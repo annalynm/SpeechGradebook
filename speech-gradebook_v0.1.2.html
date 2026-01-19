@@ -1,0 +1,3412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Gradebook</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Georgia&family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #142940;
+            --secondary: #c8a882;
+            --accent: #d4af37;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --bg: #fafbfc;
+            --bg-alt: #f1f4f7;
+            --card: #ffffff;
+            --border: #e1e8ed;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --heading-font: 'Crimson Pro', serif;
+            --body-font: 'Work Sans', sans-serif;
+            --heading-weight: 700;
+            --body-weight: 400;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--body-font);
+            font-weight: var(--body-weight);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--heading-font);
+            font-weight: var(--heading-weight);
+            color: var(--primary);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+        
+        .app-title h1 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed var(--border);
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-alt);
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+        
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(30, 58, 95, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .file-info {
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="number"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: var(--body-font);
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Buttons */
+        button,
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        button:hover,
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--border);
+            z-index: 1;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--border);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-circle {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: var(--success);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Classes Grid */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .class-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .class-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .class-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .class-meta {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .class-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        /* Rubrics */
+        .rubrics-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .rubric-item {
+            background: var(--bg-alt);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .rubric-info h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .rubric-info p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .rubric-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Score Display */
+        .score-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .score-percentage {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-2 {
+            margin-top: 2rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 2rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo" id="appLogo">SG</div>
+                    <div class="app-title">
+                        <h1 id="appName">Speech Gradebook</h1>
+                        <div class="tagline" id="appTagline">AI-Powered Speech Assessment</div>
+                    </div>
+                </div>
+                <nav>
+                    <a href="#" class="nav-link active" id="navEvaluate" onclick="showEvaluate(); return false;">Evaluate Speech</a>
+                    <a href="#" class="nav-link" id="navDashboard" onclick="showDashboard(); return false;">Dashboard</a>
+                    <a href="#" class="nav-link" id="navSettings" onclick="showSettings(); return false;">Settings</a>
+                    <a href="#" class="nav-link" id="navHelp" onclick="showHelp(); return false;">Help</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Evaluate Section -->
+        <section id="evaluateSection" class="section active">
+            <div class="card">
+                <div class="card-header" id="evaluateCardHeader">📊 Evaluate a Speech</div>
+                
+                <div class="progress-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Upload</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Details</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Evaluate</div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Results</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Upload -->
+                <div id="uploadStep">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">📁</div>
+                        <h3>Upload Speech Recording</h3>
+                        <p>Click or drag & drop your audio/video file here</p>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
+                            Supported formats: MP3, MP4, WAV, M4A, WebM
+                        </p>
+                    </div>
+                    <input type="file" id="fileInput" accept="audio/*,video/*" style="display: none;">
+                    <div id="fileInfo" class="file-info hidden">
+                        <span id="fileName"></span>
+                        <button onclick="removeFile()" class="btn-small btn-danger">Remove</button>
+                    </div>
+                    <div id="continueButtonContainer" style="margin-top: 2rem; display: none;">
+                        <button onclick="moveToStep(2)" id="continueToDetails">Continue to Details →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Details -->
+                <div id="detailsStep" class="hidden">
+                    <form id="studentForm">
+                        <div class="form-group">
+                            <label for="studentName">Student Name *</label>
+                            <input type="text" id="studentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentEmail">Student Email</label>
+                            <input type="email" id="studentEmail">
+                        </div>
+                        <div class="form-group">
+                            <label for="speechDate">Speech Date</label>
+                            <input type="date" id="speechDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentType">Assignment Type</label>
+                            <select id="assignmentType">
+                                <option value="self-introduction">Self Introduction Speech</option>
+                                <option value="informative">Informative Speech</option>
+                                <option value="persuasive">Persuasive Speech</option>
+                                <option value="demonstration">Demonstration Speech</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rubricSelect">Evaluation Rubric *</label>
+                            <select id="rubricSelect" required>
+                                <option value="">-- Select a Rubric --</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Choose which rubric to use for evaluation. <a href="#" onclick="showDashboard(); return false;" style="color: var(--primary);">Manage rubrics</a>
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="apiKey">Anthropic API Key *</label>
+                            <input type="password" id="apiKey" placeholder="sk-ant-...">
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                💡 <strong>Tip:</strong> Save your key in <a href="#" onclick="showSettings(); return false;" style="color: var(--primary);">Settings</a> to avoid entering it each time!
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="button" onclick="moveToStep(1)" class="btn-secondary">← Back</button>
+                            <button type="submit">Continue to Evaluation →</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 3: Processing -->
+                <div id="processingStep" class="hidden text-center">
+                    <div class="spinner"></div>
+                    <h3>Evaluating Speech...</h3>
+                    <p id="processingMessage">Analyzing speech content and delivery...</p>
+                </div>
+
+                <!-- Step 4: Results -->
+                <div id="resultsStep" class="hidden">
+                    <div id="resultsContent"></div>
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button onclick="openSaveModal()">💾 Save Results</button>
+                        <button onclick="downloadPDF()" class="btn-secondary">📋 Copy to Clipboard</button>
+                        <button onclick="emailResults()" class="btn-secondary">📧 Email Results</button>
+                        <button onclick="startOver()" class="btn-secondary">🔄 Start Over</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Save Modal -->
+        <div id="saveModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:white;padding:2rem;border-radius:1rem;max-width:500px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+                <h3 style="margin-top:0;color:var(--primary);">💾 Save Evaluation</h3>
+                <div style="margin:1.5rem 0;">
+                    <label style="display:block;font-weight:600;margin-bottom:0.5rem;">Class:</label>
+                    <select id="saveClassSel" onchange="loadSaveStudents()" style="width:100%;padding:0.75rem;font-size:1rem;border:2px solid #ddd;border-radius:0.5rem;">
+                        <option value="">-- Select Class --</option>
+                    </select>
+                </div>
+                <div style="margin:1.5rem 0;">
+                    <label style="display:block;font-weight:600;margin-bottom:0.5rem;">Student:</label>
+                    <select id="saveStudentSel" style="width:100%;padding:0.75rem;font-size:1rem;border:2px solid #ddd;border-radius:0.5rem;">
+                        <option value="">-- Select Student --</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:2rem;">
+                    <button onclick="closeSaveModal()" style="padding:0.75rem 1.5rem;background:#6c757d;color:white;border:none;border-radius:0.5rem;cursor:pointer;">Cancel</button>
+                    <button onclick="doSaveEval()" style="padding:0.75rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:600;">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" class="section">
+            <div class="card">
+                <div class="card-header">📚 My Classes</div>
+                <div style="margin-bottom: 1.5rem;">
+                    <button onclick="showCreateClass()">➕ Create New Class</button>
+                </div>
+                <div id="classesGrid" class="classes-grid"></div>
+            </div>
+
+            <!-- Create Class Form -->
+            <div id="createClassCard" class="card hidden">
+                <div class="card-header">Create New Class</div>
+                <form id="createClassForm">
+                    <div class="form-group">
+                        <label for="className">Class Name *</label>
+                        <input type="text" id="className" required placeholder="e.g., CMST 210">
+                    </div>
+                    <div class="form-group">
+                        <label for="classSemester">Semester</label>
+                        <select id="classSemester">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall" selected>Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classSection">Section</label>
+                        <input type="text" id="classSection" placeholder="e.g., 001">
+                    </div>
+                    <div class="form-group">
+                        <label for="classYear">Year</label>
+                        <input type="number" id="classYear" value="2025">
+                    </div>
+                    <div class="form-group">
+                        <label for="classNotes">Notes</label>
+                        <textarea id="classNotes" placeholder="Optional notes about this class"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" onclick="cancelCreateClass()" class="btn-secondary">Cancel</button>
+                        <button type="submit">Create Class</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Rubric Management -->
+            <div class="card">
+                <div class="card-header">📋 My Rubrics</div>
+                
+                <!-- Course Filter -->
+                <div style="margin-bottom: 1rem;">
+                    <label for="courseFilter" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Filter by Course:</label>
+                    <select id="courseFilter" onchange="filterRubricsByCourse()" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                        <option value="">All Courses</option>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <button onclick="showCreateRubric()">➕ Create Custom Rubric</button>
+                </div>
+                <div id="rubricsList" class="rubrics-list"></div>
+            </div>
+
+            <!-- Create/Edit Rubric Form -->
+            <div id="createRubricCard" class="card hidden">
+                <div class="card-header" id="rubricFormHeader">Create Custom Rubric</div>
+                <form id="createRubricForm">
+                    <input type="hidden" id="editingRubricId" value="">
+                    
+                    <!-- Basic Info -->
+                    <h4 style="margin-bottom: 1rem; color: var(--primary);">Basic Information</h4>
+                    <div class="form-group">
+                        <label for="rubricName">Rubric Name *</label>
+                        <input type="text" id="rubricName" placeholder="e.g., Persuasive Speech" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rubricDescription">Description</label>
+                        <textarea id="rubricDescription" placeholder="Brief description of this rubric..."></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="rubricTotalPoints">Total Points *</label>
+                            <input type="number" id="rubricTotalPoints" value="50" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rubricSpeechType">Speech Type</label>
+                            <input type="text" id="rubricSpeechType" placeholder="e.g., Persuasive, Informative">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Associated Courses (Optional)</label>
+                        <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem;">
+                            Select one or more courses/sections. This helps organize your rubrics and makes them easier to find during evaluation.
+                        </p>
+                        <div id="rubricCoursesContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 0.25rem; padding: 0.75rem; background: white;">
+                            <!-- Will be populated with checkboxes dynamically -->
+                            <p style="color: var(--text-light); text-align: center;">No courses available. Create courses in "My Classes" first.</p>
+                        </div>
+                    </div>
+
+                    <!-- Grade Scale -->
+                    <h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Grade Scale</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem;">
+                        Define what percentage of maximum points each grade represents:
+                    </p>
+                    <div style="display: grid; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0.5rem; align-items: center;">
+                            <strong style="font-size: 0.9rem;">Grade</strong>
+                            <strong style="font-size: 0.9rem;">Label</strong>
+                            <strong style="font-size: 0.9rem;">Percentage</strong>
+                            <strong style="font-size: 0.9rem;">Range</strong>
+                        </div>
+                        <div style="display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0.5rem; align-items: center;">
+                            <span style="font-weight: 600;">A</span>
+                            <input type="text" id="gradeA_label" value="Professional" style="padding: 0.4rem;">
+                            <input type="number" id="gradeA_pct" value="100" min="0" max="100" style="padding: 0.4rem;">
+                            <input type="text" id="gradeA_range" value="100-91" style="padding: 0.4rem;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0.5rem; align-items: center;">
+                            <span style="font-weight: 600;">B</span>
+                            <input type="text" id="gradeB_label" value="Proficient" style="padding: 0.4rem;">
+                            <input type="number" id="gradeB_pct" value="90" min="0" max="100" style="padding: 0.4rem;">
+                            <input type="text" id="gradeB_range" value="90-81" style="padding: 0.4rem;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0.5rem; align-items: center;">
+                            <span style="font-weight: 600;">C</span>
+                            <input type="text" id="gradeC_label" value="Developing" style="padding: 0.4rem;">
+                            <input type="number" id="gradeC_pct" value="80" min="0" max="100" style="padding: 0.4rem;">
+                            <input type="text" id="gradeC_range" value="80-71" style="padding: 0.4rem;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0.5rem; align-items: center;">
+                            <span style="font-weight: 600;">D</span>
+                            <input type="text" id="gradeD_label" value="Unprofessional" style="padding: 0.4rem;">
+                            <input type="number" id="gradeD_pct" value="70" min="0" max="100" style="padding: 0.4rem;">
+                            <input type="text" id="gradeD_range" value="70-61" style="padding: 0.4rem;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0.5rem; align-items: center;">
+                            <span style="font-weight: 600;">F</span>
+                            <input type="text" id="gradeF_label" value="Unacceptable" style="padding: 0.4rem;">
+                            <input type="number" id="gradeF_pct" value="60" min="0" max="100" style="padding: 0.4rem;">
+                            <input type="text" id="gradeF_range" value="60-0" style="padding: 0.4rem;">
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <h4 style="margin: 1.5rem 0 1rem; color: var(--primary);">Categories & Subcategories</h4>
+                    <div id="categoriesContainer"></div>
+                    <button type="button" onclick="addCategory()" class="btn-secondary" style="margin-top: 1rem;">➕ Add Category</button>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid var(--border);">
+                        <button type="button" onclick="cancelCreateRubric()" class="btn-secondary">Cancel</button>
+                        <button type="submit" id="rubricSubmitBtn">Create Rubric</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settingsSection" class="section">
+            <div class="card">
+                <div class="card-header">⚙️ Settings</div>
+                
+                <div class="form-group">
+                    <label for="tenantSelect">University / Theme</label>
+                    <select id="tenantSelect" onchange="switchTenant(this.value)">
+                        <option value="default">Generic / Default</option>
+                        <option value="utk">University of Tennessee, Knoxville</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="savedApiKey">Save API Key</label>
+                    <input type="password" id="savedApiKey" placeholder="sk-ant-...">
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                        <strong>Save time:</strong> Store your Anthropic API key here so you don't have to enter it every time!
+                    </p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Theme Customization</h3>
+                    
+                    <div class="form-group">
+                        <label>Custom Logo</label>
+                        <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
+                        <div id="logoPreview" class="hidden" style="margin-top: 1rem;">
+                            <img id="logoPreviewImg" style="max-width: 200px; border-radius: 0.5rem;">
+                            <button type="button" onclick="clearLogo()" class="btn-small btn-danger" style="display: block; margin-top: 0.5rem;">Remove Logo</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="primaryColor">Primary Color</label>
+                        <input type="color" id="primaryColor" value="#1e3a5f" onchange="updatePrimaryColor(this.value)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="headingFont">Heading Font</label>
+                        <select id="headingFont" onchange="updateFonts()">
+                            <option value="'Crimson Pro', serif">Crimson Pro (Default)</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bodyFont">Body Font</label>
+                        <select id="bodyFont" onchange="updateFonts()">
+                            <option value="'Work Sans', sans-serif">Work Sans (Default)</option>
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button onclick="saveSettings()">💾 Save Settings</button>
+                    <button onclick="resetSettings()" class="btn-secondary">🔄 Reset to Defaults</button>
+                </div>
+
+                <div id="settingsMessage" class="hidden"></div>
+            </div>
+        </section>
+
+        <!-- Class Detail Section (Simple) -->
+        <section id="classDetailSection" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <span id="classDetailTitle">Class Details</span>
+                    <button onclick="showDashboard()">← Back to Dashboard</button>
+                </div>
+                
+                <div id="classDetailContent"></div>
+            </div>
+            
+            <!-- Add Student Form -->
+            <div id="addStudentCard" class="card hidden">
+                <div class="card-header">Add Student</div>
+                <form id="addStudentForm">
+                    <div class="form-group">
+                        <label for="studentFirstName">First Name *</label>
+                        <input type="text" id="studentFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentLastName">Last Name *</label>
+                        <input type="text" id="studentLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmailAdd">Email *</label>
+                        <input type="email" id="studentEmailAdd" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentIdAdd">Student ID (optional)</label>
+                        <input type="text" id="studentIdAdd">
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" onclick="cancelAddStudent()" class="btn-secondary">Cancel</button>
+                        <button type="submit">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Help Section -->
+        <section id="helpSection" class="section">
+            <div class="card">
+                <div class="card-header">❓ Help & Documentation</div>
+                
+                <h3 style="margin-bottom: 1rem;">Getting Started</h3>
+                <p style="margin-bottom: 2rem;">
+                    Speech Gradebook uses AI to automatically evaluate speech recordings based on customizable rubrics. 
+                    Simply upload your speech file, provide student details, and let our AI analyze the content and delivery.
+                </p>
+
+                <h3 style="margin-bottom: 1rem;">How to Evaluate a Speech</h3>
+                <ol style="margin-bottom: 2rem; padding-left: 1.5rem;">
+                    <li style="margin-bottom: 0.5rem;">Click "Evaluate Speech" in the navigation</li>
+                    <li style="margin-bottom: 0.5rem;">Upload your audio or video file</li>
+                    <li style="margin-bottom: 0.5rem;">Enter student details and your Anthropic API key</li>
+                    <li style="margin-bottom: 0.5rem;">Click "Continue to Evaluation" and wait for AI analysis</li>
+                    <li style="margin-bottom: 0.5rem;">Review results, download PDF, or email to student</li>
+                </ol>
+
+                <h3 style="margin-bottom: 1rem;">Getting an API Key</h3>
+                <p style="margin-bottom: 2rem;">
+                    You'll need an Anthropic API key to use this service:
+                </p>
+                <ol style="margin-bottom: 2rem; padding-left: 1.5rem;">
+                    <li style="margin-bottom: 0.5rem;">Visit <a href="https://console.anthropic.com" target="_blank" style="color: var(--primary);">console.anthropic.com</a></li>
+                    <li style="margin-bottom: 0.5rem;">Sign up or log in to your account</li>
+                    <li style="margin-bottom: 0.5rem;">Navigate to API Keys section</li>
+                    <li style="margin-bottom: 0.5rem;">Generate a new API key</li>
+                    <li style="margin-bottom: 0.5rem;">Save it in Settings to avoid re-entering it</li>
+                </ol>
+
+                <h3 style="margin-bottom: 1rem;">Managing Classes</h3>
+                <p style="margin-bottom: 2rem;">
+                    Use the Dashboard to create and manage your classes. Track students, assignments, and evaluation history 
+                    all in one place. All data is stored locally in your browser.
+                </p>
+
+                <h3 style="margin-bottom: 1rem;">Custom Rubrics</h3>
+                <p style="margin-bottom: 2rem;">
+                    Create custom rubrics tailored to your specific assignment requirements. The AI will evaluate speeches 
+                    based on your rubric criteria and provide detailed feedback.
+                </p>
+
+                <h3 style="margin-bottom: 1rem;">Support</h3>
+                <p>
+                    For questions or technical support, contact: <strong id="supportEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c0f090c0c130e083c0f0c19191f141b0e1d18191e131317521f1311">[email&#160;protected]</a></strong>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links" id="footerLinks">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <p id="footerCopyright">© 2026 Speech Gradebook</p>
+                <p id="footerAdditional" style="opacity: 0.8; font-size: 0.9rem;"></p>
+            </div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // ===== TENANT CONFIGURATION =====
+        const TENANT_CONFIGS = {
+            'utk': {
+                name: 'University of Tennessee, Knoxville',
+                shortName: 'UTK',
+                domain: 'utk.edu',
+                branding: {
+                    appName: 'Speech Gradebook',
+                    tagline: 'AI-Powered Speech Assessment'
+                },
+                colors: {
+                    primary: '#FF8200',
+                    primaryDark: '#D66D00',
+                    secondary: '#58595B',
+                    accent: '#FF8200'
+                },
+                typography: {
+                    headingFont: "'Montserrat', sans-serif",
+                    bodyFont: "'Georgia', serif",
+                    headingWeight: '600',
+                    bodyWeight: '400'
+                },
+                contact: {
+                    supportEmail: 'speecheval-support@utk.edu'
+                },
+                footer: {
+                    links: [
+                        { text: 'Privacy Policy', url: 'https://www.utk.edu/aboutut/privacy/' },
+                        { text: 'Accessibility', url: 'https://dae.utk.edu/eoa/ada/' },
+                        { text: 'Title IX', url: 'https://titleix.utk.edu/' },
+                        { text: 'IT Help', url: 'https://oit.utk.edu/help' }
+                    ],
+                    copyright: '© 2026 Speech Gradebook',
+                    additionalText: 'The flagship campus of the University of Tennessee System'
+                }
+            },
+            'default': {
+                name: 'Speech Gradebook',
+                shortName: 'SG',
+                domain: null,
+                branding: {
+                    appName: 'Speech Gradebook',
+                    tagline: 'AI-Powered Speech Assessment'
+                },
+                colors: {
+                    primary: '#1e3a5f',
+                    primaryDark: '#142940',
+                    secondary: '#c8a882',
+                    accent: '#d4af37'
+                },
+                typography: {
+                    headingFont: "'Crimson Pro', serif",
+                    bodyFont: "'Work Sans', sans-serif",
+                    headingWeight: '700',
+                    bodyWeight: '400'
+                },
+                contact: {
+                    supportEmail: 'support@speechgradebook.com'
+                },
+                footer: {
+                    links: [
+                        { text: 'Privacy Policy', url: '#' },
+                        { text: 'Terms of Service', url: '#' }
+                    ],
+                    copyright: '© 2026 Speech Gradebook',
+                    additionalText: null
+                }
+            }
+        };
+
+        // ===== GLOBAL STATE =====
+        let currentTenant = 'default';
+        let uploadedFile = null;
+        let evaluationResults = null;
+        let currentStep = 1;
+
+        // ===== RUBRIC SYSTEM =====
+        // Define the Self-Introduction Speech Rubric
+        const SELF_INTRO_RUBRIC = {
+            name: "Self Introduction Speech",
+            totalPoints: 50,
+            gradeScale: {
+                A: { label: "Professional", percentage: 1.00, range: "100-91" },
+                B: { label: "Proficient", percentage: 0.90, range: "90-89" },
+                C: { label: "Developing", percentage: 0.80, range: "80-71" },
+                D: { label: "Unprofessional", percentage: 0.70, range: "70-61" },
+                F: { label: "Unacceptable", percentage: 0.60, range: "60-0" }
+            },
+            categories: [
+                {
+                    name: "Content - Introduction",
+                    subcategories: [
+                        "Capture Attention",
+                        "Relevance to Audience",
+                        "Introduction of Topic/Purpose"
+                    ]
+                },
+                {
+                    name: "Content - Organization",
+                    subcategories: [
+                        "Pattern",
+                        "Connectives",
+                        "Within Time Limits"
+                    ]
+                },
+                {
+                    name: "Content - Conclusion",
+                    subcategories: [
+                        "Recap/Summary",
+                        "Memorable Final Thought"
+                    ]
+                },
+                {
+                    name: "Content - Assignment",
+                    subcategories: [
+                        "Your passion(s)",
+                        "Career Goals",
+                        "Philosophy",
+                        "Clear Development of Ideas"
+                    ]
+                },
+                {
+                    name: "Delivery - Nonverbal",
+                    subcategories: [
+                        "Eye Contact",
+                        "Gestures/Bodily Movements",
+                        "Desire to Communicate/Enthusiasm",
+                        "Professionalism"
+                    ]
+                },
+                {
+                    name: "Delivery - Verbal",
+                    subcategories: [
+                        "Vocal volume/variety/tone",
+                        "Speaking Rate/Effective Use of Pauses",
+                        "Extemporaneous style - use of notes",
+                        "Use of vocalized pauses/fillers (ums, uhs, like...)"
+                    ]
+                }
+            ]
+        };
+
+        // Calculate rubric metrics
+        function calculateRubricMetrics(rubric) {
+            const totalSubcategories = rubric.categories.reduce(
+                (sum, cat) => sum + cat.subcategories.length, 
+                0
+            );
+            const pointsPerSubcategory = rubric.totalPoints / totalSubcategories;
+            
+            return {
+                totalSubcategories,
+                pointsPerSubcategory,
+                categoryPoints: rubric.categories.map(cat => ({
+                    name: cat.name,
+                    maxPoints: cat.subcategories.length * pointsPerSubcategory,
+                    subcategoryCount: cat.subcategories.length
+                }))
+            };
+        }
+
+        // Calculate score for a category based on grade selections
+        function calculateCategoryScore(rubric, categoryIndex, gradeSelections) {
+            const metrics = calculateRubricMetrics(rubric);
+            const category = rubric.categories[categoryIndex];
+            const pointsPerSub = metrics.pointsPerSubcategory;
+            
+            let totalScore = 0;
+            gradeSelections.forEach(grade => {
+                const gradePercentage = rubric.gradeScale[grade].percentage;
+                totalScore += pointsPerSub * gradePercentage;
+            });
+            
+            return {
+                score: parseFloat(totalScore.toFixed(2)),
+                maxScore: parseFloat((category.subcategories.length * pointsPerSub).toFixed(2))
+            };
+        }
+        let currentClassId = null;
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default tenant
+            currentTenant = 'default';
+            applyTenant(currentTenant);
+            
+            // Initialize file upload
+            initializeFileUpload();
+            
+            // Initialize form handlers
+            initializeForms();
+            
+            // Load saved data
+            loadClasses();
+            loadRubrics();
+            loadSavedSettings();
+            
+            // Set current date
+            document.getElementById('speechDate').valueAsDate = new Date();
+        });
+
+        // ===== NAVIGATION =====
+        function showEvaluate() {
+            setActiveSection('evaluateSection', 'navEvaluate');
+        }
+
+        function showDashboard() {
+            setActiveSection('dashboardSection', 'navDashboard');
+            loadClasses();
+        }
+
+        function showSettings() {
+            setActiveSection('settingsSection', 'navSettings');
+        }
+
+        function showHelp() {
+            setActiveSection('helpSection', 'navHelp');
+        }
+
+        function setActiveSection(sectionId, navId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update nav
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById(navId).classList.add('active');
+        }
+
+        // ===== TENANT/THEME MANAGEMENT =====
+        function switchTenant(tenantId) {
+            currentTenant = tenantId;
+            applyTenant(tenantId);
+            localStorage.setItem('current_tenant', tenantId);
+        }
+
+        function applyTenant(tenantId) {
+            const config = TENANT_CONFIGS[tenantId] || TENANT_CONFIGS['default'];
+            
+            // Apply colors
+            const root = document.documentElement;
+            root.style.setProperty('--primary', config.colors.primary);
+            root.style.setProperty('--primary-dark', config.colors.primaryDark);
+            root.style.setProperty('--secondary', config.colors.secondary);
+            root.style.setProperty('--accent', config.colors.accent);
+            
+            // Apply fonts
+            root.style.setProperty('--heading-font', config.typography.headingFont);
+            root.style.setProperty('--body-font', config.typography.bodyFont);
+            root.style.setProperty('--heading-weight', config.typography.headingWeight);
+            root.style.setProperty('--body-weight', config.typography.bodyWeight);
+            
+            // Apply branding
+            document.getElementById('appName').textContent = config.branding.appName;
+            document.getElementById('appTagline').textContent = config.branding.tagline;
+            document.getElementById('appLogo').textContent = config.shortName;
+            document.title = `${config.branding.appName} - ${config.name}`;
+            
+            // Apply footer
+            const footerLinks = document.getElementById('footerLinks');
+            footerLinks.innerHTML = config.footer.links.map(link => 
+                `<a href="${link.url}">${link.text}</a>`
+            ).join('');
+            
+            document.getElementById('footerCopyright').textContent = config.footer.copyright;
+            document.getElementById('footerAdditional').textContent = config.footer.additionalText || '';
+            
+            // Apply contact
+            document.getElementById('supportEmail').textContent = config.contact.supportEmail;
+            
+            // Update tenant selector
+            document.getElementById('tenantSelect').value = tenantId;
+        }
+
+        // ===== FILE UPLOAD =====
+        function initializeFileUpload() {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFile(file) {
+            uploadedFile = file;
+            document.getElementById('fileName').textContent = `📎 ${file.name} (${formatFileSize(file.size)})`;
+            document.getElementById('fileInfo').classList.remove('hidden');
+            document.getElementById('continueButtonContainer').style.display = 'block';
+        }
+
+        function removeFile() {
+            uploadedFile = null;
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+            document.getElementById('continueButtonContainer').style.display = 'none';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // ===== STEP NAVIGATION =====
+        function moveToStep(step) {
+            currentStep = step;
+            console.log('Moving to step:', step);
+            
+            // Hide all steps
+            document.getElementById('uploadStep').classList.add('hidden');
+            document.getElementById('detailsStep').classList.add('hidden');
+            document.getElementById('processingStep').classList.add('hidden');
+            document.getElementById('resultsStep').classList.add('hidden');
+            
+            // Update step indicators
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                stepEl.classList.remove('active', 'completed');
+                if (i < step) {
+                    stepEl.classList.add('completed');
+                } else if (i === step) {
+                    stepEl.classList.add('active');
+                }
+            }
+            
+            // Update card header based on step
+            const headerEl = document.getElementById('evaluateCardHeader');
+            if (step === 4) {
+                headerEl.textContent = '📊 Speech Evaluation Results';
+            } else {
+                headerEl.textContent = '📊 Evaluate a Speech';
+            }
+            
+            // Show current step
+            if (step === 1) {
+                document.getElementById('uploadStep').classList.remove('hidden');
+            } else if (step === 2) {
+                document.getElementById('detailsStep').classList.remove('hidden');
+                // Load saved API key if available
+                const savedKey = localStorage.getItem('anthropic_api_key');
+                if (savedKey) {
+                    document.getElementById('apiKey').value = savedKey;
+                }
+                // Populate rubric selector
+                populateRubricSelector();
+            } else if (step === 3) {
+                document.getElementById('processingStep').classList.remove('hidden');
+            } else if (step === 4) {
+                console.log('Showing results step');
+                document.getElementById('resultsStep').classList.remove('hidden');
+            }
+        }
+
+        function populateRubricSelector() {
+            const select = document.getElementById('rubricSelect');
+            if (!select) return;
+            
+            const rubrics = getAllRubrics();
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            
+            // Clear existing options except the first one
+            select.innerHTML = '<option value="">-- Select a Rubric --</option>';
+            
+            // Separate rubrics by type
+            const defaultRubrics = rubrics.filter(r => r.id === 'default');
+            
+            // Filter unassigned rubrics (no courseId or courseIds)
+            const unassignedRubrics = rubrics.filter(r => {
+                if (r.id === 'default') return false;
+                const hasOldCourseId = r.courseId && r.courseId !== '';
+                const hasNewCourseIds = r.courseIds && Array.isArray(r.courseIds) && r.courseIds.length > 0;
+                return !hasOldCourseId && !hasNewCourseIds;
+            });
+            
+            // Add default rubric
+            if (defaultRubrics.length > 0) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = 'System Default';
+                defaultRubrics.forEach(rubric => {
+                    const option = document.createElement('option');
+                    option.value = rubric.id;
+                    option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                    optgroup.appendChild(option);
+                });
+                select.appendChild(optgroup);
+            }
+            
+            // Group rubrics by course NAME (not ID) to consolidate sections
+            const rubricsByCourse = {};
+            rubrics.filter(r => r.id !== 'default').forEach(rubric => {
+                // Get courseIds for this rubric (handle both old and new format)
+                let courseIds = [];
+                if (rubric.courseIds && Array.isArray(rubric.courseIds)) {
+                    courseIds = rubric.courseIds;
+                } else if (rubric.courseId) {
+                    courseIds = [rubric.courseId];
+                }
+                
+                // Add rubric to each course it's assigned to
+                courseIds.forEach(courseId => {
+                    const course = classes.find(c => c.id === courseId);
+                    if (course) {
+                        // Use course name + semester + year as key
+                        const courseKey = `${course.name}|${course.semester}|${course.year}`;
+                        if (!rubricsByCourse[courseKey]) {
+                            rubricsByCourse[courseKey] = {
+                                name: course.name,
+                                semester: course.semester,
+                                year: course.year,
+                                rubrics: []
+                            };
+                        }
+                        // Avoid duplicates
+                        if (!rubricsByCourse[courseKey].rubrics.find(r => r.id === rubric.id)) {
+                            rubricsByCourse[courseKey].rubrics.push(rubric);
+                        }
+                    }
+                });
+            });
+            
+            // Add course-specific rubrics grouped by course name
+            Object.keys(rubricsByCourse).sort().forEach(courseKey => {
+                const courseGroup = rubricsByCourse[courseKey];
+                
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = `${courseGroup.name} - ${courseGroup.semester} ${courseGroup.year}`;
+                
+                courseGroup.rubrics.forEach(rubric => {
+                    const option = document.createElement('option');
+                    option.value = rubric.id;
+                    option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                    if (rubric.speechType) {
+                        option.textContent += ` - ${rubric.speechType}`;
+                    }
+                    optgroup.appendChild(option);
+                });
+                
+                select.appendChild(optgroup);
+            });
+            
+            // Add unassigned custom rubrics
+            if (unassignedRubrics.length > 0) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = 'My Rubrics (No Course)';
+                unassignedRubrics.forEach(rubric => {
+                    const option = document.createElement('option');
+                    option.value = rubric.id;
+                    option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                    if (rubric.speechType) {
+                        option.textContent += ` - ${rubric.speechType}`;
+                    }
+                    optgroup.appendChild(option);
+                });
+                select.appendChild(optgroup);
+            }
+            
+            // Pre-select the Self-Introduction rubric if available
+            const selfIntroRubric = rubrics.find(r => r.id === 'self-intro-1');
+            if (selfIntroRubric) {
+                select.value = selfIntroRubric.id;
+            }
+        }
+
+        // ===== FORMS =====
+        function initializeForms() {
+            // Student form
+            document.getElementById('studentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!uploadedFile) {
+                    alert('Please upload a speech recording first.');
+                    return;
+                }
+
+                moveToStep(3);
+                await processAndEvaluate();
+            });
+
+            // Create class form
+            document.getElementById('createClassForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const newClass = {
+                    id: Date.now().toString(),
+                    name: document.getElementById('className').value,
+                    semester: document.getElementById('classSemester').value,
+                    section: document.getElementById('classSection').value,
+                    year: document.getElementById('classYear').value,
+                    notes: document.getElementById('classNotes').value,
+                    roster: [],
+                    evaluations: [],
+                    createdAt: new Date().toISOString()
+                };
+                
+                const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                classes.push(newClass);
+                localStorage.setItem('classes', JSON.stringify(classes));
+                
+                alert('✓ Class created successfully!');
+                document.getElementById('createClassForm').reset();
+                cancelCreateClass();
+                loadClasses();
+            });
+
+            // Create rubric form
+            document.getElementById('createRubricForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                try {
+                    const rubricData = collectRubricData();
+                    
+                    // Validation
+                    if (!rubricData.name) {
+                        alert('Please enter a rubric name');
+                        return;
+                    }
+                    
+                    if (rubricData.totalPoints < 1) {
+                        alert('Total points must be at least 1');
+                        return;
+                    }
+                    
+                    if (rubricData.categories.length === 0) {
+                        alert('Please add at least one category with subcategories');
+                        return;
+                    }
+                    
+                    // Check that all categories have subcategories
+                    const emptyCategories = rubricData.categories.filter(cat => cat.subcategories.length === 0);
+                    if (emptyCategories.length > 0) {
+                        alert('All categories must have at least one subcategory');
+                        return;
+                    }
+                    
+                    // Save using the new storage system
+                    const savedRubric = saveRubric(rubricData);
+                    
+                    const isEditing = document.getElementById('editingRubricId').value !== '';
+                    alert(isEditing ? '✓ Rubric updated successfully!' : '✓ Rubric created successfully!');
+                    
+                    document.getElementById('createRubricForm').reset();
+                    cancelCreateRubric();
+                    loadRubrics();
+                } catch (error) {
+                    console.error('Error saving rubric:', error);
+                    alert('Error saving rubric: ' + error.message);
+                }
+            });
+
+            // Add student form
+            document.getElementById('addStudentForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const newStudent = {
+                    id: Date.now().toString(),
+                    firstName: document.getElementById('studentFirstName').value,
+                    lastName: document.getElementById('studentLastName').value,
+                    email: document.getElementById('studentEmailAdd').value,
+                    studentId: document.getElementById('studentIdAdd').value,
+                    addedAt: new Date().toISOString()
+                };
+                
+                const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                const classIndex = classes.findIndex(c => c.id === currentClassId);
+                
+                if (classIndex !== -1) {
+                    if (!classes[classIndex].roster) {
+                        classes[classIndex].roster = [];
+                    }
+                    classes[classIndex].roster.push(newStudent);
+                    localStorage.setItem('classes', JSON.stringify(classes));
+                    
+                    alert('✓ Student added successfully!');
+                    document.getElementById('addStudentForm').reset();
+                    cancelAddStudent();
+                    viewClass(currentClassId); // Refresh the view
+                }
+            });
+        }
+
+        // ===== SPEECH EVALUATION =====
+        async function processAndEvaluate() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const selectedRubricId = document.getElementById('rubricSelect').value;
+            
+            if (!apiKey) {
+                alert('Please enter your Anthropic API key.');
+                moveToStep(2);
+                return;
+            }
+            
+            if (!selectedRubricId) {
+                alert('Please select a rubric for evaluation.');
+                moveToStep(2);
+                return;
+            }
+
+            const studentName = document.getElementById('studentName').value;
+            const assignmentType = document.getElementById('assignmentType').value;
+            
+            document.getElementById('processingMessage').textContent = 
+                'Analyzing speech content and delivery for ' + studentName + '...';
+
+            try {
+                // Get the selected rubric
+                const selectedRubric = getRubricById(selectedRubricId);
+                if (!selectedRubric) {
+                    throw new Error('Selected rubric not found');
+                }
+                
+                // Pass rubric to evaluation function
+                const result = await evaluateSpeech(apiKey, uploadedFile, assignmentType, selectedRubric);
+                evaluationResults = result;
+                moveToStep(4);
+                displayResults(result);
+            } catch (error) {
+                alert('Error evaluating speech: ' + error.message);
+                moveToStep(2);
+            }
+        }
+
+        async function evaluateSpeech(apiKey, file, assignmentType, rubric) {
+            // Simulate evaluation with mock data
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Use the passed rubric (or fallback to default if not provided)
+            if (!rubric) {
+                rubric = getRubricById('default') || DEFAULT_RUBRIC;
+            }
+            
+            const metrics = calculateRubricMetrics(rubric);
+            
+            // Generate mock grades based on rubric structure
+            // In a real system, AI would determine these grades
+            const mockGrades = {};
+            rubric.categories.forEach((category, index) => {
+                // Generate random grades for demo purposes
+                const grades = [];
+                for (let i = 0; i < category.subcategories.length; i++) {
+                    // Weighted toward higher grades (mostly A's and B's)
+                    const rand = Math.random();
+                    if (rand > 0.7) grades.push('A');
+                    else if (rand > 0.4) grades.push('B');
+                    else if (rand > 0.2) grades.push('C');
+                    else grades.push('D');
+                }
+                mockGrades[index] = grades;
+            });
+            
+            // Calculate scores for each category
+            const sections = {};
+            let totalScore = 0;
+            
+            rubric.categories.forEach((category, index) => {
+                const categoryScore = calculateCategoryScore(rubric, index, mockGrades[index]);
+                const pointsPerSub = metrics.pointsPerSubcategory;
+                
+                // Build subcategory details with individual grades and points
+                const subcategoryDetails = category.subcategories.map((subName, subIndex) => {
+                    const grade = mockGrades[index][subIndex];
+                    const gradePercentage = rubric.gradeScale[grade].percentage;
+                    const points = pointsPerSub * gradePercentage;
+                    return {
+                        name: subName,
+                        grade: grade,
+                        gradeLabel: rubric.gradeScale[grade].label,
+                        points: parseFloat(points.toFixed(2)),
+                        maxPoints: parseFloat(pointsPerSub.toFixed(2))
+                    };
+                });
+                
+                sections[category.name] = {
+                    score: categoryScore.score,
+                    maxScore: categoryScore.maxScore,
+                    feedback: generateCategoryFeedback(category.name, mockGrades[index]),
+                    subcategories: subcategoryDetails
+                };
+                totalScore += categoryScore.score;
+            });
+            
+            return {
+                studentName: document.getElementById('studentName').value,
+                speechDate: document.getElementById('speechDate').value,
+                assignmentType: assignmentType,
+                speechTime: '4:32',
+                sections: sections,
+                totalScore: parseFloat(totalScore.toFixed(2)),
+                maxScore: rubric.totalPoints,
+                overallComments: 'This was an excellent self-introduction speech. The speaker demonstrated strong public speaking fundamentals with engaging content and confident delivery. The personal anecdotes were particularly effective in helping the audience connect with the speaker. Areas for improvement include smoother transitions between main points and reducing some nervous gestures and filler words. Overall, this was a professional and polished presentation that exceeded expectations for an introductory speech.'
+            };
+        }
+
+        // Generate feedback based on category and grades
+        function generateCategoryFeedback(categoryName, grades) {
+            const avgGrade = calculateAverageGrade(grades);
+            
+            const feedbackMap = {
+                'Content - Introduction': {
+                    'A': 'Excellent opening with clear attention getter. Introduction effectively established topic relevance and purpose.',
+                    'B': 'Strong opening with clear attention getter. Introduction effectively established topic relevance. Good connection to audience.',
+                    'C': 'Adequate introduction present. Could improve attention-getting technique and clearer statement of purpose.',
+                    'D': 'Introduction present but lacks clear attention getter or purpose statement.',
+                    'F': 'Introduction needs significant improvement in capturing attention and establishing purpose.'
+                },
+                'Content - Organization': {
+                    'A': 'Excellent organizational structure with clear pattern. Smooth transitions and perfect time management.',
+                    'B': 'Clear organizational pattern evident. Transitions could be smoother. Excellent time management.',
+                    'C': 'Basic organizational structure present. Transitions need improvement. Time management adequate.',
+                    'D': 'Organization unclear. Transitions weak. Time management needs attention.',
+                    'F': 'Lacks clear organizational pattern. Poor transitions and time management.'
+                },
+                'Content - Conclusion': {
+                    'A': 'Excellent conclusion with memorable final thought and effective summary of main points.',
+                    'B': 'Strong conclusion with good summary. Final thought could be more memorable.',
+                    'C': 'Adequate conclusion present. Could strengthen summary and final thought.',
+                    'D': 'Weak conclusion. Lacks clear summary or memorable ending.',
+                    'F': 'No clear conclusion or summary provided.'
+                },
+                'Content - Assignment': {
+                    'A': 'Outstanding content that fully addresses all assignment requirements. Personal stories highly engaging and philosophy exceptionally well-articulated.',
+                    'B': 'Content clearly addressed assignment requirements. Personal stories were engaging and philosophy was well-articulated.',
+                    'C': 'Content addresses most assignment requirements. Could develop ideas more fully.',
+                    'D': 'Content partially addresses assignment. Ideas need more development.',
+                    'F': 'Content does not adequately address assignment requirements.'
+                },
+                'Delivery - Nonverbal': {
+                    'A': 'Excellent eye contact, natural gestures, and enthusiastic delivery. Highly professional appearance.',
+                    'B': 'Good eye contact and gestures. Enthusiastic delivery. Some improvement needed in reducing nervous movements. Professional appearance.',
+                    'C': 'Adequate eye contact and gestures. Could improve enthusiasm and reduce distracting movements.',
+                    'D': 'Limited eye contact. Gestures need improvement. Lacks enthusiasm.',
+                    'F': 'Poor eye contact and minimal effective gestures. Unprofessional delivery.'
+                },
+                'Delivery - Verbal': {
+                    'A': 'Excellent vocal variety, volume, and speaking rate. Perfect use of pauses. Fully extemporaneous with no filler words.',
+                    'B': 'Excellent vocal variety and appropriate volume. Good speaking rate. Mostly extemporaneous style with minimal notes. Some filler words present.',
+                    'C': 'Adequate vocal delivery. Could improve variety and reduce dependence on notes. Noticeable filler words.',
+                    'D': 'Limited vocal variety. Over-reliant on notes. Excessive filler words.',
+                    'F': 'Poor vocal delivery. Reading from notes. Excessive filler words interfere with message.'
+                }
+            };
+            
+            return feedbackMap[categoryName]?.[avgGrade] || 'Feedback not available.';
+        }
+
+        // Calculate average grade from an array of grades
+        function calculateAverageGrade(grades) {
+            const gradeValues = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'F': 1 };
+            const sum = grades.reduce((total, grade) => total + gradeValues[grade], 0);
+            const avg = sum / grades.length;
+            
+            if (avg >= 4.5) return 'A';
+            if (avg >= 3.5) return 'B';
+            if (avg >= 2.5) return 'C';
+            if (avg >= 1.5) return 'D';
+            return 'F';
+        }
+
+        // ===== RUBRIC STORAGE & MANAGEMENT =====
+        
+        // Create a default "General Speech Evaluation" rubric
+        const DEFAULT_RUBRIC = {
+            id: 'default',
+            name: "General Speech Evaluation",
+            description: "Simplified evaluation for verbal and nonverbal communication",
+            totalPoints: 50,
+            courseId: null,
+            speechType: "General",
+            createdDate: new Date().toISOString(),
+            gradeScale: {
+                A: { label: "Professional", percentage: 1.00, range: "100-91" },
+                B: { label: "Proficient", percentage: 0.90, range: "90-89" },
+                C: { label: "Developing", percentage: 0.80, range: "80-71" },
+                D: { label: "Unprofessional", percentage: 0.70, range: "70-61" },
+                F: { label: "Unacceptable", percentage: 0.60, range: "60-0" }
+            },
+            categories: [
+                {
+                    name: "Verbal Delivery",
+                    subcategories: [
+                        "Vocal Volume and Clarity",
+                        "Speaking Rate and Pacing",
+                        "Vocal Variety and Expression",
+                        "Minimal Filler Words"
+                    ]
+                },
+                {
+                    name: "Nonverbal Delivery",
+                    subcategories: [
+                        "Eye Contact",
+                        "Gestures and Body Language",
+                        "Confidence and Enthusiasm",
+                        "Professional Appearance"
+                    ]
+                }
+            ]
+        };
+
+        // Initialize rubrics in localStorage if not exists
+        function initializeRubrics() {
+            const existingRubrics = localStorage.getItem('speech_rubrics');
+            if (!existingRubrics) {
+                // Create initial rubrics array with default and self-intro
+                const initialRubrics = [
+                    DEFAULT_RUBRIC,
+                    {
+                        id: 'self-intro-1',
+                        name: "Self Introduction Speech",
+                        description: "Comprehensive rubric for self-introduction speeches",
+                        totalPoints: 50,
+                        courseId: null,
+                        speechType: "Self-Introduction",
+                        createdDate: new Date().toISOString(),
+                        gradeScale: SELF_INTRO_RUBRIC.gradeScale,
+                        categories: SELF_INTRO_RUBRIC.categories
+                    }
+                ];
+                localStorage.setItem('speech_rubrics', JSON.stringify(initialRubrics));
+            }
+        }
+
+        // Get all rubrics
+        function getAllRubrics() {
+            const rubrics = localStorage.getItem('speech_rubrics');
+            return rubrics ? JSON.parse(rubrics) : [];
+        }
+
+        // Get rubrics by course
+        function getRubricsByCourse(courseId) {
+            const rubrics = getAllRubrics();
+            return rubrics.filter(r => r.courseId === courseId);
+        }
+
+        // Get rubric by ID
+        function getRubricById(rubricId) {
+            const rubrics = getAllRubrics();
+            return rubrics.find(r => r.id === rubricId);
+        }
+
+        // Save/update rubric
+        function saveRubric(rubric) {
+            const rubrics = getAllRubrics();
+            const existingIndex = rubrics.findIndex(r => r.id === rubric.id);
+            
+            if (existingIndex >= 0) {
+                // Update existing
+                rubric.modifiedDate = new Date().toISOString();
+                rubrics[existingIndex] = rubric;
+            } else {
+                // Add new
+                rubric.id = 'rubric-' + Date.now();
+                rubric.createdDate = new Date().toISOString();
+                rubrics.push(rubric);
+            }
+            
+            localStorage.setItem('speech_rubrics', JSON.stringify(rubrics));
+            return rubric;
+        }
+
+        // Duplicate rubric
+        function duplicateRubric(rubricId) {
+            const original = getRubricById(rubricId);
+            if (!original) return null;
+            
+            const duplicate = {
+                ...JSON.parse(JSON.stringify(original)), // Deep copy
+                id: 'rubric-' + Date.now(),
+                name: original.name + " (Copy)",
+                createdDate: new Date().toISOString(),
+                modifiedDate: null
+            };
+            
+            return saveRubric(duplicate);
+        }
+
+        // Delete rubric
+        function deleteRubric(rubricId) {
+            // Don't allow deleting the default rubric
+            if (rubricId === 'default') {
+                alert('Cannot delete the default rubric.');
+                return false;
+            }
+            
+            const rubrics = getAllRubrics();
+            const filtered = rubrics.filter(r => r.id !== rubricId);
+            localStorage.setItem('speech_rubrics', JSON.stringify(filtered));
+            return true;
+        }
+
+        // Get rubrics grouped by course
+        function getRubricsGroupedByCourse() {
+            const rubrics = getAllRubrics();
+            const grouped = {
+                'unassigned': []
+            };
+            
+            rubrics.forEach(rubric => {
+                if (!rubric.courseId) {
+                    grouped['unassigned'].push(rubric);
+                } else {
+                    if (!grouped[rubric.courseId]) {
+                        grouped[rubric.courseId] = [];
+                    }
+                    grouped[rubric.courseId].push(rubric);
+                }
+            });
+            
+            return grouped;
+        }
+
+        // Populate course selector in rubric form with checkboxes
+        function populateCourseSelector(selectedCourseIds = []) {
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const container = document.getElementById('rubricCoursesContainer');
+            
+            if (!container) return;
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            if (classes.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-light); text-align: center;">No courses available. Create courses in "My Classes" first.</p>';
+                return;
+            }
+            
+            // Group courses by course name for better organization
+            const courseGroups = {};
+            classes.forEach(cls => {
+                if (!courseGroups[cls.name]) {
+                    courseGroups[cls.name] = [];
+                }
+                courseGroups[cls.name].push(cls);
+            });
+            
+            // Create checkboxes grouped by course name
+            Object.keys(courseGroups).sort().forEach(courseName => {
+                const sections = courseGroups[courseName];
+                
+                // Add course name header if multiple sections exist
+                if (sections.length > 1) {
+                    const header = document.createElement('div');
+                    header.style.cssText = 'font-weight: 600; color: var(--primary); margin-top: 0.5rem; margin-bottom: 0.25rem; font-size: 0.9rem;';
+                    header.textContent = courseName;
+                    container.appendChild(header);
+                }
+                
+                // Add checkbox for each section
+                sections.forEach(cls => {
+                    const checkboxDiv = document.createElement('div');
+                    checkboxDiv.style.cssText = 'padding: 0.4rem; display: flex; align-items: center;';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `course_${cls.id}`;
+                    checkbox.value = cls.id;
+                    checkbox.className = 'course-checkbox';
+                    checkbox.style.cssText = 'margin-right: 0.5rem; cursor: pointer;';
+                    
+                    // Check if this course is in the selected list
+                    if (selectedCourseIds.includes(cls.id)) {
+                        checkbox.checked = true;
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `course_${cls.id}`;
+                    label.style.cssText = 'cursor: pointer; user-select: none;';
+                    label.textContent = `${cls.name} - ${cls.semester} ${cls.year} (Section ${cls.section})`;
+                    
+                    checkboxDiv.appendChild(checkbox);
+                    checkboxDiv.appendChild(label);
+                    container.appendChild(checkboxDiv);
+                });
+            });
+        }
+
+        // Populate course filter dropdown in My Rubrics section
+        function populateCourseFilter() {
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const filter = document.getElementById('courseFilter');
+            
+            if (!filter) return;
+            
+            // Clear existing options except "All Courses"
+            filter.innerHTML = '<option value="">All Courses</option>';
+            
+            // Add "Unassigned" option
+            filter.innerHTML += '<option value="unassigned">Unassigned (No Course)</option>';
+            
+            // Group classes by course name + semester + year
+            const courseGroups = {};
+            classes.forEach(cls => {
+                const courseKey = `${cls.name}|${cls.semester}|${cls.year}`;
+                if (!courseGroups[courseKey]) {
+                    courseGroups[courseKey] = {
+                        name: cls.name,
+                        semester: cls.semester,
+                        year: cls.year,
+                        ids: []
+                    };
+                }
+                courseGroups[courseKey].ids.push(cls.id);
+            });
+            
+            // Add grouped courses to filter
+            Object.keys(courseGroups).sort().forEach(courseKey => {
+                const group = courseGroups[courseKey];
+                const option = document.createElement('option');
+                option.value = group.ids.join(','); // Store all section IDs as comma-separated
+                option.textContent = `${group.name} - ${group.semester} ${group.year}`;
+                filter.appendChild(option);
+            });
+        }
+
+        // Filter rubrics display based on selected course
+        function filterRubricsByCourse() {
+            const filterValue = document.getElementById('courseFilter').value;
+            
+            // Initialize rubrics storage if needed
+            initializeRubrics();
+            
+            // Get all rubrics and classes
+            const allRubrics = getAllRubrics();
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            
+            // Filter rubrics based on selection
+            let filteredRubrics = allRubrics;
+            
+            if (filterValue === 'unassigned') {
+                // Show only rubrics with no courses assigned
+                filteredRubrics = allRubrics.filter(r => {
+                    const hasOldCourseId = r.courseId && r.courseId !== '';
+                    const hasNewCourseIds = r.courseIds && Array.isArray(r.courseIds) && r.courseIds.length > 0;
+                    return !hasOldCourseId && !hasNewCourseIds;
+                });
+            } else if (filterValue !== '') {
+                // Filter by course - filterValue contains comma-separated IDs for all sections of a course
+                const courseIdsToMatch = filterValue.split(',');
+                
+                filteredRubrics = allRubrics.filter(rubric => {
+                    // Get rubric's course IDs (handle both old and new format)
+                    let rubricCourseIds = [];
+                    if (rubric.courseIds && Array.isArray(rubric.courseIds)) {
+                        rubricCourseIds = rubric.courseIds;
+                    } else if (rubric.courseId) {
+                        rubricCourseIds = [rubric.courseId];
+                    }
+                    
+                    // Check if rubric is assigned to any of the course sections
+                    return rubricCourseIds.some(id => courseIdsToMatch.includes(id));
+                });
+            }
+            
+            // Display filtered rubrics
+            const list = document.getElementById('rubricsList');
+            if (!list) return;
+            
+            if (filteredRubrics.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-light); text-align: center; padding: 2rem;">No rubrics found for this filter.</p>';
+                return;
+            }
+            
+            list.innerHTML = filteredRubrics.map(rubric => {
+                // Get course info - handle both courseIds array and old courseId
+                let courseInfo = '';
+                let courseIdsToDisplay = [];
+                
+                if (rubric.courseIds && Array.isArray(rubric.courseIds) && rubric.courseIds.length > 0) {
+                    courseIdsToDisplay = rubric.courseIds;
+                } else if (rubric.courseId) {
+                    courseIdsToDisplay = [rubric.courseId];
+                }
+                
+                if (courseIdsToDisplay.length > 0) {
+                    const courses = courseIdsToDisplay
+                        .map(id => classes.find(c => c.id === id))
+                        .filter(c => c);
+                    
+                    if (courses.length > 0) {
+                        // Group by course name
+                        const courseGroups = {};
+                        courses.forEach(course => {
+                            if (!courseGroups[course.name]) {
+                                courseGroups[course.name] = [];
+                            }
+                            courseGroups[course.name].push(course);
+                        });
+                        
+                        // Format display
+                        const courseDisplays = Object.keys(courseGroups).map(courseName => {
+                            const sections = courseGroups[courseName];
+                            const firstCourse = sections[0];
+                            const sectionNums = sections.map(s => s.section).join(', ');
+                            const sectionText = sections.length > 1 ? `Sections ${sectionNums}` : `Section ${sectionNums}`;
+                            return `${courseName} (${firstCourse.semester} ${firstCourse.year}) - ${sectionText}`;
+                        });
+                        
+                        courseInfo = ` • <span style="color: var(--primary); font-weight: 500;">${courseDisplays.join(' • ')}</span>`;
+                    } else if (courseIdsToDisplay.length > 0) {
+                        courseInfo = ' • <span style="color: #999;">Course(s) not found</span>';
+                    }
+                }
+                
+                return `
+                <div class="rubric-item">
+                    <div class="rubric-info">
+                        <h4>${rubric.name}</h4>
+                        <p>${rubric.description || 'No description'} • ${rubric.totalPoints} points${rubric.speechType ? ' • ' + rubric.speechType : ''}${courseInfo}</p>
+                    </div>
+                    <div class="rubric-actions">
+                        <button class="btn-small btn-view" data-rubric-id="${rubric.id}">View</button>
+                        <button class="btn-small btn-edit" data-rubric-id="${rubric.id}">Edit</button>
+                        <button class="btn-small btn-duplicate" data-rubric-id="${rubric.id}">Duplicate</button>
+                        ${rubric.id !== 'default' ? `
+                            <button class="btn-small btn-danger btn-delete" data-rubric-id="${rubric.id}">Delete</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            }).join('');
+            
+            // Re-attach event listeners to all buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', () => viewRubric(btn.dataset.rubricId));
+            });
+            
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => editRubric(btn.dataset.rubricId));
+            });
+            
+            document.querySelectorAll('.btn-duplicate').forEach(btn => {
+                btn.addEventListener('click', () => duplicateRubricUI(btn.dataset.rubricId));
+            });
+            
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => deleteRubricUI(btn.dataset.rubricId));
+            });
+        }
+
+
+        function displayResults(results) {
+            let html = `
+                <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <strong>Student:</strong> ${results.studentName}<br>
+                    <strong>Date:</strong> ${results.speechDate}<br>
+                    <strong>Assignment:</strong> ${results.assignmentType}<br>
+                    <strong>Speech Time:</strong> ${results.speechTime}
+                </div>
+                
+                <div class="score-banner">
+                    <h2 style="color: white;">Final Score</h2>
+                    <div class="score-value">${results.totalScore} / ${results.maxScore}</div>
+                    <div class="score-percentage">${((results.totalScore / results.maxScore) * 100).toFixed(1)}%</div>
+                </div>
+                
+                <h3 style="margin-bottom: 1rem;">Detailed Scores by Category</h3>
+                <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+            `;
+            
+            for (const [section, data] of Object.entries(results.sections)) {
+                html += `
+                    <div style="background: var(--bg-alt); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--primary);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <strong style="text-transform: capitalize;">${section}</strong>
+                            <strong style="color: var(--primary);">${data.score} / ${data.maxScore}</strong>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem;">${data.feedback}</p>
+                `;
+                
+                // Show subcategory breakdown if available
+                if (data.subcategories && data.subcategories.length > 0) {
+                    html += `<div style="background: white; padding: 0.75rem; border-radius: 0.25rem; margin-top: 0.75rem;">
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text);">Subcategory Breakdown:</div>
+                    `;
+                    
+                    data.subcategories.forEach(sub => {
+                        const gradeColor = sub.grade === 'A' ? '#28a745' : 
+                                          sub.grade === 'B' ? '#5cb85c' :
+                                          sub.grade === 'C' ? '#f0ad4e' :
+                                          sub.grade === 'D' ? '#d9534f' : '#c9302c';
+                        
+                        html += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--border);">
+                                <span style="font-size: 0.85rem; color: var(--text);">${sub.name}</span>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: ${gradeColor}; color: white; padding: 0.15rem 0.4rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600;">${sub.grade}</span>
+                                    <span style="font-size: 0.85rem; color: var(--text-light);">${sub.points} / ${sub.maxPoints} pts</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                html += `</div>`;
+            }
+            
+            html += `
+                </div>
+                
+                <div style="background: #fffef7; border: 2px solid var(--accent); padding: 1.5rem; border-radius: 0.5rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Overall Comments</h3>
+                    <p>${results.overallComments}</p>
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = html;
+        }
+
+        function downloadPDF() {
+            if (!evaluationResults) {
+                alert('No evaluation results to download.');
+                return;
+            }
+            
+            // Create a simple text version for now
+            let text = `SPEECH EVALUATION REPORT\n\n`;
+            text += `Student: ${evaluationResults.studentName}\n`;
+            text += `Date: ${evaluationResults.speechDate}\n`;
+            text += `Assignment: ${evaluationResults.assignmentType}\n`;
+            text += `Speech Time: ${evaluationResults.speechTime}\n\n`;
+            text += `FINAL SCORE: ${evaluationResults.totalScore} / ${evaluationResults.maxScore} (${((evaluationResults.totalScore / evaluationResults.maxScore) * 100).toFixed(1)}%)\n\n`;
+            text += `SECTION SCORES:\n`;
+            
+            for (const [section, data] of Object.entries(evaluationResults.sections)) {
+                text += `\n${section.toUpperCase()}: ${data.score} / ${data.maxScore}\n`;
+                text += `${data.feedback}\n`;
+            }
+            
+            text += `\nOVERALL COMMENTS:\n${evaluationResults.overallComments}\n`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✓ Evaluation copied to clipboard!\n\nYou can paste it into a document to save as PDF.');
+            }).catch(() => {
+                alert('Could not copy to clipboard. PDF generation requires additional library integration.');
+            });
+        }
+
+        function emailResults() {
+            const studentEmail = document.getElementById('studentEmail').value;
+            if (!studentEmail) {
+                alert('Please enter student email in Step 2 (Details) first.');
+                return;
+            }
+            
+            if (!evaluationResults) {
+                alert('No evaluation results to email.');
+                return;
+            }
+            
+            const subject = `Speech Evaluation Results - ${evaluationResults.assignmentType}`;
+            const body = `Dear ${evaluationResults.studentName},\n\nYour speech evaluation results are ready.\n\nFinal Score: ${evaluationResults.totalScore} / ${evaluationResults.maxScore}\n\nPlease contact your instructor for the complete evaluation details.\n\nBest regards`;
+            
+            const mailtoLink = `mailto:${studentEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink);
+        }
+
+        function startOver() {
+            uploadedFile = null;
+            evaluationResults = null;
+            document.getElementById('studentForm').reset();
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+            moveToStep(1);
+        }
+
+        // ===== CLASSES MANAGEMENT =====
+        function loadClasses() {
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            
+            // Initialize with demo classes if empty
+            if (classes.length === 0) {
+                const demoClasses = [
+                    {
+                        id: '1',
+                        name: 'CMST 210',
+                        semester: 'Fall',
+                        section: '001',
+                        year: '2024',
+                        notes: 'Intro to Public Speaking',
+                        roster: [],
+                        evaluations: []
+                    },
+                    {
+                        id: '2',
+                        name: 'CMST 210',
+                        semester: 'Fall',
+                        section: '002',
+                        year: '2024',
+                        notes: 'Intro to Public Speaking',
+                        roster: [],
+                        evaluations: []
+                    },
+                    {
+                        id: '3',
+                        name: 'CMST 240',
+                        semester: 'Spring',
+                        section: '001',
+                        year: '2025',
+                        notes: 'Argumentation and Debate',
+                        roster: [],
+                        evaluations: []
+                    }
+                ];
+                localStorage.setItem('classes', JSON.stringify(demoClasses));
+                return loadClasses();
+            }
+            
+            const grid = document.getElementById('classesGrid');
+            grid.innerHTML = classes.map(cls => {
+                let evalCount = 0;
+                if (cls.roster) {
+                    cls.roster.forEach(student => {
+                        if (student.evaluations) {
+                            evalCount += student.evaluations.length;
+                        }
+                    });
+                }
+                
+                return `
+                <div class="class-card" data-class-id="${cls.id}">
+                    <div class="class-header">${cls.name}</div>
+                    <div class="class-meta">
+                        ${cls.semester} ${cls.year} • Section ${cls.section}
+                    </div>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                        ${cls.notes || 'No description'}
+                    </p>
+                    <div class="class-stats">
+                        <div class="stat">
+                            <div class="stat-value">${(cls.roster || []).length}</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${evalCount}</div>
+                            <div class="stat-label">Evaluations</div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            // Add click handlers
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const classId = this.getAttribute('data-class-id');
+                    viewClass(classId);
+                });
+            });
+        }
+
+        function showCreateClass() {
+            document.getElementById('createClassCard').classList.remove('hidden');
+        }
+
+        function cancelCreateClass() {
+            document.getElementById('createClassCard').classList.add('hidden');
+            document.getElementById('createClassForm').reset();
+        }
+
+        function toggleEvalType(typeId) {
+            const content = document.getElementById(typeId);
+            const arrow = document.getElementById(typeId + '-arrow');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.style.transform = 'rotate(90deg)';
+            } else {
+                content.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function viewClass(classId) {
+            currentClassId = classId; // Store for later use
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const selectedClass = classes.find(c => c.id === classId);
+            
+            if (!selectedClass) {
+                alert('Class not found');
+                return;
+            }
+            
+            const roster = selectedClass.roster || [];
+            
+            // Gather all evaluations from students
+            const evals = [];
+            roster.forEach(student => {
+                if (student.evaluations) {
+                    student.evaluations.forEach(ev => {
+                        evals.push({
+                            studentName: student.firstName + ' ' + student.lastName,
+                            studentId: student.id,
+                            date: ev.date,
+                            type: ev.type,
+                            totalScore: ev.results.totalScore,
+                            maxScore: ev.results.maxScore,
+                            results: ev.results
+                        });
+                    });
+                }
+            });
+            
+            // Update title
+            document.getElementById('classDetailTitle').textContent = 
+                `${selectedClass.name} - ${selectedClass.semester} ${selectedClass.year}`;
+            
+            // Build content
+            let html = `
+                <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <strong>Section:</strong> ${selectedClass.section}<br>
+                    <strong>Notes:</strong> ${selectedClass.notes || 'None'}<br>
+                    <strong>Students:</strong> ${roster.length}<br>
+                    <strong>Evaluations:</strong> ${evals.length}
+                </div>
+            `;
+            
+            // Students section with Add button
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">👥 Students</h3>
+                    <button onclick="showAddStudent()">➕ Add Student</button>
+                </div>
+            `;
+            
+            if (roster.length === 0) {
+                html += '<p style="color: var(--text-light);">No students yet. Click "Add Student" to get started.</p>';
+            } else {
+                html += '<ul style="list-style: none; padding: 0;">';
+                roster.forEach(student => {
+                    const evalCount = (student.evaluations || []).length;
+                    let evalText = '';
+                    if (evalCount > 0) {
+                        evalText = ` • ${evalCount} evaluation${evalCount > 1 ? 's' : ''}`;
+                    }
+                    
+                    html += `<li style="background: var(--bg-alt); padding: 1rem; margin-bottom: 0.5rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${student.firstName} ${student.lastName}</strong><br>
+                            <span style="color: var(--text-light); font-size: 0.9rem;">${student.email}${evalText}</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${evalCount > 0 ? `<button onclick="viewStudentEvals('${student.id}')" class="btn-small">View Evals</button>` : ''}
+                            <button onclick="deleteStudent('${student.id}')" class="btn-small btn-danger">Delete</button>
+                        </div>
+                    </li>`;
+                });
+                html += '</ul>';
+            }
+            
+            // Evaluations section - grouped by speech type
+            html += '<h3 style="margin-top: 2rem;">📊 Recent Evaluations</h3>';
+            if (evals.length === 0) {
+                html += '<p style="color: var(--text-light);">No evaluations yet. Evaluations will appear here when speeches are graded.</p>';
+            } else {
+                // Group evaluations by type
+                const evalsByType = {};
+                evals.forEach(e => {
+                    const type = e.type || 'Unknown';
+                    if (!evalsByType[type]) {
+                        evalsByType[type] = [];
+                    }
+                    evalsByType[type].push(e);
+                });
+                
+                // Display each type with its average (collapsible)
+                Object.keys(evalsByType).forEach((type, index) => {
+                    const typeEvals = evalsByType[type];
+                    const avgScore = (typeEvals.reduce((sum, e) => sum + e.totalScore, 0) / typeEvals.length).toFixed(1);
+                    const avgPercent = ((avgScore / 50) * 100).toFixed(0);
+                    const typeId = 'evalType' + index;
+                    
+                    html += `
+                        <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                            <div onclick="toggleEvalType('${typeId}')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span id="${typeId}-arrow" style="font-size: 1.2rem; transition: transform 0.2s;">▶</span>
+                                    <h4 style="margin: 0; color: var(--primary); font-family: var(--body-font); font-weight: 600;">${type}</h4>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${avgScore} / 50</div>
+                                    <div style="color: var(--text-light);">Average (${avgPercent}%)</div>
+                                </div>
+                            </div>
+                            <div id="${typeId}" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border);">
+                                <div style="display: grid; gap: 0.75rem;">
+                    `;
+                    
+                    typeEvals.forEach(e => {
+                        const percentage = ((e.totalScore / e.maxScore) * 100).toFixed(0);
+                        let color = 'var(--success)';
+                        if (percentage < 70) color = 'var(--error)';
+                        else if (percentage < 80) color = 'var(--warning)';
+                        
+                        html += `
+                            <div style="background: white; padding: 0.75rem; border-radius: 0.5rem; border-left: 3px solid ${color};">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <strong>${e.studentName}</strong>
+                                    <strong style="color: var(--primary);">${e.totalScore}/${e.maxScore} (${percentage}%)</strong>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                                    ${e.date}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Overall class average
+                const overallAvg = (evals.reduce((sum, e) => sum + e.totalScore, 0) / evals.length).toFixed(1);
+                const overallPercent = ((overallAvg / 50) * 100).toFixed(0);
+                html += `
+                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="margin: 0; color: white; font-size: 1rem; font-family: var(--body-font); font-weight: 600;">Overall Class Average</div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.5rem; font-weight: bold;">${overallAvg} / 50</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">${overallPercent}%</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Show content
+            document.getElementById('classDetailContent').innerHTML = html;
+            
+            // Switch to class detail view
+            setActiveSection('classDetailSection', 'navDashboard');
+        }
+
+        // ===== RUBRICS MANAGEMENT =====
+        function loadRubrics() {
+            // Initialize rubrics storage if needed
+            initializeRubrics();
+            
+            // Populate course filter dropdown
+            populateCourseFilter();
+            
+            // Get all rubrics from storage
+            const allRubrics = getAllRubrics();
+            
+            // Get all classes for course name lookup
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            
+            const list = document.getElementById('rubricsList');
+            if (!list) return; // Exit if element doesn't exist yet
+            
+            list.innerHTML = allRubrics.map(rubric => {
+                // Get course info - handle both new courseIds array and old single courseId
+                let courseInfo = '';
+                let courseIdsToDisplay = [];
+                
+                if (rubric.courseIds && Array.isArray(rubric.courseIds) && rubric.courseIds.length > 0) {
+                    courseIdsToDisplay = rubric.courseIds;
+                } else if (rubric.courseId) {
+                    // Backward compatibility with single courseId
+                    courseIdsToDisplay = [rubric.courseId];
+                }
+                
+                if (courseIdsToDisplay.length > 0) {
+                    const courses = courseIdsToDisplay
+                        .map(id => classes.find(c => c.id === id))
+                        .filter(c => c); // Remove undefined (deleted courses)
+                    
+                    if (courses.length > 0) {
+                        // Group by course name
+                        const courseGroups = {};
+                        courses.forEach(course => {
+                            if (!courseGroups[course.name]) {
+                                courseGroups[course.name] = [];
+                            }
+                            courseGroups[course.name].push(course);
+                        });
+                        
+                        // Format display: "CMST 210 (Fall 2024) - Sections 001, 002"
+                        const courseDisplays = Object.keys(courseGroups).map(courseName => {
+                            const sections = courseGroups[courseName];
+                            const firstCourse = sections[0];
+                            const sectionNums = sections.map(s => s.section).join(', ');
+                            const sectionText = sections.length > 1 ? `Sections ${sectionNums}` : `Section ${sectionNums}`;
+                            return `${courseName} (${firstCourse.semester} ${firstCourse.year}) - ${sectionText}`;
+                        });
+                        
+                        courseInfo = ` • <span style="color: var(--primary); font-weight: 500;">${courseDisplays.join(' • ')}</span>`;
+                    } else if (courseIdsToDisplay.length > 0) {
+                        courseInfo = ' • <span style="color: #999;">Course(s) not found</span>';
+                    }
+                }
+                
+                return `
+                <div class="rubric-item">
+                    <div class="rubric-info">
+                        <h4>${rubric.name}</h4>
+                        <p>${rubric.description || 'No description'} • ${rubric.totalPoints} points${rubric.speechType ? ' • ' + rubric.speechType : ''}${courseInfo}</p>
+                    </div>
+                    <div class="rubric-actions">
+                        <button class="btn-small btn-view" data-rubric-id="${rubric.id}">View</button>
+                        <button class="btn-small btn-edit" data-rubric-id="${rubric.id}">Edit</button>
+                        <button class="btn-small btn-duplicate" data-rubric-id="${rubric.id}">Duplicate</button>
+                        ${rubric.id !== 'default' ? `
+                            <button class="btn-small btn-danger btn-delete" data-rubric-id="${rubric.id}">Delete</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            }).join('');
+            
+            // Add event listeners to all buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', () => viewRubric(btn.dataset.rubricId));
+            });
+            
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => editRubric(btn.dataset.rubricId));
+            });
+            
+            document.querySelectorAll('.btn-duplicate').forEach(btn => {
+                btn.addEventListener('click', () => duplicateRubricUI(btn.dataset.rubricId));
+            });
+            
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    console.log('Delete button clicked via event listener!');
+                    deleteRubricUI(btn.dataset.rubricId);
+                });
+            });
+        }
+
+        function viewRubric(rubricId) {
+            const rubric = getRubricById(rubricId);
+            if (!rubric) return;
+            
+            const metrics = calculateRubricMetrics(rubric);
+            const maxPointsPerSub = metrics.pointsPerSubcategory;
+            
+            // Get course info - handle both courseIds array and old courseId
+            let courseInfo = '';
+            let courseIdsToDisplay = [];
+            
+            if (rubric.courseIds && Array.isArray(rubric.courseIds) && rubric.courseIds.length > 0) {
+                courseIdsToDisplay = rubric.courseIds;
+            } else if (rubric.courseId) {
+                courseIdsToDisplay = [rubric.courseId];
+            }
+            
+            if (courseIdsToDisplay.length > 0) {
+                const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                const courses = courseIdsToDisplay
+                    .map(id => classes.find(c => c.id === id))
+                    .filter(c => c);
+                
+                if (courses.length > 0) {
+                    const courseDisplays = courses.map(course => 
+                        `${course.name} - ${course.semester} ${course.year} (Section ${course.section})`
+                    ).join('<br>');
+                    courseInfo = `<strong>Course${courses.length > 1 ? 's' : ''}:</strong> ${courseDisplays}<br>`;
+                }
+            }
+            
+            let html = `
+                <div style="background: white; padding: 2rem; border-radius: 0.5rem; max-width: 800px; margin: 2rem auto;">
+                    <h2>${rubric.name}</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">${rubric.description || ''}</p>
+                    <div style="background: var(--bg-alt); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                        ${courseInfo}
+                        <strong>Total Points:</strong> ${rubric.totalPoints}<br>
+                        <strong>Total Subcategories:</strong> ${metrics.totalSubcategories}<br>
+                        <strong>Maximum Points per Subcategory:</strong> ${maxPointsPerSub.toFixed(2)} (when graded as A)
+                    </div>
+                    <h3>Grade Scale & Points per Subcategory</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">Each subcategory can earn different points based on the grade received:</p>
+                    <div style="margin-bottom: 1.5rem;">
+            `;
+            
+            for (const [grade, info] of Object.entries(rubric.gradeScale)) {
+                const points = (maxPointsPerSub * info.percentage).toFixed(2);
+                html += `<div style="padding: 0.5rem; border-left: 3px solid var(--primary); margin-bottom: 0.5rem; background: var(--bg-alt);">
+                    <strong>${grade} - ${info.label}:</strong> ${info.percentage * 100}% → <strong>${points} points</strong> per subcategory (Range: ${info.range})
+                </div>`;
+            }
+            
+            html += `</div><h3>Categories & Subcategories</h3>`;
+            
+            rubric.categories.forEach((cat, idx) => {
+                const catMetrics = metrics.categoryPoints[idx];
+                html += `
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                        <h4>${cat.name} <span style="color: var(--primary);">(Max: ${catMetrics.maxPoints.toFixed(1)} points)</span></h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">${catMetrics.subcategoryCount} subcategories × ${maxPointsPerSub.toFixed(2)} points each (if all A's)</p>
+                        <ul style="margin-top: 0.5rem;">
+                            ${cat.subcategories.map(sub => `<li>${sub}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            
+            html += `<button onclick="closeModal()">Close</button></div>`;
+            
+            showModal(html);
+        }
+
+        function editRubric(rubricId) {
+            const rubric = getRubricById(rubricId);
+            if (!rubric) {
+                alert('Rubric not found');
+                return;
+            }
+            loadRubricIntoForm(rubric);
+        }
+
+        function duplicateRubricUI(rubricId) {
+            console.log('Duplicating rubric:', rubricId);
+            const newRubric = duplicateRubric(rubricId);
+            if (newRubric) {
+                loadRubrics();
+                alert(`✓ Rubric duplicated: ${newRubric.name}`);
+            }
+        }
+
+        function deleteRubricUI(rubricId) {
+            console.log('Delete button clicked for:', rubricId);
+            const rubric = getRubricById(rubricId);
+            if (!rubric) {
+                console.error('Rubric not found:', rubricId);
+                return;
+            }
+            
+            console.log('Found rubric:', rubric.name);
+            
+            // Use custom confirmation modal instead of native confirm
+            showConfirmModal(
+                'Delete Rubric',
+                `Are you sure you want to delete "${rubric.name}"? This action cannot be undone.`,
+                () => {
+                    // User clicked Yes/Confirm
+                    console.log('User confirmed deletion via custom modal');
+                    const deleteResult = deleteRubric(rubricId);
+                    console.log('deleteRubric returned:', deleteResult);
+                    
+                    if (deleteResult) {
+                        console.log('Rubric deleted successfully');
+                        loadRubrics();
+                        alert('✓ Rubric deleted successfully');
+                    } else {
+                        console.error('Delete function returned false');
+                    }
+                },
+                () => {
+                    // User clicked No/Cancel
+                    console.log('User cancelled deletion via custom modal');
+                }
+            );
+        }
+
+        // Make functions globally accessible
+        window.deleteRubricUI = deleteRubricUI;
+        window.duplicateRubricUI = duplicateRubricUI;
+        window.viewRubric = viewRubric;
+        window.editRubric = editRubric;
+        window.showCreateRubric = showCreateRubric;
+        window.cancelCreateRubric = cancelCreateRubric;
+        window.addCategory = addCategory;
+        window.removeCategory = removeCategory;
+        window.addSubcategory = addSubcategory;
+        window.removeSubcategory = removeSubcategory;
+
+        // Test function to verify everything is working
+        function testDeleteFunction() {
+            console.log('=== TEST FUNCTION CALLED ===');
+            console.log('deleteRubricUI exists?', typeof window.deleteRubricUI);
+            console.log('deleteRubric exists?', typeof deleteRubric);
+            console.log('getRubricById exists?', typeof getRubricById);
+            
+            const allRubrics = getAllRubrics();
+            console.log('All rubrics:', allRubrics);
+            
+            if (allRubrics.length > 0) {
+                const testId = allRubrics[allRubrics.length - 1].id;
+                console.log('Attempting to call deleteRubricUI with ID:', testId);
+                try {
+                    deleteRubricUI(testId);
+                } catch (e) {
+                    console.error('Error calling deleteRubricUI:', e);
+                }
+            }
+        }
+        window.testDeleteFunction = testDeleteFunction;
+
+        function showModal(content) {
+            const modal = document.getElementById('saveModal');
+            if (!modal) return;
+            
+            modal.innerHTML = `
+                <div onclick="closeModal()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div onclick="event.stopPropagation()" style="background: white; border-radius: 0.5rem; max-height: 90vh; overflow-y: auto; max-width: 90vw;">
+                        ${content}
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('saveModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.innerHTML = '';
+            }
+        }
+
+        function showConfirmModal(title, message, onConfirm, onCancel) {
+            const modal = document.getElementById('saveModal');
+            if (!modal) {
+                console.error('Modal element not found');
+                return;
+            }
+            
+            modal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div onclick="event.stopPropagation()" style="background: white; border-radius: 0.5rem; padding: 2rem; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                        <h3 style="margin-bottom: 1rem; color: var(--primary);">${title}</h3>
+                        <p style="margin-bottom: 2rem; color: var(--text);">${message}</p>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button id="confirmCancel" class="btn-secondary" style="padding: 0.5rem 1.5rem;">Cancel</button>
+                            <button id="confirmYes" class="btn-danger" style="padding: 0.5rem 1.5rem;">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            
+            // Add event listeners
+            document.getElementById('confirmYes').addEventListener('click', () => {
+                closeModal();
+                if (onConfirm) onConfirm();
+            });
+            
+            document.getElementById('confirmCancel').addEventListener('click', () => {
+                closeModal();
+                if (onCancel) onCancel();
+            });
+        }
+
+        // Make modal functions globally accessible
+        window.showModal = showModal;
+        window.closeModal = closeModal;
+        window.showConfirmModal = showConfirmModal;
+
+        function showCreateRubric() {
+            document.getElementById('rubricFormHeader').textContent = 'Create Custom Rubric';
+            document.getElementById('rubricSubmitBtn').textContent = 'Create Rubric';
+            document.getElementById('editingRubricId').value = '';
+            document.getElementById('createRubricForm').reset();
+            
+            // Populate course selector
+            populateCourseSelector();
+            
+            // Initialize with one empty category
+            document.getElementById('categoriesContainer').innerHTML = '';
+            addCategory();
+            
+            document.getElementById('createRubricCard').classList.remove('hidden');
+            document.getElementById('createRubricCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelCreateRubric() {
+            document.getElementById('createRubricCard').classList.add('hidden');
+            document.getElementById('createRubricForm').reset();
+            document.getElementById('categoriesContainer').innerHTML = '';
+        }
+
+        let categoryCounter = 0;
+
+        function addCategory() {
+            categoryCounter++;
+            const container = document.getElementById('categoriesContainer');
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'category-item';
+            categoryDiv.id = `category-${categoryCounter}`;
+            categoryDiv.style.cssText = 'background: var(--bg-alt); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border);';
+            
+            categoryDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <input type="text" placeholder="Category Name (e.g., Content - Introduction)" 
+                           class="category-name" style="flex: 1; margin-right: 1rem; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;" required>
+                    <button type="button" onclick="removeCategory('category-${categoryCounter}')" class="btn-small btn-danger">Remove Category</button>
+                </div>
+                <div class="subcategories-container" id="subcategories-${categoryCounter}"></div>
+                <button type="button" onclick="addSubcategory('subcategories-${categoryCounter}')" class="btn-small" style="margin-top: 0.5rem;">➕ Add Subcategory</button>
+            `;
+            
+            container.appendChild(categoryDiv);
+            
+            // Add one default subcategory
+            addSubcategory(`subcategories-${categoryCounter}`);
+        }
+
+        function removeCategory(categoryId) {
+            const element = document.getElementById(categoryId);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        let subcategoryCounter = 0;
+
+        function addSubcategory(containerId) {
+            subcategoryCounter++;
+            const container = document.getElementById(containerId);
+            const subDiv = document.createElement('div');
+            subDiv.id = `subcategory-${subcategoryCounter}`;
+            subDiv.style.cssText = 'display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;';
+            
+            subDiv.innerHTML = `
+                <span style="color: var(--text-light); font-size: 0.9rem;">•</span>
+                <input type="text" placeholder="Subcategory (e.g., Eye Contact)" 
+                       class="subcategory-name" style="flex: 1; padding: 0.4rem; border: 1px solid var(--border); border-radius: 0.25rem;" required>
+                <button type="button" onclick="removeSubcategory('subcategory-${subcategoryCounter}')" class="btn-small btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">✕</button>
+            `;
+            
+            container.appendChild(subDiv);
+        }
+
+        function removeSubcategory(subId) {
+            const element = document.getElementById(subId);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        function collectRubricData() {
+            // Collect selected course IDs from checkboxes
+            const selectedCourseIds = Array.from(document.querySelectorAll('.course-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+            
+            const rubricData = {
+                id: document.getElementById('editingRubricId').value || ('rubric-' + Date.now()),
+                name: document.getElementById('rubricName').value.trim(),
+                description: document.getElementById('rubricDescription').value.trim(),
+                totalPoints: parseInt(document.getElementById('rubricTotalPoints').value),
+                speechType: document.getElementById('rubricSpeechType').value.trim() || null,
+                courseIds: selectedCourseIds.length > 0 ? selectedCourseIds : [], // Array of course IDs
+                gradeScale: {
+                    A: {
+                        label: document.getElementById('gradeA_label').value,
+                        percentage: parseFloat(document.getElementById('gradeA_pct').value) / 100,
+                        range: document.getElementById('gradeA_range').value
+                    },
+                    B: {
+                        label: document.getElementById('gradeB_label').value,
+                        percentage: parseFloat(document.getElementById('gradeB_pct').value) / 100,
+                        range: document.getElementById('gradeB_range').value
+                    },
+                    C: {
+                        label: document.getElementById('gradeC_label').value,
+                        percentage: parseFloat(document.getElementById('gradeC_pct').value) / 100,
+                        range: document.getElementById('gradeC_range').value
+                    },
+                    D: {
+                        label: document.getElementById('gradeD_label').value,
+                        percentage: parseFloat(document.getElementById('gradeD_pct').value) / 100,
+                        range: document.getElementById('gradeD_range').value
+                    },
+                    F: {
+                        label: document.getElementById('gradeF_label').value,
+                        percentage: parseFloat(document.getElementById('gradeF_pct').value) / 100,
+                        range: document.getElementById('gradeF_range').value
+                    }
+                },
+                categories: []
+            };
+
+            // Collect categories and subcategories
+            const categoryElements = document.querySelectorAll('.category-item');
+            
+            categoryElements.forEach((catEl) => {
+                const categoryName = catEl.querySelector('.category-name').value.trim();
+                if (!categoryName) return;
+
+                const subcategories = [];
+                const subInputs = catEl.querySelectorAll('.subcategory-name');
+                
+                subInputs.forEach((subInput) => {
+                    const subName = subInput.value.trim();
+                    if (subName) {
+                        subcategories.push(subName);
+                    }
+                });
+
+                if (subcategories.length > 0) {
+                    rubricData.categories.push({
+                        name: categoryName,
+                        subcategories: subcategories
+                    });
+                }
+            });
+
+            return rubricData;
+        }
+
+        function loadRubricIntoForm(rubric) {
+            document.getElementById('rubricFormHeader').textContent = 'Edit Rubric';
+            document.getElementById('rubricSubmitBtn').textContent = 'Save Changes';
+            document.getElementById('editingRubricId').value = rubric.id;
+            
+            // Basic info
+            document.getElementById('rubricName').value = rubric.name;
+            document.getElementById('rubricDescription').value = rubric.description || '';
+            document.getElementById('rubricTotalPoints').value = rubric.totalPoints;
+            document.getElementById('rubricSpeechType').value = rubric.speechType || '';
+            
+            // Populate course selector with pre-selected courses
+            // Handle both old single courseId and new courseIds array for backward compatibility
+            let selectedCourseIds = [];
+            if (rubric.courseIds && Array.isArray(rubric.courseIds)) {
+                selectedCourseIds = rubric.courseIds;
+            } else if (rubric.courseId) {
+                // Backward compatibility: convert old single courseId to array
+                selectedCourseIds = [rubric.courseId];
+            }
+            populateCourseSelector(selectedCourseIds);
+            
+            // Grade scale
+            for (const grade of ['A', 'B', 'C', 'D', 'F']) {
+                const gradeData = rubric.gradeScale[grade];
+                document.getElementById(`grade${grade}_label`).value = gradeData.label;
+                document.getElementById(`grade${grade}_pct`).value = gradeData.percentage * 100;
+                document.getElementById(`grade${grade}_range`).value = gradeData.range;
+            }
+            
+            // Clear and rebuild categories
+            document.getElementById('categoriesContainer').innerHTML = '';
+            categoryCounter = 0;
+            subcategoryCounter = 0;
+            
+            rubric.categories.forEach((category) => {
+                addCategory();
+                const lastCategory = document.querySelector('.category-item:last-child');
+                lastCategory.querySelector('.category-name').value = category.name;
+                
+                // Clear default subcategory and add the actual ones
+                const subContainer = lastCategory.querySelector('.subcategories-container');
+                subContainer.innerHTML = '';
+                
+                category.subcategories.forEach((subName) => {
+                    const containerId = subContainer.id;
+                    addSubcategory(containerId);
+                    
+                    // Get all subcategory inputs in this container and set the last one
+                    const allSubInputs = subContainer.querySelectorAll('.subcategory-name');
+                    const lastSubInput = allSubInputs[allSubInputs.length - 1];
+                    
+                    if (lastSubInput) {
+                        lastSubInput.value = subName;
+                    }
+                });
+            });
+            
+            document.getElementById('createRubricCard').classList.remove('hidden');
+            document.getElementById('createRubricCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ===== STUDENT MANAGEMENT =====
+        function showAddStudent() {
+            document.getElementById('addStudentCard').classList.remove('hidden');
+        }
+
+        function cancelAddStudent() {
+            document.getElementById('addStudentCard').classList.add('hidden');
+            document.getElementById('addStudentForm').reset();
+        }
+
+        function viewStudentEvals(studentId) {
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const cls = classes.find(c => c.id === currentClassId);
+            if (!cls) return;
+            
+            const student = cls.roster.find(s => s.id === studentId);
+            if (!student || !student.evaluations || student.evaluations.length === 0) {
+                alert('No evaluations found for this student.');
+                return;
+            }
+            
+            let html = `
+                <div class="card">
+                    <div class="card-header">${student.firstName} ${student.lastName} - Evaluations</div>
+                    <div style="margin-bottom: 1rem;">
+                        <button onclick="viewClass('${currentClassId}')" class="btn-secondary">← Back to Class</button>
+                    </div>
+            `;
+            
+            student.evaluations.forEach(ev => {
+                const date = ev.date || 'No date';
+                const type = ev.type || 'Unknown';
+                const results = ev.results;
+                
+                html += `
+                    <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <div>
+                                <strong style="font-size: 1.2rem;">${type}</strong><br>
+                                <span style="color: var(--text-light);">${date}</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">
+                                    ${results.totalScore || 0}/${results.maxScore || 50}
+                                </div>
+                                <div style="color: var(--text-light);">${(((results.totalScore || 0) / (results.maxScore || 50)) * 100).toFixed(1)}%</div>
+                            </div>
+                        </div>
+                `;
+                
+                // Display individual sections
+                if (results.sections) {
+                    html += '<div style="background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">';
+                    html += '<strong style="display: block; margin-bottom: 0.75rem;">Section Scores:</strong>';
+                    
+                    Object.keys(results.sections).forEach(sectionKey => {
+                        const section = results.sections[sectionKey];
+                        const sectionName = sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1);
+                        html += `
+                            <div style="border-left: 3px solid var(--primary); padding-left: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <strong>${sectionName}</strong>
+                                    <span style="color: var(--primary); font-weight: bold;">${section.score}/${section.maxScore}</span>
+                                </div>
+                                <p style="color: var(--text-light); margin: 0; font-size: 0.9rem;">${section.feedback}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                }
+                
+                // Display overall comments
+                html += `
+                    <div style="background: white; padding: 1rem; border-radius: 0.5rem;">
+                        <strong>Overall Comments:</strong><br>
+                        <p style="margin: 0.5rem 0 0 0;">${results.overallComments || 'No comments'}</p>
+                    </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('classDetailContent').innerHTML = html;
+        }
+
+        function deleteStudent(studentId) {
+            if (!confirm('Are you sure you want to delete this student?')) return;
+            
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const classIndex = classes.findIndex(c => c.id === currentClassId);
+            
+            if (classIndex !== -1) {
+                classes[classIndex].roster = classes[classIndex].roster.filter(s => s.id !== studentId);
+                localStorage.setItem('classes', JSON.stringify(classes));
+                viewClass(currentClassId); // Refresh the view
+            }
+        }
+
+        // ===== SETTINGS =====
+        function loadSavedSettings() {
+            const savedKey = localStorage.getItem('anthropic_api_key');
+            if (savedKey) {
+                document.getElementById('savedApiKey').value = savedKey;
+            }
+            
+            const savedTenant = localStorage.getItem('current_tenant');
+            if (savedTenant) {
+                currentTenant = savedTenant;
+                applyTenant(savedTenant);
+            }
+        }
+
+        function saveSettings() {
+            const apiKey = document.getElementById('savedApiKey').value.trim();
+            if (apiKey) {
+                localStorage.setItem('anthropic_api_key', apiKey);
+            }
+            
+            showMessage('settingsMessage', 'Settings saved successfully!', 'success');
+        }
+
+        function resetSettings() {
+            if (!confirm('Reset all settings to defaults?')) return;
+            
+            localStorage.removeItem('anthropic_api_key');
+            localStorage.removeItem('current_tenant');
+            localStorage.removeItem('custom_logo');
+            
+            document.getElementById('savedApiKey').value = '';
+            currentTenant = 'default';
+            applyTenant('default');
+            
+            showMessage('settingsMessage', 'Settings reset to defaults.', 'success');
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const logoData = e.target.result;
+                localStorage.setItem('custom_logo', logoData);
+                
+                document.getElementById('logoPreviewImg').src = logoData;
+                document.getElementById('logoPreview').classList.remove('hidden');
+                
+                // Update header logo
+                document.getElementById('appLogo').innerHTML = `<img src="${logoData}" alt="Logo">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearLogo() {
+            localStorage.removeItem('custom_logo');
+            document.getElementById('logoPreview').classList.add('hidden');
+            document.getElementById('logoUpload').value = '';
+            
+            // Reset to text logo
+            const config = TENANT_CONFIGS[currentTenant];
+            document.getElementById('appLogo').textContent = config.shortName;
+        }
+
+        function updatePrimaryColor(color) {
+            document.documentElement.style.setProperty('--primary', color);
+            
+            // Generate dark variant
+            const darkColor = adjustColorBrightness(color, -20);
+            document.documentElement.style.setProperty('--primary-dark', darkColor);
+        }
+
+        function adjustColorBrightness(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255))
+                .toString(16).slice(1);
+        }
+
+        function updateFonts() {
+            const headingFont = document.getElementById('headingFont').value;
+            const bodyFont = document.getElementById('bodyFont').value;
+            
+            document.documentElement.style.setProperty('--heading-font', headingFont);
+            document.documentElement.style.setProperty('--body-font', bodyFont);
+        }
+
+        // ===== UTILITIES =====
+        function showMessage(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+                el.className = type === 'error' ? 'error-message' : 'success-message';
+        }
+
+        // ===== SAVE TO CLASS FUNCTIONS =====
+        function openSaveModal() {
+            try {
+                var classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                var sel = document.getElementById('saveClassSel');
+                sel.innerHTML = '<option value="">-- Select Class --</option>';
+                for (var i = 0; i < classes.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = classes[i].name + ' - ' + classes[i].semester + ' ' + classes[i].year;
+                    sel.appendChild(opt);
+                }
+                document.getElementById('saveModal').style.display = 'flex';
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function loadSaveStudents() {
+            try {
+                var idx = document.getElementById('saveClassSel').value;
+                var sel = document.getElementById('saveStudentSel');
+                sel.innerHTML = '<option value="">-- Select Student --</option>';
+                if (!idx) return;
+                var classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                var cls = classes[idx];
+                if (cls && cls.roster) {
+                    for (var i = 0; i < cls.roster.length; i++) {
+                        var s = cls.roster[i];
+                        var opt = document.createElement('option');
+                        opt.value = i;
+                        opt.textContent = s.firstName + ' ' + s.lastName;
+                        sel.appendChild(opt);
+                    }
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function doSaveEval() {
+            try {
+                var cIdx = document.getElementById('saveClassSel').value;
+                var sIdx = document.getElementById('saveStudentSel').value;
+                if (!cIdx || sIdx === '') {
+                    alert('Please select both class and student');
+                    return;
+                }
+                if (!evaluationResults) {
+                    alert('No evaluation to save');
+                    return;
+                }
+                var classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                var student = classes[cIdx].roster[sIdx];
+                if (!student.evaluations) {
+                    student.evaluations = [];
+                }
+                var rec = {
+                    id: Date.now().toString(),
+                    date: document.getElementById('speechDate').value,
+                    type: document.getElementById('assignmentType').value,
+                    results: evaluationResults,
+                    savedAt: new Date().toISOString()
+                };
+                student.evaluations.push(rec);
+                classes[cIdx].roster[sIdx] = student;
+                localStorage.setItem('classes', JSON.stringify(classes));
+                alert('✓ Evaluation saved for ' + student.firstName + ' ' + student.lastName);
+                closeSaveModal();
+            } catch(e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        function closeSaveModal() {
+            document.getElementById('saveModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
