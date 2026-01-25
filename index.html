@@ -717,11 +717,13 @@
                         <div class="form-group">
                             <label for="apiProvider">AI Provider *</label>
                             <select id="apiProvider" onchange="updateApiKeyPlaceholder()">
+                                <option value="demo">🎭 Demo Mode (No API Key Needed - Try It Out!)</option>
                                 <option value="gpt4o">OpenAI GPT-4o-mini (FREE $5 Credits - Best Value!)</option>
                                 <option value="gemini">Google Gemini (Full Video Analysis)</option>
                                 <option value="claude">Anthropic Claude (Audio Only)</option>
                             </select>
                             <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                <strong>Demo Mode:</strong> Generates realistic AI feedback instantly - no API needed!<br>
                                 <strong>GPT-4o-mini:</strong> FREE $5 credits! Video frames + audio analysis<br>
                                 <strong>Gemini:</strong> Full video analysis (requires billing)<br>
                                 <strong>Claude:</strong> Audio transcription only
@@ -2195,7 +2197,8 @@
             const selectedRubricId = document.getElementById('rubricSelect').value;
             console.log('Selected rubric ID:', selectedRubricId);
             
-            if (!apiKey) {
+            // Skip API key check for demo mode
+            if (!apiKey && apiProvider !== 'demo') {
                 console.log('FAILURE: No API key');
                 const providerName = apiProvider === 'gemini' ? 'Google Gemini' : 
                                     apiProvider === 'gpt4o' ? 'OpenAI' :
@@ -2204,7 +2207,9 @@
                 moveToStep(2);
                 return;
             }
-            console.log('✓ API key present');
+            if (apiProvider !== 'demo') {
+                console.log('✓ API key present');
+            }
             
             if (!selectedRubricId) {
                 console.log('FAILURE: No rubric selected');
@@ -2226,7 +2231,7 @@
 
             try {
                 // Get the selected rubric
-                const selectedRubric = getRubricById(selectedRubricId);
+                const selectedRubric = await getRubricById(selectedRubricId);
                 if (!selectedRubric) {
                     console.log('FAILURE: Rubric not found in storage');
                     throw new Error('Selected rubric not found');
@@ -2246,6 +2251,125 @@
                 alert('Error evaluating speech: ' + error.message);
                 moveToStep(2);
             }
+        }
+
+        // ===== DEMO MODE EVALUATION =====
+        async function generateDemoEvaluation(file, assignmentType, rubric) {
+            console.log('>>> Generating demo evaluation');
+            updateProcessingMessage('Generating realistic demo feedback...');
+            
+            // Simulate processing delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            const metrics = calculateRubricMetrics(rubric);
+            const studentName = document.getElementById('studentName').value || 'Student';
+            const speechDate = document.getElementById('speechDate').value || new Date().toISOString().split('T')[0];
+            
+            // First, decide on an overall performance level (70-95%)
+            const overallPercentage = 70 + (Math.random() * 25); // 70-95%
+            
+            // Generate scores that add up correctly
+            const sections = {};
+            let totalScore = 0;
+            let totalMaxScore = 0;
+            
+            rubric.categories.forEach((category, catIndex) => {
+                const categoryName = typeof category === 'string' ? category : category.name;
+                const subcategories = typeof category === 'string' ? 
+                    ['Introduction', 'Main Points', 'Conclusion'] : 
+                    (category.subcategories || []);
+                
+                const categoryFeedback = [];
+                let categoryScore = 0;
+                let categoryMaxScore = 0;
+                
+                subcategories.forEach((sub, subIndex) => {
+                    const subName = typeof sub === 'string' ? sub : sub.name;
+                    const subPoints = typeof sub === 'string' ? 10 : (sub.points || 10);
+                    
+                    // Vary individual scores slightly around the overall percentage (±10%)
+                    const variance = (Math.random() * 20) - 10; // -10% to +10%
+                    const subPercentage = Math.max(60, Math.min(100, overallPercentage + variance));
+                    const score = Math.round(subPoints * (subPercentage / 100));
+                    
+                    // Generate feedback based on score
+                    const percentage = (score / subPoints) * 100;
+                    let feedback;
+                    if (percentage >= 90) {
+                        feedback = `Excellent ${subName.toLowerCase()}. Demonstrates strong mastery of this area.`;
+                    } else if (percentage >= 80) {
+                        feedback = `Good ${subName.toLowerCase()}. Shows solid understanding with room for minor improvements.`;
+                    } else if (percentage >= 70) {
+                        feedback = `Adequate ${subName.toLowerCase()}. Meets basic requirements but could be enhanced.`;
+                    } else {
+                        feedback = `${subName} needs improvement. Consider focusing more on this area.`;
+                    }
+                    
+                    categoryFeedback.push({
+                        name: subName,
+                        points: score,
+                        maxPoints: subPoints,
+                        feedback: feedback
+                    });
+                    
+                    categoryScore += score;
+                    categoryMaxScore += subPoints;
+                });
+                
+                sections[categoryName] = {
+                    feedback: categoryFeedback,
+                    score: categoryScore,
+                    maxScore: categoryMaxScore
+                };
+                
+                totalScore += categoryScore;
+                totalMaxScore += categoryMaxScore;
+            });
+            
+            // Calculate final percentage from actual scores
+            const finalPercentage = (totalScore / totalMaxScore) * 100;
+            const letterGrade = getLetterGrade(finalPercentage, rubric.gradeScale);
+            
+            console.log('Demo evaluation:', {
+                totalScore,
+                totalMaxScore,
+                percentage: finalPercentage.toFixed(1),
+                letterGrade
+            });
+            
+            return {
+                studentName: studentName,
+                speechDate: speechDate,
+                assignmentType: assignmentType,
+                speechTime: '5:30',
+                rubricUsed: rubric.name,
+                sections: sections,
+                totalScore: totalScore,
+                maxScore: totalMaxScore,
+                percentage: finalPercentage.toFixed(1),
+                letterGrade: letterGrade,
+                aiProvider: 'demo',
+                transcript: '[Demo Mode - No actual transcription performed]'
+            };
+        }
+        
+        function getLetterGrade(percentage, gradeScale) {
+            if (!gradeScale) return 'N/A';
+            
+            const grades = Object.entries(gradeScale).sort((a, b) => {
+                const minA = a[1].min !== undefined ? a[1].min : parseFloat(a[1].range?.split('-')[0] || 0);
+                const minB = b[1].min !== undefined ? b[1].min : parseFloat(b[1].range?.split('-')[0] || 0);
+                return minB - minA;
+            });
+            
+            for (const [grade, config] of grades) {
+                const min = config.min !== undefined ? config.min : parseFloat(config.range?.split('-')[0] || 0);
+                if (percentage >= min) {
+                    return grade;
+                }
+            }
+            
+            return 'F';
         }
 
         async function evaluateSpeech(apiKey, file, assignmentType, rubric, apiProvider = 'gemini') {
@@ -2285,6 +2409,12 @@
             
             const metrics = calculateRubricMetrics(rubric);
             console.log('    Metrics calculated:', metrics);
+            
+            // Route to demo mode if selected
+            if (apiProvider === 'demo') {
+                console.log('>>> Using Demo Mode - generating mock evaluation');
+                return await generateDemoEvaluation(file, assignmentType, rubric);
+            }
             
             // Route to the appropriate API
             if (apiProvider === 'gpt4o') {
@@ -3681,6 +3811,101 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
         }
         
+        // ===== SUPABASE EVALUATION FUNCTIONS =====
+        
+        // Save evaluation to Supabase
+        async function saveEvaluationToSupabase(evaluation, courseId, studentId, rubricId) {
+            if (!supabaseClient || !currentUser) {
+                console.log('Cannot save evaluation: no Supabase or user');
+                return null;
+            }
+            
+            try {
+                const evaluationData = {
+                    instructor_id: currentUser.id,
+                    student_id: studentId, // course_students table ID
+                    course_id: courseId,
+                    rubric_id: rubricId,
+                    video_url: null, // Will be added in Phase B6
+                    audio_url: null,
+                    transcript: evaluation.transcript || null,
+                    ai_provider: evaluation.aiProvider || 'unknown',
+                    evaluation_data: {
+                        sections: evaluation.sections,
+                        studentName: evaluation.studentName,
+                        speechDate: evaluation.speechDate,
+                        assignmentType: evaluation.assignmentType,
+                        speechTime: evaluation.speechTime,
+                        rubricUsed: evaluation.rubricUsed,
+                        totalScore: evaluation.totalScore,
+                        maxScore: evaluation.maxScore,
+                        percentage: evaluation.percentage,
+                        letterGrade: evaluation.letterGrade
+                    },
+                    total_score: evaluation.totalScore || 0,
+                    letter_grade: evaluation.letterGrade || 'N/A',
+                    status: 'completed'
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('evaluations')
+                    .insert([evaluationData])
+                    .select();
+                
+                if (error) {
+                    console.error('Failed to save evaluation to Supabase:', error);
+                    return null;
+                }
+                
+                console.log('✓ Evaluation saved to Supabase');
+                return data[0];
+            } catch (error) {
+                console.error('Supabase error saving evaluation:', error);
+                return null;
+            }
+        }
+        
+        // Load evaluations from Supabase
+        async function loadEvaluationsFromSupabase(courseId = null, studentId = null) {
+            if (!supabaseClient || !currentUser) {
+                return null;
+            }
+            
+            try {
+                let query = supabaseClient
+                    .from('evaluations')
+                    .select(`
+                        *,
+                        course:courses(id, name, code, semester, year),
+                        student:course_students(id, first_name, last_name, email),
+                        rubric:rubrics(id, name)
+                    `)
+                    .eq('instructor_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                if (courseId) {
+                    query = query.eq('course_id', courseId);
+                }
+                
+                if (studentId) {
+                    query = query.eq('student_id', studentId);
+                }
+                
+                const { data, error } = await query;
+                
+                if (error) {
+                    console.error('Failed to load evaluations from Supabase:', error);
+                    return null;
+                }
+                
+                console.log(`✓ Loaded ${data.length} evaluations from Supabase`);
+                return data;
+            } catch (error) {
+                console.error('Supabase error loading evaluations:', error);
+                return null;
+            }
+        }
+        
         // ===== SUPABASE RUBRIC FUNCTIONS =====
         
         // Save rubric to Supabase
@@ -4348,47 +4573,23 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 classes = JSON.parse(localStorage.getItem('classes') || '[]');
             }
             
-            // Initialize with demo classes if empty
-            if (classes.length === 0) {
-                const demoClasses = [
-                    {
-                        id: '1',
-                        name: 'CMST 210',
-                        semester: 'Fall',
-                        section: '001',
-                        year: '2024',
-                        notes: 'Intro to Public Speaking',
-                        roster: [],
-                        evaluations: []
-                    },
-                    {
-                        id: '2',
-                        name: 'CMST 210',
-                        semester: 'Fall',
-                        section: '002',
-                        year: '2024',
-                        notes: 'Intro to Public Speaking',
-                        roster: [],
-                        evaluations: []
-                    },
-                    {
-                        id: '3',
-                        name: 'CMST 240',
-                        semester: 'Spring',
-                        section: '001',
-                        year: '2025',
-                        notes: 'Argumentation and Debate',
-                        roster: [],
-                        evaluations: []
-                    }
-                ];
-                localStorage.setItem('classes', JSON.stringify(demoClasses));
-                return loadClasses();
-            }
+            // Don't initialize demo classes - start with empty slate
             
             const grid = document.getElementById('classesGrid');
-            grid.innerHTML = classes.map(cls => {
+            
+            // Build cards asynchronously to get eval counts from Supabase
+            const cardPromises = classes.map(async cls => {
                 let evalCount = 0;
+                
+                // Get eval count from Supabase if available
+                if (supabaseClient && cls.supabaseId) {
+                    const supabaseEvals = await loadEvaluationsFromSupabase(cls.supabaseId);
+                    if (supabaseEvals) {
+                        evalCount = supabaseEvals.length;
+                    }
+                }
+                
+                // Also count localStorage evals (for backwards compatibility)
                 if (cls.roster) {
                     cls.roster.forEach(student => {
                         if (student.evaluations) {
@@ -4418,13 +4619,17 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     </div>
                 </div>
                 `;
-            }).join('');
+            });
             
-            // Add click handlers
-            document.querySelectorAll('.class-card').forEach(card => {
-                card.addEventListener('click', async function() {
-                    const classId = this.getAttribute('data-class-id');
-                    await viewClass(classId);
+            Promise.all(cardPromises).then(cards => {
+                grid.innerHTML = cards.join('');
+                
+                // Add click handlers
+                document.querySelectorAll('.class-card').forEach(card => {
+                    card.addEventListener('click', async function() {
+                        const classId = this.getAttribute('data-class-id');
+                        await viewClass(classId);
+                    });
                 });
             });
         }
@@ -4450,6 +4655,39 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
         }
 
+        
+        // Sort evaluations dynamically
+        function sortEvaluations() {
+            const sortBy = document.getElementById('evalSortBy').value;
+            const container = document.getElementById('evaluationsList');
+            const items = Array.from(container.getElementsByClassName('eval-item'));
+            
+            items.sort((a, b) => {
+                switch(sortBy) {
+                    case 'date':
+                        return new Date(b.dataset.date) - new Date(a.dataset.date);
+                    case 'date-old':
+                        return new Date(a.dataset.date) - new Date(b.dataset.date);
+                    case 'student':
+                        return a.dataset.student.localeCompare(b.dataset.student);
+                    case 'type':
+                        return a.dataset.type.localeCompare(b.dataset.type);
+                    case 'score-high':
+                        return parseFloat(b.dataset.score) - parseFloat(a.dataset.score);
+                    case 'score-low':
+                        return parseFloat(a.dataset.score) - parseFloat(b.dataset.score);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Re-append in sorted order
+            items.forEach(item => container.appendChild(item));
+        }
+        
+        // Make sortEvaluations globally accessible
+        window.sortEvaluations = sortEvaluations;
+
         async function viewClass(classId) {
             currentClassId = classId; // Store for later use
             
@@ -4466,20 +4704,58 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             
             const roster = selectedClass.roster || [];
             
-            // Gather all evaluations from students
+            // Gather all evaluations - from both Supabase and localStorage
             const evals = [];
+            
+            // Load from Supabase if available
+            if (supabaseClient && selectedClass.supabaseId) {
+                console.log('Loading evaluations from Supabase for course:', selectedClass.supabaseId);
+                const supabaseEvals = await loadEvaluationsFromSupabase(selectedClass.supabaseId);
+                console.log('Supabase evaluations result:', supabaseEvals);
+                
+                if (supabaseEvals && supabaseEvals.length > 0) {
+                    console.log('Processing', supabaseEvals.length, 'Supabase evaluations');
+                    supabaseEvals.forEach(ev => {
+                        console.log('Evaluation data:', ev);
+                        evals.push({
+                            studentName: ev.student ? `${ev.student.first_name} ${ev.student.last_name}` : 'Unknown',
+                            studentId: ev.student_id,
+                            date: new Date(ev.created_at).toLocaleDateString(),
+                            type: ev.evaluation_data?.assignmentType || 'Unknown',
+                            totalScore: ev.total_score || 0,
+                            maxScore: ev.evaluation_data?.maxScore || 100,
+                            results: ev.evaluation_data
+                        });
+                    });
+                    console.log('✓ Added', evals.length, 'evaluations from Supabase');
+                } else {
+                    console.log('No evaluations found in Supabase for this course');
+                }
+            } else {
+                console.log('Supabase not available or course has no supabaseId');
+            }
+            
+            // Also gather from localStorage (for backwards compatibility)
             roster.forEach(student => {
                 if (student.evaluations) {
                     student.evaluations.forEach(ev => {
-                        evals.push({
-                            studentName: student.firstName + ' ' + student.lastName,
-                            studentId: student.id,
-                            date: ev.date,
-                            type: ev.type,
-                            totalScore: ev.results.totalScore,
-                            maxScore: ev.results.maxScore,
-                            results: ev.results
-                        });
+                        // Only add if not already in evals (avoid duplicates)
+                        const exists = evals.find(e => 
+                            e.studentId === student.id && 
+                            e.date === ev.date &&
+                            e.type === ev.type
+                        );
+                        if (!exists) {
+                            evals.push({
+                                studentName: student.firstName + ' ' + student.lastName,
+                                studentId: student.id,
+                                date: ev.date,
+                                type: ev.type,
+                                totalScore: ev.results.totalScore,
+                                maxScore: ev.results.maxScore,
+                                results: ev.results
+                            });
+                        }
                     });
                 }
             });
@@ -4487,6 +4763,9 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Update title
             document.getElementById('classDetailTitle').textContent = 
                 `${selectedClass.name} - ${selectedClass.semester} ${selectedClass.year}`;
+            
+            console.log('Final evals array before display:', evals);
+            console.log('Evals count:', evals.length);
             
             // Build content
             let html = `
@@ -4511,7 +4790,10 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             } else {
                 html += '<ul style="list-style: none; padding: 0;">';
                 roster.forEach(student => {
-                    const evalCount = (student.evaluations || []).length;
+                    // Count evaluations for this student from the evals array
+                    const studentEvals = evals.filter(e => e.studentId === student.id || e.studentId === student.supabaseId);
+                    const evalCount = studentEvals.length;
+                    
                     let evalText = '';
                     if (evalCount > 0) {
                         evalText = ` • ${evalCount} evaluation${evalCount > 1 ? 's' : ''}`;
@@ -4520,10 +4802,10 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     html += `<li style="background: var(--bg-alt); padding: 1rem; margin-bottom: 0.5rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <strong>${student.firstName} ${student.lastName}</strong><br>
-                            <span style="color: var(--text-light); font-size: 0.9rem;">${student.email}${evalText}</span>
+                            <span style="color: var(--text-light); font-size: 0.9rem;">${student.email || 'No email'}${evalText}</span>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            ${evalCount > 0 ? `<button onclick="viewStudentEvals('${student.id}')" class="btn-small">View Evals</button>` : ''}
+                            ${evalCount > 0 ? `<button onclick="viewStudentEvals('${student.supabaseId || student.id}')" class="btn-small">View Evals</button>` : ''}
                             <button onclick="deleteStudent('${student.id}')" class="btn-small btn-danger">Delete</button>
                         </div>
                     </li>`;
@@ -4531,78 +4813,64 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 html += '</ul>';
             }
             
-            // Evaluations section - grouped by speech type
-            html += '<h3 style="margin-top: 2rem;">📊 Recent Evaluations</h3>';
+            // Evaluations section - with sorting and filtering
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">📊 Recent Evaluations</h3>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <label style="font-size: 0.9rem; color: var(--text-light);">Sort by:</label>
+                        <select id="evalSortBy" onchange="sortEvaluations()" style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border);">
+                            <option value="date">Date (Newest First)</option>
+                            <option value="date-old">Date (Oldest First)</option>
+                            <option value="student">Student Name</option>
+                            <option value="type">Speech Type</option>
+                            <option value="score-high">Score (High to Low)</option>
+                            <option value="score-low">Score (Low to High)</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
             if (evals.length === 0) {
                 html += '<p style="color: var(--text-light);">No evaluations yet. Evaluations will appear here when speeches are graded.</p>';
             } else {
-                // Group evaluations by type
-                const evalsByType = {};
-                evals.forEach(e => {
-                    const type = e.type || 'Unknown';
-                    if (!evalsByType[type]) {
-                        evalsByType[type] = [];
-                    }
-                    evalsByType[type].push(e);
-                });
+                html += '<div id="evaluationsList" style="display: grid; gap: 0.75rem; margin-top: 1rem;">';
                 
-                // Display each type with its average (collapsible)
-                Object.keys(evalsByType).forEach((type, index) => {
-                    const typeEvals = evalsByType[type];
-                    const avgScore = (typeEvals.reduce((sum, e) => sum + e.totalScore, 0) / typeEvals.length).toFixed(1);
-                    const avgPercent = ((avgScore / 50) * 100).toFixed(0);
-                    const typeId = 'evalType' + index;
+                evals.forEach(e => {
+                    const percentage = ((e.totalScore / e.maxScore) * 100).toFixed(0);
+                    let color = 'var(--success)';
+                    if (percentage < 70) color = 'var(--error)';
+                    else if (percentage < 80) color = 'var(--warning)';
                     
                     html += `
-                        <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
-                            <div onclick="toggleEvalType('${typeId}')" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span id="${typeId}-arrow" style="font-size: 1.2rem; transition: transform 0.2s;">▶</span>
-                                    <h4 style="margin: 0; color: var(--primary); font-family: var(--body-font); font-weight: 600;">${type}</h4>
+                        <div class="eval-item" data-student="${e.studentName}" data-type="${e.type}" data-score="${e.totalScore}" data-date="${e.date}" style="background: var(--bg-alt); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${color};">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                <div>
+                                    <strong style="font-size: 1.1rem;">${e.studentName}</strong>
+                                    <div style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.25rem;">
+                                        ${e.type} • ${e.date}
+                                    </div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${avgScore} / 50</div>
-                                    <div style="color: var(--text-light);">Average (${avgPercent}%)</div>
-                                </div>
-                            </div>
-                            <div id="${typeId}" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border);">
-                                <div style="display: grid; gap: 0.75rem;">
-                    `;
-                    
-                    typeEvals.forEach(e => {
-                        const percentage = ((e.totalScore / e.maxScore) * 100).toFixed(0);
-                        let color = 'var(--success)';
-                        if (percentage < 70) color = 'var(--error)';
-                        else if (percentage < 80) color = 'var(--warning)';
-                        
-                        html += `
-                            <div style="background: white; padding: 0.75rem; border-radius: 0.5rem; border-left: 3px solid ${color};">
-                                <div style="display: flex; justify-content: space-between;">
-                                    <strong>${e.studentName}</strong>
-                                    <strong style="color: var(--primary);">${e.totalScore}/${e.maxScore} (${percentage}%)</strong>
-                                </div>
-                                <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
-                                    ${e.date}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `
+                                    <strong style="color: var(--primary); font-size: 1.3rem;">${e.totalScore}/${e.maxScore}</strong>
+                                    <div style="font-size: 0.9rem; color: ${color}; font-weight: 600;">${percentage}% • ${e.results?.letterGrade || 'N/A'}</div>
                                 </div>
                             </div>
                         </div>
                     `;
                 });
                 
+                html += '</div>';
+                
                 // Overall class average
                 const overallAvg = (evals.reduce((sum, e) => sum + e.totalScore, 0) / evals.length).toFixed(1);
-                const overallPercent = ((overallAvg / 50) * 100).toFixed(0);
+                const overallMaxAvg = (evals.reduce((sum, e) => sum + e.maxScore, 0) / evals.length).toFixed(0);
+                const overallPercent = ((overallAvg / overallMaxAvg) * 100).toFixed(0);
                 html += `
                     <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
                         <div style="margin: 0; color: white; font-size: 1rem; font-family: var(--body-font); font-weight: 600;">Overall Class Average</div>
                         <div style="text-align: right;">
-                            <div style="font-size: 1.5rem; font-weight: bold;">${overallAvg} / 50</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${overallAvg} / ${overallMaxAvg}</div>
                             <div style="font-size: 0.9rem; opacity: 0.9;">${overallPercent}%</div>
                         </div>
                     </div>
@@ -5762,7 +6030,7 @@ Return ONLY the JSON object, nothing else.`;
             }
         }
 
-        function doSaveEval() {
+        async function doSaveEval() {
             try {
                 var cIdx = document.getElementById('saveClassSel').value;
                 var sIdx = document.getElementById('saveStudentSel').value;
@@ -5774,11 +6042,17 @@ Return ONLY the JSON object, nothing else.`;
                     alert('No evaluation to save');
                     return;
                 }
+                
+                // Get class and student info
                 var classes = JSON.parse(localStorage.getItem('classes') || '[]');
-                var student = classes[cIdx].roster[sIdx];
+                var classData = classes[cIdx];
+                var student = classData.roster[sIdx];
+                
                 if (!student.evaluations) {
                     student.evaluations = [];
                 }
+                
+                // Create evaluation record
                 var rec = {
                     id: Date.now().toString(),
                     date: document.getElementById('speechDate').value,
@@ -5786,12 +6060,72 @@ Return ONLY the JSON object, nothing else.`;
                     results: evaluationResults,
                     savedAt: new Date().toISOString()
                 };
+                
+                // Save to localStorage first (immediate)
                 student.evaluations.push(rec);
                 classes[cIdx].roster[sIdx] = student;
                 localStorage.setItem('classes', JSON.stringify(classes));
+                console.log('✓ Evaluation saved to localStorage');
+                
+                // Also save to Supabase if available
+                if (supabaseClient && currentUser) {
+                    const rubricId = document.getElementById('rubricSelect').value;
+                    
+                    // Get Supabase IDs if they exist
+                    const courseSupabaseId = classData.supabaseId || classData.id;
+                    const studentSupabaseId = student.supabaseId || student.id;
+                    
+                    // Get rubric's Supabase ID
+                    const rubrics = await getAllRubrics();
+                    const selectedRubric = rubrics.find(r => r.id === rubricId);
+                    const rubricSupabaseId = selectedRubric?.supabaseId || null;
+                    
+                    console.log('Attempting Supabase save with IDs:', {
+                        course: courseSupabaseId,
+                        student: studentSupabaseId,
+                        rubric: rubricSupabaseId,
+                        user: currentUser.id
+                    });
+                    
+                    // Only save if all IDs are valid UUIDs
+                    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                    const validIds = uuidRegex.test(courseSupabaseId) && 
+                                   uuidRegex.test(studentSupabaseId) && 
+                                   (!rubricSupabaseId || uuidRegex.test(rubricSupabaseId));
+                    
+                    if (validIds) {
+                        try {
+                            const result = await saveEvaluationToSupabase(
+                                evaluationResults,
+                                courseSupabaseId,
+                                studentSupabaseId,
+                                rubricSupabaseId
+                            );
+                            
+                            if (result) {
+                                console.log('✓ Evaluation saved to Supabase with ID:', result.id);
+                            } else {
+                                console.warn('⚠️ Supabase save returned null - check console for errors');
+                            }
+                        } catch (error) {
+                            console.error('Error saving to Supabase:', error);
+                        }
+                    } else {
+                        console.warn('⚠️ Invalid UUIDs for Supabase save:', {
+                            course: courseSupabaseId,
+                            student: studentSupabaseId,
+                            rubric: rubricSupabaseId
+                        });
+                        console.log('Note: Course, student, and rubric must be created in Supabase before evaluations can be saved to database');
+                    }
+                } else {
+                    console.log('Supabase not available or user not logged in');
+                }
+                
                 alert('✓ Evaluation saved for ' + student.firstName + ' ' + student.lastName);
                 closeSaveModal();
             } catch(e) {
+                console.error('Error saving evaluation:', e);
                 alert('Error: ' + e.message);
             }
         }
