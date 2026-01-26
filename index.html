@@ -755,7 +755,7 @@
                     <div id="resultsContent"></div>
                     <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                         <button onclick="openSaveModal()">💾 Save Results</button>
-                        <button onclick="downloadPDF()" class="btn-secondary">📋 Copy to Clipboard</button>
+                        <button onclick="downloadPDF()" class="btn-secondary">📄 Download Report (HTML)</button>
                         <button onclick="emailResults()" class="btn-secondary">📧 Email Results</button>
                         <button onclick="startOver()" class="btn-secondary">🔄 Start Over</button>
                     </div>
@@ -2316,10 +2316,24 @@
                     categoryMaxScore += subPoints;
                 });
                 
+                // Create overall category feedback string
+                const avgPercentage = (categoryScore / categoryMaxScore) * 100;
+                let overallFeedback;
+                if (avgPercentage >= 90) {
+                    overallFeedback = `Excellent performance in ${categoryName}. Strong demonstration of skills across all areas.`;
+                } else if (avgPercentage >= 80) {
+                    overallFeedback = `Good work in ${categoryName}. Solid performance with minor areas for improvement.`;
+                } else if (avgPercentage >= 70) {
+                    overallFeedback = `Adequate ${categoryName}. Meets basic requirements but could be strengthened.`;
+                } else {
+                    overallFeedback = `${categoryName} needs significant improvement. Focus on developing these skills.`;
+                }
+                
                 sections[categoryName] = {
-                    feedback: categoryFeedback,
+                    feedback: overallFeedback,
                     score: categoryScore,
-                    maxScore: categoryMaxScore
+                    maxScore: categoryMaxScore,
+                    subcategories: categoryFeedback
                 };
                 
                 totalScore += categoryScore;
@@ -2337,6 +2351,130 @@
                 letterGrade
             });
             
+            // Generate realistic timeline markers
+            const speechDuration = 330; // 5:30 minutes in seconds
+            const timeline_markers = [];
+            
+            // Add 3-7 markers spread throughout speech
+            const numMarkers = Math.floor(Math.random() * 5) + 3; // 3-7 markers
+            const categories = rubric.categories.map(cat => 
+                typeof cat === 'string' ? cat : cat.name
+            );
+            
+            // Define realistic issues for each category
+            const issueTemplates = {
+                'Introduction': {
+                    'positive': ['Strong attention-getter', 'Clear thesis statement', 'Excellent preview of main points'],
+                    'minor': ['Attention-getter could be stronger', 'Preview slightly unclear', 'Rushed introduction'],
+                    'moderate': ['Missing preview of main points', 'Weak attention-getter', 'No clear thesis']
+                },
+                'Organization': {
+                    'positive': ['Clear transition', 'Strong signpost phrase', 'Logical flow between ideas'],
+                    'minor': ['Transition could be smoother', 'Signpost needed here', 'Slight organizational gap'],
+                    'moderate': ['Abrupt topic change', 'Missing transition', 'Confusing sequence']
+                },
+                'Content': {
+                    'positive': ['Excellent supporting evidence', 'Strong example usage', 'Compelling story'],
+                    'minor': ['Example could be more specific', 'Source citation needed', 'Claim needs support'],
+                    'moderate': ['Lack of supporting evidence', 'Unsupported claim', 'Weak reasoning']
+                },
+                'Delivery': {
+                    'positive': ['Great vocal variety', 'Strong emphasis here', 'Clear pronunciation'],
+                    'minor': ['Vocalized pause ("um")', 'Speaking slightly fast', 'Volume a bit low'],
+                    'moderate': ['Multiple filler words', 'Speaking too fast', 'Monotone delivery']
+                },
+                'Eye Contact': {
+                    'positive': ['Great audience engagement', 'Scanning all sections', 'Natural connection with audience'],
+                    'minor': ['Brief glance at notes', 'Favoring one side slightly', 'Quick look down'],
+                    'moderate': ['Looking down at notes', 'Avoiding audience gaze', 'Reading from slides']
+                },
+                'Body Language': {
+                    'positive': ['Confident posture', 'Effective gestures', 'Good use of space'],
+                    'minor': ['Hands in pockets briefly', 'Slight fidgeting', 'Standing too still'],
+                    'moderate': ['Distracting movements', 'Poor posture', 'Awkward gestures']
+                },
+                'Conclusion': {
+                    'positive': ['Strong closing statement', 'Clear call to action', 'Memorable ending'],
+                    'minor': ['Conclusion slightly rushed', 'Could restate thesis more clearly', 'Ending a bit abrupt'],
+                    'moderate': ['No clear conclusion', 'Forgot to summarize', 'Weak ending']
+                }
+            };
+            
+            // Generate markers
+            for (let i = 0; i < numMarkers; i++) {
+                // Spread markers throughout speech
+                const seconds = Math.floor((speechDuration / (numMarkers + 1)) * (i + 1));
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                const timestamp = `${minutes}:${secs.toString().padStart(2, '0')}`;
+                
+                // Pick random category from rubric
+                const category = categories[Math.floor(Math.random() * categories.length)];
+                
+                // Determine severity (weighted toward positive/minor)
+                const severityRoll = Math.random();
+                let severity;
+                if (severityRoll < 0.3) severity = 'positive';
+                else if (severityRoll < 0.8) severity = 'minor';
+                else severity = 'moderate';
+                
+                // Get appropriate issue template
+                const categoryTemplates = issueTemplates[category] || issueTemplates['Delivery'];
+                const issueList = categoryTemplates[severity] || categoryTemplates['minor'];
+                const issue = issueList[Math.floor(Math.random() * issueList.length)];
+                
+                // Generate contextual note based on severity
+                let note;
+                if (severity === 'positive') {
+                    const positiveNotes = [
+                        'This was a strong moment in your speech. Keep up this excellent technique!',
+                        'Very effective here. This really engaged the audience.',
+                        'Great job with this element. Consider using this approach more often.',
+                        'This demonstrated strong mastery of the technique.'
+                    ];
+                    note = positiveNotes[Math.floor(Math.random() * positiveNotes.length)];
+                } else if (severity === 'minor') {
+                    const minorNotes = [
+                        'Small issue that\'s easy to fix with practice. Not a major concern.',
+                        'Minor point to work on for your next speech. Otherwise looking good.',
+                        'This is easily correctable. Just be mindful of it during practice.',
+                        'Worth noting, but doesn\'t significantly impact your overall performance.'
+                    ];
+                    note = minorNotes[Math.floor(Math.random() * minorNotes.length)];
+                } else {
+                    const moderateNotes = [
+                        'This is an area that needs attention before your next speech. Practice this specifically.',
+                        'Work on improving this aspect. It impacted the effectiveness of your message.',
+                        'This requires focused practice. Consider getting feedback on this element.',
+                        'Important area for improvement. This affects audience comprehension.'
+                    ];
+                    note = moderateNotes[Math.floor(Math.random() * moderateNotes.length)];
+                }
+                
+                timeline_markers.push({
+                    timestamp: timestamp,
+                    seconds: seconds,
+                    category: category,
+                    issue: issue,
+                    severity: severity,
+                    note: note
+                });
+            }
+            
+            // Sort by time
+            timeline_markers.sort((a, b) => a.seconds - b.seconds);
+            
+            console.log('Generated timeline markers:', timeline_markers.length);
+            
+            // Generate overall comments
+            const overallComments = finalPercentage >= 90 ? 
+                "Outstanding speech overall. Demonstrates strong mastery across all evaluated areas. Continue refining these excellent skills." :
+                finalPercentage >= 80 ?
+                "Strong performance with solid execution in most areas. Focus on the identified improvement areas to reach the next level." :
+                finalPercentage >= 70 ?
+                "Adequate performance meeting basic requirements. Review the specific feedback in each category and work on identified weaknesses." :
+                "Significant improvement needed. Focus on the fundamental skills highlighted in the feedback and practice consistently.";
+            
             return {
                 studentName: studentName,
                 speechDate: speechDate,
@@ -2349,7 +2487,9 @@
                 percentage: finalPercentage.toFixed(1),
                 letterGrade: letterGrade,
                 aiProvider: 'demo',
-                transcript: '[Demo Mode - No actual transcription performed]'
+                transcript: '[Demo Mode - No actual transcription performed]',
+                timeline_markers: timeline_markers,
+                overallComments: overallComments
             };
         }
         
@@ -3840,7 +3980,8 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         totalScore: evaluation.totalScore,
                         maxScore: evaluation.maxScore,
                         percentage: evaluation.percentage,
-                        letterGrade: evaluation.letterGrade
+                        letterGrade: evaluation.letterGrade,
+                        timeline_markers: evaluation.timeline_markers || []
                     },
                     total_score: evaluation.totalScore || 0,
                     letter_grade: evaluation.letterGrade || 'N/A',
@@ -4455,58 +4596,245 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 `;
             }
             
+            // Add timeline markers section if available
+            if (results.timeline_markers && results.timeline_markers.length > 0) {
+                html += `
+                    <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-top: 2rem;">
+                        <h3 style="margin: 0 0 0.5rem 0; color: var(--primary);">⏱️ Timeline Markers</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            Review specific moments in your video using these timestamps. 
+                            Open your video file on your device and seek to the times listed below to see exactly what was observed.
+                        </p>
+                `;
+                
+                // Group markers by category
+                const markersByCategory = {};
+                results.timeline_markers.forEach(marker => {
+                    if (!markersByCategory[marker.category]) {
+                        markersByCategory[marker.category] = [];
+                    }
+                    markersByCategory[marker.category].push(marker);
+                });
+                
+                // Display each category
+                Object.keys(markersByCategory).forEach(category => {
+                    const markers = markersByCategory[category];
+                    
+                    html += `
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-dark); font-size: 1.1rem; font-family: var(--body-font);">${category}</h4>
+                            <div style="display: grid; gap: 0.75rem;">
+                    `;
+                    
+                    markers.forEach(marker => {
+                        // Color coding based on severity
+                        const severityColors = {
+                            'positive': '#10b981',   // green
+                            'minor': '#f59e0b',      // orange
+                            'moderate': '#f59e0b',   // orange
+                            'major': '#ef4444'       // red
+                        };
+                        
+                        const severityIcons = {
+                            'positive': '✓',
+                            'minor': '⚠',
+                            'moderate': '⚠',
+                            'major': '✕'
+                        };
+                        
+                        const color = severityColors[marker.severity] || '#f59e0b';
+                        const icon = severityIcons[marker.severity] || '⚠';
+                        
+                        html += `
+                            <div style="background: white; padding: 0.75rem; border-radius: 0.25rem; border-left: 4px solid ${color}; display: flex; gap: 1rem; align-items: start;">
+                                <div style="background: ${color}; color: white; min-width: 60px; height: 60px; border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.95rem; font-weight: bold; text-align: center; padding: 0.25rem;">
+                                    ${marker.timestamp}
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                        <span style="font-size: 1.2rem;">${icon}</span>
+                                        <strong style="color: var(--text-dark); font-size: 1rem;">${marker.issue}</strong>
+                                    </div>
+                                    <p style="margin: 0; color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">
+                                        ${marker.note}
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+            
             document.getElementById('resultsContent').innerHTML = html;
         }
 
+        // Export evaluation as accessible HTML file
         function downloadPDF() {
             if (!evaluationResults) {
                 alert('No evaluation results to download.');
                 return;
             }
             
-            // Create a simple text version for now
-            let text = `SPEECH EVALUATION REPORT\n\n`;
-            text += `Student: ${evaluationResults.studentName}\n`;
-            text += `Date: ${evaluationResults.speechDate}\n`;
-            text += `Assignment: ${evaluationResults.assignmentType}\n`;
-            text += `Speech Time: ${evaluationResults.speechTime}\n`;
-            if (evaluationResults.rubricUsed) {
-                text += `Rubric Used: ${evaluationResults.rubricUsed}\n`;
-            }
-            text += `\nFINAL SCORE: ${evaluationResults.totalScore} / ${evaluationResults.maxScore} (${((evaluationResults.totalScore / evaluationResults.maxScore) * 100).toFixed(1)}%)\n\n`;
-            text += `SECTION SCORES:\n`;
-            
-            for (const [section, data] of Object.entries(evaluationResults.sections)) {
-                text += `\n${section.toUpperCase()}: ${data.score} / ${data.maxScore}\n`;
-                text += `${data.feedback}\n`;
-                
-                // Add subcategory details
-                if (data.subcategories && data.subcategories.length > 0) {
-                    text += `  Subcategories:\n`;
-                    data.subcategories.forEach(sub => {
-                        text += `    - ${sub.name}: ${sub.grade} (${sub.points}/${sub.maxPoints} pts)\n`;
-                    });
-                }
-            }
-            
-            text += `\nOVERALL COMMENTS:\n${evaluationResults.overallComments}\n`;
-            
-            // Add transcript if available
-            if (evaluationResults.transcript && evaluationResults.transcript.trim().length > 0) {
-                text += `\n${'='.repeat(80)}\n`;
-                text += `SPEECH TRANSCRIPT:\n`;
-                text += `${'='.repeat(80)}\n\n`;
-                text += evaluationResults.transcript;
-                text += `\n\n${'='.repeat(80)}\n`;
-            }
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(text).then(() => {
-                alert('✓ Evaluation copied to clipboard!\n\nYou can paste it into a document to save as PDF.');
-            }).catch(() => {
-                alert('Could not copy to clipboard. PDF generation requires additional library integration.');
-            });
+            exportEvaluationHTML(evaluationResults, evaluationResults.studentName);
         }
+        
+        async function exportEvaluationHTML(evaluation, studentName) {
+            console.log('Exporting evaluation as accessible HTML...');
+            
+            // Build timeline markers HTML if they exist
+            let timelineHTML = '';
+            if (evaluation.timeline_markers && evaluation.timeline_markers.length > 0) {
+                // Group by category
+                const markersByCategory = {};
+                evaluation.timeline_markers.forEach(marker => {
+                    if (!markersByCategory[marker.category]) {
+                        markersByCategory[marker.category] = [];
+                    }
+                    markersByCategory[marker.category].push(marker);
+                });
+                
+                timelineHTML = `
+            <section aria-labelledby="timeline-markers">
+                <h2 id="timeline-markers">Timeline Markers</h2>
+                
+                <div class="instructions" role="note">
+                    <h3>How to Use Timeline Markers</h3>
+                    <p>Open your video file on your device and seek to the timestamps below to review specific moments from your speech. These markers highlight both strengths and areas for improvement.</p>
+                </div>
+                `;
+                
+                Object.entries(markersByCategory).forEach(([category, markers]) => {
+                    timelineHTML += `
+                <article aria-labelledby="${category.toLowerCase().replace(/\s+/g, '-')}-heading">
+                    <h3 id="${category.toLowerCase().replace(/\s+/g, '-')}-heading">${category}</h3>
+                    `;
+                    
+                    markers.forEach(marker => {
+                        const severityClass = marker.severity || 'minor';
+                        const icon = {positive: '✓', minor: '⚠', moderate: '⚠', major: '✕'}[severityClass] || '⚠';
+                        
+                        timelineHTML += `
+                    <div class="marker ${severityClass}" role="article" aria-label="${severityClass === 'positive' ? 'Strength' : 'Area for improvement'} at ${marker.timestamp}">
+                        <div class="marker-time" aria-label="Timestamp">${marker.timestamp}</div>
+                        <div class="marker-content">
+                            <h4><span aria-hidden="true">${icon}</span> ${marker.issue}</h4>
+                            <p>${marker.note}</p>
+                        </div>
+                    </div>
+                        `;
+                    });
+                    
+                    timelineHTML += `</article>`;
+                });
+                
+                timelineHTML += `</section>`;
+            }
+            
+            // Create complete HTML document
+            const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Evaluation - ${studentName}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 2rem; background: #f5f5f5; }
+        .container { background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        :focus { outline: 3px solid #3b82f6; outline-offset: 2px; }
+        @media (prefers-contrast: high) { body { background: white; color: black; } .container { border: 2px solid black; } }
+        @media print { body { background: white; padding: 0; } .container { box-shadow: none; padding: 1rem; } .no-print { display: none !important; } .section, .marker { page-break-inside: avoid; } }
+        h1 { font-size: 2rem; color: #1e293b; margin-bottom: 1.5rem; border-bottom: 3px solid #3b82f6; padding-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; color: #1e293b; margin: 2rem 0 1rem 0; }
+        h3 { font-size: 1.25rem; color: #334155; margin: 1.5rem 0 0.75rem 0; }
+        .meta-info { background: #f1f5f9; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+        .meta-info p { margin: 0.25rem 0; }
+        .score-highlight { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1.5rem; border-radius: 8px; margin: 2rem 0; }
+        .score-highlight h2 { color: white; margin: 0 0 0.5rem 0; }
+        .section { background: #f8fafc; padding: 1.5rem; border-radius: 4px; margin-bottom: 1rem; border-left: 4px solid #3b82f6; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .section-score { font-size: 1.25rem; font-weight: bold; color: #3b82f6; }
+        .marker { display: flex; gap: 1rem; background: white; padding: 1rem; border-radius: 4px; margin-bottom: 0.75rem; border-left: 3px solid; }
+        .marker.positive { border-left-color: #10b981; }
+        .marker.minor { border-left-color: #f59e0b; }
+        .marker.moderate { border-left-color: #f59e0b; }
+        .marker.major { border-left-color: #ef4444; }
+        .marker-time { min-width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; color: white; flex-shrink: 0; }
+        .marker.positive .marker-time { background: #10b981; }
+        .marker.minor .marker-time { background: #f59e0b; }
+        .marker.moderate .marker-time { background: #f59e0b; }
+        .marker.major .marker-time { background: #ef4444; }
+        .marker-content h4 { margin: 0 0 0.5rem 0; color: #1e293b; }
+        .marker-content p { margin: 0; color: #64748b; }
+        .instructions { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        .instructions h3 { margin-top: 0; color: #92400e; }
+        .button { display: inline-block; background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; margin-right: 1rem; }
+        .button:hover { background: #2563eb; }
+        .skip-link { position: absolute; top: -40px; left: 0; background: #3b82f6; color: white; padding: 8px; z-index: 100; }
+        .skip-link:focus { top: 0; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="container">
+        <div class="no-print" style="margin-bottom: 2rem; display: flex; gap: 1rem;">
+            <button onclick="window.print()" class="button">🖨️ Print / Save as PDF</button>
+            <button onclick="window.close()" class="button" style="background: #6b7280;">✕ Close</button>
+        </div>
+        <main id="main-content">
+            <header>
+                <h1>Speech Evaluation Report</h1>
+                <div class="meta-info" role="contentinfo">
+                    <p><strong>Student:</strong> ${studentName}</p>
+                    <p><strong>Date:</strong> ${evaluation.speechDate || new Date().toLocaleDateString()}</p>
+                    <p><strong>Assignment:</strong> ${evaluation.assignmentType || 'Speech Evaluation'}</p>
+                    <p><strong>Rubric:</strong> ${evaluation.rubricUsed || 'Standard'}</p>
+                </div>
+            </header>
+            <section class="score-highlight" aria-labelledby="overall-score">
+                <h2 id="overall-score">Overall Score</h2>
+                <p style="font-size: 2rem; margin: 0.5rem 0;">${evaluation.totalScore}/${evaluation.maxScore} <span style="font-size: 1.5rem;">(${evaluation.percentage}%)</span></p>
+                <p style="font-size: 1.5rem; margin: 0;">Grade: ${evaluation.letterGrade}</p>
+            </section>
+            <section aria-labelledby="section-scores">
+                <h2 id="section-scores">Section Scores & Feedback</h2>
+                ${Object.keys(evaluation.sections || {}).map(sectionKey => {
+                    const section = evaluation.sections[sectionKey];
+                    const sectionName = sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1);
+                    return `<article class="section"><div class="section-header"><h3>${sectionName}</h3><span class="section-score" aria-label="${sectionName} score">${section.score}/${section.maxScore}</span></div><p>${section.feedback || 'No feedback provided.'}</p></article>`;
+                }).join('')}
+            </section>
+            ${timelineHTML}
+            <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.875rem;">
+                <p>Generated by SpeechGradebook on ${new Date().toLocaleDateString()}</p>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>`;
+            
+            // Create blob and download
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${studentName.replace(/\s+/g, '_')}_Evaluation_${evaluation.speechDate || 'report'}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('✓ Accessible HTML evaluation exported');
+        }
+        
+        window.exportEvaluationHTML = exportEvaluationHTML;
 
         function emailResults() {
             const studentEmail = document.getElementById('studentEmail').value;
@@ -5740,13 +6068,37 @@ Return ONLY the JSON object, nothing else.`;
             document.getElementById('addStudentForm').reset();
         }
 
-        function viewStudentEvals(studentId) {
+        async function viewStudentEvals(studentId) {
             const classes = JSON.parse(localStorage.getItem('classes') || '[]');
             const cls = classes.find(c => c.id === currentClassId);
             if (!cls) return;
             
-            const student = cls.roster.find(s => s.id === studentId);
-            if (!student || !student.evaluations || student.evaluations.length === 0) {
+            const student = cls.roster.find(s => s.id === studentId || s.supabaseId === studentId);
+            if (!student) {
+                alert('Student not found.');
+                return;
+            }
+            
+            // Load evaluations from Supabase
+            let allEvals = [];
+            if (supabaseClient && cls.supabaseId) {
+                const supabaseEvals = await loadEvaluationsFromSupabase(cls.supabaseId, student.supabaseId || studentId);
+                if (supabaseEvals && supabaseEvals.length > 0) {
+                    allEvals = supabaseEvals.map(ev => ({
+                        date: new Date(ev.created_at).toLocaleDateString(),
+                        type: ev.evaluation_data?.assignmentType || 'Unknown',
+                        results: ev.evaluation_data,
+                        supabaseId: ev.id
+                    }));
+                }
+            }
+            
+            // Also check localStorage
+            if (student.evaluations && student.evaluations.length > 0) {
+                allEvals = [...allEvals, ...student.evaluations];
+            }
+            
+            if (allEvals.length === 0) {
                 alert('No evaluations found for this student.');
                 return;
             }
@@ -5759,7 +6111,7 @@ Return ONLY the JSON object, nothing else.`;
                     </div>
             `;
             
-            student.evaluations.forEach(ev => {
+            allEvals.forEach(ev => {
                 const date = ev.date || 'No date';
                 const type = ev.type || 'Unknown';
                 const results = ev.results;
@@ -5776,6 +6128,7 @@ Return ONLY the JSON object, nothing else.`;
                                     ${results.totalScore || 0}/${results.maxScore || 50}
                                 </div>
                                 <div style="color: var(--text-light);">${(((results.totalScore || 0) / (results.maxScore || 50)) * 100).toFixed(1)}%</div>
+                                <div style="margin-top: 0.25rem;"><strong>${results.letterGrade || 'N/A'}</strong></div>
                             </div>
                         </div>
                 `;
@@ -5794,9 +6147,46 @@ Return ONLY the JSON object, nothing else.`;
                                     <strong>${sectionName}</strong>
                                     <span style="color: var(--primary); font-weight: bold;">${section.score}/${section.maxScore}</span>
                                 </div>
-                                <p style="color: var(--text-light); margin: 0; font-size: 0.9rem;">${section.feedback}</p>
+                                <p style="color: var(--text-light); margin: 0; font-size: 0.9rem;">${section.feedback || 'No feedback'}</p>
                             </div>
                         `;
+                    });
+                    
+                    html += '</div>';
+                }
+                
+                // Display timeline markers if available
+                if (results.timeline_markers && results.timeline_markers.length > 0) {
+                    html += `
+                        <div style="background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                            <strong style="display: block; margin-bottom: 0.75rem;">⏱️ Timeline Markers (${results.timeline_markers.length}):</strong>
+                    `;
+                    
+                    // Group by category
+                    const markersByCategory = {};
+                    results.timeline_markers.forEach(marker => {
+                        if (!markersByCategory[marker.category]) {
+                            markersByCategory[marker.category] = [];
+                        }
+                        markersByCategory[marker.category].push(marker);
+                    });
+                    
+                    Object.keys(markersByCategory).forEach(category => {
+                        html += `<div style="margin-bottom: 1rem;"><strong style="color: var(--primary);">${category}:</strong><div style="margin-top: 0.5rem;">`;
+                        
+                        markersByCategory[category].forEach(marker => {
+                            const color = {positive: '#10b981', minor: '#f59e0b', moderate: '#f59e0b', major: '#ef4444'}[marker.severity] || '#f59e0b';
+                            const icon = {positive: '✓', minor: '⚠', moderate: '⚠', major: '✕'}[marker.severity] || '⚠';
+                            
+                            html += `
+                                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; background: var(--bg-alt); border-left: 3px solid ${color}; border-radius: 0.25rem;">
+                                    <span style="color: ${color}; font-weight: bold; min-width: 50px;">[${marker.timestamp}]</span>
+                                    <span><strong>${icon} ${marker.issue}:</strong> ${marker.note}</span>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `</div></div>`;
                     });
                     
                     html += '</div>';
