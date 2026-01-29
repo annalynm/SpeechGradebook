@@ -39,28 +39,33 @@
             box-sizing: border-box;
         }
         
-        /* CRITICAL: Force all elements to normal weight to prevent custom fonts from appearing bold */
-        /* This overrides all inline styles and CSS that might apply bold/semi-bold weights */
-        *, *::before, *::after {
+        /* Targeted approach: Only force normal weight on text content elements */
+        /* This prevents custom fonts from appearing bold while preserving button styles */
+        p, span, a:not(.button):not(.btn):not(.nav-link),
+        li, td, label:not([for]), 
+        .class-card, .student-card, .eval-card,
+        .class-meta, .class-stats, .stat-label,
+        textarea, input[type="text"], input[type="email"], input[type="password"], select {
             font-weight: 400 !important;
             font-style: normal !important;
         }
         
-        /* Explicitly allow bold ONLY for these specific elements */
+        /* Explicitly allow bold for semantic elements */
         h1, h2, h3, h4, h5, h6,
         strong, b, .font-bold,
         th {
             font-weight: 700 !important;
         }
         
-        /* Explicitly allow italic ONLY for these specific elements */
+        /* Explicitly allow italic for semantic elements */
         em, i, .font-italic {
             font-style: italic !important;
         }
         
-        /* Buttons and labels can be semi-bold for UI clarity */
-        button, .btn,
-        label[style*="font-weight"],
+        /* Preserve button and UI element weights (semi-bold for clarity) */
+        button, .btn, .button,
+        input[type="button"], input[type="submit"],
+        .nav-link,
         .card-header,
         .step-label.active {
             font-weight: 600 !important;
@@ -378,6 +383,62 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
+        }
+        
+        /* Data Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .data-table thead {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .data-table th:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+        
+        .data-table tbody tr:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        
+        .data-table td {
+            padding: 0.75rem 1rem;
+            color: var(--text);
+        }
+        
+        .data-table td:last-child {
+            text-align: center;
+        }
+        
+        /* Filter Controls */
+        .filter-controls {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 0.5rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
         }
         
         .class-card {
@@ -959,12 +1020,231 @@
 
         <!-- Dashboard Section -->
         <section id="dashboardSection" class="section">
+            <!-- MY COURSES SECTION (Personal) - Always visible for all tiers -->
             <div class="card">
-                <div class="card-header">📚 My Classes</div>
+                <div class="card-header">👤 My Courses</div>
                 <div style="margin-bottom: 1.5rem;">
                     <button onclick="showCreateClass()">➕ Create New Class</button>
                 </div>
                 <div id="classesGrid" class="classes-grid"></div>
+            </div>
+
+            <!-- ALL INSTITUTIONS SECTION (Super Admin only) -->
+            <div id="allInstitutionsSection" class="card" style="display: none; margin-top: 2rem;">
+                <div class="card-header">🌐 All Institutions</div>
+                
+                <!-- Filter Controls -->
+                <div id="superAdminFilters" class="filter-controls" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="filter-group">
+                        <label for="filterInstitution" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Institution</label>
+                        <select id="filterInstitution" onchange="onInstitutionFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; min-width: 200px;">
+                            <option value="">All Institutions</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterInstructor" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Instructor</label>
+                        <select id="filterInstructor" onchange="onInstructorFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; min-width: 200px;">
+                            <option value="">All Instructors</option>
+                            <!-- Populated dynamically based on institution -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterYear" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Year</label>
+                        <select id="filterYear" onchange="onYearFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Years</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterSemester" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Semester</label>
+                        <select id="filterSemester" onchange="onSemesterFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Semesters</option>
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterModality" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Modality</label>
+                        <select id="filterModality" onchange="onModalityFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Modalities</option>
+                            <option value="in-person">In-Person</option>
+                            <option value="online">Online</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="flex-grow: 1;">
+                        <label for="filterSearch" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Search</label>
+                        <input type="text" id="filterSearch" oninput="onSearchFilterChange()" placeholder="Search courses..." style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; width: 100%;">
+                    </div>
+                    
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button onclick="clearAllFilters()" class="btn-secondary" style="padding: 0.5rem 1rem;">Clear Filters</button>
+                    </div>
+                    
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button onclick="testTableRenderingWithMockData()" style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">🧪 Test Table</button>
+                    </div>
+                </div>
+                
+                <!-- Results Info -->
+                <div id="filterResultsInfo" style="margin-bottom: 1rem; color: var(--text-light); font-size: 0.9rem;">
+                    Select filters to view courses
+                </div>
+                
+                <!-- Data Table -->
+                <div id="coursesTableContainer" style="overflow-x: auto;">
+                    <table id="coursesTable" class="data-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTableBy('name')">Course Name</th>
+                                <th onclick="sortTableBy('code')">Code</th>
+                                <th onclick="sortTableBy('instructor')">Instructor</th>
+                                <th onclick="sortTableBy('institution')">Institution</th>
+                                <th onclick="sortTableBy('semester')">Semester/Year</th>
+                                <th onclick="sortTableBy('modality')">Modality</th>
+                                <th onclick="sortTableBy('students')">Students</th>
+                                <th onclick="sortTableBy('evaluations')">Evaluations</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DEPARTMENT COURSES SECTION (Admin only) -->
+            <div id="departmentCoursesSection" class="card" style="display: none; margin-top: 2rem;">
+                <div class="card-header">🏛️ Department Courses</div>
+                
+                <!-- Admin Filter Controls -->
+                <div id="adminFilters" class="filter-controls" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="filter-group">
+                        <label for="adminFilterInstructor" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Instructor</label>
+                        <select id="adminFilterInstructor" onchange="onAdminInstructorFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; min-width: 200px;">
+                            <option value="">All Instructors</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="adminFilterYear" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Year</label>
+                        <select id="adminFilterYear" onchange="onAdminYearFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Years</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="adminFilterSemester" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Semester</label>
+                        <select id="adminFilterSemester" onchange="onAdminSemesterFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Semesters</option>
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="adminFilterModality" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Modality</label>
+                        <select id="adminFilterModality" onchange="onAdminModalityFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Modalities</option>
+                            <option value="in-person">In-Person</option>
+                            <option value="online">Online</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button onclick="clearAdminFilters()" class="btn-secondary" style="padding: 0.5rem 1rem;">Clear Filters</button>
+                    </div>
+                    
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button onclick="testTableRenderingWithMockData()" style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">🧪 Test Table</button>
+                    </div>
+                </div>
+                
+                <!-- Admin Results Info -->
+                <div id="adminFilterResultsInfo" style="margin-bottom: 1rem; color: var(--text-light); font-size: 0.9rem;">
+                    Loading department courses...
+                </div>
+                
+                <!-- Admin Data Table -->
+                <div id="adminCoursesTableContainer" style="overflow-x: auto;">
+                    <table id="adminCoursesTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortAdminTableBy('name')">Course Name</th>
+                                <th onclick="sortAdminTableBy('code')">Code</th>
+                                <th onclick="sortAdminTableBy('instructor')">Instructor</th>
+                                <th onclick="sortAdminTableBy('semester')">Semester/Year</th>
+                                <th onclick="sortAdminTableBy('modality')">Modality</th>
+                                <th onclick="sortAdminTableBy('students')">Students</th>
+                                <th onclick="sortAdminTableBy('evaluations')">Evaluations</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminCoursesTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- INSTRUCTOR FILTERS SECTION -->
+            <div id="instructorFiltersSection" class="card" style="display: none; margin-top: 2rem;">
+                <div class="card-header">📚 Filter My Courses</div>
+                
+                <!-- Instructor Filter Controls -->
+                <div id="instructorFilters" class="filter-controls" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="filter-group">
+                        <label for="instructorFilterCourse" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Course Name</label>
+                        <select id="instructorFilterCourse" onchange="onInstructorCourseFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; min-width: 200px;">
+                            <option value="">All Courses</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="instructorFilterSemester" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Semester</label>
+                        <select id="instructorFilterSemester" onchange="onInstructorSemesterFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Semesters</option>
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="instructorFilterYear" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Year</label>
+                        <select id="instructorFilterYear" onchange="onInstructorYearFilterChange()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="">All Years</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button onclick="clearInstructorFilters()" class="btn-secondary" style="padding: 0.5rem 1rem;">Clear Filters</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Create Class Form -->
@@ -1784,10 +2064,18 @@
                 return;
             }
             
+            console.log('=== SWITCHING VIEW MODE ===');
+            console.log('From:', currentViewMode);
+            console.log('To:', mode);
+            console.log('User tier:', userTier);
+            console.log('Institution:', currentInstitution?.name);
+            
             currentViewMode = mode;
             
             // Save preference
             localStorage.setItem('adminViewMode', mode);
+            
+            console.log('✓ View mode updated to:', currentViewMode);
             
             // Update UI based on mode
             updateViewMode();
@@ -1800,6 +2088,8 @@
                 'demo': '🎭 Demo Mode'
             };
             showNotification(`Switched to ${modeNames[mode]}`, 'success');
+            
+            console.log('=== VIEW MODE SWITCH COMPLETE ===');
         }
         
         // Update UI based on current view mode
@@ -1830,6 +2120,648 @@
             // Reload data for current view
             loadClasses();
         }
+        
+        // ===== FILTER HANDLER FUNCTIONS (PHASE 2) =====
+        
+        // Super Admin Filter Handlers
+        function onInstitutionFilterChange() {
+            const value = document.getElementById('filterInstitution')?.value;
+            console.log('🔍 Institution filter changed:', value || 'All Institutions');
+            
+            // PHASE 5: Reload instructors for selected institution
+            loadInstructorsForFilter(value);
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        function onInstructorFilterChange() {
+            const value = document.getElementById('filterInstructor')?.value;
+            console.log('🔍 Instructor filter changed:', value || 'All Instructors');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        function onYearFilterChange() {
+            const value = document.getElementById('filterYear')?.value;
+            console.log('🔍 Year filter changed:', value || 'All Years');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        function onSemesterFilterChange() {
+            const value = document.getElementById('filterSemester')?.value;
+            console.log('🔍 Semester filter changed:', value || 'All Semesters');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        function onModalityFilterChange() {
+            const value = document.getElementById('filterModality')?.value;
+            console.log('🔍 Modality filter changed:', value || 'All Modalities');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        function onSearchFilterChange() {
+            const value = document.getElementById('filterSearch')?.value;
+            console.log('🔍 Search filter changed:', value || '(empty)');
+            
+            // PHASE 5: Reload courses with new filter (with debounce would be better, but simple for now)
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        function clearAllFilters() {
+            console.log('🧹 Clearing all super admin filters');
+            document.getElementById('filterInstitution').value = '';
+            document.getElementById('filterInstructor').value = '';
+            document.getElementById('filterYear').value = '';
+            document.getElementById('filterSemester').value = '';
+            document.getElementById('filterModality').value = '';
+            document.getElementById('filterSearch').value = '';
+            
+            // PHASE 5: Reset instructor dropdown and reload all instructors
+            loadInstructorsForFilter('');
+            
+            // PHASE 5: Reload courses without filters
+            loadFilteredCoursesForSuperAdmin();
+        }
+        
+        // Admin Filter Handlers
+        function onAdminInstructorFilterChange() {
+            const value = document.getElementById('adminFilterInstructor')?.value;
+            console.log('🔍 Admin instructor filter changed:', value || 'All Instructors');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForAdmin();
+        }
+        
+        function onAdminYearFilterChange() {
+            const value = document.getElementById('adminFilterYear')?.value;
+            console.log('🔍 Admin year filter changed:', value || 'All Years');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForAdmin();
+        }
+        
+        function onAdminSemesterFilterChange() {
+            const value = document.getElementById('adminFilterSemester')?.value;
+            console.log('🔍 Admin semester filter changed:', value || 'All Semesters');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForAdmin();
+        }
+        
+        function onAdminModalityFilterChange() {
+            const value = document.getElementById('adminFilterModality')?.value;
+            console.log('🔍 Admin modality filter changed:', value || 'All Modalities');
+            
+            // PHASE 5: Reload courses with new filter
+            loadFilteredCoursesForAdmin();
+        }
+        
+        function clearAdminFilters() {
+            console.log('🧹 Clearing admin filters');
+            document.getElementById('adminFilterInstructor').value = '';
+            document.getElementById('adminFilterYear').value = '';
+            document.getElementById('adminFilterSemester').value = '';
+            document.getElementById('adminFilterModality').value = '';
+            
+            // PHASE 5: Reload all courses
+            loadFilteredCoursesForAdmin();
+        }
+        
+        // Instructor Filter Handlers
+        function onInstructorCourseFilterChange() {
+            const value = document.getElementById('instructorFilterCourse')?.value;
+            console.log('🔍 Instructor course filter changed:', value || 'All Courses');
+            // TODO Phase 8: Load filtered courses
+        }
+        
+        function onInstructorSemesterFilterChange() {
+            const value = document.getElementById('instructorFilterSemester')?.value;
+            console.log('🔍 Instructor semester filter changed:', value || 'All Semesters');
+            // TODO Phase 8: Load filtered courses
+        }
+        
+        function onInstructorYearFilterChange() {
+            const value = document.getElementById('instructorFilterYear')?.value;
+            console.log('🔍 Instructor year filter changed:', value || 'All Years');
+            // TODO Phase 8: Load filtered courses
+        }
+        
+        function clearInstructorFilters() {
+            console.log('🧹 Clearing instructor filters');
+            document.getElementById('instructorFilterCourse').value = '';
+            document.getElementById('instructorFilterSemester').value = '';
+            document.getElementById('instructorFilterYear').value = '';
+            // TODO Phase 8: Reload all courses
+        }
+        
+        // Table Sorting Placeholders
+        function sortTableBy(column) {
+            console.log('↕️ Sort super admin table by:', column);
+            // TODO Phase 4: Implement table sorting
+        }
+        
+        function sortAdminTableBy(column) {
+            console.log('↕️ Sort admin table by:', column);
+            // TODO Phase 4: Implement table sorting
+        }
+        
+        // ===== TABLE RENDERING FUNCTIONS (PHASE 4) =====
+        
+        /**
+         * Render courses in super admin table
+         * @param {Array} courses - Array of course objects
+         */
+        function renderSuperAdminCoursesTable(courses) {
+            console.log('📊 Rendering super admin table with', courses.length, 'courses');
+            
+            const table = document.getElementById('coursesTable');
+            const tbody = document.getElementById('coursesTableBody');
+            const resultsInfo = document.getElementById('filterResultsInfo');
+            
+            if (!tbody || !table || !resultsInfo) {
+                console.error('Table elements not found');
+                return;
+            }
+            
+            // Update results info
+            if (courses.length === 0) {
+                resultsInfo.textContent = 'No courses found matching filters';
+                table.style.display = 'none';
+                return;
+            }
+            
+            resultsInfo.textContent = `Showing ${courses.length} course${courses.length === 1 ? '' : 's'}`;
+            table.style.display = 'table';
+            
+            // Build table rows
+            tbody.innerHTML = courses.map(course => {
+                const courseName = course.name || 'Untitled Course';
+                const courseCode = course.code || course.section || 'N/A';
+                const instructorName = course.instructor_name || 'Unknown';
+                const institutionName = course.institution_name || 'Unknown';
+                const semester = course.semester || 'N/A';
+                const year = course.year || '';
+                const semesterYear = `${semester} ${year}`.trim();
+                const modality = course.modality || 'N/A';
+                const studentCount = course.student_count || (course.roster ? course.roster.length : 0);
+                const evalCount = course.evaluation_count || 0;
+                const courseId = course.id || course.supabaseId;
+                
+                return `
+                    <tr>
+                        <td><strong>${courseName}</strong></td>
+                        <td>${courseCode}</td>
+                        <td>${instructorName}</td>
+                        <td>${institutionName}</td>
+                        <td>${semesterYear}</td>
+                        <td>${modality}</td>
+                        <td>${studentCount}</td>
+                        <td>${evalCount}</td>
+                        <td>
+                            <button onclick="viewCourse('${courseId}')" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 0.9rem;">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            console.log('✅ Super admin table rendered');
+        }
+        
+        /**
+         * Render courses in admin table
+         * @param {Array} courses - Array of course objects
+         */
+        function renderAdminCoursesTable(courses) {
+            console.log('📊 Rendering admin table with', courses.length, 'courses');
+            
+            const table = document.getElementById('adminCoursesTable');
+            const tbody = document.getElementById('adminCoursesTableBody');
+            const resultsInfo = document.getElementById('adminFilterResultsInfo');
+            
+            if (!tbody || !table || !resultsInfo) {
+                console.error('Admin table elements not found');
+                return;
+            }
+            
+            // Update results info
+            if (courses.length === 0) {
+                resultsInfo.textContent = 'No courses found in your department';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-light);">No courses found</td></tr>';
+                return;
+            }
+            
+            resultsInfo.textContent = `Showing ${courses.length} course${courses.length === 1 ? '' : 's'}`;
+            
+            // Build table rows
+            tbody.innerHTML = courses.map(course => {
+                const courseName = course.name || 'Untitled Course';
+                const courseCode = course.code || course.section || 'N/A';
+                const instructorName = course.instructor_name || 'Unknown';
+                const semester = course.semester || 'N/A';
+                const year = course.year || '';
+                const semesterYear = `${semester} ${year}`.trim();
+                const modality = course.modality || 'N/A';
+                const studentCount = course.student_count || (course.roster ? course.roster.length : 0);
+                const evalCount = course.evaluation_count || 0;
+                const courseId = course.id || course.supabaseId;
+                
+                return `
+                    <tr>
+                        <td><strong>${courseName}</strong></td>
+                        <td>${courseCode}</td>
+                        <td>${instructorName}</td>
+                        <td>${semesterYear}</td>
+                        <td>${modality}</td>
+                        <td>${studentCount}</td>
+                        <td>${evalCount}</td>
+                        <td>
+                            <button onclick="viewCourse('${courseId}')" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer; font-size: 0.9rem;">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            console.log('✅ Admin table rendered');
+        }
+        
+        /**
+         * Test table rendering with mock data (for Phase 4 testing only)
+         */
+        function testTableRenderingWithMockData() {
+            console.log('🧪 Testing table rendering with mock data');
+            
+            const mockCourses = [
+                {
+                    id: '1',
+                    name: 'Public Speaking 101',
+                    code: 'CMST 210',
+                    instructor_name: 'John Doe',
+                    institution_name: 'University of Tennessee',
+                    semester: 'Fall',
+                    year: '2024',
+                    modality: 'in-person',
+                    student_count: 25,
+                    evaluation_count: 12
+                },
+                {
+                    id: '2',
+                    name: 'Advanced Rhetoric',
+                    code: 'CMST 340',
+                    instructor_name: 'Jane Smith',
+                    institution_name: 'University of Tennessee',
+                    semester: 'Spring',
+                    year: '2025',
+                    modality: 'online',
+                    student_count: 18,
+                    evaluation_count: 8
+                }
+            ];
+            
+            // Test super admin table
+            if (userTier === 'super_admin') {
+                renderSuperAdminCoursesTable(mockCourses);
+            }
+            
+            // Test admin table
+            if (userTier === 'admin') {
+                renderAdminCoursesTable(mockCourses);
+            }
+        }
+        
+        // ===== END TABLE RENDERING FUNCTIONS =====
+        
+        // ===== DATA LOADING FUNCTIONS (PHASE 5) =====
+        
+        /**
+         * Load all institutions for super admin filter dropdown
+         */
+        async function loadInstitutionsForFilter() {
+            if (!supabaseClient) return;
+            
+            console.log('📊 Loading institutions for filter...');
+            
+            try {
+                const { data: institutions, error } = await supabaseClient
+                    .from('institutions')
+                    .select('id, name')
+                    .order('name');
+                
+                if (error) {
+                    console.error('Error loading institutions:', error);
+                    return;
+                }
+                
+                console.log('✅ Loaded', institutions.length, 'institutions');
+                
+                // Populate institution dropdown
+                const institutionSelect = document.getElementById('filterInstitution');
+                if (institutionSelect) {
+                    const options = institutions.map(inst => 
+                        `<option value="${inst.id}">${inst.name}</option>`
+                    ).join('');
+                    institutionSelect.innerHTML = '<option value="">All Institutions</option>' + options;
+                }
+            } catch (error) {
+                console.error('Error in loadInstitutionsForFilter:', error);
+            }
+        }
+        
+        /**
+         * Load instructors for a specific institution
+         */
+        async function loadInstructorsForFilter(institutionId) {
+            if (!supabaseClient) return;
+            
+            console.log('📊 Loading instructors for institution:', institutionId || 'All');
+            
+            try {
+                let query = supabaseClient
+                    .from('user_profiles')
+                    .select('id, first_name, last_name, institution_id');
+                
+                // Filter by institution if specified
+                if (institutionId) {
+                    query = query.eq('institution_id', institutionId);
+                }
+                
+                query = query.order('last_name');
+                
+                const { data: instructors, error } = await query;
+                
+                if (error) {
+                    console.error('Error loading instructors:', error);
+                    return;
+                }
+                
+                console.log('✅ Loaded', instructors.length, 'instructors');
+                
+                // Populate instructor dropdown
+                const instructorSelect = document.getElementById('filterInstructor');
+                if (instructorSelect) {
+                    const options = instructors.map(inst => {
+                        const name = `${inst.first_name || ''} ${inst.last_name || ''}`.trim() || 'Unknown';
+                        return `<option value="${inst.id}">${name}</option>`;
+                    }).join('');
+                    instructorSelect.innerHTML = '<option value="">All Instructors</option>' + options;
+                }
+            } catch (error) {
+                console.error('Error in loadInstructorsForFilter:', error);
+            }
+        }
+        
+        /**
+         * Load instructors for admin (department only)
+         */
+        async function loadDepartmentInstructorsForFilter() {
+            if (!supabaseClient || !currentUser) return;
+            
+            console.log('📊 Loading department instructors...');
+            
+            try {
+                const { data: instructors, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, first_name, last_name')
+                    .eq('institution_id', currentUser.institution_id)
+                    .order('last_name');
+                
+                if (error) {
+                    console.error('Error loading department instructors:', error);
+                    return;
+                }
+                
+                console.log('✅ Loaded', instructors.length, 'department instructors');
+                
+                // Populate admin instructor dropdown
+                const instructorSelect = document.getElementById('adminFilterInstructor');
+                if (instructorSelect) {
+                    const options = instructors.map(inst => {
+                        const name = `${inst.first_name || ''} ${inst.last_name || ''}`.trim() || 'Unknown';
+                        return `<option value="${inst.id}">${name}</option>`;
+                    }).join('');
+                    instructorSelect.innerHTML = '<option value="">All Instructors</option>' + options;
+                }
+            } catch (error) {
+                console.error('Error in loadDepartmentInstructorsForFilter:', error);
+            }
+        }
+        
+        /**
+         * Load courses with current filter settings (Super Admin)
+         */
+        async function loadFilteredCoursesForSuperAdmin() {
+            if (!supabaseClient) return;
+            
+            console.log('=== LOADING FILTERED COURSES (SUPER ADMIN) ===');
+            
+            // Get filter values
+            const institutionId = document.getElementById('filterInstitution')?.value;
+            const instructorId = document.getElementById('filterInstructor')?.value;
+            const year = document.getElementById('filterYear')?.value;
+            const semester = document.getElementById('filterSemester')?.value;
+            const modality = document.getElementById('filterModality')?.value;
+            const searchTerm = document.getElementById('filterSearch')?.value;
+            
+            console.log('Filters:', { institutionId, instructorId, year, semester, modality, searchTerm });
+            
+            try {
+                // Build base query - simpler join
+                let query = supabaseClient
+                    .from('courses')
+                    .select('*');
+                
+                // Apply instructor filter directly
+                if (instructorId) {
+                    query = query.eq('instructor_id', instructorId);
+                } else if (institutionId) {
+                    // If filtering by institution but no specific instructor,
+                    // we need to get all instructors in that institution first
+                    const { data: instInstructors } = await supabaseClient
+                        .from('user_profiles')
+                        .select('id')
+                        .eq('institution_id', institutionId);
+                    
+                    if (instInstructors && instInstructors.length > 0) {
+                        const instructorIds = instInstructors.map(i => i.id);
+                        query = query.in('instructor_id', instructorIds);
+                    } else {
+                        // No instructors in this institution, return empty
+                        renderSuperAdminCoursesTable([]);
+                        return;
+                    }
+                }
+                
+                // Apply other filters
+                if (year) {
+                    query = query.eq('year', parseInt(year));
+                }
+                
+                if (semester) {
+                    query = query.eq('semester', semester);
+                }
+                
+                if (modality) {
+                    query = query.eq('modality', modality);
+                }
+                
+                if (searchTerm) {
+                    query = query.or(`name.ilike.%${searchTerm}%,code.ilike.%${searchTerm}%`);
+                }
+                
+                query = query.order('created_at', { ascending: false });
+                
+                const { data: courses, error } = await query;
+                
+                if (error) {
+                    console.error('❌ Error loading courses:', error);
+                    renderSuperAdminCoursesTable([]);
+                    return;
+                }
+                
+                console.log('✅ Loaded', courses.length, 'courses');
+                
+                // Now get instructor and institution names separately
+                if (courses.length > 0) {
+                    const instructorIds = [...new Set(courses.map(c => c.instructor_id))];
+                    
+                    // Get user profiles with institution info
+                    const { data: profiles } = await supabaseClient
+                        .from('user_profiles')
+                        .select('id, first_name, last_name, institution_id')
+                        .in('id', instructorIds);
+                    
+                    // Get institutions
+                    const institutionIds = [...new Set(profiles?.map(p => p.institution_id).filter(Boolean) || [])];
+                    const { data: institutions } = await supabaseClient
+                        .from('institutions')
+                        .select('id, name')
+                        .in('id', institutionIds);
+                    
+                    // Create lookup maps
+                    const institutionMap = {};
+                    institutions?.forEach(inst => {
+                        institutionMap[inst.id] = inst.name;
+                    });
+                    
+                    const profileMap = {};
+                    profiles?.forEach(prof => {
+                        profileMap[prof.id] = {
+                            name: `${prof.first_name || ''} ${prof.last_name || ''}`.trim() || 'Unknown',
+                            institution_id: prof.institution_id,
+                            institution_name: institutionMap[prof.institution_id] || 'Unknown'
+                        };
+                    });
+                    
+                    // Transform courses with joined data
+                    const transformedCourses = courses.map(course => ({
+                        ...course,
+                        instructor_name: profileMap[course.instructor_id]?.name || 'Unknown',
+                        institution_name: profileMap[course.instructor_id]?.institution_name || 'Unknown',
+                        student_count: 0 // We'll calculate this separately if needed
+                    }));
+                    
+                    renderSuperAdminCoursesTable(transformedCourses);
+                } else {
+                    renderSuperAdminCoursesTable([]);
+                }
+            } catch (error) {
+                console.error('❌ Error in loadFilteredCoursesForSuperAdmin:', error);
+                renderSuperAdminCoursesTable([]);
+            }
+        }
+        
+        /**
+         * Load courses for admin (department only)
+         */
+        async function loadFilteredCoursesForAdmin() {
+            if (!supabaseClient || !currentUser) return;
+            
+            console.log('=== LOADING FILTERED COURSES (ADMIN) ===');
+            
+            // Get filter values
+            const instructorId = document.getElementById('adminFilterInstructor')?.value;
+            const year = document.getElementById('adminFilterYear')?.value;
+            const semester = document.getElementById('adminFilterSemester')?.value;
+            const modality = document.getElementById('adminFilterModality')?.value;
+            
+            console.log('Filters:', { instructorId, year, semester, modality });
+            
+            try {
+                // Get all users in this institution
+                const { data: institutionUsers } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, first_name, last_name')
+                    .eq('institution_id', currentUser.institution_id);
+                
+                const userIds = institutionUsers?.map(u => u.id) || [];
+                
+                // Create instructor name lookup
+                const instructorMap = {};
+                institutionUsers?.forEach(user => {
+                    instructorMap[user.id] = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown';
+                });
+                
+                // Build query without joins
+                let query = supabaseClient
+                    .from('courses')
+                    .select('*')
+                    .in('instructor_id', userIds);
+                
+                // Apply filters
+                if (instructorId) {
+                    query = query.eq('instructor_id', instructorId);
+                }
+                
+                if (year) {
+                    query = query.eq('year', parseInt(year));
+                }
+                
+                if (semester) {
+                    query = query.eq('semester', semester);
+                }
+                
+                if (modality) {
+                    query = query.eq('modality', modality);
+                }
+                
+                query = query.order('created_at', { ascending: false });
+                
+                const { data: courses, error } = await query;
+                
+                if (error) {
+                    console.error('❌ Error loading courses:', error);
+                    renderAdminCoursesTable([]);
+                    return;
+                }
+                
+                console.log('✅ Loaded', courses.length, 'courses');
+                
+                // Transform data for table rendering
+                const transformedCourses = courses.map(course => ({
+                    ...course,
+                    instructor_name: instructorMap[course.instructor_id] || 'Unknown',
+                    student_count: 0
+                }));
+                
+                renderAdminCoursesTable(transformedCourses);
+            } catch (error) {
+                console.error('❌ Error in loadFilteredCoursesForAdmin:', error);
+                renderAdminCoursesTable([]);
+            }
+        }
+        
+        // ===== END DATA LOADING FUNCTIONS =====
         
         // Load user's account tier from user_profiles table
         async function loadUserTier() {
@@ -2250,6 +3182,19 @@
                 console.log('  ✓ View switcher configured (4 modes)');
             }
             
+            // PHASE 3: Show All Institutions section with filters
+            const allInstitutionsSection = document.getElementById('allInstitutionsSection');
+            if (allInstitutionsSection) {
+                allInstitutionsSection.style.display = 'block';
+                console.log('  ✓ All Institutions section visible');
+            }
+            
+            // Hide department and instructor filter sections (not for super admin)
+            const deptCoursesSection = document.getElementById('departmentCoursesSection');
+            const instructorFiltersSection = document.getElementById('instructorFiltersSection');
+            if (deptCoursesSection) deptCoursesSection.style.display = 'none';
+            if (instructorFiltersSection) instructorFiltersSection.style.display = 'none';
+            
             // Hide department section, show user management (super admins manage all users)
             const deptSection = document.getElementById('departmentInstructorsSection');
             const userMgmtSection = document.getElementById('userManagementSection');
@@ -2265,6 +3210,10 @@
             console.log('✓ Super Admin interface ready');
             console.log('  - View:', currentViewMode);
             console.log('  - Can manage:', 'All institutions and users');
+            
+            // PHASE 5: Load filter dropdowns
+            loadInstitutionsForFilter();
+            loadInstructorsForFilter(''); // Load all instructors initially
             
             // CRITICAL: Always start at dashboard after login
             setActiveSection('dashboardSection', 'navDashboard');
@@ -2304,6 +3253,19 @@
                 console.log('  ✓ View switcher configured (3 modes)');
             }
             
+            // PHASE 3: Show Department Courses section with filters
+            const deptCoursesSection = document.getElementById('departmentCoursesSection');
+            if (deptCoursesSection) {
+                deptCoursesSection.style.display = 'block';
+                console.log('  ✓ Department Courses section visible');
+            }
+            
+            // Hide all institutions and instructor filter sections (not for admin)
+            const allInstitutionsSection = document.getElementById('allInstitutionsSection');
+            const instructorFiltersSection = document.getElementById('instructorFiltersSection');
+            if (allInstitutionsSection) allInstitutionsSection.style.display = 'none';
+            if (instructorFiltersSection) instructorFiltersSection.style.display = 'none';
+            
             // Show department section, hide user management (admins manage department, not all users)
             const deptSection = document.getElementById('departmentInstructorsSection');
             const userMgmtSection = document.getElementById('userManagementSection');
@@ -2320,6 +3282,10 @@
             console.log('  - Theme:', currentInstitution?.name || 'Default');
             console.log('  - View:', currentViewMode);
             console.log('  - Can manage:', 'Department instructors');
+            
+            // PHASE 5: Load filter dropdowns and courses
+            loadDepartmentInstructorsForFilter();
+            loadFilteredCoursesForAdmin(); // Load all department courses by default
             
             // CRITICAL: Always start at dashboard after login
             setActiveSection('dashboardSection', 'navDashboard');
@@ -2343,6 +3309,19 @@
                 viewSwitcher.style.display = 'none';
                 console.log('  ✓ View switcher hidden');
             }
+            
+            // PHASE 3: Show Instructor Filters section
+            const instructorFiltersSection = document.getElementById('instructorFiltersSection');
+            if (instructorFiltersSection) {
+                instructorFiltersSection.style.display = 'block';
+                console.log('  ✓ Instructor Filters section visible');
+            }
+            
+            // Hide all institutions and department sections (not for instructor)
+            const allInstitutionsSection = document.getElementById('allInstitutionsSection');
+            const deptCoursesSection = document.getElementById('departmentCoursesSection');
+            if (allInstitutionsSection) allInstitutionsSection.style.display = 'none';
+            if (deptCoursesSection) deptCoursesSection.style.display = 'none';
             
             // CRITICAL: Remove view mode banner (from previous admin session)
             const viewBanner = document.getElementById('viewModeBanner');
@@ -8220,8 +9199,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
         // Load courses from Supabase
         async function loadCoursesFromSupabase() {
             if (!supabaseClient || !currentUser) {
+                console.log('Cannot load courses: No Supabase client or user');
                 return null;
             }
+            
+            console.log('=== LOADING COURSES FROM SUPABASE ===');
+            console.log('View mode:', currentViewMode);
+            console.log('User tier:', userTier);
+            console.log('User ID:', currentUser.id);
+            console.log('Institution:', currentUser.institution_id);
             
             try {
                 let query = supabaseClient
@@ -8240,38 +9226,64 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 // Filter based on view mode
                 if (currentViewMode === 'own' || userTier === 'instructor') {
                     // Instructor view: Only their own courses
+                    console.log('Filtering: Own courses only (instructor_id =', currentUser.id, ')');
                     query = query.eq('instructor_id', currentUser.id);
                 } else if (currentViewMode === 'institution' && isAdmin()) {
                     // Admin institution view: All courses in their institution
+                    console.log('Filtering: Institution view - loading all instructors in institution');
+                    
                     // Get all instructor IDs in the same institution
-                    const { data: institutionInstructors } = await supabaseClient
+                    const { data: institutionInstructors, error: instError } = await supabaseClient
                         .from('user_profiles')
                         .select('id')
                         .eq('institution_id', currentUser.institution_id);
                     
+                    if (instError) {
+                        console.error('Error loading institution instructors:', instError);
+                    } else {
+                        console.log('Found', institutionInstructors?.length || 0, 'users in institution');
+                    }
+                    
                     if (institutionInstructors && institutionInstructors.length > 0) {
                         const instructorIds = institutionInstructors.map(i => i.id);
+                        console.log('Filtering courses for instructor IDs:', instructorIds);
                         query = query.in('instructor_id', instructorIds);
+                    } else {
+                        console.warn('No instructors found in institution - will return 0 courses');
                     }
                 } else if (currentViewMode === 'all' && isSuperAdmin()) {
                     // Super admin all view: All courses (no filter)
-                    // Query already has no filter
+                    console.log('Filtering: ALL institutions (no filter - super admin)');
                 } else if (currentViewMode === 'demo') {
                     // Demo mode: Don't load from Supabase
+                    console.log('Demo mode: Skipping Supabase load');
                     return null;
+                } else {
+                    console.warn('Unknown view mode or insufficient permissions:', currentViewMode);
                 }
                 
                 const { data: courses, error } = await query.order('created_at', { ascending: false });
                 
                 if (error) {
-                    console.error('Failed to load courses:', error);
+                    console.error('❌ Failed to load courses:', error);
                     return null;
                 }
                 
-                console.log(`✓ Loaded ${courses.length} courses from Supabase (${currentViewMode} view)`);
+                console.log(`✅ Loaded ${courses.length} courses from Supabase (${currentViewMode} view)`);
+                
+                // Log course details for debugging
+                if (courses.length > 0) {
+                    console.log('First course:', {
+                        name: courses[0].name,
+                        instructor_id: courses[0].instructor_id,
+                        created_at: courses[0].created_at
+                    });
+                }
+                
+                console.log('=== COURSE LOAD COMPLETE ===');
                 return courses;
             } catch (error) {
-                console.error('Supabase error loading courses:', error);
+                console.error('❌ Supabase error loading courses:', error);
                 return null;
             }
         }
