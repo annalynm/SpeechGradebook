@@ -39,9 +39,37 @@
             box-sizing: border-box;
         }
         
+        /* CRITICAL: Force all elements to normal weight to prevent custom fonts from appearing bold */
+        /* This overrides all inline styles and CSS that might apply bold/semi-bold weights */
+        *, *::before, *::after {
+            font-weight: 400 !important;
+            font-style: normal !important;
+        }
+        
+        /* Explicitly allow bold ONLY for these specific elements */
+        h1, h2, h3, h4, h5, h6,
+        strong, b, .font-bold,
+        th {
+            font-weight: 700 !important;
+        }
+        
+        /* Explicitly allow italic ONLY for these specific elements */
+        em, i, .font-italic {
+            font-style: italic !important;
+        }
+        
+        /* Buttons and labels can be semi-bold for UI clarity */
+        button, .btn,
+        label[style*="font-weight"],
+        .card-header,
+        .step-label.active {
+            font-weight: 600 !important;
+        }
+        
         body {
             font-family: var(--body-font);
-            font-weight: var(--body-weight);
+            font-weight: 400; /* Always normal weight */
+            font-style: normal; /* Always normal style */
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
@@ -49,7 +77,8 @@
         
         h1, h2, h3, h4, h5, h6 {
             font-family: var(--heading-font);
-            font-weight: var(--heading-weight);
+            font-weight: 700; /* Always bold for headings */
+            font-style: normal; /* Always normal style */
             color: var(--primary);
         }
         
@@ -63,7 +92,7 @@
         header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 1rem 0;
+            padding: 1.25rem 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
@@ -80,22 +109,23 @@
         }
         
         .logo {
-            width: 50px;
-            height: 50px;
+            width: 70px;
+            height: 70px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: var(--primary);
+            flex-shrink: 0; /* Prevent compression */
         }
         
         .logo img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             border-radius: 50%;
         }
         
@@ -667,7 +697,7 @@
                         </select>
                     </div>
                     
-                    <a href="#" class="nav-link" onclick="logout(); return false;" style="color: var(--text-light);">
+                    <a href="#" id="logoutLink" class="nav-link" onclick="logout(); return false;">
                         <span id="userEmailDisplay"></span> | Logout
                     </a>
                 </nav>
@@ -1141,47 +1171,8 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem;">
-                    <h3 style="margin-bottom: 1rem;">Theme Customization</h3>
-                    
-                    <div class="form-group">
-                        <label>Custom Logo</label>
-                        <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
-                        <div id="logoPreview" class="hidden" style="margin-top: 1rem;">
-                            <img id="logoPreviewImg" style="max-width: 200px; border-radius: 0.5rem;">
-                            <button type="button" onclick="clearLogo()" class="btn-small btn-danger" style="display: block; margin-top: 0.5rem;">Remove Logo</button>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="primaryColor">Primary Color</label>
-                        <input type="color" id="primaryColor" value="#1e3a5f" onchange="updatePrimaryColor(this.value)">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="headingFont">Heading Font</label>
-                        <select id="headingFont" onchange="updateFonts()">
-                            <option value="'Crimson Pro', serif">Crimson Pro (Default)</option>
-                            <option value="'Montserrat', sans-serif">Montserrat</option>
-                            <option value="'Roboto', sans-serif">Roboto</option>
-                            <option value="'Open Sans', sans-serif">Open Sans</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bodyFont">Body Font</label>
-                        <select id="bodyFont" onchange="updateFonts()">
-                            <option value="'Work Sans', sans-serif">Work Sans (Default)</option>
-                            <option value="'Georgia', serif">Georgia</option>
-                            <option value="'Roboto', sans-serif">Roboto</option>
-                            <option value="'Open Sans', sans-serif">Open Sans</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <button onclick="saveSettings()">💾 Save Settings</button>
-                    <button onclick="resetSettings()" class="btn-secondary">🔄 Reset to Defaults</button>
                 </div>
 
                 <div id="settingsMessage" class="hidden"></div>
@@ -1465,6 +1456,185 @@
                     </div>
                 </div>
                 
+                <!-- Theme Customizer Section (for Admins and Super Admins) -->
+                <div id="themeCustomizerSection" style="margin-bottom: 3rem;">
+                    <h3 style="margin-bottom: 1rem;">🎨 Theme Customizer</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-light);">
+                        Customize your institution's colors, branding, and typography. Changes apply to all users in your institution.
+                    </p>
+                    
+                    <div style="background: var(--bg-alt); padding: 2rem; border-radius: 0.5rem;">
+                        
+                        <!-- Institution Logo -->
+                        <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+                            <h4 style="margin-bottom: 1rem;">Institution Logo</h4>
+                            <div style="display: flex; gap: 2rem; align-items: center;">
+                                <div>
+                                    <div id="logoPreview" style="width: 100px; height: 100px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; border: 2px solid var(--border); overflow: hidden;">
+                                        <span id="logoPlaceholder" style="font-size: 2rem; font-weight: bold; color: var(--primary);">LOGO</span>
+                                        <img id="logoPreviewImage" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                    </div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Upload Logo Image</label>
+                                    <input type="file" id="institutionLogoUpload" accept="image/*" 
+                                           onchange="handleLogoUpload(event)"
+                                           style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; width: 100%;">
+                                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-light);">
+                                        Recommended: Square image, at least 200x200px. Will be displayed as a circle.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Color Settings -->
+                        <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+                            <h4 style="margin-bottom: 1rem;">Institution Colors</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                                <!-- Primary Color -->
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Primary Color (Buttons)</label>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <input type="color" id="themePrimaryColor" value="#FF8200" 
+                                               style="width: 60px; height: 40px; border: 1px solid var(--border); border-radius: 0.25rem; cursor: pointer;">
+                                        <input type="text" id="themePrimaryText" value="#FF8200" 
+                                               style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                    </div>
+                                </div>
+                                
+                                <!-- Header Background -->
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Header Background</label>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <input type="color" id="themeHeaderColor" value="#4B4B4B" 
+                                               style="width: 60px; height: 40px; border: 1px solid var(--border); border-radius: 0.25rem; cursor: pointer;">
+                                        <input type="text" id="themeHeaderText" value="#4B4B4B" 
+                                               style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                    </div>
+                                </div>
+                                
+                                <!-- Secondary Color -->
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Secondary Color</label>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <input type="color" id="themeSecondaryColor" value="#4B4B4B" 
+                                               style="width: 60px; height: 40px; border: 1px solid var(--border); border-radius: 0.25rem; cursor: pointer;">
+                                        <input type="text" id="themeSecondaryText" value="#4B4B4B" 
+                                               style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                    </div>
+                                </div>
+                                
+                                <!-- Text Color -->
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Primary Text</label>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <input type="color" id="themeTextColor" value="#4B4B4B" 
+                                               style="width: 60px; height: 40px; border: 1px solid var(--border); border-radius: 0.25rem; cursor: pointer;">
+                                        <input type="text" id="themeTextText" value="#4B4B4B" 
+                                               style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Typography Settings -->
+                        <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+                            <h4 style="margin-bottom: 1rem;">Typography</h4>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <!-- Heading Font -->
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Heading Font</label>
+                                    <select id="themeHeadingFont" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                        <option value="'Inter', -apple-system, sans-serif">Inter (Default)</option>
+                                        <option value="'Crimson Pro', serif">Crimson Pro (Serif)</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                                        <option value="'Lato', sans-serif">Lato</option>
+                                        <option value="'Poppins', sans-serif">Poppins</option>
+                                        <option value="'Raleway', sans-serif">Raleway</option>
+                                        <option value="'Playfair Display', serif">Playfair Display</option>
+                                        <option value="'Georgia', serif">Georgia</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Body Font -->
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Body Font</label>
+                                    <select id="themeBodyFont" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                        <option value="'Inter', -apple-system, sans-serif">Inter (Default)</option>
+                                        <option value="'Work Sans', sans-serif">Work Sans</option>
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                                        <option value="'Lato', sans-serif">Lato</option>
+                                        <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                                        <option value="'Noto Sans', sans-serif">Noto Sans</option>
+                                        <option value="'Georgia', serif">Georgia</option>
+                                        <option value="'Times New Roman', serif">Times New Roman</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Font Upload -->
+                            <div style="background: var(--bg); padding: 1.5rem; border-radius: 0.5rem; border: 2px dashed var(--border);">
+                                <h5 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span>📦</span> Custom Font Packages
+                                </h5>
+                                <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem;">
+                                    Upload your institution's official font files. Supported formats: WOFF2, WOFF, TTF, OTF
+                                </p>
+                                
+                                <div style="margin-bottom: 1rem;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Font Family Name</label>
+                                    <input type="text" id="customFontName" placeholder="e.g., UT Volunteer"
+                                           style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                    <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                                        This is the display name that will appear in the font selector.
+                                    </p>
+                                </div>
+                                
+                                <div style="margin-bottom: 1rem;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Font Files</label>
+                                    <input type="file" id="customFontFiles" accept=".woff2,.woff,.ttf,.otf" multiple
+                                           style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                                    <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                                        Select a folder or multiple font files. The system will automatically find and use only the Regular variant.
+                                    </p>
+                                    <div style="margin-top: 0.75rem; padding: 0.75rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 0.25rem;">
+                                        <strong style="color: #856404;">ℹ️ Storage Optimization:</strong>
+                                        <span style="color: #856404; font-size: 0.85rem;">
+                                            Only the <strong>Regular</strong> (normal weight) font file will be saved to the database. 
+                                            All Bold, Italic, and other variants will be discarded to save storage space.
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="uploadCustomFont()" style="background: var(--secondary);">
+                                    ⬆️ Upload Font Package
+                                </button>
+                                
+                                <!-- Custom Fonts List -->
+                                <div id="customFontsList" style="margin-top: 1rem; display: none;">
+                                    <h6 style="margin-bottom: 0.5rem; font-weight: 600;">Installed Custom Fonts:</h6>
+                                    <div id="customFontsContainer" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <!-- Custom fonts will be listed here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 1rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                            <button onclick="previewTheme()" style="background: var(--secondary);">👁️ Preview</button>
+                            <button onclick="saveInstitutionTheme()" style="background: var(--success);">💾 Save Theme</button>
+                            <button onclick="resetThemeForm()" style="background: var(--error);">🔄 Reset</button>
+                        </div>
+                        
+                        <div id="themeStatus" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+                
                 <!-- User Management Section (for Super Admins) -->
                 <div id="userManagementSection">
                     <h3 style="margin-bottom: 1rem;">User Management</h3>
@@ -1583,6 +1753,7 @@
         let userTier = 'demo'; // 'demo', 'instructor', 'admin', or 'super_admin'
         let currentViewMode = 'own'; // 'own' (default), 'institution' (admin), 'all' (super_admin), 'demo'
         let currentInstitution = null;
+        let currentInstitutionTheme = null; // Store loaded theme
         let cachedDepartmentInstructors = []; // Cache for semester filtering
         
         // User-scoped localStorage helpers
@@ -1735,6 +1906,14 @@
                 return;
             }
             
+            if (!institutionId) {
+                console.log('⚠️ No institution ID provided, skipping theme load');
+                return;
+            }
+            
+            console.log('=== LOADING THEME ===');
+            console.log('Loading theme for institution_id:', institutionId);
+            
             try {
                 const { data, error } = await supabaseClient
                     .from('institution_themes')
@@ -1743,27 +1922,87 @@
                     .single();
                 
                 if (error) {
-                    console.log('ℹ️ No custom theme found, using defaults');
+                    console.log('ℹ️ No custom theme found for institution:', institutionId);
+                    console.log('   Using default theme');
                     currentUser.theme = null;
+                    currentInstitutionTheme = null;
                     return;
                 }
                 
                 if (data) {
+                    // CRITICAL: Verify institution_id matches what we requested
+                    if (data.institution_id !== institutionId) {
+                        console.error('❌ SECURITY: Theme institution mismatch!');
+                        console.error('   Requested:', institutionId);
+                        console.error('   Received:', data.institution_id);
+                        currentUser.theme = null;
+                        currentInstitutionTheme = null;
+                        return;
+                    }
+                    
                     currentUser.theme = data;
-                    console.log('✓ Loaded institutional theme:', {
-                        primary: data.primary_color,
-                        secondary: data.secondary_color,
-                        header: data.header_bg_color,
-                        mode: data.is_dark_mode ? 'dark' : 'light'
-                    });
+                    currentInstitutionTheme = data; // Store globally
+                    
+                    console.log('✓ Theme loaded successfully');
+                    console.log('   Institution ID:', data.institution_id);
+                    console.log('   Primary color:', data.primary_color);
+                    console.log('   Header color:', data.header_bg_color);
+                    console.log('   Has logo:', !!data.logo_url);
+                    console.log('   Has custom fonts:', !!data.custom_fonts);
+                    console.log('   Heading font:', data.font_heading || 'default');
+                    console.log('   Body font:', data.font_body || 'default');
                     
                     // Apply theme to CSS immediately
                     applyThemeToCSS(data);
+                    
+                    // Apply fonts if set
+                    if (data.font_heading || data.font_body) {
+                        const root = document.documentElement;
+                        if (data.font_heading) {
+                            root.style.setProperty('--heading-font', data.font_heading);
+                            console.log('✓ Applied heading font:', data.font_heading);
+                        }
+                        if (data.font_body) {
+                            root.style.setProperty('--body-font', data.font_body);
+                            console.log('✓ Applied body font:', data.font_body);
+                        }
+                    }
+                    
+                    // Load custom fonts if exists
+                    if (data.custom_fonts) {
+                        console.log('Loading custom fonts...');
+                        loadCustomFontsOnStartup(data.custom_fonts);
+                    }
+                    
+                    console.log('=== THEME LOAD COMPLETE ===');
                 }
             } catch (err) {
-                console.error('Error loading theme:', err);
+                console.error('❌ Error loading theme:', err);
                 currentUser.theme = null;
+                currentInstitutionTheme = null;
             }
+        }
+        
+        // Load custom fonts on startup (for all users)
+        function loadCustomFontsOnStartup(customFontsData) {
+            if (!customFontsData) return;
+            
+            let fonts = [];
+            try {
+                fonts = typeof customFontsData === 'string' ? JSON.parse(customFontsData) : customFontsData;
+            } catch (e) {
+                console.error('Error parsing custom fonts:', e);
+                return;
+            }
+            
+            if (!Array.isArray(fonts) || fonts.length === 0) return;
+            
+            // Inject font-face CSS for each font
+            fonts.forEach(font => {
+                injectFontFace(font);
+            });
+            
+            console.log('✓ Loaded', fonts.length, 'custom font(s)');
         }
         
         // Apply theme to CSS variables
@@ -1812,6 +2051,34 @@
             if (header && theme.header_bg_color) {
                 header.style.background = theme.header_bg_color; // Solid color
                 header.style.backgroundImage = 'none'; // Remove gradient
+                
+                // Set header text color (white for dark backgrounds, dark for light)
+                const headerColor = theme.header_bg_color;
+                // Simple brightness check: if background is dark, use white text
+                if (headerColor) {
+                    const isDark = headerColor.toLowerCase() === '#4b4b4b' || 
+                                   headerColor.toLowerCase() === '#061e29' ||
+                                   headerColor.toLowerCase() === '#0f172a' ||
+                                   parseInt(headerColor.replace('#', ''), 16) < 0x808080;
+                    
+                    const textColor = isDark ? 'white' : '#4B4B4B';
+                    header.style.color = textColor;
+                    
+                    // Also update heading text colors
+                    const h1 = header.querySelector('h1');
+                    const subtitle = header.querySelector('.subtitle');
+                    const logoutLink = document.getElementById('logoutLink');
+                    const navLinks = header.querySelectorAll('.nav-link');
+                    
+                    if (h1) h1.style.color = textColor;
+                    if (subtitle) subtitle.style.color = textColor;
+                    if (logoutLink) logoutLink.style.color = textColor;
+                    
+                    // Update all nav links
+                    navLinks.forEach(link => {
+                        link.style.color = textColor;
+                    });
+                }
             }
             
             // Update logo based on institution
@@ -1826,11 +2093,51 @@
         }
         
         // Update logo based on institution
-        function updateInstitutionLogo() {
+        async function updateInstitutionLogo() {
             const logo = document.getElementById('appLogo');
-            if (!logo) return;
+            if (!logo) {
+                console.error('❌ Logo element not found');
+                return;
+            }
             
-            // Determine logo text based on institution
+            console.log('🔄 Updating institution logo...');
+            console.log('Current user institution:', currentUser?.institution_id);
+            console.log('Current theme institution:', currentInstitutionTheme?.institution_id);
+            
+            // CRITICAL: Only use theme if it matches current user's institution
+            // This prevents theme bleeding across institutions
+            if (currentInstitutionTheme && 
+                currentUser && 
+                currentUser.institution_id &&
+                currentInstitutionTheme.institution_id === currentUser.institution_id) {
+                
+                console.log('✓ Institution match verified - theme belongs to this user');
+                
+                // Check if institution has a custom logo in theme
+                if (currentInstitutionTheme.logo_url) {
+                    console.log('✓ Custom logo URL found:', currentInstitutionTheme.logo_url.substring(0, 50) + '...');
+                    
+                    // Use custom logo image
+                    try {
+                        logo.innerHTML = `<img src="${currentInstitutionTheme.logo_url}" 
+                                              style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" 
+                                              onerror="console.error('Logo image failed to load'); this.style.display='none';"
+                                              onload="console.log('✓ Logo image loaded successfully');">`;
+                        console.log('✓ Logo HTML updated with custom image');
+                        return;
+                    } catch (error) {
+                        console.error('Error setting logo image:', error);
+                    }
+                }
+            } else if (currentInstitutionTheme && currentUser && currentInstitutionTheme.institution_id !== currentUser.institution_id) {
+                console.warn('⚠️ Institution mismatch detected! Theme will not be applied.');
+                console.warn('  User institution:', currentUser.institution_id);
+                console.warn('  Theme institution:', currentInstitutionTheme.institution_id);
+            } else {
+                console.log('No custom logo URL in theme or no theme loaded');
+            }
+            
+            // Fallback to text logo based on institution
             let logoText = 'SG'; // Default
             
             if (currentInstitution) {
@@ -1846,7 +2153,7 @@
             }
             
             logo.textContent = logoText;
-            console.log('✓ Logo updated:', logoText);
+            console.log('✓ Logo updated with text:', logoText);
         }
         
         // Route user to appropriate interface based on their tier
@@ -1875,6 +2182,19 @@
         // Initialize interface based on user type
         function initializeInterface(interfaceType) {
             console.log('🚀 Initializing interface:', interfaceType);
+            
+            // CRITICAL: Hide ALL sections first to prevent flashing wrong interface
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Hide admin button and view switcher by default (each interface shows what it needs)
+            const adminLink = document.getElementById('navAdmin');
+            const viewSwitcher = document.getElementById('viewSwitcher');
+            if (adminLink) adminLink.style.display = 'none';
+            if (viewSwitcher) viewSwitcher.style.display = 'none';
+            
+            console.log('✓ Previous interface cleared');
             
             switch(interfaceType) {
                 case 'super_admin':
@@ -1945,6 +2265,9 @@
             console.log('✓ Super Admin interface ready');
             console.log('  - View:', currentViewMode);
             console.log('  - Can manage:', 'All institutions and users');
+            
+            // CRITICAL: Always start at dashboard after login
+            setActiveSection('dashboardSection', 'navDashboard');
         }
         
         // Initialize Admin interface
@@ -1997,6 +2320,9 @@
             console.log('  - Theme:', currentInstitution?.name || 'Default');
             console.log('  - View:', currentViewMode);
             console.log('  - Can manage:', 'Department instructors');
+            
+            // CRITICAL: Always start at dashboard after login
+            setActiveSection('dashboardSection', 'navDashboard');
         }
         
         // Initialize Instructor interface
@@ -2018,6 +2344,13 @@
                 console.log('  ✓ View switcher hidden');
             }
             
+            // CRITICAL: Remove view mode banner (from previous admin session)
+            const viewBanner = document.getElementById('viewModeBanner');
+            if (viewBanner) {
+                viewBanner.remove();
+                console.log('  ✓ View mode banner removed');
+            }
+            
             // Remove any demo banners
             const demoBanner = document.getElementById('demoBanner');
             if (demoBanner) {
@@ -2025,12 +2358,16 @@
                 console.log('  ✓ Demo banner removed');
             }
             
-            // Set view mode to 'own' (instructor sees only their courses)
+            // CRITICAL: Set view mode to 'own' (instructor sees only their courses)
+            // This prevents institution banner from showing
             currentViewMode = 'own';
             
             console.log('✓ Instructor interface ready');
             console.log('  - Theme:', currentInstitution?.name || 'Default');
             console.log('  - View: Own courses only');
+            
+            // CRITICAL: Always start at dashboard after login
+            setActiveSection('dashboardSection', 'navDashboard');
         }
         
         // Initialize Demo interface
@@ -2068,6 +2405,9 @@
             console.log('✓ Demo interface ready');
             console.log('  - Storage: localStorage only');
             console.log('  - Features: Full evaluation features for testing');
+            
+            // CRITICAL: Always start at dashboard after login
+            setActiveSection('dashboardSection', 'navDashboard');
         }
         
         // Update UI elements based on account tier
@@ -2234,6 +2574,20 @@
         // Login
         async function login(email, password) {
             try {
+                console.log('=== LOGGING IN ===');
+                
+                // CRITICAL: Clear previous user state FIRST
+                currentUser = null;
+                userTier = 'demo';
+                currentViewMode = 'own';
+                currentInstitution = null;
+                currentInstitutionTheme = null;
+                window.institutionLogoData = null;
+                window.pendingCustomFonts = null;
+                cachedDepartmentInstructors = [];
+                
+                console.log('✓ Previous state cleared');
+                
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
@@ -2245,7 +2599,9 @@
                 }
                 
                 currentUser = data.user;
-                console.log('✓ Login successful');
+                console.log('✓ Login successful:', email);
+                
+                // Load new user's profile and theme
                 await checkAuth();
                 
                 // Reload data for this user
@@ -2379,11 +2735,66 @@
         
         // Logout
         async function logout() {
+            console.log('=== LOGGING OUT ===');
+            
+            // Sign out from Supabase
             if (supabaseClient) {
                 await supabaseClient.auth.signOut();
             }
+            
+            // Clear ALL global state
             currentUser = null;
+            userTier = 'demo';
+            currentViewMode = 'own';
+            currentInstitution = null;
+            currentInstitutionTheme = null;
+            
+            // Clear window variables
+            window.institutionLogoData = null;
+            window.pendingCustomFonts = null;
+            
+            // Clear any cached data
+            cachedDepartmentInstructors = [];
+            
+            // CRITICAL: Clear login form
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPassword = document.getElementById('loginPassword');
+            if (loginEmail) loginEmail.value = '';
+            if (loginPassword) loginPassword.value = '';
+            
+            // Remove all banners
+            const viewBanner = document.getElementById('viewModeBanner');
+            if (viewBanner) viewBanner.remove();
+            const demoBanner = document.getElementById('demoBanner');
+            if (demoBanner) demoBanner.remove();
+            
+            // Reset CSS to defaults (clear any theme styling)
+            const root = document.documentElement;
+            root.style.setProperty('--primary', '#3b82f6'); // Default blue
+            root.style.setProperty('--header-bg', '#ffffff');
+            root.style.setProperty('--text', '#1f2937');
+            root.style.setProperty('--heading-font', 'Inter, -apple-system, sans-serif');
+            root.style.setProperty('--body-font', 'Inter, -apple-system, sans-serif');
+            
+            // Reset logo to default
+            const logo = document.getElementById('appLogo');
+            if (logo) {
+                logo.textContent = 'SG';
+                logo.innerHTML = 'SG'; // Clear any image
+            }
+            
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            console.log('✓ State cleared');
+            console.log('✓ Login form cleared');
+            console.log('✓ Banners removed');
+            console.log('✓ Theme reset to defaults');
             console.log('✓ Logged out');
+            
+            // Show login screen
             showAuthScreen();
         }
         
@@ -2684,12 +3095,630 @@
                 alert('Access denied. Admin privileges required.');
                 return;
             }
+            
+            console.log('=== OPENING ADMIN PANEL ===');
+            console.log('User:', currentUser?.email);
+            console.log('Tier:', userTier);
+            console.log('Institution:', currentUser?.institution_id);
+            console.log('Admin can ONLY edit theme for this institution');
+            
             setActiveSection('adminSection', 'navAdmin');
             
             // Auto-load department data
             console.log('🔄 Auto-loading department data...');
             loadDepartmentInstructors();
             loadEnhancedAnalytics();
+            
+            // Load current theme into customizer
+            loadCurrentThemeToForm();
+        }
+        
+        // Load current institution theme into form
+        async function loadCurrentThemeToForm() {
+            if (!currentUser || !currentUser.institution_id) {
+                console.warn('⚠️ Cannot load theme form: No user or institution');
+                return;
+            }
+            
+            console.log('Loading theme form for institution:', currentUser.institution_id);
+            
+            try {
+                const { data: theme, error } = await supabaseClient
+                    .from('institution_themes')
+                    .select('*')
+                    .eq('institution_id', currentUser.institution_id)
+                    .single();
+                
+                if (error) {
+                    console.log('ℹ️ No theme found for this institution');
+                    throw error;
+                }
+                
+                if (theme) {
+                    // CRITICAL SECURITY CHECK: Verify institution_id matches
+                    if (theme.institution_id !== currentUser.institution_id) {
+                        console.error('❌ SECURITY VIOLATION: Theme institution mismatch!');
+                        console.error('   User institution:', currentUser.institution_id);
+                        console.error('   Theme institution:', theme.institution_id);
+                        alert('Security error: You do not have permission to edit this theme.');
+                        return;
+                    }
+                    
+                    console.log('✓ Loading theme form with data from institution:', theme.institution_id);
+                    
+                    document.getElementById('themePrimaryColor').value = theme.primary_color || '#FF8200';
+                    document.getElementById('themePrimaryText').value = theme.primary_color || '#FF8200';
+                    document.getElementById('themeHeaderColor').value = theme.header_bg_color || '#4B4B4B';
+                    document.getElementById('themeHeaderText').value = theme.header_bg_color || '#4B4B4B';
+                    document.getElementById('themeSecondaryColor').value = theme.secondary_color || '#4B4B4B';
+                    document.getElementById('themeSecondaryText').value = theme.secondary_color || '#4B4B4B';
+                    document.getElementById('themeTextColor').value = theme.text_primary || '#4B4B4B';
+                    document.getElementById('themeTextText').value = theme.text_primary || '#4B4B4B';
+                    
+                    // Load fonts
+                    if (theme.font_heading) {
+                        document.getElementById('themeHeadingFont').value = theme.font_heading;
+                    }
+                    if (theme.font_body) {
+                        document.getElementById('themeBodyFont').value = theme.font_body;
+                    }
+                    
+                    // Load logo if exists
+                    if (theme.logo_url) {
+                        const logoImg = document.getElementById('logoPreviewImage');
+                        const logoPlaceholder = document.getElementById('logoPlaceholder');
+                        
+                        if (logoImg && logoPlaceholder) {
+                            logoImg.src = theme.logo_url;
+                            logoImg.style.display = 'block';
+                            logoPlaceholder.style.display = 'none';
+                            
+                            // IMPORTANT: Store in window variable so it persists
+                            window.institutionLogoData = theme.logo_url;
+                            console.log('✓ Logo loaded from database');
+                        }
+                    }
+                    
+                    // Load custom fonts if exists
+                    if (theme.custom_fonts) {
+                        console.log('✓ Loading custom fonts into form');
+                        loadCustomFonts(theme.custom_fonts);
+                    }
+                    
+                    // Sync color pickers with text inputs
+                    syncColorInputs();
+                    
+                    console.log('✓ Theme form loaded successfully');
+                }
+            } catch (error) {
+                console.error('Error loading theme form:', error);
+            }
+        }
+        
+        // Load and display custom fonts
+        function loadCustomFonts(customFontsData) {
+            if (!customFontsData) return;
+            
+            let fonts = [];
+            try {
+                fonts = typeof customFontsData === 'string' ? JSON.parse(customFontsData) : customFontsData;
+            } catch (e) {
+                console.error('Error parsing custom fonts:', e);
+                return;
+            }
+            
+            if (!Array.isArray(fonts) || fonts.length === 0) return;
+            
+            const container = document.getElementById('customFontsContainer');
+            const list = document.getElementById('customFontsList');
+            
+            if (!container || !list) return;
+            
+            // Show the list
+            list.style.display = 'block';
+            
+            // Clear existing
+            container.innerHTML = '';
+            
+            // Add each font
+            fonts.forEach((font, index) => {
+                // Inject font-face
+                injectFontFace(font);
+                
+                // Add to selectors
+                addFontToSelectors(font.name, font.family);
+                
+                // Display in list
+                const fontItem = document.createElement('div');
+                fontItem.style.cssText = 'padding: 0.75rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.25rem; display: flex; justify-content: space-between; align-items: center;';
+                fontItem.innerHTML = `
+                    <span style="font-family: ${font.family}, sans-serif; font-weight: 600;">${font.name}</span>
+                    <button onclick="removeCustomFont(${index})" style="padding: 0.25rem 0.5rem; font-size: 0.85rem; background: var(--error);">
+                        🗑️ Remove
+                    </button>
+                `;
+                container.appendChild(fontItem);
+            });
+        }
+        
+        // Inject @font-face CSS - ONLY Regular weight to prevent auto-matching
+        function injectFontFace(font) {
+            const styleId = `custom-font-${font.family.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            
+            // Check if already injected
+            if (document.getElementById(styleId)) return;
+            
+            // CRITICAL: Only use Regular (400) Normal style variant
+            // This prevents browser from auto-applying bold/italic variants
+            const regularFile = font.files.find(f => f.weight === '400' && f.style === 'normal');
+            
+            if (!regularFile) {
+                console.warn(`No Regular variant found for ${font.family}, using first file`);
+                // Fallback to first file but force it as Regular
+                const fallbackFile = font.files[0];
+                if (!fallbackFile) return;
+                
+                const style = document.createElement('style');
+                style.id = styleId;
+                style.textContent = `
+                    @font-face {
+                        font-family: '${font.family}';
+                        src: url('${fallbackFile.data}') format('${fallbackFile.format}');
+                        font-weight: 400;
+                        font-style: normal;
+                        font-display: swap;
+                    }
+                `;
+                document.head.appendChild(style);
+                console.log(`✓ Injected font-face for ${font.family} (forced as Regular)`);
+                return;
+            }
+            
+            // Inject ONLY the Regular variant
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                @font-face {
+                    font-family: '${font.family}';
+                    src: url('${regularFile.data}') format('${regularFile.format}');
+                    font-weight: 400;
+                    font-style: normal;
+                    font-display: swap;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            console.log(`✓ Injected font-face for ${font.family} (Regular only - ${font.files.length} total variants ignored to prevent auto-matching)`);
+        }
+        
+        // Add font to selectors
+        function addFontToSelectors(name, family) {
+            const headingSelect = document.getElementById('themeHeadingFont');
+            const bodySelect = document.getElementById('themeBodyFont');
+            
+            if (!headingSelect || !bodySelect) return;
+            
+            const value = `'${family}', sans-serif`;
+            
+            // Check if already exists
+            const existsInHeading = Array.from(headingSelect.options).some(opt => opt.value === value);
+            const existsInBody = Array.from(bodySelect.options).some(opt => opt.value === value);
+            
+            if (!existsInHeading) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = `${name} (Custom)`;
+                headingSelect.appendChild(option);
+            }
+            
+            if (!existsInBody) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = `${name} (Custom)`;
+                bodySelect.appendChild(option);
+            }
+        }
+        
+        // Upload custom font
+        async function uploadCustomFont() {
+            const nameInput = document.getElementById('customFontName');
+            const filesInput = document.getElementById('customFontFiles');
+            
+            // Check which input has files
+            const files = filesInput.files;
+            
+            if (!nameInput.value.trim()) {
+                alert('Please enter a font family name.');
+                return;
+            }
+            
+            if (!files || files.length === 0) {
+                alert('Please select font files or a folder containing fonts.');
+                return;
+            }
+            
+            const fontName = nameInput.value.trim();
+            const fontFamily = fontName.replace(/[^a-zA-Z0-9 ]/g, '');
+            
+            const statusDiv = document.getElementById('themeStatus');
+            statusDiv.innerHTML = '<p style="color: var(--text-light);">Processing font files...</p>';
+            
+            try {
+                let regularFile = null;
+                let processedCount = 0;
+                
+                // Find ONLY the Regular variant - discard all others to save storage
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    // Skip non-font files
+                    if (!file.name.match(/\.(woff2|woff|ttf|otf)$/i)) {
+                        console.log('Skipping non-font file:', file.name);
+                        continue;
+                    }
+                    
+                    processedCount++;
+                    
+                    // Detect if this is the Regular variant
+                    const fileName = file.name.toLowerCase();
+                    const isRegular = (fileName.includes('regular') || fileName.includes('normal')) && 
+                                     !fileName.includes('italic') && 
+                                     !fileName.includes('oblique');
+                    
+                    // If no explicit "Regular" found, use first non-bold, non-italic file as fallback
+                    const isFallbackRegular = !fileName.includes('bold') && 
+                                             !fileName.includes('italic') && 
+                                             !fileName.includes('black') && 
+                                             !fileName.includes('heavy') && 
+                                             !fileName.includes('light') && 
+                                             !fileName.includes('thin') && 
+                                             !fileName.includes('medium') &&
+                                             !fileName.includes('semi') &&
+                                             !fileName.includes('extra');
+                    
+                    if (isRegular || (isFallbackRegular && !regularFile)) {
+                        // Validate size (max 2MB)
+                        if (file.size > 2 * 1024 * 1024) {
+                            console.warn(`${file.name} is too large (max 2MB), skipping.`);
+                            continue;
+                        }
+                        
+                        // Determine format
+                        const format = file.name.toLowerCase().endsWith('.woff2') ? 'woff2' :
+                                      file.name.toLowerCase().endsWith('.woff') ? 'woff' :
+                                      file.name.toLowerCase().endsWith('.ttf') ? 'truetype' :
+                                      file.name.toLowerCase().endsWith('.otf') ? 'opentype' : 'woff';
+                        
+                        // Read as base64
+                        const base64 = await readFileAsBase64(file);
+                        
+                        regularFile = {
+                            name: file.name,
+                            format: format,
+                            data: base64,
+                            weight: '400',
+                            style: 'normal'
+                        };
+                        
+                        console.log(`✓ Found Regular variant: ${file.name}`);
+                        break; // Stop after finding Regular
+                    } else {
+                        console.log(`Skipping non-Regular variant: ${file.name} (not needed, saves storage)`);
+                    }
+                }
+                
+                if (!regularFile) {
+                    throw new Error('No Regular (normal weight) font file found. Please include a Regular or Normal weight variant in your font package.');
+                }
+                
+                // Create font package with ONLY Regular variant
+                const fontPackage = {
+                    name: fontName,
+                    family: fontFamily,
+                    files: [regularFile] // ONLY ONE FILE - saves storage!
+                };
+                
+                // Get existing custom fonts
+                let customFonts = [];
+                if (currentInstitutionTheme && currentInstitutionTheme.custom_fonts) {
+                    try {
+                        customFonts = typeof currentInstitutionTheme.custom_fonts === 'string' 
+                            ? JSON.parse(currentInstitutionTheme.custom_fonts)
+                            : currentInstitutionTheme.custom_fonts;
+                    } catch (e) {
+                        customFonts = [];
+                    }
+                }
+                
+                // Add new font
+                customFonts.push(fontPackage);
+                
+                // Temporarily store (will be saved with theme)
+                window.pendingCustomFonts = customFonts;
+                
+                // Display the font
+                loadCustomFonts(customFonts);
+                
+                // Clear inputs
+                nameInput.value = '';
+                filesInput.value = '';
+                
+                const discardedCount = processedCount - 1;
+                
+                statusDiv.innerHTML = 
+                    '<p style="color: var(--success); padding: 1rem; background: #d1fae5; border-radius: 0.5rem;">' +
+                    `✅ Font "${fontName}" uploaded!<br>` +
+                    `<span style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem; display: block;">` +
+                    `Stored: 1 file (Regular variant, ${(regularFile.data.length / 1024).toFixed(1)}KB)<br>` +
+                    (discardedCount > 0 ? `Discarded: ${discardedCount} file${discardedCount !== 1 ? 's' : ''} (Bold, Italic, etc. - not needed, saves storage)<br>` : '') +
+                    `Click "Save Theme" to apply permanently.</span></p>`;
+                
+            } catch (error) {
+                console.error('Error uploading font:', error);
+                statusDiv.innerHTML = 
+                    '<p style="color: var(--error); padding: 1rem; background: #fee; border-radius: 0.5rem;">' +
+                    '❌ Error uploading font: ' + error.message + '</p>';
+            }
+        }
+        
+        // Read file as base64
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Remove custom font
+        function removeCustomFont(index) {
+            if (!confirm('Remove this custom font?')) return;
+            
+            let customFonts = window.pendingCustomFonts || [];
+            customFonts.splice(index, 1);
+            window.pendingCustomFonts = customFonts;
+            
+            loadCustomFonts(customFonts);
+            
+            document.getElementById('themeStatus').innerHTML = 
+                '<p style="color: var(--text-light);">Font removed. Click "Save Theme" to apply changes.</p>';
+        }
+        
+        // Handle logo upload for institution
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file.');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image must be less than 5MB.');
+                return;
+            }
+            
+            // Preview the image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const logoImg = document.getElementById('logoPreviewImage');
+                const logoPlaceholder = document.getElementById('logoPlaceholder');
+                
+                if (logoImg && logoPlaceholder) {
+                    logoImg.src = e.target.result;
+                    logoImg.style.display = 'block';
+                    logoPlaceholder.style.display = 'none';
+                    
+                    // Store base64 for saving
+                    window.institutionLogoData = e.target.result;
+                    
+                    console.log('✓ Logo preview loaded');
+                }
+            };
+            reader.onerror = function(error) {
+                console.error('Error reading logo file:', error);
+                alert('Error loading logo preview. Please try again.');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Sync color picker with text input
+        function syncColorInputs() {
+            const pairs = [
+                ['themePrimaryColor', 'themePrimaryText'],
+                ['themeHeaderColor', 'themeHeaderText'],
+                ['themeSecondaryColor', 'themeSecondaryText'],
+                ['themeTextColor', 'themeTextText']
+            ];
+            
+            pairs.forEach(([pickerId, textId]) => {
+                const picker = document.getElementById(pickerId);
+                const text = document.getElementById(textId);
+                
+                if (picker && text) {
+                    picker.addEventListener('input', () => {
+                        text.value = picker.value.toUpperCase();
+                    });
+                    
+                    text.addEventListener('input', () => {
+                        if (/^#[0-9A-F]{6}$/i.test(text.value)) {
+                            picker.value = text.value;
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Preview theme (temporary, doesn't save)
+        function previewTheme() {
+            const theme = {
+                primary_color: document.getElementById('themePrimaryColor').value,
+                header_bg_color: document.getElementById('themeHeaderColor').value,
+                secondary_color: document.getElementById('themeSecondaryColor').value,
+                text_primary: document.getElementById('themeTextColor').value,
+                font_heading: document.getElementById('themeHeadingFont').value,
+                font_body: document.getElementById('themeBodyFont').value
+            };
+            
+            applyThemeToCSS(theme);
+            
+            // Apply fonts
+            const root = document.documentElement;
+            if (theme.font_heading) {
+                root.style.setProperty('--heading-font', theme.font_heading);
+            }
+            if (theme.font_body) {
+                root.style.setProperty('--body-font', theme.font_body);
+            }
+            
+            // Preview logo if uploaded
+            if (window.institutionLogoData) {
+                const appLogo = document.getElementById('appLogo');
+                if (appLogo) {
+                    appLogo.innerHTML = `<img src="${window.institutionLogoData}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+            }
+            
+            document.getElementById('themeStatus').innerHTML = 
+                '<p style="color: var(--success); padding: 1rem; background: var(--bg-alt); border-radius: 0.5rem;">👁️ Preview applied! Click "Save Theme" to make permanent.</p>';
+        }
+        
+        // Save theme to database
+        async function saveInstitutionTheme() {
+            if (!supabaseClient || !currentUser || !currentUser.institution_id) {
+                alert('Error: Not connected to database or no institution assigned.');
+                return;
+            }
+            
+            const statusDiv = document.getElementById('themeStatus');
+            statusDiv.innerHTML = '<p style="color: var(--text-light);">Saving theme...</p>';
+            
+            console.log('=== SAVING THEME ===');
+            console.log('User institution:', currentUser.institution_id);
+            console.log('User tier:', userTier);
+            
+            try {
+                const themeData = {
+                    primary_color: document.getElementById('themePrimaryColor').value,
+                    header_bg_color: document.getElementById('themeHeaderColor').value,
+                    secondary_color: document.getElementById('themeSecondaryColor').value,
+                    text_primary: document.getElementById('themeTextColor').value,
+                    text_secondary: document.getElementById('themeTextColor').value,
+                    font_heading: document.getElementById('themeHeadingFont').value,
+                    font_body: document.getElementById('themeBodyFont').value,
+                    updated_at: new Date().toISOString()
+                };
+                
+                // Add logo if uploaded
+                if (window.institutionLogoData) {
+                    themeData.logo_url = window.institutionLogoData;
+                    console.log('✓ Logo data prepared for save');
+                    console.log('  Logo size:', (themeData.logo_url.length / 1024).toFixed(1) + 'KB');
+                } else {
+                    console.log('ℹ️ No new logo data to save (keeping existing if any)');
+                }
+                
+                // Add custom fonts if uploaded
+                if (window.pendingCustomFonts && window.pendingCustomFonts.length > 0) {
+                    themeData.custom_fonts = window.pendingCustomFonts; // Store as JSONB directly
+                    console.log('✓ Custom fonts prepared for save:', window.pendingCustomFonts.length, 'font(s)');
+                    console.log('  Font data size:', JSON.stringify(window.pendingCustomFonts).length, 'characters');
+                } else {
+                    console.log('ℹ️ No custom fonts to save (keeping existing if any)');
+                }
+                
+                console.log('Saving theme to institution_id:', currentUser.institution_id);
+                
+                // Use upsert instead of update - creates row if doesn't exist, updates if it does
+                const { data, error } = await supabaseClient
+                    .from('institution_themes')
+                    .upsert({
+                        institution_id: currentUser.institution_id,
+                        ...themeData
+                    }, {
+                        onConflict: 'institution_id'
+                    })
+                    .select(); // CRITICAL: .select() returns the saved data
+                
+                if (error) {
+                    console.error('❌ Save failed:', error);
+                    throw error;
+                }
+                
+                if (!data || data.length === 0) {
+                    console.error('❌ No data returned from upsert');
+                    throw new Error('No data returned from save operation');
+                }
+                
+                const savedTheme = data[0];
+                console.log('✓ Theme saved to database');
+                console.log('  Saved to institution_id:', savedTheme.institution_id);
+                console.log('  Has logo:', !!savedTheme.logo_url);
+                console.log('  Has custom fonts:', !!savedTheme.custom_fonts);
+                
+                // CRITICAL: Update global theme variable with complete data from database
+                // This ensures institution_id and all fields are properly set
+                currentInstitutionTheme = savedTheme;
+                currentUser.theme = savedTheme;
+                
+                console.log('✓ Global theme variable updated');
+                
+                // Apply the theme immediately
+                applyThemeToCSS(savedTheme);
+                
+                // Apply fonts
+                const root = document.documentElement;
+                if (savedTheme.font_heading) {
+                    root.style.setProperty('--heading-font', savedTheme.font_heading);
+                    console.log('✓ Applied heading font:', savedTheme.font_heading);
+                }
+                if (savedTheme.font_body) {
+                    root.style.setProperty('--body-font', savedTheme.font_body);
+                    console.log('✓ Applied body font:', savedTheme.font_body);
+                }
+                
+                // Load custom fonts if saved
+                if (savedTheme.custom_fonts) {
+                    console.log('Loading custom fonts from saved data...');
+                    loadCustomFontsOnStartup(savedTheme.custom_fonts);
+                }
+                
+                // Update logo if uploaded
+                if (window.institutionLogoData) {
+                    console.log('Updating logo display...');
+                    await updateInstitutionLogo();
+                }
+                
+                statusDiv.innerHTML = 
+                    '<p style="color: var(--success); padding: 1rem; background: #d1fae5; border-radius: 0.5rem; border-left: 4px solid var(--success);">' +
+                    '✅ Theme saved successfully! All users in your institution will see these colors, fonts, and logo on next login.</p>';
+                
+                console.log('=== THEME SAVE COMPLETE ===');
+                
+                // Clear pending fonts (they're now saved)
+                window.pendingCustomFonts = null;
+                
+            } catch (error) {
+                console.error('Error saving theme:', error);
+                statusDiv.innerHTML = 
+                    '<p style="color: var(--error); padding: 1rem; background: #fee; border-radius: 0.5rem; border-left: 4px solid var(--error);">' +
+                    '❌ Error saving theme: ' + error.message + '</p>';
+            }
+        }
+        
+        // Reset theme form to current saved values
+        function resetThemeForm() {
+            loadCurrentThemeToForm(); // This will reload logo from database
+            window.pendingCustomFonts = null;
+            document.getElementById('institutionLogoUpload').value = '';
+            document.getElementById('customFontName').value = '';
+            document.getElementById('customFontFiles').value = '';
+            document.getElementById('themeStatus').innerHTML = 
+                '<p style="color: var(--text-light);">Reset to saved theme.</p>';
         }
         
         // Load department instructors (for admins)
@@ -4934,14 +5963,25 @@ SpeechGradebook Research Team`;
         }
 
         function setActiveSection(sectionId, navId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            // Hide all sections using display (not just class)
+            document.querySelectorAll('.section').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none'; // CRITICAL: Actually hide the section
+            });
+            
             // Show selected section
-            document.getElementById(sectionId).classList.add('active');
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+                selectedSection.style.display = 'block'; // CRITICAL: Actually show the section
+            }
             
             // Update nav
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(navId).classList.add('active');
+            const selectedNav = document.getElementById(navId);
+            if (selectedNav) {
+                selectedNav.classList.add('active');
+            }
         }
 
         // ===== TENANT/THEME MANAGEMENT =====
@@ -10283,33 +11323,8 @@ Return ONLY the JSON object, nothing else.`;
                 document.getElementById('savedClaudeKey').value = claudeKey;
             }
             
-            // Load theme settings
-            const savedTenant = localStorage.getItem('current_tenant');
-            if (savedTenant) {
-                currentTenant = savedTenant;
-                applyTenant(savedTenant);
-                document.getElementById('tenantSelect').value = savedTenant;
-            }
-            
-            const savedColor = localStorage.getItem('primary_color');
-            if (savedColor) {
-                document.getElementById('primaryColor').value = savedColor;
-                updatePrimaryColor(savedColor);
-            }
-            
-            const savedHeadingFont = localStorage.getItem('heading_font');
-            if (savedHeadingFont) {
-                document.getElementById('headingFont').value = savedHeadingFont;
-            }
-            
-            const savedBodyFont = localStorage.getItem('body_font');
-            if (savedBodyFont) {
-                document.getElementById('bodyFont').value = savedBodyFont;
-            }
-            
-            if (savedHeadingFont || savedBodyFont) {
-                updateFonts();
-            }
+            // Note: Theme settings (colors, fonts, logo) are now managed by admins
+            // in the Theme Customizer, not in user settings
         }
 
         function saveSettings() {
@@ -10364,33 +11379,8 @@ Return ONLY the JSON object, nothing else.`;
             showMessage('settingsMessage', '✅ Settings reset to defaults.', 'success');
         }
 
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const logoData = e.target.result;
-                localStorage.setItem('custom_logo', logoData);
-                
-                document.getElementById('logoPreviewImg').src = logoData;
-                document.getElementById('logoPreview').classList.remove('hidden');
-                
-                // Update header logo
-                document.getElementById('appLogo').innerHTML = `<img src="${logoData}" alt="Logo">`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function clearLogo() {
-            localStorage.removeItem('custom_logo');
-            document.getElementById('logoPreview').classList.add('hidden');
-            document.getElementById('logoUpload').value = '';
-            
-            // Reset to text logo
-            const config = TENANT_CONFIGS[currentTenant];
-            document.getElementById('appLogo').textContent = config.shortName;
-        }
+        // Note: handleLogoUpload is defined earlier in the theme customizer section
+        // Old duplicate removed to prevent conflicts
 
         function updatePrimaryColor(color) {
             document.documentElement.style.setProperty('--primary', color);
