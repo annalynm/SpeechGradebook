@@ -1,0 +1,13 @@
+# Python deps for LLM training (Phase 2 - LoRA fine-tuning) and serving
+# Install: pip install -r requirements-train.txt
+
+torch>=2.0.0
+transformers>=4.36.0
+peft>=0.7.0
+datasets>=2.16.0
+accelerate>=0.25.0
+trl>=0.7.0
+bitsandbytes>=0.41.0; sys_platform != 'darwin'  # optional, for 8-bit loading on Linux
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
