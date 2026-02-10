@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+.eggs/
+
+# Env / secrets
+.env
+.env.local
+*.pem
+
+# LLM training generated data and cache
+llm_training/train.jsonl
+llm_training/validation.jsonl
+llm_training/exported.json
+llm_training/exports/
+llm_training/cache/
+
+# IDE / editor
+.cursor/

@@ -1,0 +1,45 @@
+# Git and IDE
+.git
+.gitignore
+.cursor
+.cursorignore
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv
+venv
+env
+
+# Node (if any scripts use it locally)
+node_modules
+
+# Tests and dev
+tests/
+pytest.ini
+*.test.js
+
+# Scripts not needed in container
+run_local.sh
+run_local_if_super_admin.sh
+install_login_start.sh
+launchd/
+
+# Render / deploy config (not needed inside image)
+render.yaml
+RENDER_DEPLOY.md
+
+# Large artifacts (mount or copy separately if needed)
+llm_training/mistral7b-speech-lora
+llm_training/qwen2.5vl-speech-lora
+*.slurm
+llm_training/scripts/
+llm_training/logs

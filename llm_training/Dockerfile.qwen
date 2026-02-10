@@ -1,0 +1,23 @@
+# Qwen2.5-VL service for SpeechGradebook (video analysis + rubric extraction).
+# GPU: use a CUDA base image and set PORT when deploying (e.g. Render sets PORT=10000).
+# Build: docker build -f Dockerfile.qwen -t qwen-speechgradebook .
+# Run:   docker run -p 8001:8001 -e PORT=8001 -e ALLOWED_ORIGINS=https://speechgradebook.onrender.com qwen-speechgradebook
+
+FROM python:3.11-slim
+
+# Optional: use nvidia/cuda image for GPU (e.g. nvidia/cuda:12.1-runtime-ubuntu22.04)
+# FROM nvidia/cuda:12.1-runtime-ubuntu22.04
+# RUN apt-get update && apt-get install -y python3.11 python3-pip && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements-qwen.txt .
+RUN pip install --no-cache-dir -r requirements-qwen.txt
+
+COPY qwen_serve.py .
+
+# Use PORT from environment (Render, etc.) or 8001
+ENV PORT=8001
+EXPOSE 8001
+
+CMD ["sh", "-c", "exec python qwen_serve.py --port ${PORT}"]

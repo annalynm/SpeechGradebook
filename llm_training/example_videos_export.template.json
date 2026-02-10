@@ -1,0 +1,41 @@
+[
+  {
+    "transcript": "Replace with the spoken content of the video (from Whisper or typed). Example: First I will cover the main points, then we will look at delivery. The speaker maintained strong eye contact and used clear gestures.",
+    "video_notes": "Replace with a description of nonverbal/verbal behaviors you want the model to learn. Example: Strong eye contact with camera throughout. Relaxed, open posture. Purposeful hand gestures. Steady pacing with appropriate pauses. Minimal use of notes.",
+    "rubric": "Informative Speech",
+    "rubric_structure": {
+      "categories": [
+        { "name": "Content", "subcategories": ["Organization", "Supporting Material", "Conclusion"] },
+        { "name": "Delivery", "subcategories": ["Eye contact", "Vocal delivery"] }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 36,
+        "maxScore": 40,
+        "subcategories": [
+          { "name": "Organization", "points": 14, "maxPoints": 15 },
+          { "name": "Supporting Material", "points": 11, "maxPoints": 15 },
+          { "name": "Conclusion", "points": 10, "maxPoints": 10 }
+        ]
+      },
+      "Delivery": {
+        "score": 28,
+        "maxScore": 30,
+        "subcategories": [
+          { "name": "Eye contact", "points": 15, "maxPoints": 15 },
+          { "name": "Vocal delivery", "points": 13, "maxPoints": 15 }
+        ]
+      }
+    }
+  },
+  {
+    "transcript": "Second example: minimal transcript if the video is mostly nonverbal.",
+    "video_notes": "Example of needs-improvement delivery: limited eye contact, read from notes often, stiff posture, few gestures. Use this to teach the model to score lower for these behaviors.",
+    "rubric": "Informative Speech",
+    "scores": {
+      "Content": { "score": 30, "maxScore": 40, "subcategories": [{ "name": "Organization", "points": 10, "maxPoints": 15 }, { "name": "Supporting Material", "points": 10, "maxPoints": 15 }, { "name": "Conclusion", "points": 10, "maxPoints": 10 }] },
+      "Delivery": { "score": 18, "maxScore": 30, "subcategories": [{ "name": "Eye contact", "points": 6, "maxPoints": 15 }, { "name": "Vocal delivery", "points": 12, "maxPoints": 15 }] }
+    }
+  }
+]

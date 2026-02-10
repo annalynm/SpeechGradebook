@@ -1,0 +1,5 @@
+# Only upload files needed for Qwen evaluation (minimize size for faster deploy)
+*
+!qwen_serve.py
+!qwen_behavior_references.json
+!__init__.py

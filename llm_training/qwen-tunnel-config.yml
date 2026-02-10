@@ -1,0 +1,7 @@
+tunnel: bc473029-6b8b-421e-bb46-b3d77084b35c
+credentials-file: /nfs/home/amcclu12/llm_training/.cloudflared/bc473029-6b8b-421e-bb46-b3d77084b35c.json
+
+ingress:
+  - hostname: qwen.speechgradebook.com
+    service: http://localhost:8001
+  - service: http_status:404

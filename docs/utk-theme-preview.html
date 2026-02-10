@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTK Torch Theme Preview – Speech Gradebook</title>
+    <link href="https://fonts.bunny.net/css?family=Montserrat:400,500,600,700|Source+Sans+3:400,600,700&display=swap" rel="stylesheet">
+    <style>
+        /* UTK Torch Theme – https://brand.utk.edu/web-design-system/component/ and https://brand.utk.edu/standards/colors/ */
+        :root {
+            --primary: #FF8200;        /* Tennessee Orange */
+            --primary-dark: #E56B00;   /* Darker orange for hover */
+            --smokey: #4B4B4B;         /* Smokey Gray – header, footer, dark sections */
+            --text: #4B4B4B;           /* Smokey for body text (no black per UT brand) */
+            --text-light: #6B6B6B;
+            --bg: #FAFAFA;
+            --bg-light-gray: #F0F0F0;  /* Torch Light Gray variant */
+            --card: #FFFFFF;
+            --border: #E0E0E0;
+            --success: #059669;
+            --link-blue: #1a73c5;       /* UT river – buttons/CTA text (from utkwds theme.json) */
+            --heading-font: 'Montserrat', sans-serif;
+            --body-font: 'Source Sans 3', -apple-system, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--body-font); background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 2rem; }
+        h1, h2, h3 { font-family: var(--heading-font); color: var(--smokey); font-weight: 600; }
+        
+        .preview-badge {
+            position: fixed; top: 10px; right: 10px; background: white; color: var(--link-blue);
+            border: 2px solid var(--primary);
+            padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.85rem; z-index: 9999;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        
+        /* Header – Smokey Gray (Torch: dark grey nav) */
+        header {
+            background: var(--smokey);
+            color: white;
+            padding: 1.25rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 1rem; }
+        .logo { width: 48px; height: 48px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+        header h1 { color: white; font-size: 1.5rem; margin: 0; }
+        .nav-link { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: 500; opacity: 0.95; }
+        .nav-link:hover { opacity: 1; }
+        
+        section { margin: 2rem 0; }
+        section h2 { margin-bottom: 1rem; font-size: 1.25rem; color: var(--smokey); }
+        
+        /* Torch Button & Link Styles – https://brand.utk.edu/web-design-system/buttons-and-links/ */
+        
+        /* Quiet: Text links – subtlest, within running copy */
+        .torch-text-link {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+        }
+        .torch-text-link:hover { color: var(--primary-dark); }
+        
+        /* Medium: Single link – orange arrow left, moves slightly on hover, ≤30 chars */
+        .torch-single-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 0.1rem;
+            transition: gap 0.2s ease;
+        }
+        .torch-single-link:hover { gap: 0.6rem; color: var(--primary-dark); }
+        .torch-single-link::before {
+            content: '→';
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.05em;
+        }
+        
+        /* Medium: Link group – 2–3 columns, orange arrows, bottom borders */
+        .torch-link-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+        .torch-link-group-3 { grid-template-columns: repeat(3, 1fr); }
+        .torch-link-group a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: gap 0.2s ease;
+        }
+        .torch-link-group a:hover { gap: 0.6rem; color: var(--primary-dark); }
+        .torch-link-group a::before { content: '→'; color: var(--primary); font-weight: 700; }
+        
+        /* Loud: CTA link – blue text + orange arrow right (no orange bg + white text) */
+        .torch-cta-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--link-blue);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: gap 0.2s;
+        }
+        .torch-cta-link:hover { gap: 0.75rem; color: #0d47a1; }
+        .torch-cta-link::after {
+            content: '→';
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        /* Loud: Button – white bg, orange border, blue text (no orange + white) */
+        .torch-btn {
+            background: white;
+            color: var(--link-blue);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .torch-btn:hover { border-color: var(--primary-dark); color: #0d47a1; background: #FFFBF7; }
+        .torch-btn-secondary {
+            background: white;
+            color: var(--smokey);
+            border: 2px solid var(--smokey);
+        }
+        .torch-btn-secondary:hover { background: var(--bg-light-gray); border-color: #3a3a3a; color: #3a3a3a; }
+        
+        .btn { background: white; color: var(--link-blue); padding: 0.75rem 1.5rem; border: 2px solid var(--primary); border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; margin-right: 0.5rem; margin-bottom: 0.5rem; transition: all 0.2s; }
+        .btn:hover { border-color: var(--primary-dark); color: #0d47a1; background: #FFFBF7; }
+        .btn-secondary { background: white; color: var(--smokey); border: 2px solid var(--smokey); }
+        .btn-secondary:hover { background: var(--bg-light-gray); border-color: #3a3a3a; color: #3a3a3a; }
+        
+        /* Torch: Tabs – wp-block-utk-wds-tab-group structure */
+        .wp-block-utk-wds-tab-group { margin: 2rem 0; }
+        .wp-block-utk-wds-tab-group .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            list-style: none;
+            border-bottom: 2px solid var(--border);
+            padding: 0;
+            margin: 0;
+        }
+        .wp-block-utk-wds-tab-group .nav-item {
+            margin-bottom: -2px;
+        }
+        .wp-block-utk-wds-tab-group .nav-link {
+            display: block;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-light-gray);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            font-weight: 500;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 0.25rem 0.25rem 0 0;
+            transition: all 0.2s;
+        }
+        .wp-block-utk-wds-tab-group .nav-link:hover {
+            color: var(--link-blue);
+            background: var(--bg);
+        }
+        .wp-block-utk-wds-tab-group .nav-link.active {
+            background: white;
+            color: var(--link-blue);
+            border-color: var(--border);
+            border-bottom: 2px solid white;
+            font-weight: 600;
+        }
+        .utk-wds-tab-wrapper.tab-content { padding-top: 1.25rem; }
+        .wp-block-utk-wds-tab.tab-pane {
+            display: none;
+        }
+        .wp-block-utk-wds-tab.tab-pane.active.show {
+            display: block;
+        }
+        .utk-wds-tab__panel-body { padding: 0; }
+        
+        /* Torch: Horizontal Card – half image/block + half text (Content Cards) */
+        .horizontal-card {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            background: var(--card);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+        .horizontal-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .horizontal-card-media {
+            background: #FFF8F0;
+            border-right: 4px solid var(--primary);
+            color: var(--smokey);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .horizontal-card-body { padding: 1.25rem; }
+        .horizontal-card-body h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .horizontal-card-body .meta { color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; }
+        .horizontal-card-stats { display: flex; gap: 1.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        .horizontal-card-stats .val { font-weight: 700; color: var(--primary); }
+        .horizontal-card-stats .lbl { font-size: 0.8rem; color: var(--text-light); }
+        
+        /* Torch: Callout Banner – full-width, floating/inset text box for impactful statement */
+        .callout-banner {
+            background: var(--bg-light-gray);
+            padding: 2.5rem 2rem;
+            margin: 2rem 0;
+            position: relative;
+            border-left: 6px solid var(--primary);
+        }
+        .callout-banner-inner {
+            background: white;
+            padding: 2rem 2.5rem;
+            max-width: 500px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .callout-banner h2 { font-size: 1.1rem; color: var(--smokey); margin-bottom: 0.5rem; }
+        .callout-banner .score-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+        .callout-banner .score-meta { font-size: 1.1rem; color: var(--text-light); margin-top: 0.25rem; }
+        
+        /* Torch: Stack Cards – vertical stacked cards with clear boundaries */
+        .stack-cards { display: flex; flex-direction: column; gap: 0; }
+        .stack-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+        }
+        .stack-card:last-child { border-bottom: 1px solid var(--border); }
+        .stack-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .stack-card-header h3 { font-size: 1rem; margin: 0; color: var(--smokey); }
+        .stack-card-score { font-weight: 700; color: var(--primary); }
+        .stack-card p { font-size: 0.9rem; color: var(--text-light); margin: 0; line-height: 1.5; }
+        
+        /* Torch: Icon & Text Banner – accent bar with content */
+        .icon-text-banner {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .icon-text-banner-icon {
+            width: 48px;
+            height: 48px;
+            background: #FFF8F0;
+            border: 2px solid var(--primary);
+            color: var(--link-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        /* Torch: Data table – Smokey header (matches site header) */
+        .data-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); }
+        .data-table thead { background: var(--smokey); color: white; }
+        .data-table th { padding: 1rem; text-align: left; font-weight: 600; }
+        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+        .data-table tbody tr:hover { background: var(--bg-light-gray); }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        
+        /* Form */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            font-family: inherit;
+            max-width: 400px;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        
+        /* Footer – Smokey to match header */
+        footer {
+            background: var(--smokey);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        .footer-content { text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-links a { color: white; text-decoration: none; opacity: 0.9; }
+        .footer-links a:hover { opacity: 1; }
+        .footer-copy { font-size: 0.9rem; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="preview-badge">🔍 UTK Torch Theme Preview</div>
+    
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">SG</div>
+                    <div>
+                        <h1>Speech Gradebook</h1>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.25rem;">University of Tennessee, Knoxville</p>
+                    </div>
+                </div>
+                <nav>
+                    <a href="#" class="nav-link">Dashboard</a>
+                    <a href="#" class="nav-link">Classes</a>
+                    <a href="#" class="nav-link">Rubrics</a>
+                    <a href="#" class="nav-link">Settings</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section>
+            <h2>Tabs</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">Torch wp-block-utk-wds-tab-group pattern</p>
+            <div class="wp-block-utk-wds-tab-group">
+                <ul class="nav nav-tabs main-tabs" role="tablist">
+                    <li class="nav-item block" role="presentation">
+                        <button class="nav-link active" id="tab-1-tab" data-tab-target="#tab-1" type="button" role="tab" aria-controls="tab-1">Upload</button>
+                    </li>
+                    <li class="nav-item block" role="presentation">
+                        <button class="nav-link" id="tab-2-tab" data-tab-target="#tab-2" type="button" role="tab" aria-controls="tab-2">Details</button>
+                    </li>
+                    <li class="nav-item block" role="presentation">
+                        <button class="nav-link" id="tab-3-tab" data-tab-target="#tab-3" type="button" role="tab" aria-controls="tab-3">Evaluate</button>
+                    </li>
+                    <li class="nav-item block" role="presentation">
+                        <button class="nav-link" id="tab-4-tab" data-tab-target="#tab-4" type="button" role="tab" aria-controls="tab-4">Results</button>
+                    </li>
+                </ul>
+                <div class="utk-wds-tab-wrapper main-tabs-content tab-content">
+                    <div class="wp-block-utk-wds-tab active show tab-pane" role="tabpanel" id="tab-1" aria-labelledby="tab-1-tab">
+                        <section data-tab-section="true">
+                            <div class="utk-wds-tab__panel-body">
+                                <p>Upload your video or audio file to begin evaluation.</p>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="wp-block-utk-wds-tab tab-pane" role="tabpanel" id="tab-2" aria-labelledby="tab-2-tab">
+                        <section data-tab-section="true">
+                            <div class="utk-wds-tab__panel-body">
+                                <p>Enter assignment details, student name, and select a rubric.</p>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="wp-block-utk-wds-tab tab-pane" role="tabpanel" id="tab-3" aria-labelledby="tab-3-tab">
+                        <section data-tab-section="true">
+                            <div class="utk-wds-tab__panel-body">
+                                <p>Evaluation is in progress. Select your AI provider and run the evaluation.</p>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="wp-block-utk-wds-tab tab-pane" role="tabpanel" id="tab-4" aria-labelledby="tab-4-tab">
+                        <section data-tab-section="true">
+                            <div class="utk-wds-tab__panel-body">
+                                <p>View scores, feedback, and timeline markers. Save or edit the evaluation.</p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Buttons & Links</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">Per <a href="https://brand.utk.edu/web-design-system/buttons-and-links/" target="_blank" rel="noopener" class="torch-text-link">Torch Button & Link Styles</a></p>
+            <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--smokey);">Quiet – Text link (within copy):</p>
+            <p style="margin-bottom: 1.5rem;">Use <a href="#" class="torch-text-link">text links</a> for optional, supplementary actions within running copy.</p>
+            <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--smokey);">Medium – Single link (arrow moves on hover):</p>
+            <p style="margin-bottom: 1rem;"><a href="#" class="torch-single-link">Select rubric</a></p>
+            <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--smokey);">Medium – Link group (2–3 columns):</p>
+            <div class="torch-link-group" style="max-width: 400px; margin-bottom: 1.5rem;">
+                <a href="#">Manage rubrics</a>
+                <a href="#">View evaluations</a>
+                <a href="#">Export data</a>
+                <a href="#">Settings</a>
+            </div>
+            <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--smokey);">Loud – CTA link (calls to action, limit 2/page):</p>
+            <p style="margin-bottom: 0.5rem;"><a href="#" class="torch-cta-link">Start evaluation</a></p>
+            <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--smokey);">Loud – Button (submit, modal, final step):</p>
+            <button class="torch-btn">Save</button>
+            <button class="torch-btn torch-btn-secondary">Cancel</button>
+        </section>
+        
+        <section>
+            <h2>Horizontal Cards</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">Torch Content Cards – half block + half text</p>
+            <div class="horizontal-card">
+                <div class="horizontal-card-media">COMM</div>
+                <div class="horizontal-card-body">
+                    <h3>COMM 101</h3>
+                    <div class="meta">Fall 2025 • In-person</div>
+                    <div class="horizontal-card-stats">
+                        <span><span class="val">24</span> <span class="lbl">Students</span></span>
+                        <span><span class="val">18</span> <span class="lbl">Evaluations</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="horizontal-card">
+                <div class="horizontal-card-media">SPCH</div>
+                <div class="horizontal-card-body">
+                    <h3>SPCH 110</h3>
+                    <div class="meta">Spring 2026 • Online</div>
+                    <div class="horizontal-card-stats">
+                        <span><span class="val">32</span> <span class="lbl">Students</span></span>
+                        <span><span class="val">12</span> <span class="lbl">Evaluations</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Callout Banner</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">Torch pattern – single impactful statement</p>
+            <div class="callout-banner">
+                <div class="callout-banner-inner">
+                    <h2>Overall Score</h2>
+                    <div class="score-value">45/50</div>
+                    <div class="score-meta">90.0% • Grade: B</div>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Stack Cards</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">Torch pattern – vertical stacked content</p>
+            <div class="stack-cards">
+                <div class="stack-card">
+                    <div class="stack-card-header"><h3>Content - Introduction</h3><span class="stack-card-score">9/10</span></div>
+                    <p>The introduction was clear and engaging, capturing attention effectively.</p>
+                </div>
+                <div class="stack-card">
+                    <div class="stack-card-header"><h3>Delivery - Nonverbal</h3><span class="stack-card-score">8/10</span></div>
+                    <p>Good eye contact and appropriate gestures throughout.</p>
+                </div>
+                <div class="stack-card">
+                    <div class="stack-card-header"><h3>Delivery - Verbal</h3><span class="stack-card-score">7/10</span></div>
+                    <p>Clear vocal delivery with effective use of pauses.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Icon & Text Banner</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">Torch pattern – icon + content</p>
+            <div class="icon-text-banner">
+                <div class="icon-text-banner-icon">📋</div>
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">Self-Introduction Speech</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem;">50 points • Use this rubric for introductory speeches.</p>
+                    <a href="#" class="torch-single-link" style="margin-top: 0.5rem; display: inline-block;">Select rubric</a>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Data Table</h2>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">Smokey header to match site header</p>
+            <table class="data-table">
+                <thead>
+                    <tr><th>Student</th><th>Assignment</th><th>Score</th><th>Date</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Jane Doe</td><td>Introduction</td><td>45/50</td><td>2026-02-06</td></tr>
+                    <tr><td>John Smith</td><td>Introduction</td><td>42/50</td><td>2026-02-05</td></tr>
+                    <tr><td>Alex Johnson</td><td>Persuasive</td><td>48/50</td><td>2026-02-04</td></tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section>
+            <h2>Form Inputs</h2>
+            <div class="form-group">
+                <label>Rubric</label>
+                <select><option>Self-Introduction Speech</option><option>Persuasive Speech</option></select>
+            </div>
+            <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" placeholder="Enter student name" value="Jane Doe">
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://www.utk.edu/aboutut/privacy/">Privacy Policy</a>
+                    <a href="https://dae.utk.edu/eoa/ada/">Accessibility</a>
+                    <a href="https://titleix.utk.edu/">Title IX</a>
+                    <a href="https://oit.utk.edu/help">IT Help</a>
+                </div>
+                <p class="footer-copy">© 2026 Speech Gradebook</p>
+                <p class="footer-copy" style="margin-top: 0.5rem; font-size: 0.85rem;">The flagship campus of the University of Tennessee System</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.wp-block-utk-wds-tab-group [data-tab-target]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var targetId = this.getAttribute('data-tab-target');
+                var group = this.closest('.wp-block-utk-wds-tab-group');
+                group.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
+                group.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active', 'show'); });
+                this.classList.add('active');
+                var pane = document.querySelector(targetId);
+                if (pane) { pane.classList.add('active', 'show'); }
+            });
+        });
+    </script>
+</body>
+</html>

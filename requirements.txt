@@ -1,0 +1,23 @@
+# Dependencies for SpeechGradebook app + evaluation API (same as llm_training/requirements-train.txt)
+# Used by Render: pip install -r requirements.txt
+
+torch>=2.0.0
+transformers>=4.36.0
+peft>=0.7.0
+datasets>=2.16.0
+accelerate>=0.25.0
+trl>=0.7.0
+bitsandbytes>=0.41.0; sys_platform != 'darwin'
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+slowapi>=0.1.9
+python-dotenv>=1.0.0
+
+# Textbook RAG (optional; needed when rubric has textbook_id)
+sentence-transformers>=2.2.0
+psycopg2-binary>=2.9.0
+
+# Testing (optional, for development)
+pytest>=7.0.0
+httpx>=0.24.0

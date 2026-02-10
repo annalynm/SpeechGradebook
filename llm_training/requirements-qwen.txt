@@ -1,0 +1,18 @@
+# Dependencies for Qwen2.5-VL service (video analysis + rubric extraction)
+# Requires Python 3.9+. Run: pip install -r requirements-qwen.txt
+# If "transformers>=4.50.0" fails, upgrade pip and retry, or install from git:
+#   pip install --upgrade pip && pip install git+https://github.com/huggingface/transformers.git
+
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.50.0
+accelerate>=0.25.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+pillow>=10.0.0
+pymupdf>=1.23.0
+
+# Textbook RAG (optional; needed when rubric has textbook_id)
+sentence-transformers>=2.2.0
+psycopg2-binary>=2.9.0

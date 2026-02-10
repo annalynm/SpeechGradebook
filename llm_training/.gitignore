@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+
+# Generated / large data - do not commit
+train.jsonl
+validation.jsonl
+exported.json
+exports/
+cache/
+behavior_examples_qwen.jsonl
+behavior_examples_export.json# ISAAC / local config (may contain NetID, account, tokens)
+run_config.env
+.env_isaac

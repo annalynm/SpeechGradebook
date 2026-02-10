@@ -1,0 +1,21 @@
+# Local run with Docker Compose.
+# Prerequisites: .env with SUPABASE_URL and SUPABASE_ANON_KEY (copy from .env.example).
+#
+#   docker compose up --build
+#   Open http://localhost:8000
+#
+# Optional: mount a trained model for /api/evaluate
+#   Uncomment the volumes section for llm_training below and set the host path.
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PORT=8000
+    # Optional: use a local adapter so /api/evaluate works
+    # volumes:
+    #   - ./llm_training/mistral7b-speech-lora:/app/llm_training/mistral7b-speech-lora:ro

@@ -1,0 +1,21 @@
+[
+  {
+    "label": "Swaying",
+    "type": "delivery",
+    "description": "Speaker sways side to side or rocks while standing; distracting and suggests lack of poise.",
+    "scoring_guidance": "Deduct in Delivery under posture or body control. Severe swaying = significant deduction; minimal = small deduction."
+  },
+  {
+    "label": "Purpose statement",
+    "type": "content",
+    "description": "Clear statement of the speech goal (e.g. 'Today I will explain...', 'My goal is to persuade you that...').",
+    "example_excerpt": "Today I will explain three benefits of regular exercise.",
+    "scoring_guidance": "Credit in Content / organization or introduction. Strong purpose statement = full or near-full points; missing or vague = deduct."
+  },
+  {
+    "label": "Strong eye contact",
+    "type": "delivery",
+    "description": "Speaker looks at the audience or camera regularly; does not read from notes for extended periods.",
+    "scoring_guidance": "Credit in Delivery / eye contact. Sustained eye contact = full points; frequent reading from notes or looking away = deduct."
+  }
+]

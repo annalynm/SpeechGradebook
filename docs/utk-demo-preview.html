@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Gradebook – Demo with UTK Theme</title>
+    <link href="https://fonts.bunny.net/css?family=Montserrat:400,500,600,700|Source+Sans+3:400,600,700&display=swap" rel="stylesheet">
+    <style>
+        /* Reuse UTK theme – inline copy for standalone use */
+        :root {
+            --primary: #FF8200; --primary-dark: #E56B00; --smokey: #4B4B4B; --text: #4B4B4B;
+            --text-light: #6B6B6B; --bg: #FAFAFA; --bg-light-gray: #F0F0F0; --card: #FFFFFF;
+            --border: #E0E0E0; --success: #059669; --link-blue: #1a73c5;
+            --heading-font: 'Montserrat', sans-serif; --body-font: 'Source Sans 3', -apple-system, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--body-font); background: var(--bg); color: var(--text); line-height: 1.6; }
+        h1, h2, h3 { font-family: var(--heading-font); color: var(--smokey); font-weight: 600; }
+        .hidden { display: none !important; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .preview-badge { position: fixed; top: 10px; right: 10px; background: white; color: var(--link-blue); border: 2px solid var(--primary); padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.85rem; z-index: 9999; }
+        header { background: var(--smokey); color: white; padding: 1.25rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo-section { display: flex; align-items: center; gap: 1rem; }
+        .logo { width: 48px; height: 48px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+        header h1 { color: white; font-size: 1.5rem; margin: 0; }
+        .nav-link { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: 500; opacity: 0.95; }
+        .torch-btn { background: white; color: var(--link-blue); padding: 0.75rem 1.5rem; border: 2px solid var(--primary); border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .torch-btn:hover { border-color: var(--primary-dark); color: #0d47a1; background: #FFFBF7; }
+        .torch-btn-secondary { background: white; color: var(--smokey); border: 2px solid var(--smokey); }
+        .torch-btn-secondary:hover { background: var(--bg-light-gray); }
+        .torch-cta-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--link-blue); text-decoration: none; font-weight: 700; font-size: 1.05rem; }
+        .torch-cta-link::after { content: '→'; color: var(--primary); font-weight: 700; }
+        .torch-single-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--primary); padding-bottom: 0.1rem; }
+        .torch-single-link::before { content: '→'; color: var(--primary); font-weight: 700; }
+        .horizontal-card { display: grid; grid-template-columns: 120px 1fr; background: var(--card); border: 1px solid var(--border); overflow: hidden; margin-bottom: 1rem; transition: box-shadow 0.2s; cursor: pointer; }
+        .horizontal-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .horizontal-card-media { background: #FFF8F0; border-right: 4px solid var(--primary); color: var(--smokey); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; }
+        .horizontal-card-body { padding: 1.25rem; }
+        .horizontal-card-body h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .horizontal-card-body .meta { color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; }
+        .horizontal-card-stats { display: flex; gap: 1.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        .horizontal-card-stats .val { font-weight: 700; color: var(--primary); }
+        .horizontal-card-stats .lbl { font-size: 0.8rem; color: var(--text-light); }
+        .callout-banner { background: var(--bg-light-gray); padding: 2.5rem 2rem; margin: 2rem 0; border-left: 6px solid var(--primary); }
+        .callout-banner-inner { background: white; padding: 2rem 2.5rem; max-width: 500px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .callout-banner h2 { font-size: 1.1rem; color: var(--smokey); margin-bottom: 0.5rem; }
+        .callout-banner .score-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+        .callout-banner .score-meta { font-size: 1.1rem; color: var(--text-light); margin-top: 0.25rem; }
+        .stack-cards { display: flex; flex-direction: column; gap: 0; }
+        .stack-card { background: var(--card); border: 1px solid var(--border); border-bottom: none; padding: 1.25rem 1.5rem; }
+        .stack-card:last-child { border-bottom: 1px solid var(--border); }
+        .stack-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .stack-card-header h3 { font-size: 1rem; margin: 0; color: var(--smokey); }
+        .stack-card-score { font-weight: 700; color: var(--primary); }
+        .stack-card p { font-size: 0.9rem; color: var(--text-light); margin: 0; line-height: 1.5; }
+        .wp-block-utk-wds-tab-group .nav-tabs { display: flex; list-style: none; border-bottom: 2px solid var(--border); padding: 0; margin: 0; }
+        .wp-block-utk-wds-tab-group .nav-item { margin-bottom: -2px; }
+        .wp-block-utk-wds-tab-group .nav-link { display: block; padding: 0.75rem 1.25rem; background: var(--bg-light-gray); color: var(--text-light); border: 1px solid var(--border); border-bottom: none; font-weight: 500; font-family: inherit; font-size: 1rem; cursor: pointer; border-radius: 0.25rem 0.25rem 0 0; transition: all 0.2s; }
+        .wp-block-utk-wds-tab-group .nav-link:hover { color: var(--link-blue); background: var(--bg); }
+        .wp-block-utk-wds-tab-group .nav-link.active { background: white; color: var(--link-blue); border-color: var(--border); border-bottom: 2px solid white; font-weight: 600; }
+        .utk-wds-tab-wrapper.tab-content { padding-top: 1.25rem; }
+        .wp-block-utk-wds-tab.tab-pane { display: none; }
+        .wp-block-utk-wds-tab.tab-pane.active.show { display: block; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+        input, select { width: 100%; max-width: 400px; padding: 0.75rem 1rem; border: 2px solid var(--border); border-radius: 0.25rem; font-size: 1rem; font-family: inherit; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+        footer { background: var(--smokey); color: white; padding: 2rem 0; margin-top: 3rem; }
+        .footer-content { text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .footer-links a { color: white; text-decoration: none; opacity: 0.9; }
+        .auth-card { max-width: 420px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+        .auth-card h2 { text-align: center; margin-bottom: 0.5rem; }
+        .auth-tagline { text-align: center; color: var(--text-light); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .auth-divider { text-align: center; margin: 1rem 0; color: var(--text-light); font-size: 0.9rem; }
+        .btn-demo { width: 100%; padding: 0.875rem; font-size: 1rem; background: white; color: var(--link-blue); border: 2px solid var(--primary); border-radius: 0.5rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+        .btn-demo:hover { background: #FFFBF7; border-color: var(--primary-dark); }
+        .demo-banner { background: #FFF8F0; border: 2px solid var(--primary); padding: 0.75rem 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-size: 0.9rem; text-align: center; }
+        .upload-zone { border: 2px dashed var(--border); border-radius: 1rem; padding: 3rem 2rem; text-align: center; color: var(--text-light); cursor: pointer; background: var(--bg); transition: all 0.2s; }
+        .upload-zone:hover { border-color: var(--primary); background: #FFFBF7; }
+    </style>
+</head>
+<body>
+    <div class="preview-badge">Demo + UTK Theme</div>
+    
+    <!-- Auth screen -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 80px; height: 80px; margin: 0 auto 1rem; background: white; border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary); font-size: 1.5rem;">SG</div>
+                <h2>Speech Gradebook</h2>
+                <p class="auth-tagline">University of Tennessee, Knoxville</p>
+            </div>
+            <p class="auth-divider">Sign in or try the demo</p>
+            <button type="button" class="btn-demo" onclick="enterDemo();" style="margin-top: 0.5rem;">
+                Try demo
+            </button>
+            <p style="text-align: center; margin-top: 1.5rem; color: var(--text-light); font-size: 0.9rem;">
+                Don't have an account? <a href="#" class="torch-single-link">Create one</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main app (hidden until demo) -->
+    <div id="mainApp" class="hidden">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <div class="logo">SG</div>
+                        <div>
+                            <h1>Speech Gradebook</h1>
+                            <p style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.25rem;">University of Tennessee, Knoxville</p>
+                        </div>
+                    </div>
+                    <nav>
+                        <a href="#" class="nav-link" onclick="showView('dashboard'); return false;">Dashboard</a>
+                        <a href="#" class="nav-link" onclick="showView('evaluate'); return false;">Evaluate</a>
+                        <a href="#" class="nav-link">Rubrics</a>
+                        <a href="#" class="nav-link">Settings</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        
+        <main class="container" style="padding: 2rem 1rem;">
+            <div class="demo-banner">You're viewing the demo. This is a preview of the UTK Torch theme applied to Speech Gradebook.</div>
+            
+            <!-- Dashboard view -->
+            <div id="viewDashboard">
+                <h2 style="margin-bottom: 1.5rem;">My Classes</h2>
+                <div class="horizontal-card" onclick="showView('evaluate')">
+                    <div class="horizontal-card-media">COMM</div>
+                    <div class="horizontal-card-body">
+                        <h3>COMM 101</h3>
+                        <div class="meta">Fall 2025 • In-person</div>
+                        <div class="horizontal-card-stats">
+                            <span><span class="val">24</span> <span class="lbl">Students</span></span>
+                            <span><span class="val">18</span> <span class="lbl">Evaluations</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="horizontal-card" onclick="showView('evaluate')">
+                    <div class="horizontal-card-media">SPCH</div>
+                    <div class="horizontal-card-body">
+                        <h3>SPCH 110</h3>
+                        <div class="meta">Spring 2026 • Online</div>
+                        <div class="horizontal-card-stats">
+                            <span><span class="val">32</span> <span class="lbl">Students</span></span>
+                            <span><span class="val">12</span> <span class="lbl">Evaluations</span></span>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 1rem;"><a href="#" onclick="showView('evaluate'); return false;" class="torch-cta-link">Start new evaluation</a></p>
+            </div>
+            
+            <!-- Evaluation view -->
+            <div id="viewEvaluate" class="hidden">
+                <h2 style="margin-bottom: 1rem;">Evaluate Speech</h2>
+                <div class="wp-block-utk-wds-tab-group">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item"><button class="nav-link active" data-tab="#tab-1">Upload</button></li>
+                        <li class="nav-item"><button class="nav-link" data-tab="#tab-2">Details</button></li>
+                        <li class="nav-item"><button class="nav-link" data-tab="#tab-3">Evaluate</button></li>
+                        <li class="nav-item"><button class="nav-link" data-tab="#tab-4">Results</button></li>
+                    </ul>
+                    <div class="utk-wds-tab-wrapper tab-content">
+                        <div id="tab-1" class="wp-block-utk-wds-tab tab-pane active show">
+                            <div class="utk-wds-tab__panel-body">
+                                <div class="upload-zone" onclick="goToTab(4)">
+                                    <p style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text);">Drop video or audio here</p>
+                                    <p style="font-size: 0.9rem;">or click to browse</p>
+                                </div>
+                                <p style="margin-top: 1rem;"><button class="torch-btn" onclick="goToTab(4)">Skip to sample results</button></p>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="wp-block-utk-wds-tab tab-pane">
+                            <div class="utk-wds-tab__panel-body">
+                                <div class="form-group"><label>Student</label><input type="text" value="Jane Doe" readonly></div>
+                                <div class="form-group"><label>Assignment</label><select><option>Introduction</option></select></div>
+                                <div class="form-group"><label>Rubric</label><select><option>Self-Introduction Speech</option></select></div>
+                                <p style="margin-top: 1rem;"><button class="torch-btn" onclick="goToTab(4)">Continue to results</button></p>
+                            </div>
+                        </div>
+                        <div id="tab-3" class="wp-block-utk-wds-tab tab-pane">
+                            <div class="utk-wds-tab__panel-body">
+                                <p>Select AI provider and run evaluation.</p>
+                                <p style="margin-top: 1rem;"><button class="torch-btn" onclick="goToTab(4)">Generate demo results</button></p>
+                            </div>
+                        </div>
+                        <div id="tab-4" class="wp-block-utk-wds-tab tab-pane">
+                            <div class="utk-wds-tab__panel-body">
+                                <div class="callout-banner">
+                                    <div class="callout-banner-inner">
+                                        <h2>Overall Score</h2>
+                                        <div class="score-value">45/50</div>
+                                        <div class="score-meta">90.0% • Grade: B</div>
+                                    </div>
+                                </div>
+                                <h3 style="margin: 2rem 0 1rem;">Section Scores</h3>
+                                <div class="stack-cards">
+                                    <div class="stack-card">
+                                        <div class="stack-card-header"><h3>Content - Introduction</h3><span class="stack-card-score">9/10</span></div>
+                                        <p>The introduction was clear and engaging, capturing attention effectively.</p>
+                                    </div>
+                                    <div class="stack-card">
+                                        <div class="stack-card-header"><h3>Delivery - Nonverbal</h3><span class="stack-card-score">8/10</span></div>
+                                        <p>Good eye contact and appropriate gestures throughout.</p>
+                                    </div>
+                                    <div class="stack-card">
+                                        <div class="stack-card-header"><h3>Delivery - Verbal</h3><span class="stack-card-score">7/10</span></div>
+                                        <p>Clear vocal delivery with effective use of pauses.</p>
+                                    </div>
+                                </div>
+                                <p style="margin-top: 1.5rem;">
+                                    <button class="torch-btn">Save evaluation</button>
+                                    <button class="torch-btn torch-btn-secondary" onclick="showView('dashboard')">Back to dashboard</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-links">
+                        <a href="https://www.utk.edu/aboutut/privacy/">Privacy Policy</a>
+                        <a href="https://dae.utk.edu/eoa/ada/">Accessibility</a>
+                        <a href="https://titleix.utk.edu/">Title IX</a>
+                        <a href="https://oit.utk.edu/help">IT Help</a>
+                    </div>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">© 2026 Speech Gradebook</p>
+                    <p style="font-size: 0.85rem; opacity: 0.9; margin-top: 0.5rem;">The flagship campus of the University of Tennessee System</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        function enterDemo() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            showView('dashboard');
+        }
+        function showView(view) {
+            document.getElementById('viewDashboard').classList.toggle('hidden', view !== 'dashboard');
+            document.getElementById('viewEvaluate').classList.toggle('hidden', view !== 'evaluate');
+            if (view === 'evaluate') goToTab(1);
+        }
+        function goToTab(n) {
+            var group = document.querySelector('.wp-block-utk-wds-tab-group');
+            if (!group) return;
+            group.querySelectorAll('.nav-link').forEach(function(l, i) { l.classList.toggle('active', i === n - 1); });
+            group.querySelectorAll('.tab-pane').forEach(function(p, i) { p.classList.toggle('active', i === n - 1); p.classList.toggle('show', i === n - 1); });
+        }
+        document.querySelectorAll('.wp-block-utk-wds-tab-group .nav-link').forEach(function(btn, i) {
+            btn.addEventListener('click', function() { goToTab(i + 1); });
+        });
+    </script>
+</body>
+</html>

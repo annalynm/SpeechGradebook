@@ -1,0 +1,18 @@
+# Render Blueprint for SpeechGradebook (FastAPI + static frontend)
+# See: https://render.com/docs/blueprint-spec
+# If you created the service manually, set Start Command in Dashboard to the value below.
+#
+# Required: In Render Dashboard → your service → Environment, add:
+#   SUPABASE_URL     = your Supabase project URL (e.g. https://xxxx.supabase.co)
+#   SUPABASE_ANON_KEY = your Supabase anon/public key (Settings → API in Supabase)
+# Without these, login will fail with "Invalid API key". See RENDER_DEPLOY.md for details.
+#
+# For "Submit to ISAAC" (Platform Analytics → LLM Export): add ISAAC_USER, ISAAC_HOST,
+# ISAAC_REMOTE_DIR, ISAAC_SSH_PRIVATE_KEY, RENDER_LLM_EXPORT_SECRET. See RENDER_DEPLOY.md.
+
+services:
+  - type: web
+    name: speechgradebook
+    runtime: docker
+    # Dockerfile installs ffmpeg for /api/compress_video. Omit buildCommand/startCommand; Dockerfile CMD runs uvicorn.
+    healthCheckPath: /api/health

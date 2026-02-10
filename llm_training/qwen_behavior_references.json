@@ -1,0 +1,92 @@
+[
+  {
+    "label": "Hands in pockets",
+    "type": "delivery",
+    "description": "Speaker's hands or hand in pants or jacket pockets; suggests informality and limits gesture use.",
+    "scoring_guidance": "Deduct in Delivery (body/professionalism). Dock points; more frequent or prolonged = larger deduction.",
+    "severity_default": "moderate",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/hands-in-pockets.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Hands clasped (in front)",
+    "type": "delivery",
+    "description": "Hands clasped together in front of body. Can be neutral if brief; prolonged or rigid suggests tension or lack of gesture.",
+    "scoring_guidance": "Deduct only if prolonged or dominant. Mild/brief = small or no deduction; pronounced = deduct in Delivery.",
+    "severity_default": "minor",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/hands-clasped-front.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Hands clasped behind",
+    "type": "delivery",
+    "description": "Hands clasped behind the back; formal or stiff posture, limits gesture.",
+    "scoring_guidance": "Deduct in Delivery if prolonged; brief may be acceptable.",
+    "severity_default": "minor",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/hands-clasped-behind.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Swaying",
+    "type": "delivery",
+    "description": "Speaker sways side to side or rocks while standing; distracting and suggests lack of poise.",
+    "scoring_guidance": "Deduct in Delivery (posture/body control). Severe swaying = significant deduction; minimal = small deduction.",
+    "severity_default": "moderate",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/swaying.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Tapping hands",
+    "type": "delivery",
+    "description": "Repetitive tapping of hands together, on legs, or on podium; distracting mannerism.",
+    "scoring_guidance": "Deduct in Delivery. Frequent or noticeable = moderate deduction.",
+    "severity_default": "moderate",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/tapping-hands.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Vocalized pause",
+    "type": "delivery",
+    "description": "Filler sounds or words: 'um', 'uh', 'like', 'you know' used as pauses.",
+    "scoring_guidance": "Deduct in Delivery (vocal delivery/fluency). Many = larger deduction; few = small deduction.",
+    "severity_default": "minor",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/vocalized-pause.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Purpose statement",
+    "type": "content",
+    "description": "Clear statement of the speech goal (e.g. 'Today I will explain...', 'My goal is to persuade you that...').",
+    "scoring_guidance": "Credit in Content (organization/introduction). Strong purpose statement = full or near-full points; missing or vague = deduct.",
+    "severity_default": "positive",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/purpose-statement.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Eye contact with camera",
+    "type": "delivery",
+    "description": "Speaker looks at the camera lens rather than at the screen or notes; essential for connection in online/remote presentations.",
+    "scoring_guidance": "Credit in Delivery when sustained. Deduct when frequently looking at screen, notes, or elsewhere instead of camera.",
+    "severity_default": "positive",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/eye-contact-camera.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Reading from notes or screen",
+    "type": "delivery",
+    "description": "Speaker reads extensively from notes or reads text verbatim from screen; reduces engagement and eye contact with audience.",
+    "scoring_guidance": "Deduct in Delivery. Heavy reliance = moderate or major deduction; occasional glance = small or no deduction.",
+    "severity_default": "moderate",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/reading-from-notes.mp4",
+    "media_type": "video"
+  },
+  {
+    "label": "Professional setup",
+    "type": "delivery",
+    "description": "Clean background, good lighting, camera at eye level; appropriate for online presentation.",
+    "scoring_guidance": "Credit when well done. Minor deduct if distracting background or poor lighting.",
+    "severity_default": "positive",
+    "media_url": "https://mqhbfefylpfqsbtrshpu.supabase.co/storage/v1/object/public/evaluation-media/behavior-examples/professional-setup.mp4",
+    "media_type": "video"
+  }
+]

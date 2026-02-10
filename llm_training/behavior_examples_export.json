@@ -1,0 +1,415 @@
+[
+  {
+    "transcript": "N/A",
+    "video_notes": "Speaker's hands or hand in pants or jacket pockets; suggests informality and limits gesture use.. Deduct in Delivery (body/professionalism). Dock points; more frequent or prolonged = larger deduction.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 7,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 2,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Hands in pockets"
+  },
+  {
+    "transcript": "N/A",
+    "video_notes": "Hands clasped together in front of body. Can be neutral if brief; prolonged or rigid suggests tension or lack of gesture.. Deduct only if prolonged or dominant. Mild/brief = small or no deduction; pronounced = deduct in Delivery.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 9,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 4,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Hands clasped (in front)"
+  },
+  {
+    "transcript": "N/A",
+    "video_notes": "Hands clasped behind the back; formal or stiff posture, limits gesture.. Deduct in Delivery if prolonged; brief may be acceptable.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 9,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 4,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Hands clasped behind"
+  },
+  {
+    "transcript": "N/A",
+    "video_notes": "Speaker sways side to side or rocks while standing; distracting and suggests lack of poise.. Deduct in Delivery (posture/body control). Severe swaying = significant deduction; minimal = small deduction.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 7,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 2,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Swaying"
+  },
+  {
+    "transcript": "N/A",
+    "video_notes": "Repetitive tapping of hands together, on legs, or on podium; distracting mannerism.. Deduct in Delivery. Frequent or noticeable = moderate deduction.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 7,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 2,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Tapping hands"
+  },
+  {
+    "transcript": "N/A",
+    "video_notes": "Filler sounds or words: 'um', 'uh', 'like', 'you know' used as pauses.. Deduct in Delivery (vocal delivery/fluency). Many = larger deduction; few = small deduction.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 9,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 4,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Vocalized pause"
+  },
+  {
+    "transcript": "N/A",
+    "video_notes": "Clear statement of the speech goal (e.g. 'Today I will explain...', 'My goal is to persuade you that...').. Credit in Content (organization/introduction). Strong purpose statement = full or near-full points; missing or vague = deduct.",
+    "rubric": "Speech (Delivery + Content)",
+    "rubric_structure": {
+      "name": "Speech (Delivery + Content)",
+      "categories": [
+        {
+          "name": "Content",
+          "subcategories": [
+            "Organization",
+            "Supporting Material"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "subcategories": [
+            "Body/professionalism",
+            "Vocal delivery"
+          ]
+        }
+      ]
+    },
+    "scores": {
+      "Content": {
+        "score": 8,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Organization",
+            "points": 4,
+            "maxPoints": 5
+          },
+          {
+            "name": "Supporting Material",
+            "points": 4,
+            "maxPoints": 5
+          }
+        ]
+      },
+      "Delivery": {
+        "score": 10,
+        "maxScore": 10,
+        "subcategories": [
+          {
+            "name": "Body/professionalism",
+            "points": 5,
+            "maxPoints": 5
+          },
+          {
+            "name": "Vocal delivery",
+            "points": 5,
+            "maxPoints": 5
+          }
+        ]
+      }
+    },
+    "source_behavior_label": "Purpose statement"
+  }
+]
