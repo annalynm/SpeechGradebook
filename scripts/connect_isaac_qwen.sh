@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Connect to ISAAC, request a GPU node, and launch Qwen + Cloudflare tunnel.
+# NOTE: This script is for using ISAAC (UT's cluster) for Qwen evaluations.
+# For production, use Modal instead (see llm_training/QWEN_MODAL_SETUP.md).
+# This script is kept for reference or if you need ISAAC for training/testing.
+#
 # Run from your Mac (e.g. double-click or: ./scripts/connect_isaac_qwen.sh).
 # You will be prompted for password and Duo. After the GPU job starts, Qwen and the tunnel run;
 # copy the https://....trycloudflare.com URL and set QWEN_API_URL on Render if it changed.

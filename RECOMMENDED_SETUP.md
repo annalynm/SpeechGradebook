@@ -1,15 +1,19 @@
-# Recommended setup: Gemini for evaluations, export & train when ready
+# Recommended setup: SpeechGradebook Text + Video Model (Qwen via Modal) for evaluations
 
-This is the simplest path: **users evaluate speeches with Google Gemini**, and you **export data and train the LLM** when you’re ready. No need to run or fix the Qwen connection for normal use.
+This setup uses **SpeechGradebook Text + Video Model (Qwen)** deployed on **Modal** (pay-per-use GPU) as the default evaluation provider. Users get full video analysis (content + delivery, eye contact, gestures, slides) with no local GPU required.
 
 ---
 
 ## 1. Evaluations (users)
 
-- **Default:** The app uses **Google Gemini** for speech/video evaluations.
-- **What you need:** A Gemini API key. Set it in **Settings → General → API Keys** (or have an admin set an institution key in **Settings → Admin**).
-- **Get a key:** [Google AI Studio](https://aistudio.google.com/app/apikey) (free tier available).
-- **Result:** Instructors and students can run evaluations without any Qwen or tunnel setup.
+- **Default:** The app uses **SpeechGradebook Text + Video Model (Qwen)** for speech/video evaluations.
+- **Deployment:** Qwen runs on **Modal** (serverless GPU). Pay only for GPU seconds used (~$0.01–0.03 per evaluation).
+- **Setup:** 
+  1. Deploy Qwen to Modal: `modal deploy llm_training/qwen_modal.py` (see `llm_training/QWEN_MODAL_SETUP.md`)
+  2. Set `QWEN_API_URL` on Render to your Modal URL (e.g. `https://yourname--qwen-speechgradebook.modal.run`)
+  3. Users select "SpeechGradebook Text + Video Model (Qwen)" in the evaluation provider dropdown (default)
+- **Result:** Instructors and students get comprehensive video analysis without any local setup or API keys.
+- **Alternative providers:** Gemini, OpenAI GPT-4o, or Claude can be used as fallbacks (set API keys in Settings → General → API Keys).
 
 ---
 
@@ -18,26 +22,27 @@ This is the simplest path: **users evaluate speeches with Google Gemini**, and y
 - **Who:** Super Admin only.
 - **Where:** **Analytics → Evaluations** (or the **LLM Export** tab). Use **Download for LLM training** to get consented evaluations as `exported.json`.
 - **What it does:** Downloads evaluations that have student consent and instructor LLM consent in the format needed for fine-tuning. You can use this with the training scripts in `llm_training/` (e.g. `export_to_jsonl.js`, then `train_lora.py` or the Qwen training pipeline).
-- **No Qwen required:** Export works without a live Qwen service. You’re just downloading data from the app.
+- **No GPU required for export:** Export works without any GPU infrastructure. You're just downloading data from the app.
 
 ---
 
-## 3. Train the LLM (when you’re ready)
+## 3. Train the LLM (when you're ready)
 
-- **Where:** On ISAAC (your campus cluster), or on a cloud GPU (RunPod, Lambda, etc.), or locally if you have a suitable GPU.
+- **Where:** On a cloud GPU (RunPod, Lambda Labs, Vast.ai, etc.), or locally if you have a suitable GPU.
 - **Steps:**  
   1. Export data (step 2 above).  
   2. Convert to training format (e.g. `node export_to_jsonl.js exported.json > train.jsonl`).  
   3. Run training (e.g. `train_lora.py` for Mistral, or the Qwen training scripts in `llm_training/`).  
-- **Docs:** For a single place that covers consent, export flow, data formats, scripts, and environment for **both** Mistral and Qwen, see **`llm_training/TRAINING_REQUIREMENTS.md`**. See also `llm_training/README.md`, `llm_training/STEPS_TO_REAL_EVALUATIONS.md`, and `llm_training/DUAL_MODEL_TRAINING.md` for your chosen model and cluster.
+- **Docs:** For a single place that covers consent, export flow, data formats, scripts, and environment for **both** Mistral and Qwen, see **`llm_training/TRAINING_REQUIREMENTS.md`**. See also `llm_training/README.md`, `llm_training/STEPS_TO_REAL_EVALUATIONS.md`, and `llm_training/DUAL_MODEL_TRAINING.md` for your chosen model and GPU provider.
 
 ---
 
-## 4. Qwen (optional)
+## 4. Alternative evaluation providers (optional)
 
-- **Use:** Video analysis and rubric extraction via the “SpeechGradebook Text + Video Model (Qwen)” provider. Requires running the Qwen service (e.g. on ISAAC or a cloud GPU) and exposing it (e.g. Cloudflare tunnel).
-- **When:** Only if you want to use Qwen for evaluations or rubric extraction. Most users can ignore this and use Gemini only.
-- **Docs:** `llm_training/QWEN_NAMED_TUNNEL.md`, `llm_training/START_QWEN_FOR_RENDER.md`, etc. Revisit these if you later set up an always-on Qwen instance (e.g. RunPod or Lambda).
+- **Google Gemini:** Free tier available. Good for testing or as a fallback. Set API key in Settings → General → API Keys.
+- **OpenAI GPT-4o:** Paid API. Video analysis (single frame). Set API key in Settings.
+- **Anthropic Claude:** Paid API. Audio-only (transcribes then evaluates). Set API key in Settings.
+- **SpeechGradebook Text Model (Mistral):** Your own fine-tuned model. Requires training and hosting separately.
 
 ---
 
@@ -45,7 +50,7 @@ This is the simplest path: **users evaluate speeches with Google Gemini**, and y
 
 | Goal | What to do |
 |------|------------|
-| **Users evaluate speeches** | Use **Google Gemini** (default). Set Gemini API key in Settings. |
+| **Users evaluate speeches** | Use **SpeechGradebook Text + Video Model (Qwen)** (default via Modal). Deploy to Modal and set `QWEN_API_URL` on Render. |
 | **Export data for training** | Super Admin → **Download for LLM training** (Analytics / LLM Export). |
-| **Train the LLM** | Use exported data with scripts in `llm_training/` on ISAAC or a GPU host. |
-| **Use Qwen for evaluations** | Optional; set up Qwen service + tunnel when you need it (see `llm_training/` docs). |
+| **Train the LLM** | Use exported data with scripts in `llm_training/` on a cloud GPU (RunPod, Lambda, etc.) or local GPU. |
+| **Use alternative providers** | Optional; set API keys in Settings → General → API Keys for Gemini, OpenAI, or Claude. |

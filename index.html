@@ -1753,7 +1753,7 @@
                                 <option value="gpt4o" data-api-provider>OpenAI GPT-4o</option>
                             </select>
                             <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
-                                <strong>Evaluations use the SpeechGradebook Text + Video Model (Qwen) by default.</strong> Options are enabled when the API key (or URL) is set in Settings → General → API Keys or by your admin. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color: var(--primary);">Get a free Gemini API key</a> if you don&apos;t have one. See <a href="RECOMMENDED_SETUP.md" target="_blank" rel="noopener" style="color: var(--primary);">RECOMMENDED_SETUP.md</a> for the full guide.
+                                <strong>Evaluations use the SpeechGradebook Text + Video Model (Qwen) by default.</strong> Qwen runs on Modal (serverless GPU). Set <code>QWEN_API_URL</code> on Render to your Modal URL. Alternative providers (Gemini, OpenAI, Claude) can be used by setting API keys in Settings → General → API Keys. See <a href="RECOMMENDED_SETUP.md" target="_blank" rel="noopener" style="color: var(--primary);">RECOMMENDED_SETUP.md</a> for the full guide.
                             </p>
                         </div>
                         <p id="localhostServerHint" style="font-size: 0.9rem; color: var(--primary); margin-top: 0.25rem; display: none;">
@@ -2590,13 +2590,13 @@ ssh amcclu12@login.isaac.utk.edu
                 <div id="apiKeysSectionSuperAdminOnly" style="margin-top: 2rem;">
                     <h3 class="settings-section-heading"><span class="icon-with-text"><i data-lucide="key"></i> API Keys</span></h3>
                     <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1.5rem;">
-                        Set your evaluation API keys. <strong>Google Gemini is recommended</strong> for most evaluations. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color: var(--primary);">Get a free Gemini API key</a> if you don&apos;t have one. Instructors use your institution keys if they don&apos;t set their own (Admins: Settings → Admin → Institution API keys). See <code>RECOMMENDED_SETUP.md</code> for the simple path: Gemini for evaluations, export data for training when ready.
+                        Set your evaluation API keys. <strong>SpeechGradebook Text + Video Model (Qwen) is the default</strong> and runs on Modal (serverless GPU). Set <code>QWEN_API_URL</code> on Render to your Modal URL. Alternative providers (Gemini, OpenAI, Claude) can be used as fallbacks by setting API keys below. Instructors use your institution keys if they don&apos;t set their own (Admins: Settings → Admin → Institution API keys). See <code>RECOMMENDED_SETUP.md</code> for setup instructions.
                     </p>
 
                     <div class="form-group api-key-input-section" id="apiKeyInput-qwen" style="display: none;">
-                        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.5rem;">Optional. Most users evaluate with <strong>Google Gemini</strong>; Qwen requires separate setup (see docs below).</p>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.5rem;">Set this to your Modal URL (e.g. <code>https://yourname--qwen-speechgradebook.modal.run</code>). This is the default evaluation provider. See <code>llm_training/QWEN_MODAL_SETUP.md</code> for deployment instructions.</p>
                         <label for="savedQwenUrl"><strong>SpeechGradebook Text + Video Model (Qwen) Service URL</strong></label>
-                        <input type="text" id="savedQwenUrl" placeholder="http://localhost:8001" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
+                        <input type="text" id="savedQwenUrl" placeholder="https://yourname--qwen-speechgradebook.modal.run" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
                         <p style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem;">
                             <strong>Use case:</strong> Rubric extraction from PDF/images, video analysis (body movement, eye contact)<br>
                             <strong>Setup:</strong> Run Qwen on ISAAC (or locally), then expose with Cloudflare. Use a <strong>named tunnel</strong> for a stable URL — see <code>llm_training/QWEN_NAMED_TUNNEL.md</code>.

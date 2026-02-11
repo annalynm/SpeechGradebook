@@ -76,7 +76,7 @@ Running `connect_isaac_qwen.sh` from an Automator **Run Shell Script** action fa
 **Recommended:** Use **`Connect_ISAAC_Qwen.command`** in the repo root. Double‑click it (or open it from a shortcut) to get a real Terminal window.
 
 - **Desktop/Applications shortcut:** In Finder, Right‑click `Connect_ISAAC_Qwen.command` → **Make Alias**, then move the alias to Desktop or Applications.
-- **Keyboard shortcut:** Use a Quick Action that runs `open "/Users/annamcclure/SpeechGradebook Repo/Connect_ISAAC_Qwen.command"` (see Option B).
+- **Keyboard shortcut:** Use a Quick Action that runs `open "/Users/annamcclure/SpeechGradebook/Connect_ISAAC_Qwen.command"` (see Option B).
 
 ### Option A: Double‑click to run (Automator app)
 
@@ -88,7 +88,7 @@ Running `connect_isaac_qwen.sh` from an Automator **Run Shell Script** action fa
 
    **Push to GitHub:**
    ```bash
-   cd "/Users/annamcclure/SpeechGradebook Repo"
+   cd "/Users/annamcclure/SpeechGradebook"
    ./scripts/push_to_github.sh
    ```
 
@@ -108,8 +108,8 @@ read
    - **File → New** → **Quick Action**.
    - **Workflow receives:** no input.
    - Add **Run Shell Script**; put one of these in the script box:
-     - **Connect ISAAC + Qwen:** `open "/Users/annamcclure/SpeechGradebook Repo/Connect_ISAAC_Qwen.command"`
-     - **Push to GitHub:** `cd "/Users/annamcclure/SpeechGradebook Repo"` then `./scripts/push_to_github.sh`
+     - **Connect ISAAC + Qwen:** `open "/Users/annamcclure/SpeechGradebook/Connect_ISAAC_Qwen.command"`
+     - **Push to GitHub:** `cd "/Users/annamcclure/SpeechGradebook"` then `./scripts/push_to_github.sh`
    - Save (e.g. “Connect ISAAC Qwen”, “Push SpeechGradebook to GitHub”).
 2. Open **System Settings → Keyboard → Keyboard Shortcuts → Services**.
 3. Find your Quick Action and assign a shortcut (e.g. **⌃⌘I** for ISAAC, **⌃⌘G** for GitHub).
@@ -119,8 +119,8 @@ read
 Add to `~/.zshrc` (or `~/.bashrc`):
 
 ```bash
-alias isaac-qwen='cd "/Users/annamcclure/SpeechGradebook Repo" && ./scripts/connect_isaac_qwen.sh'
-alias push-speechgradebook='cd "/Users/annamcclure/SpeechGradebook Repo" && ./scripts/push_to_github.sh'
+alias isaac-qwen='cd "/Users/annamcclure/SpeechGradebook" && ./scripts/connect_isaac_qwen.sh'
+alias push-speechgradebook='cd "/Users/annamcclure/SpeechGradebook" && ./scripts/push_to_github.sh'
 ```
 
 Then run `isaac-qwen` or `push-speechgradebook` from any directory (after `source ~/.zshrc` or opening a new terminal).
@@ -131,7 +131,7 @@ Then run `isaac-qwen` or `push-speechgradebook` from any directory (after `sourc
 
 Replace with your actual repo path if different:
 
-- **Repo root:** `/Users/annamcclure/SpeechGradebook Repo`
+- **Repo root:** `/Users/annamcclure/SpeechGradebook`
 - **Connect ISAAC + Qwen (recommended):** `Connect_ISAAC_Qwen.command` in repo root (double‑click or `open "…/Connect_ISAAC_Qwen.command"`).
 - **Connect ISAAC + Qwen (from Terminal):** `./scripts/connect_isaac_qwen.sh`
 - **Push to GitHub:** `./scripts/push_to_github.sh`

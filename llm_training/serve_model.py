@@ -41,7 +41,9 @@ except ImportError:
 import torch
 
 # #region agent log
-DEBUG_LOG_PATH = "/Users/annamcclure/SpeechGradebook Repo/.cursor/debug.log"
+# Debug log path (relative to repo root)
+_repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEBUG_LOG_PATH = os.path.join(_repo_root, ".cursor", "debug.log")
 def _dbg(msg, data=None, hypothesis_id=None):
     try:
         with open(DEBUG_LOG_PATH, "a") as f:

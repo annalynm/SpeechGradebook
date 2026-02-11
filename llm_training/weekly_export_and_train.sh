@@ -6,7 +6,7 @@
 # Optional: run_config.env with ISAAC_* for ISAAC; otherwise set RUN_BACKEND=local to train locally.
 #
 # Example cron (every Sunday at 2am):
-#   0 2 * * 0 /Users/annamcclure/SpeechGradebook\ Repo/SpeechGradebook/llm_training/weekly_export_and_train.sh
+#   0 2 * * 0 /Users/annamcclure/SpeechGradebook/llm_training/weekly_export_and_train.sh
 
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
