@@ -24,3 +24,8 @@ llm_training/cache/
 
 # IDE / editor
 .cursor/
+
+# Helper scripts (local development only)
+.env.template
+check_env_values.sh
+verify_env.sh
