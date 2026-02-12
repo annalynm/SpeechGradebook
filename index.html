@@ -16217,7 +16217,7 @@ SpeechGradebook Research Team`;
                 uploadedFile = file;
                 
                 updateUploadProgress(90, 'Starting evaluation...');
-                hideUploadProgress();
+                // Don't hide progress yet - let it switch to finalizing mode
                 
                 // Move to processing step
                 moveToStep(3);
@@ -16239,6 +16239,8 @@ SpeechGradebook Research Team`;
                 
                 moveToStep(4);
                 displayResults(result);
+                // Hide progress now that re-evaluation is complete
+                hideUploadProgress();
                 
             } catch (error) {
                 console.error('Re-evaluation error:', error);
@@ -16383,13 +16385,17 @@ SpeechGradebook Research Team`;
                 modelOutputOriginal = (result && result.sections) ? { sections: JSON.parse(JSON.stringify(result.sections)), timeline_markers: Array.isArray(result.timeline_markers) ? result.timeline_markers.slice() : [] } : null;
                 moveToStep(4);
                 displayResults(result);
+                // Hide progress now that evaluation is complete
+                hideUploadProgress();
             } catch (error) {
                 // Check if error is from cancellation
                 if (error.name === 'AbortError' || (evaluationAbortController && evaluationAbortController.signal.aborted)) {
                     console.log('Evaluation cancelled');
+                    hideUploadProgress();
                     return;
                 }
                 console.error('EVALUATION ERROR:', error);
+                hideUploadProgress();
                 alert('Error evaluating speech: ' + error.message);
                 moveToStep(2);
             } finally {
@@ -16803,8 +16809,10 @@ SpeechGradebook Research Team`;
                     }, (percent) => {
                         updateUploadProgress(percent, 'Uploading file...');
                     });
+                    // Upload complete - switch to finalizing mode (updateUploadProgress handles this)
+                    updateUploadProgress(100, 'Finalizing Evaluation...');
                 } finally {
-                    hideUploadProgress();
+                    // Don't hide here - let it stay visible during evaluation
                 }
                 if (!response.ok) {
                     const errText = await response.text();
@@ -16823,7 +16831,10 @@ SpeechGradebook Research Team`;
                 const data = await response.json();
                 updateProcessingMessage('Calculating final scores...');
                 const duration = await getVideoDuration(file);
-                return formatFinetunedResults(data, rubric, duration, videoNotes);
+                const result = formatFinetunedResults(data, rubric, duration, videoNotes);
+                // Hide progress now that evaluation is complete
+                hideUploadProgress();
+                return result;
             } catch (error) {
                 console.error('SpeechGradebook Text Model (Mistral) evaluation error:', error);
                 const isConnectionError = error.message === 'Load failed' || error.message === 'Failed to fetch' || error.name === 'TypeError';
@@ -16886,8 +16897,10 @@ SpeechGradebook Research Team`;
                     }, (percent) => {
                         updateUploadProgress(percent, 'Uploading video...');
                     });
+                    // Upload complete - switch to finalizing mode (updateUploadProgress handles this)
+                    updateUploadProgress(100, 'Finalizing Evaluation...');
                 } finally {
-                    hideUploadProgress();
+                    // Don't hide here - let it stay visible during evaluation
                 }
                 if (!response.ok) {
                     const errText = await response.text();
@@ -16912,7 +16925,10 @@ SpeechGradebook Research Team`;
                 console.log('Qwen API raw response:', data);
                 updateProcessingMessage('Calculating final scores...');
                 const duration = await getVideoDuration(file);
-                return formatFinetunedResults(data, rubric, duration, '');
+                const result = formatFinetunedResults(data, rubric, duration, '');
+                // Hide progress now that evaluation is complete
+                hideUploadProgress();
+                return result;
             } catch (error) {
                 console.error('SpeechGradebook Text + Video Model (Qwen) evaluation error:', error);
                 const isConnectionError = error.message === 'Load failed' || error.message === 'Failed to fetch' || error.name === 'TypeError';
@@ -17916,7 +17932,17 @@ Ensure every subcategory receives a grade. Include "video_notes" as a single par
             if (container) container.style.display = 'block';
         }
         
+        let finalizingInterval = null;
+        let finalizingStartTime = null;
+        let estimatedFinalizingTime = 45; // Estimated seconds for evaluation after upload
+        
         function hideUploadProgress() {
+            // Clear any finalizing interval
+            if (finalizingInterval) {
+                clearInterval(finalizingInterval);
+                finalizingInterval = null;
+            }
+            finalizingStartTime = null;
             const container = document.getElementById('uploadProgressContainer');
             if (container) container.style.display = 'none';
         }
@@ -17925,9 +17951,48 @@ Ensure every subcategory receives a grade. Include "video_notes" as a single par
             const bar = document.getElementById('uploadProgressBar');
             const percentEl = document.getElementById('uploadProgressPercent');
             const textEl = document.getElementById('uploadProgressText');
+            
+            // When upload reaches 100%, switch to "Finalizing Evaluation" mode
+            if (percent >= 100 && !finalizingInterval) {
+                // Start finalizing mode
+                finalizingStartTime = Date.now();
+                if (bar) bar.style.width = '100%';
+                if (percentEl) percentEl.textContent = '';
+                
+                // Update text to "Finalizing Evaluation"
+                if (textEl) {
+                    textEl.textContent = 'Finalizing Evaluation...';
+                }
+                
+                // Start countdown timer
+                finalizingInterval = setInterval(() => {
+                    if (!finalizingStartTime) return;
+                    
+                    const elapsed = Math.floor((Date.now() - finalizingStartTime) / 1000);
+                    const remaining = Math.max(0, estimatedFinalizingTime - elapsed);
+                    
+                    const percentEl = document.getElementById('uploadProgressPercent');
+                    if (percentEl) {
+                        if (remaining > 0) {
+                            percentEl.textContent = `~${remaining}s remaining`;
+                        } else {
+                            percentEl.textContent = 'Almost done...';
+                        }
+                    }
+                }, 1000); // Update every second
+                
+                return; // Don't update further in this call
+            }
+            
+            // If already in finalizing mode, don't update
+            if (finalizingInterval) {
+                return;
+            }
+            
+            // Normal upload progress (before 100%)
             if (bar) bar.style.width = Math.min(100, Math.max(0, percent)) + '%';
-            if (percentEl) percentEl.textContent = Math.round(percent) + '%';
-            if (textEl && text) textEl.textContent = text;
+            if (percentEl && percent < 100) percentEl.textContent = Math.round(percent) + '%';
+            if (textEl && text && percent < 100) textEl.textContent = text;
         }
         
         // Fetch with upload progress tracking (uses XMLHttpRequest for progress events)
@@ -20707,8 +20772,42 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             
             // If not editing, try to get from current save selection
             if (!evaluationId || !studentId) {
-                const saveClassIdx = document.getElementById('saveClassSel')?.value || document.getElementById('uploadClassSel')?.value;
-                const saveStudentIdx = document.getElementById('saveStudentSel')?.value || document.getElementById('uploadStudentSel')?.value;
+                // Try to get from step 2 selectors first, then save modal
+                const evalClassSelect = document.getElementById('evalClassSelect');
+                const evalStudentSelect = document.getElementById('evalStudentSelect');
+                let saveClassIdx = null;
+                let saveStudentIdx = null;
+                
+                if (evalClassSelect?.value && evalClassSelect.value !== '' && evalClassSelect.value !== 'other') {
+                    const classes = JSON.parse(getUserItem('classes') || '[]');
+                    const classIndex = classes.findIndex(c => 
+                        (c.id === evalClassSelect.value || c.name === evalClassSelect.value) ||
+                        (Array.isArray(classes) && classes[parseInt(evalClassSelect.value)])
+                    );
+                    if (classIndex !== -1) {
+                        saveClassIdx = classIndex;
+                        if (evalStudentSelect?.value && evalStudentSelect.value !== '') {
+                            const selectedClass = classes[classIndex];
+                            if (selectedClass && selectedClass.roster) {
+                                const studentIndex = selectedClass.roster.findIndex(s =>
+                                    (s.id === evalStudentSelect.value || s.studentId === evalStudentSelect.value) ||
+                                    (Array.isArray(selectedClass.roster) && selectedClass.roster[parseInt(evalStudentSelect.value)])
+                                );
+                                if (studentIndex !== -1) {
+                                    saveStudentIdx = studentIndex;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Fallback to save modal if not set in step 2
+                if (!saveClassIdx) {
+                    saveClassIdx = document.getElementById('saveClassSel')?.value;
+                }
+                if (!saveStudentIdx) {
+                    saveStudentIdx = document.getElementById('saveStudentSel')?.value;
+                }
                 if (saveClassIdx && saveStudentIdx) {
                     try {
                         const classes = JSON.parse(getUserItem('classes') || '[]');
@@ -23482,6 +23581,14 @@ Return ONLY the JSON object, nothing else.`;
             
             // Otherwise show the save modal as normal
             try {
+                // Ensure modal exists in DOM
+                var saveModal = document.getElementById('saveModal');
+                if (!saveModal) {
+                    console.error('openSaveModal: saveModal element not found');
+                    alert('Error: Save modal not found. Please refresh the page.');
+                    return;
+                }
+                
                 var classes = JSON.parse(getUserItem('classes') || '[]');
                 var sel = document.getElementById('saveClassSel');
                 if (!sel) {
@@ -23497,28 +23604,43 @@ Return ONLY the JSON object, nothing else.`;
                     sel.appendChild(opt);
                 }
                 
-                // Pre-select class/student if they were chosen during upload
-                const uploadClassIdx = document.getElementById('uploadClassSel')?.value;
-                const uploadStudentIdx = document.getElementById('uploadStudentSel')?.value;
-                if (uploadClassIdx) {
-                    sel.value = uploadClassIdx;
-                    loadSaveStudents();
-                    if (uploadStudentIdx) {
-                        const studentSel = document.getElementById('saveStudentSel');
-                        if (studentSel) {
-                            setTimeout(() => {
-                                studentSel.value = uploadStudentIdx;
-                            }, 100);
+                // Pre-select class/student if they were chosen during evaluation (step 2)
+                const evalClassSelect = document.getElementById('evalClassSelect');
+                const evalStudentSelect = document.getElementById('evalStudentSelect');
+                const evalClassValue = evalClassSelect?.value;
+                const evalStudentValue = evalStudentSelect?.value;
+                
+                if (evalClassValue && evalClassValue !== '' && evalClassValue !== 'other') {
+                    // Find the index of the selected class
+                    const classIndex = classes.findIndex(c => 
+                        (c.id === evalClassValue || c.name === evalClassValue) ||
+                        (Array.isArray(classes) && classes[parseInt(evalClassValue)])
+                    );
+                    if (classIndex !== -1) {
+                        sel.value = classIndex;
+                        loadSaveStudents();
+                        if (evalStudentValue && evalStudentValue !== '') {
+                            const studentSel = document.getElementById('saveStudentSel');
+                            if (studentSel) {
+                                setTimeout(() => {
+                                    // Find the student index in the class roster
+                                    const selectedClass = classes[classIndex];
+                                    if (selectedClass && selectedClass.roster) {
+                                        const studentIndex = selectedClass.roster.findIndex(s =>
+                                            (s.id === evalStudentValue || s.studentId === evalStudentValue) ||
+                                            (Array.isArray(selectedClass.roster) && selectedClass.roster[parseInt(evalStudentValue)])
+                                        );
+                                        if (studentIndex !== -1) {
+                                            studentSel.value = studentIndex;
+                                        }
+                                    }
+                                }, 100);
+                            }
                         }
                     }
                 }
                 
-                var saveModal = document.getElementById('saveModal');
-                if (!saveModal) {
-                    console.error('openSaveModal: saveModal element not found');
-                    alert('Error: Save modal not found. Please refresh the page.');
-                    return;
-                }
+                // Modal was already checked at the start, just show it
                 saveModal.style.display = 'flex';
             } catch(e) {
                 console.error('openSaveModal error:', e);
@@ -23592,12 +23714,38 @@ Return ONLY the JSON object, nothing else.`;
                     // INSERT new evaluation (original behavior)
                     var savedLocallyOnly = false;
                     // Check if class/student were selected during upload
-                    var cIdx = document.getElementById('uploadClassSel')?.value || document.getElementById('saveClassSel').value;
-                    var sIdx = document.getElementById('uploadStudentSel')?.value || document.getElementById('saveStudentSel').value;
+                    // Try to get from step 2 selectors first, then save modal
+                    const evalClassSelect = document.getElementById('evalClassSelect');
+                    const evalStudentSelect = document.getElementById('evalStudentSelect');
+                    let cIdx = null;
+                    let sIdx = null;
                     
-                    // If not set during upload, require selection in save modal
+                    // Check step 2 selectors first
+                    if (evalClassSelect?.value && evalClassSelect.value !== '' && evalClassSelect.value !== 'other') {
+                        const classes = JSON.parse(getUserItem('classes') || '[]');
+                        const classIndex = classes.findIndex(c => 
+                            (c.id === evalClassSelect.value || c.name === evalClassSelect.value) ||
+                            (Array.isArray(classes) && classes[parseInt(evalClassSelect.value)])
+                        );
+                        if (classIndex !== -1) {
+                            cIdx = classIndex;
+                            if (evalStudentSelect?.value && evalStudentSelect.value !== '') {
+                                const selectedClass = classes[classIndex];
+                                if (selectedClass && selectedClass.roster) {
+                                    const studentIndex = selectedClass.roster.findIndex(s =>
+                                        (s.id === evalStudentSelect.value || s.studentId === evalStudentSelect.value) ||
+                                        (Array.isArray(selectedClass.roster) && selectedClass.roster[parseInt(evalStudentSelect.value)])
+                                    );
+                                    if (studentIndex !== -1) {
+                                        sIdx = studentIndex;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If not set in step 2, try save modal
                     if (!cIdx || sIdx === '') {
-                        // Try to get from save modal
                         cIdx = document.getElementById('saveClassSel')?.value;
                         sIdx = document.getElementById('saveStudentSel')?.value;
                         if (!cIdx || sIdx === '') {
