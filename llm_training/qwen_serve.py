@@ -132,6 +132,13 @@ async def analyze_video(file: UploadFile = File(...)):
 
     try:
         import torch
+        import gc
+        
+        # Clear memory before processing to free up space from previous requests
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+        gc.collect()
 
         conversation = [
             {
@@ -151,15 +158,20 @@ async def analyze_video(file: UploadFile = File(...)):
             }
         ]
 
+        # Reduced fps from 0.25 to 0.15 to use fewer video frames and save memory
         inputs = processor.apply_chat_template(
             conversation,
-            fps=0.25,
+            fps=0.15,  # Reduced from 0.25 to save memory (fewer frames processed)
             add_generation_prompt=True,
             tokenize=True,
             return_dict=True,
             return_tensors="pt",
         )
         inputs = {k: v.to(model.device) if hasattr(v, "to") else v for k, v in inputs.items()}
+
+        # Clear cache again after moving inputs to GPU
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         with torch.no_grad():
             out = model.generate(**inputs, max_new_tokens=512, do_sample=False)
@@ -743,6 +755,13 @@ async def evaluate_video(
 
     try:
         import torch
+        import gc
+        
+        # Clear memory before processing to free up space from previous requests
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+        gc.collect()
 
         conversation = [
             {
@@ -754,9 +773,10 @@ async def evaluate_video(
             }
         ]
 
+        # Reduced fps from 0.25 to 0.15 to use fewer video frames and save memory
         inputs = processor.apply_chat_template(
             conversation,
-            fps=0.25,
+            fps=0.15,  # Reduced from 0.25 to save memory (fewer frames processed)
             add_generation_prompt=True,
             tokenize=True,
             return_dict=True,
@@ -764,8 +784,13 @@ async def evaluate_video(
         )
         inputs = {k: v.to(model.device) if hasattr(v, "to") else v for k, v in inputs.items()}
 
+        # Clear cache again after moving inputs to GPU
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
         with torch.no_grad():
-            out = model.generate(**inputs, max_new_tokens=4096, do_sample=False)
+            # Reduced max_new_tokens from 4096 to 3072 to save memory
+            out = model.generate(**inputs, max_new_tokens=3072, do_sample=False)
 
         gen_ids = [o[len(i):] for i, o in zip(inputs["input_ids"], out)]
         text = processor.batch_decode(gen_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
@@ -941,6 +966,13 @@ async def extract_rubric(file: UploadFile = File(...)):
 
     try:
         import torch
+        import gc
+        
+        # Clear memory before processing to free up space from previous requests
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+        gc.collect()
 
         conversation = [
             {
@@ -961,8 +993,13 @@ async def extract_rubric(file: UploadFile = File(...)):
         )
         inputs = {k: v.to(model.device) if hasattr(v, "to") else v for k, v in inputs.items()}
 
+        # Clear cache again after moving inputs to GPU
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
         with torch.no_grad():
-            out = model.generate(**inputs, max_new_tokens=4096, do_sample=False)
+            # Reduced max_new_tokens from 4096 to 3072 to save memory
+            out = model.generate(**inputs, max_new_tokens=3072, do_sample=False)
 
         gen_ids = [o[len(i) :] for i, o in zip(inputs["input_ids"], out)]
         text = processor.batch_decode(gen_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)

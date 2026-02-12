@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speech Gradebook</title>
+    <title>SpeechGradebook</title>
     <link rel="icon" id="faviconLink" href="assets/logo-light-bg.png" type="image/png">
     
     <!-- Fonts (Bunny Fonts - privacy-friendly, less blocked than Google Fonts) -->
@@ -21,17 +21,53 @@
         :root {
             --primary: #1e3a5f;
             --primary-dark: #142940;
+            --primary-light: #2d4a6f;
             --secondary: #c8a882;
             --accent: #d4af37;
-            --text: #2c3e50;
-            --text-light: #6c757d;
+            
+            /* Apple HIG: Text colors with WCAG AA contrast (4.5:1 on white) */
+            --text: #1a1a1a;              /* High contrast for body text (WCAG AAA: 16.6:1) */
+            --text-secondary: #4a4a4a;     /* Secondary text (WCAG AA: 7.1:1) */
+            --text-light: #6b6b6b;        /* Light text (WCAG AA: 4.6:1) - minimum for body */
+            --text-disabled: #9a9a9a;     /* Disabled text (WCAG AA: 2.8:1 - only for disabled states) */
+            
+            /* Apple HIG: Background colors */
             --bg: #fafbfc;
             --bg-alt: #f1f4f7;
+            --bg-hover: #e8ecf0;
             --card: #ffffff;
-            --border: #e1e8ed;
-            --success: #059669;
-            --warning: #d97706;
-            --error: #b91c1c;
+            --border: #d1d5db;
+            --border-light: #e5e7eb;
+            
+            /* Apple HIG: Semantic colors with proper contrast */
+            --success: #059669;           /* Green - WCAG AA on white (3.2:1) - use with white text or darker shade */
+            --success-bg: #d1fae5;       /* Light green background */
+            --success-text: #065f46;     /* Dark green text (WCAG AA: 7.1:1) */
+            --success-border: #10b981;    /* Success border */
+            
+            --warning: #d97706;           /* Orange - WCAG AA on white (3.0:1) */
+            --warning-bg: #fef3c7;        /* Light orange background */
+            --warning-text: #92400e;      /* Dark orange text (WCAG AA: 7.4:1) */
+            --warning-border: #f59e0b;    /* Warning border */
+            
+            --error: #b91c1c;             /* Red - WCAG AA on white (4.5:1) */
+            --error-bg: #fee2e2;          /* Light red background */
+            --error-text: #991b1b;        /* Dark red text (WCAG AA: 7.0:1) */
+            --error-border: #dc2626;      /* Error border */
+            
+            --info: #0284c7;               /* Blue - WCAG AA on white (3.2:1) */
+            --info-bg: #dbeafe;           /* Light blue background */
+            --info-text: #0c4a6e;         /* Dark blue text (WCAG AA: 7.8:1) */
+            --info-border: #3b82f6;       /* Info border */
+            
+            /* Apple HIG: Interactive states with proper contrast */
+            --link: #2563eb;              /* Link color (WCAG AA: 4.6:1 on white) */
+            --link-hover: #1d4ed8;        /* Link hover (WCAG AA: 5.8:1) */
+            --link-visited: #7c3aed;       /* Visited link (WCAG AA: 4.7:1) */
+            
+            /* Apple HIG: Focus indicators */
+            --focus-ring: #2563eb;        /* Focus ring color */
+            --focus-ring-offset: 2px;     /* Focus ring offset */
             --heading-font: 'Roboto', sans-serif;
             --body-font: 'Roboto', sans-serif;
             --heading-weight: 700;
@@ -43,6 +79,48 @@
             --text-headline-weight: 600;
             --text-body-size: 1rem;
             --text-caption-size: 0.875rem;
+            
+            /* Apple HIG: Spacing System (8px base unit) */
+            --space-xs: 0.25rem;   /* 4px */
+            --space-sm: 0.5rem;     /* 8px */
+            --space-md: 1rem;       /* 16px */
+            --space-lg: 1.5rem;     /* 24px */
+            --space-xl: 2rem;       /* 32px */
+            --space-2xl: 3rem;      /* 48px */
+            --space-3xl: 4rem;      /* 64px */
+            
+            /* Apple HIG: Elevation System (for depth) */
+            --elevation-0: none;
+            --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --elevation-2: 0 3px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --elevation-3: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            --elevation-4: 0 15px 30px rgba(0, 0, 0, 0.12), 0 5px 10px rgba(0, 0, 0, 0.08);
+            
+            /* Apple HIG: Motion (respects prefers-reduced-motion) */
+            --motion-fast: 0.15s;
+            --motion-normal: 0.25s;
+            --motion-slow: 0.35s;
+            --motion-ease: cubic-bezier(0.4, 0.0, 0.2, 1);
+            --motion-ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+            --motion-ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+            
+            /* Apple HIG: Border Radius */
+            --radius-sm: 0.375rem;  /* 6px */
+            --radius-md: 0.5rem;     /* 8px */
+            --radius-lg: 0.75rem;    /* 12px */
+            --radius-xl: 1rem;       /* 16px */
+            --radius-full: 9999px;
+        }
+        
+        /* Apple HIG: Respect prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
         
         * {
@@ -103,39 +181,44 @@
         .text-title { font-size: var(--text-title-size); font-weight: var(--text-title-weight); line-height: 1.3; color: var(--text); }
         .text-headline { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); line-height: 1.35; color: var(--text); }
         .text-body { font-size: var(--text-body-size); font-weight: 400; line-height: 1.6; color: var(--text); }
-        .text-body-secondary { font-size: 0.9375rem; font-weight: 400; color: var(--text-light); line-height: 1.5; }
+        .text-body-secondary { font-size: 0.9375rem; font-weight: 400; color: var(--text-secondary); line-height: 1.5; }
         .text-caption { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; }
         /* Apply hierarchy to components */
         .card-header, .dashboard-shell-title, .modal-box h3, .class-header {
             font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); line-height: 1.35; font-family: var(--heading-font);
         }
-        .card-header { color: var(--primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; }
+        .card-header { 
+            color: var(--primary); 
+            margin-bottom: var(--space-lg); 
+            border-bottom: 2px solid var(--border); 
+            padding-bottom: var(--space-md); 
+        }
         .modal-box h3 { margin: 0 0 0.75rem 0; color: var(--primary); }
-        .class-header { color: var(--primary); margin-bottom: 0.5rem; }
+        .class-header { color: var(--primary); margin-bottom: var(--space-sm); }
         .dashboard-shell-title { margin-bottom: 0.25rem; color: var(--text); }
         .dashboard-shell-subtitle, .modal-box p, .empty-state .empty-state-desc, .kpi-card .kpi-title, .chart-card .chart-subtitle, .chart-card .chart-description {
             font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4;
         }
-        .dashboard-shell-subtitle { margin-bottom: 1.5rem; }
-        .modal-box p { margin: 0 0 1rem 0; color: var(--text-light); line-height: 1.5; }
+        .dashboard-shell-subtitle { margin-bottom: var(--space-lg); }
+        .modal-box p { margin: 0 0 var(--space-md) 0; color: var(--text-light); line-height: 1.5; }
         .empty-state .empty-state-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); margin-bottom: 0.35rem; color: var(--text); line-height: 1.35; }
         .stat-value { font-size: var(--text-title-size); font-weight: var(--text-title-weight); color: var(--primary); }
         .stat-label, .kpi-card .kpi-subtext, .kpi-card .kpi-footer, .chart-card .chart-footer { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; }
-        .class-meta { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.5; margin-bottom: 1rem; }
+        .class-meta { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.5; margin-bottom: var(--space-md); }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 var(--space-md);
         }
         
-        /* Header */
+        /* Header - Apple HIG: Clear hierarchy, proper elevation */
         header {
             font-family: var(--body-font);
             background: var(--primary-dark);
             color: white;
-            padding: 1.25rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: var(--space-lg) 0;
+            box-shadow: var(--elevation-2);
         }
         
         .header-content {
@@ -147,7 +230,7 @@
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: var(--space-md);
         }
         
         .logo {
@@ -188,7 +271,7 @@
             font-weight: 700;
             color: white;
             font-size: 1.8rem;
-            margin-bottom: 0.2rem;
+            margin-bottom: var(--space-xs);
         }
         
         .tagline {
@@ -196,19 +279,19 @@
             opacity: 0.9;
         }
         
-        /* Navigation */
+        /* Navigation - Apple HIG: Proper spacing */
         nav {
             font-family: var(--body-font);
             display: flex;
-            gap: 1.5rem;
+            gap: var(--space-lg);
         }
         
         .nav-link {
             color: white;
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: background 0.3s;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            transition: background var(--motion-normal) var(--motion-ease);
             min-height: 2.75rem;
             display: inline-flex;
             align-items: center;
@@ -225,10 +308,10 @@
             background: rgba(255,255,255,0.2);
         }
         
-        /* Main Content */
+        /* Main Content - Apple HIG: Generous spacing */
         main {
             font-family: var(--body-font);
-            padding: 2rem 0;
+            padding: var(--space-xl) 0;
             min-height: calc(100vh - 200px);
         }
         
@@ -240,13 +323,13 @@
             display: block;
         }
         
-        /* Cards */
+        /* Cards - Apple HIG: Proper spacing and elevation */
         .card {
             background: var(--card);
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--elevation-1);
+            margin-bottom: var(--space-xl);
         }
         
         .card-header {
@@ -443,21 +526,43 @@
             from { opacity: 0; transform: translateX(-50%) translateY(0.5rem); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
+        
+        /* Apple HIG: Dropdown animation */
+        @keyframes dropdownSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-0.5rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            @keyframes dropdownSlideIn {
+                from, to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+        }
 
         /* Account-wide search dropdown */
         .account-search-results {
             position: absolute;
-            top: calc(100% + 0.25rem);
+            top: calc(100% + var(--space-xs));
             left: 0;
             right: 0;
             max-height: 360px;
             overflow-y: auto;
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border-radius: var(--radius-md);
+            box-shadow: var(--elevation-3);
             z-index: 1000;
-            padding: 0.5rem 0;
+            padding: var(--space-sm) 0;
+            animation: dropdownSlideIn var(--motion-fast) var(--motion-ease-out);
         }
         .account-search-results.hidden { display: none !important; }
         .account-search-results .search-group-label {
@@ -632,35 +737,45 @@
         /* Upload Zone */
         .upload-zone {
             border: 3px dashed var(--border);
-            border-radius: 1rem;
-            padding: 3rem;
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: border-color var(--motion-normal) var(--motion-ease),
+                        background-color var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
             background: var(--bg-alt);
+            min-height: 2.75rem;  /* Ensure touch target minimum */
         }
         
         .upload-zone:hover {
             border-color: var(--primary);
             background: white;
+            transform: scale(1.01);
         }
         
         .upload-zone.drag-over {
             border-color: var(--primary);
             background: rgba(30, 58, 95, 0.05);
+            transform: scale(1.02);
+        }
+        
+        .upload-zone:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
         }
         
         .upload-icon {
             font-size: 3rem;
-            margin-bottom: 1rem;
+            margin-bottom: var(--space-md);
         }
         
         .file-info {
             background: var(--success);
             color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-md);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -699,6 +814,38 @@
         textarea:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+        }
+        
+        /* Apple HIG: Enhanced focus states for accessibility */
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
+            border-color: var(--primary);
+        }
+        
+        /* Apple HIG: Ensure links have proper contrast and focus states */
+        a:not(.btn):not(.button):not(.nav-link) {
+            color: var(--link);
+            text-decoration: none;
+            transition: color var(--motion-fast) var(--motion-ease);
+        }
+        
+        a:not(.btn):not(.button):not(.nav-link):hover {
+            color: var(--link-hover);
+            text-decoration: underline;
+        }
+        
+        a:not(.btn):not(.button):not(.nav-link):visited {
+            color: var(--link-visited);
+        }
+        
+        a:not(.btn):not(.button):not(.nav-link):focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            border-radius: 2px;
         }
         
         textarea {
@@ -706,28 +853,43 @@
             min-height: 100px;
         }
         
-        /* Buttons */
+        /* Buttons - Apple HIG: Clear affordances, proper feedback */
         button,
         .btn {
             background: var(--primary);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: var(--space-md) var(--space-lg);
             border: none;
-            border-radius: 0.5rem;
+            border-radius: var(--radius-md);
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background-color var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease),
+                        box-shadow var(--motion-normal) var(--motion-ease);
             display: inline-block;
             text-decoration: none;
             text-align: center;
+            box-shadow: var(--elevation-1);
         }
         
         button:hover,
         .btn:hover {
             background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        button:active,
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: var(--elevation-1);
+        }
+        
+        button:focus-visible,
+        .btn:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
         }
         
         .btn-icon-only {
@@ -740,16 +902,55 @@
         }
         .btn-icon-only [data-lucide] { width: 1.25em; height: 1.25em; }
         
+        /* Apple HIG: Button variants with proper contrast */
         .btn-secondary {
             background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #b89a6f;
+            color: white;
         }
         
         .btn-success {
             background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #047857;
+            color: white;
         }
         
         .btn-danger {
             background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #991b1b;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #b45309;
+            color: white;
+        }
+        
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #0369a1;
+            color: white;
         }
         
         /* Minimum touch target (Apple HIG: ~44pt) for primary actions */
@@ -811,23 +1012,25 @@
             border-bottom: 2px solid white;
         }
         
-        /* Progress Steps */
+        /* Progress Steps - Apple HIG: Proper spacing and motion */
         .progress-steps {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2rem;
+            margin-bottom: var(--space-xl);
             position: relative;
+            gap: var(--space-md);
         }
         
         .progress-steps::before {
             content: '';
             position: absolute;
-            top: 25px;
+            top: 1.375rem;  /* Center of 2.75rem circle */
             left: 0;
             right: 0;
             height: 3px;
             background: var(--border);
             z-index: 1;
+            transition: background-color var(--motion-normal) var(--motion-ease);
         }
         
         .step {
@@ -837,9 +1040,12 @@
             z-index: 2;
         }
         
+        /* Apple HIG: Step circles with proper touch targets and motion */
         .step-circle {
-            width: 50px;
-            height: 50px;
+            width: 2.75rem;  /* 44pt minimum touch target */
+            height: 2.75rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
             border-radius: 50%;
             background: var(--border);
             color: var(--text-light);
@@ -847,8 +1053,20 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            margin: 0 auto 0.5rem;
-            transition: all 0.3s;
+            margin: 0 auto var(--space-sm);
+            transition: background-color var(--motion-normal) var(--motion-ease),
+                        color var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
+            cursor: pointer;
+        }
+        
+        .step-circle:hover {
+            transform: scale(1.05);
+        }
+        
+        .step-circle:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
         }
         
         .step.active .step-circle {
@@ -864,6 +1082,8 @@
         .step-label {
             font-size: 0.9rem;
             color: var(--text-light);
+            transition: color var(--motion-normal) var(--motion-ease),
+                        font-weight var(--motion-normal) var(--motion-ease);
         }
         
         .step.active .step-label {
@@ -875,8 +1095,8 @@
         .classes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
         }
         
         /* Data Table Styles */
@@ -884,8 +1104,9 @@
             width: 100%;
             border-collapse: collapse;
             background: var(--card);
-            border-radius: 0.5rem;
+            border-radius: var(--radius-md);
             overflow: hidden;
+            box-shadow: var(--elevation-1);
         }
         
         .data-table thead {
@@ -910,13 +1131,18 @@
             transition: background 0.2s;
         }
         
+        .data-table tbody tr {
+            transition: background-color var(--motion-fast) var(--motion-ease);
+        }
+        
         .data-table tbody tr:hover {
-            background: rgba(0, 0, 0, 0.02);
+            background: var(--bg-hover);
         }
         
         .data-table td {
-            padding: 0.75rem 1rem;
+            padding: var(--space-md) var(--space-md);
             color: var(--text);
+            min-height: 2.75rem;  /* Touch target minimum for clickable rows */
         }
         
         .data-table td:last-child {
@@ -935,19 +1161,33 @@
             flex-direction: column;
         }
         
+        /* Apple HIG: Cards with proper elevation and spacing */
         .class-card {
             background: var(--card);
-            border: 2px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            transition: all 0.3s;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transition: border-color var(--motion-normal) var(--motion-ease),
+                        box-shadow var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
             cursor: pointer;
+            box-shadow: var(--elevation-1);
         }
         
         .class-card:hover {
             border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            box-shadow: var(--elevation-2);
+            transform: translateY(-1px);
+        }
+        
+        .class-card:active {
+            transform: translateY(0);
+            box-shadow: var(--elevation-1);
+        }
+        
+        .class-card:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
         }
         
         .class-header {
@@ -963,13 +1203,13 @@
             font-weight: 400;
             color: var(--text-light);
             line-height: 1.5;
-            margin-bottom: 1rem;
+            margin-bottom: var(--space-md);
         }
         
         .class-stats {
             display: flex;
             justify-content: space-between;
-            padding-top: 1rem;
+            padding-top: var(--space-md);
             border-top: 1px solid var(--border);
         }
         
@@ -990,23 +1230,39 @@
             line-height: 1.4;
         }
         
-        /* Rubrics */
+        /* Rubrics - Apple HIG: Proper spacing */
         .rubrics-list {
             display: grid;
-            gap: 1rem;
+            gap: var(--space-md);
         }
         
         .rubric-item {
             background: var(--bg-alt);
-            padding: 1rem;
-            border-radius: 0.5rem;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color var(--motion-normal) var(--motion-ease),
+                        box-shadow var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
+            cursor: pointer;
+            min-height: 2.75rem;  /* Touch target minimum */
+        }
+        
+        .rubric-item:hover {
+            background: var(--bg-hover);
+            box-shadow: var(--elevation-1);
+            transform: translateX(2px);
+        }
+        
+        .rubric-item:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
         }
         
         .rubric-info h4 {
-            margin-bottom: 0.25rem;
+            margin-bottom: var(--space-xs);
         }
         
         .rubric-info p {
@@ -1018,28 +1274,84 @@
         
         .rubric-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: var(--space-sm);
         }
         
-        /* Loading Spinner */
+        /* Apple HIG: Enhanced Loading States */
         .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
+            width: 48px;
+            height: 48px;
+            animation: spin var(--motion-slow) linear infinite;
+            margin: var(--space-xl) auto;
+            position: relative;
+        }
+        
+        /* Apple HIG: Skeleton loading for content */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-alt) 25%, var(--border) 50%, var(--bg-alt) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+            min-height: 1rem;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .spin { display: inline-block; animation: spin 1s linear infinite; vertical-align: middle; }
+        
+        .spin { 
+            display: inline-block; 
+            animation: spin var(--motion-slow) linear infinite; 
+            vertical-align: middle; 
+        }
+        
+        /* Apple HIG: Loading states with proper feedback */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2xl);
+            gap: var(--space-md);
+            text-align: center;
+        }
+        
+        .loading-state .spinner {
+            margin: 0;
+        }
+        
+        .loading-state-message {
+            color: var(--text-light);
+            font-size: var(--text-body-size);
+            line-height: 1.5;
+        }
+        
+        .loading-state-submessage {
+            color: var(--text-light);
+            font-size: var(--text-caption-size);
+            margin-top: var(--space-xs);
+        }
+        
         @media (prefers-reduced-motion: reduce) {
-            .spinner, .spin, .auth-loading-spinner { animation: none; }
-            .spinner { border-top-color: var(--primary); opacity: 0.85; }
+            .spinner, .spin, .auth-loading-spinner, .skeleton { 
+                animation: none; 
+            }
+            .spinner { 
+                border-top-color: var(--primary); 
+                opacity: 0.85; 
+            }
+            .skeleton {
+                background: var(--bg-alt);
+            }
         }
 
         /* Analytics dashboard — typography hierarchy */
@@ -1047,12 +1359,12 @@
         .dashboard-shell-subtitle { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; margin-bottom: 1.5rem; }
         .global-filter-bar {
             display: flex; flex-direction: column; gap: 0;
-            padding: 1rem 1.25rem; margin-bottom: 1.5rem;
-            border: 1px solid var(--border); border-radius: 1rem; background: var(--bg-alt);
+            padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-lg);
+            border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-alt);
         }
         .global-filter-bar-row {
-            display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 1rem 1.25rem;
-            overflow: visible; min-width: 0; padding-bottom: 0.25rem;
+            display: flex; flex-wrap: nowrap; align-items: flex-end; gap: var(--space-md) var(--space-lg);
+            overflow: visible; min-width: 0; padding-bottom: var(--space-xs);
         }
         .global-filter-bar-row > * { flex-shrink: 0; }
         .global-filter-bar label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--text-light); }
@@ -1064,21 +1376,41 @@
         /* Custom multi-select filter dropdowns (match Sort dropdown look) */
         .filter-dropdown { position: relative; display: flex; flex-direction: column; gap: 0.25rem; }
         .filter-dropdown .filter-dropdown-trigger {
-            padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;
-            background: var(--bg); color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+            padding: var(--space-sm) var(--space-md); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.875rem; min-width: 8rem;
+            min-height: 2.75rem;  /* Touch target minimum */
+            background: var(--bg); color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);
+            transition: border-color var(--motion-normal) var(--motion-ease),
+                        background-color var(--motion-fast) var(--motion-ease);
         }
-        .filter-dropdown .filter-dropdown-trigger:hover { border-color: var(--primary); }
+        .filter-dropdown .filter-dropdown-trigger:hover { 
+            border-color: var(--primary);
+            background: var(--bg-alt);
+        }
+        .filter-dropdown .filter-dropdown-trigger:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
         .filter-dropdown .filter-dropdown-trigger::after { content: ''; border: 0.35rem solid transparent; border-top-color: currentColor; margin-left: auto; }
         .filter-dropdown .filter-dropdown-panel {
-            display: none; position: absolute; top: 100%; left: 0; min-width: 100%; margin-top: 0.25rem;
-            background: var(--bg); border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-height: 14rem; overflow-y: auto; z-index: 9999; padding: 0.25rem 0; min-height: 2rem;
+            display: none; position: absolute; top: 100%; left: 0; min-width: 100%; margin-top: var(--space-xs);
+            background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--elevation-3);
+            max-height: 14rem; overflow-y: auto; z-index: 9999; padding: var(--space-xs) 0; min-height: 2rem;
+            animation: dropdownSlideIn var(--motion-fast) var(--motion-ease-out);
         }
         .filter-dropdown.open .filter-dropdown-panel { display: block; }
         .filter-dropdown .filter-dropdown-item {
-            padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;
+            padding: var(--space-sm) var(--space-md); 
+            min-height: 2.75rem;  /* Touch target minimum */
+            cursor: pointer; display: flex; align-items: center; gap: var(--space-sm); font-size: 0.875rem;
+            transition: background-color var(--motion-fast) var(--motion-ease);
         }
-        .filter-dropdown .filter-dropdown-item:hover { background: var(--bg-alt); }
+        .filter-dropdown .filter-dropdown-item:hover { 
+            background: var(--bg-hover);
+        }
+        .filter-dropdown .filter-dropdown-item:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: -2px;
+        }
         .filter-dropdown .filter-dropdown-item .filter-dropdown-check { width: 1rem; flex-shrink: 0; color: var(--primary); font-weight: bold; display: inline-flex; align-items: center; justify-content: center; }
         .filter-dropdown .filter-dropdown-item .filter-dropdown-check svg { width: 1rem; height: 1rem; }
         .filter-dropdown .filter-dropdown-item:not(.selected) .filter-dropdown-check { visibility: hidden; }
@@ -1113,10 +1445,10 @@
         .export-header-filter-panel .export-filter-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.6rem; cursor: pointer; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .export-header-filter-panel .export-filter-item:hover { background: var(--bg-alt); }
         .export-header-filter-panel .export-filter-item input { margin: 0; flex-shrink: 0; }
-        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg); }
         .kpi-card {
-            border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; background: var(--bg);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg); background: var(--bg);
+            box-shadow: var(--elevation-1);
             transition: box-shadow 0.2s ease, border-color 0.2s ease;
         }
         .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: var(--border); }
@@ -1133,20 +1465,20 @@
         .kpi-card .kpi-title:hover, .chart-card .chart-title:hover { color: var(--primary); }
         /* Chart cards — HIG: focused, clear hierarchy */
         .chart-card {
-            border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; background: var(--bg);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg); background: var(--bg);
+            box-shadow: var(--elevation-1);
             min-width: 0; overflow: hidden;
-            transition: box-shadow 0.2s ease;
+            transition: box-shadow var(--motion-normal) var(--motion-ease);
         }
-        .chart-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-        .chart-card .chart-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); margin-bottom: 0.25rem; letter-spacing: -0.01em; color: var(--text); line-height: 1.35; }
-        .chart-card .chart-subtitle { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); margin-bottom: 0.35rem; line-height: 1.4; }
-        .chart-card .chart-description { font-size: var(--text-caption-size); font-weight: 400; color: var(--text); margin-bottom: 0.75rem; line-height: 1.45; }
+        .chart-card:hover { box-shadow: var(--elevation-2); }
+        .chart-card .chart-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); margin-bottom: var(--space-xs); letter-spacing: -0.01em; color: var(--text); line-height: 1.35; }
+        .chart-card .chart-subtitle { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); margin-bottom: var(--space-xs); line-height: 1.4; }
+        .chart-card .chart-description { font-size: var(--text-caption-size); font-weight: 400; color: var(--text); margin-bottom: var(--space-md); line-height: 1.45; }
         .chart-card .chart-body {
-            min-height: 180px; border: 1px solid var(--border); border-radius: 10px;
-            background: var(--bg-alt); overflow-x: auto; padding: 1rem;
+            min-height: 180px; border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--bg-alt); overflow-x: auto; padding: var(--space-md);
         }
-        .chart-card .chart-body .chart-bars { display: flex; flex-direction: column; gap: 1rem; }
+        .chart-card .chart-body .chart-bars { display: flex; flex-direction: column; gap: var(--space-md); }
         .chart-card .chart-body .chart-bar-row {
             display: flex; flex-direction: column; gap: 0.35rem;
         }
@@ -1177,14 +1509,14 @@
         .chart-card .chart-body .data-table th.num, .chart-card .chart-body .data-table td.num { text-align: right; }
         .chart-card .chart-footer { font-size: 0.875rem; font-weight: 400; color: var(--text-light); margin-top: 0.75rem; line-height: 1.4; }
         .chart-card .chart-footer a { color: var(--primary); text-decoration: underline; cursor: pointer; }
-        .dashboard-charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .dashboard-charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg); }
         
         /* Score Display */
         .score-banner {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 2rem;
-            border-radius: 1rem;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
             text-align: center;
             margin: 2rem 0;
         }
@@ -1243,13 +1575,14 @@
             padding: 1rem;
         }
         .modal-overlay[hidden] { display: none !important; }
+        /* Apple HIG: Modals with proper elevation and spacing */
         .modal-box {
             background: var(--card);
-            padding: 1.75rem 2rem;
-            border-radius: 1rem;
+            padding: var(--space-xl) var(--space-2xl);
+            border-radius: var(--radius-lg);
             max-width: 440px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            box-shadow: var(--elevation-4);
             border: 1px solid var(--border);
         }
         .modal-box h3 {
@@ -1314,13 +1647,10 @@
         button:focus-visible,
         .btn:focus-visible,
         a:focus-visible,
-        input:focus-visible,
-        select:focus-visible,
-        textarea:focus-visible,
         [role="button"]:focus-visible,
         [role="tab"]:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
+            outline: 2px solid var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
         }
         .hidden {
             display: none !important;
@@ -1349,28 +1679,36 @@
             margin-bottom: 2rem;
         }
         
+        /* Apple HIG: Alert styles with semantic colors and proper contrast */
         .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            border-left: 4px solid;
         }
         
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+        
+        .alert-error {
+            background: var(--error-bg);
+            color: var(--error-text);
+            border-color: var(--error-border);
         }
         
         .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            border-color: var(--warning-border);
         }
         
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: var(--info-bg);
+            color: var(--info-text);
+            border-color: var(--info-border);
         }
         
         /* Responsive */
@@ -1548,7 +1886,7 @@
         <div class="auth-card">
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div class="auth-logo"><img id="authLogoImg" src="assets/logo-light-bg.png" alt="SpeechGradebook" /></div>
-                <h2><span class="icon-with-text"><i data-lucide="graduation-cap" style="width:1.25em;height:1.25em;"></i> Speech Gradebook</span></h2>
+                <h2><span class="icon-with-text"><i data-lucide="graduation-cap" style="width:1.25em;height:1.25em;"></i> SpeechGradebook</span></h2>
                 <p class="auth-tagline">Instructor-Informed Speech Assessment</p>
             </div>
             
@@ -1563,7 +1901,7 @@
                         <label for="loginPassword">Password</label>
                         <input type="password" id="loginPassword" required placeholder="••••••••">
                     </div>
-                    <button type="submit" style="width: 100%; padding: 0.75rem; font-size: 1rem;"><span class="icon-with-text"><i data-lucide="log-in"></i> Login</span></button>
+                    <button type="submit" style="width: 100%; padding: var(--space-md) var(--space-lg); font-size: 1rem;"><span class="icon-with-text"><i data-lucide="log-in"></i> Login</span></button>
                 </form>
                 <p class="auth-divider">or</p>
                 <button type="button" class="btn-demo" onclick="enterDemoMode();"><span class="icon-with-text"><i data-lucide="play"></i> Try demo</span></button>
@@ -1575,7 +1913,7 @@
             <!-- Register Form -->
             <div id="registerFormDiv" class="hidden">
                 <h3 style="margin-bottom: 1.5rem; color: var(--text);"><span class="icon-with-text"><i data-lucide="user-plus"></i> Create your account</span></h3>
-                <p id="registerNonInvitedHint" class="text-body-secondary" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                <p id="registerNonInvitedHint" class="text-body-secondary" style="margin-bottom: var(--space-md); padding: var(--space-md); background: var(--bg-alt); border-radius: var(--radius-md);">
                     Without an invitation link, you must use a <strong>.edu</strong> email and your request will need approval by an administrator after you confirm your email.
                 </p>
                 <form id="registerForm">
@@ -1601,7 +1939,7 @@
                         <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
                         <small style="color: var(--text-light);">At least 6 characters</small>
                     </div>
-                    <button type="submit" style="width: 100%; padding: 0.75rem; font-size: 1rem;"><span class="icon-with-text"><i data-lucide="user-plus"></i> Create Account</span></button>
+                    <button type="submit" style="width: 100%; padding: var(--space-md) var(--space-lg); font-size: 1rem;"><span class="icon-with-text"><i data-lucide="user-plus"></i> Create Account</span></button>
                 </form>
                 <p style="text-align: center; margin-top: 1.5rem; color: var(--text-light);">
                     Already have an account? <a href="#" onclick="showLoginForm(); return false;" class="text-caption icon-with-text" style="color: var(--primary); font-weight: 600;"><i data-lucide="log-in"></i> Login</a>
@@ -1613,7 +1951,7 @@
     <!-- Pending approval: shown when user is logged in but approval_status = pending_approval -->
     <div id="pendingApprovalScreen" style="display: none; min-height: 100vh; align-items: center; justify-content: center;" class="auth-screen">
         <div class="auth-card" style="max-width: 28rem;">
-            <h3 style="margin-bottom: 1rem; color: var(--text);"><span class="icon-with-text"><i data-lucide="clock"></i> Account pending approval</span></h3>
+            <h3 style="margin-bottom: var(--space-md); color: var(--text);"><span class="icon-with-text"><i data-lucide="clock"></i> Account pending approval</span></h3>
             <p style="color: var(--text-light); margin-bottom: 1.5rem;">Your account request has been received. Please confirm your email (check your inbox) and wait for an administrator to approve your account. You will not have access until then.</p>
             <button type="button" onclick="logout(); return false;" class="btn" style="width: 100%;"><span class="icon-with-text"><i data-lucide="log-out"></i> Logout</span></button>
         </div>
@@ -1645,9 +1983,9 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-                    <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/logo-dark-bg.png" alt="Speech Gradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;"></div>
+                    <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;"></div>
                     <div class="app-title">
-                        <h1 id="appName">Speech Gradebook</h1>
+                        <h1 id="appName">SpeechGradebook</h1>
                         <div class="tagline" id="appTagline">Instructor-Informed Speech Assessment</div>
                     </div>
                 </div>
@@ -1704,7 +2042,8 @@
                         <p>Click or drag & drop your audio/video file here</p>
                         <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
                             Supported: MP3, MP4, WAV, M4A, WebM, MOV<br>
-                            <strong>Videos over 50 MB</strong> are compressed automatically so they can be stored (e.g. for training).
+                            <strong style="color: var(--primary);">Maximum file size: 50 MB</strong><br>
+                            Files over 50 MB cannot be uploaded. Please compress your file and try again.
                         </p>
                     </div>
                     <input type="file" id="fileInput" accept="audio/*,video/*,image/*" style="display: none;">
@@ -1712,6 +2051,8 @@
                         <span id="fileName"></span>
                         <button onclick="removeFile()" class="btn-small btn-danger"><span class="icon-with-text"><i data-lucide="trash-2"></i> Remove</span></button>
                     </div>
+                    
+                    <!-- Optional: Assign to class/student on upload -->
                     <div id="continueButtonContainer" style="margin-top: 2rem; display: none;">
                         <button onclick="moveToStep(2)" id="continueToDetails"><span class="icon-with-text">Continue to Details <i data-lucide="arrow-right"></i></span></button>
                     </div>
@@ -1720,6 +2061,34 @@
                 <!-- Step 2: Details -->
                 <div id="detailsStep" class="hidden">
                     <form id="studentForm">
+                        <div class="form-group">
+                            <label for="evalClassSelect">Class (Optional)</label>
+                            <select id="evalClassSelect" onchange="loadEvalStudents(); updateRubricSelectorForClass();">
+                                <option value="">-- None --</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Select a class to assign this evaluation, or choose "None" if not applicable.
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="evalStudentSelect">Student (Optional)</label>
+                            <select id="evalStudentSelect">
+                                <option value="">-- None --</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Select a student from the chosen class, or choose "None" if not applicable.
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="rubricSelect">Evaluation Rubric *</label>
+                            <select id="rubricSelect" required>
+                                <option value="">-- Select a Rubric --</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Choose which rubric to use for evaluation. <a href="#" onclick="showDashboard(); return false;" style="color: var(--primary);">Manage rubrics</a>
+                            </p>
+                        </div>
                         <div class="form-group">
                             <label for="speechDate">Speech Date</label>
                             <input type="date" id="speechDate">
@@ -1732,15 +2101,6 @@
                                 <option value="Group Presentation">Group Presentation</option>
                                 <option value="Other">Other</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="rubricSelect">Evaluation Rubric *</label>
-                            <select id="rubricSelect" required>
-                                <option value="">-- Select a Rubric --</option>
-                            </select>
-                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
-                                Choose which rubric to use for evaluation. <a href="#" onclick="showDashboard(); return false;" style="color: var(--primary);">Manage rubrics</a>
-                            </p>
                         </div>
                         <div class="form-group">
                             <label for="evalApiProvider">Evaluation provider</label>
@@ -1766,18 +2126,36 @@
                     </form>
                 </div>
 
-                <!-- Step 3: Processing -->
-                <div id="processingStep" class="hidden text-center">
-                    <div class="spinner"></div>
-                    <h3><span class="icon-with-text"><i data-lucide="loader"></i> Evaluating Speech...</span></h3>
-                    <p id="processingMessage">Analyzing speech content and delivery...</p>
+                <!-- Step 3: Processing - Apple HIG: Clear loading state with feedback -->
+                <div id="processingStep" class="hidden loading-state">
+                    <div class="spinner" aria-label="Loading"></div>
+                    <div>
+                        <h3 style="margin: 0 0 var(--space-sm) 0; color: var(--text);">
+                            <span class="icon-with-text"><i data-lucide="loader"></i> Evaluating Speech...</span>
+                        </h3>
+                        <p id="processingMessage" class="loading-state-message">Analyzing speech content and delivery...</p>
+                        <p id="processingSubmessage" class="loading-state-submessage" style="display: none;"></p>
+                    </div>
+                    <div id="uploadProgressContainer" style="margin-top: var(--space-lg); max-width: 500px; width: 100%; display: none;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm);">
+                            <span id="uploadProgressText" style="font-size: var(--text-caption-size); color: var(--text-light);">Uploading file...</span>
+                            <span id="uploadProgressPercent" style="font-size: var(--text-caption-size); color: var(--primary); font-weight: 600;">0%</span>
+                        </div>
+                        <div style="background: var(--bg-alt); height: 8px; border-radius: var(--radius-sm); overflow: hidden; position: relative;">
+                            <div id="uploadProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); transition: width var(--motion-normal) var(--motion-ease); border-radius: var(--radius-sm);"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: var(--space-xl);">
+                        <button onclick="cancelEvaluation()" class="btn-secondary" id="cancelEvaluationBtn" style="padding: 0.5rem 1rem; font-size: 0.875rem;"><span class="icon-with-text"><i data-lucide="x"></i> Cancel Evaluation</span></button>
+                    </div>
                 </div>
 
                 <!-- Step 4: Results -->
                 <div id="resultsStep" class="hidden">
                     <div id="resultsContent"></div>
-                    <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                    <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl); flex-wrap: wrap;">
                         <button onclick="openSaveModal()"><span class="icon-with-text"><i data-lucide="save"></i> Save Results</span></button>
+                        <button onclick="openMoveEvalModal()" class="btn-secondary" id="moveEvalBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="move"></i> Move to Different Class/Student</span></button>
                         <button onclick="downloadPDF()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="file-text"></i> Download Report (HTML)</span></button>
                         <button onclick="emailResults()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="mail"></i> Email Results</span></button>
                         <button onclick="viewCorrectionHistory()" class="btn-secondary" id="viewCorrectionsBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="clipboard-list"></i> View Corrections (<span id="correctionCount">0</span>)</span></button>
@@ -1806,6 +2184,30 @@
                 <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:2rem;">
                     <button onclick="closeSaveModal()" style="padding:0.75rem 1.5rem;background:#6c757d;color:white;border:none;border-radius:0.5rem;cursor:pointer;"><span class="icon-with-text"><i data-lucide="x"></i> Cancel</span></button>
                     <button onclick="doSaveEval()" style="padding:0.75rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:600;"><span class="icon-with-text"><i data-lucide="check"></i> Save</span></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Move Evaluation Modal -->
+        <div id="moveEvalModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:white;padding:2rem;border-radius:1rem;max-width:500px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+                <h3 style="margin-top:0;color:var(--primary);"><span class="icon-with-text"><i data-lucide="move"></i> Move Evaluation</span></h3>
+                <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem;">Move this evaluation to a different class and/or student.</p>
+                <div style="margin:1.5rem 0;">
+                    <label style="display:block;font-weight:600;margin-bottom:0.5rem;">New Class:</label>
+                    <select id="moveClassSel" onchange="loadMoveStudents()" style="width:100%;padding:0.75rem;font-size:1rem;border:2px solid #ddd;border-radius:0.5rem;">
+                        <option value="">-- Select Class --</option>
+                    </select>
+                </div>
+                <div style="margin:1.5rem 0;">
+                    <label style="display:block;font-weight:600;margin-bottom:0.5rem;">New Student:</label>
+                    <select id="moveStudentSel" style="width:100%;padding:0.75rem;font-size:1rem;border:2px solid #ddd;border-radius:0.5rem;">
+                        <option value="">-- Select Student --</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:2rem;">
+                    <button onclick="closeMoveEvalModal()" style="padding:0.75rem 1.5rem;background:#6c757d;color:white;border:none;border-radius:0.5rem;cursor:pointer;"><span class="icon-with-text"><i data-lucide="x"></i> Cancel</span></button>
+                    <button onclick="doMoveEval()" style="padding:0.75rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:600;"><span class="icon-with-text"><i data-lucide="check"></i> Move</span></button>
                 </div>
             </div>
         </div>
@@ -2103,7 +2505,7 @@
                         </div>
                         <div class="filter-actions" style="margin-left: auto;">
                             <button type="button" id="analyticsGlobalReset" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" aria-label="Reset filters">Reset</button>
-                            <button type="button" id="analyticsGlobalApply" class="btn" style="padding: 0.5rem 1rem; font-size: 0.875rem; background: var(--primary); color: white;" aria-label="Apply filters">Apply</button>
+                            <button type="button" id="analyticsGlobalApply" class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background: var(--primary); color: white;" aria-label="Apply filters">Apply</button>
                             <span id="analyticsLastUpdated" class="last-updated" style="align-self: center;"></span>
                         </div>
                         </div>
@@ -2746,7 +3148,7 @@ ssh amcclu12@login.isaac.utk.edu
                         <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem;">Load a preset to preview a theme. You can then tweak colors below.</p>
                         <div class="form-group" style="max-width: 400px; margin-bottom: 1rem;">
                             <select id="demoBrandingPackageSelect" onchange="onDemoBrandingPackageChange(this.value)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
-                                <option value="default">Speech Gradebook Default</option>
+                                <option value="default">SpeechGradebook Default</option>
                                 <option value="utk-wds">UTK WDS (University of Tennessee, Knoxville)</option>
                             </select>
                         </div>
@@ -2968,7 +3370,7 @@ ssh amcclu12@login.isaac.utk.edu
                             <div class="form-group" style="max-width: 400px;">
                                 <label for="brandingPackageSelect" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Package</label>
                                 <select id="brandingPackageSelect" onchange="onBrandingPackageChange(this.value)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
-                                    <option value="default">Speech Gradebook Default</option>
+                                    <option value="default">SpeechGradebook Default</option>
                                     <option value="utk-wds">UTK WDS (University of Tennessee, Knoxville)</option>
                                 </select>
                             </div>
@@ -3601,13 +4003,16 @@ ssh amcclu12@login.isaac.utk.edu
                     <a href="privacy.html">Privacy Policy</a>
                     <a href="terms.html">Terms of Service</a>
                 </div>
-                <p id="footerCopyright">© 2026 Speech Gradebook</p>
+                <p id="footerCopyright">© 2026 SpeechGradebook</p>
                 <p id="footerAdditional" style="opacity: 0.8; font-size: 0.9rem;"></p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Validate script is loading correctly
+        if (typeof console !== 'undefined') console.log('SpeechGradebook script loading...');
+        
         // ===== CONFIGURATION =====
         // Note: In production, these should be loaded from environment variables or a secure endpoint
         const CONFIG = {
@@ -3702,6 +4107,64 @@ ssh amcclu12@login.isaac.utk.edu
          * @param {string} text - Text to escape
          * @returns {string} Escaped HTML-safe text
          */
+        /* Apple HIG: Spacing utility functions for consistent inline styles */
+        // Get CSS spacing variable value (for use in inline styles)
+        function getSpacing(size) {
+            const spacingMap = {
+                'xs': 'var(--space-xs)',
+                'sm': 'var(--space-sm)',
+                'md': 'var(--space-md)',
+                'lg': 'var(--space-lg)',
+                'xl': 'var(--space-xl)',
+                '2xl': 'var(--space-2xl)',
+                '3xl': 'var(--space-3xl)'
+            };
+            return spacingMap[size] || size;
+        }
+        
+        // Generate spacing style string (e.g., "padding: var(--space-md); margin: var(--space-lg);")
+        function spacingStyle(props) {
+            const styles = [];
+            if (props.p) styles.push(`padding: ${getSpacing(props.p)}`);
+            if (props.pt) styles.push(`padding-top: ${getSpacing(props.pt)}`);
+            if (props.pr) styles.push(`padding-right: ${getSpacing(props.pr)}`);
+            if (props.pb) styles.push(`padding-bottom: ${getSpacing(props.pb)}`);
+            if (props.pl) styles.push(`padding-left: ${getSpacing(props.pl)}`);
+            if (props.px) styles.push(`padding-left: ${getSpacing(props.px)}; padding-right: ${getSpacing(props.px)}`);
+            if (props.py) styles.push(`padding-top: ${getSpacing(props.py)}; padding-bottom: ${getSpacing(props.py)}`);
+            if (props.m) styles.push(`margin: ${getSpacing(props.m)}`);
+            if (props.mt) styles.push(`margin-top: ${getSpacing(props.mt)}`);
+            if (props.mr) styles.push(`margin-right: ${getSpacing(props.mr)}`);
+            if (props.mb) styles.push(`margin-bottom: ${getSpacing(props.mb)}`);
+            if (props.ml) styles.push(`margin-left: ${getSpacing(props.ml)}`);
+            if (props.mx) styles.push(`margin-left: ${getSpacing(props.mx)}; margin-right: ${getSpacing(props.mx)}`);
+            if (props.my) styles.push(`margin-top: ${getSpacing(props.my)}; margin-bottom: ${getSpacing(props.my)}`);
+            if (props.gap) styles.push(`gap: ${getSpacing(props.gap)}`);
+            return styles.join('; ');
+        }
+        
+        // Common spacing patterns as shortcuts
+        const space = {
+            // Padding shortcuts
+            p: (size) => `padding: ${getSpacing(size)}`,
+            px: (size) => `padding-left: ${getSpacing(size)}; padding-right: ${getSpacing(size)}`,
+            py: (size) => `padding-top: ${getSpacing(size)}; padding-bottom: ${getSpacing(size)}`,
+            // Margin shortcuts
+            m: (size) => `margin: ${getSpacing(size)}`,
+            mx: (size) => `margin-left: ${getSpacing(size)}; margin-right: ${getSpacing(size)}`,
+            my: (size) => `margin-top: ${getSpacing(size)}; margin-bottom: ${getSpacing(size)}`,
+            mb: (size) => `margin-bottom: ${getSpacing(size)}`,
+            mt: (size) => `margin-top: ${getSpacing(size)}`,
+            // Gap
+            gap: (size) => `gap: ${getSpacing(size)}`,
+            // Combined common patterns
+            card: () => `padding: ${getSpacing('lg')}; margin-bottom: ${getSpacing('lg')}`,
+            section: () => `padding: ${getSpacing('xl')} 0; margin-bottom: ${getSpacing('xl')}`,
+            button: () => `padding: ${getSpacing('md')} ${getSpacing('lg')}`,
+            input: () => `padding: ${getSpacing('md')}`,
+            modal: () => `padding: ${getSpacing('xl')} ${getSpacing('2xl')}`
+        };
+        
         function escapeHtml(text) {
             if (text == null) return '';
             const str = String(text);
@@ -5521,7 +5984,7 @@ ssh amcclu12@login.isaac.utk.edu
             const footer = document.querySelector('footer');
             if (footer) { footer.style.background = ''; footer.style.backgroundImage = ''; }
             const logo = document.getElementById('appLogo');
-            if (logo) { logo.innerHTML = '<img src="assets/logo-dark-bg.png" alt="Speech Gradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">'; logo.style.backgroundColor = '#ffffff'; }
+            if (logo) { logo.innerHTML = '<img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">'; logo.style.backgroundColor = '#ffffff'; }
             const appTaglineEl = document.getElementById('appTagline');
             if (appTaglineEl) appTaglineEl.textContent = 'Instructor-Informed Speech Assessment';
             currentInstitutionTheme = null;
@@ -5625,7 +6088,7 @@ ssh amcclu12@login.isaac.utk.edu
                 root.style.removeProperty('--smokey');
                 root.style.removeProperty('--link-blue');
             }
-            // Tab favicon always Speech Gradebook
+            // Tab favicon always SpeechGradebook
             var fav = document.getElementById('faviconLink');
             if (fav) { fav.href = 'assets/logo-light-bg.png'; fav.type = 'image/png'; }
             var header = document.querySelector('header');
@@ -5643,7 +6106,7 @@ ssh amcclu12@login.isaac.utk.edu
                     logo.innerHTML = '<img src="' + theme.logoDataUrl.replace(/"/g, '&quot;') + '" alt="Logo" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;">';
                     logo.style.backgroundColor = '#ffffff';
                 } else {
-                    logo.innerHTML = '<img src="assets/logo-dark-bg.png" alt="Speech Gradebook" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;">';
+                    logo.innerHTML = '<img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;">';
                     logo.style.backgroundColor = '#ffffff';
                 }
             }
@@ -5922,7 +6385,7 @@ ssh amcclu12@login.isaac.utk.edu
                     footer.style.background = '#4B4B4B';
                     footer.style.backgroundImage = 'none';
                 }
-                // Tab favicon always Speech Gradebook (never institution logo)
+                // Tab favicon always SpeechGradebook (never institution logo)
                 const faviconEl = document.getElementById('faviconLink');
                 if (faviconEl) { faviconEl.href = 'assets/logo-light-bg.png'; faviconEl.type = 'image/png'; }
             } else {
@@ -5985,15 +6448,27 @@ ssh amcclu12@login.isaac.utk.edu
                 console.log('No custom logo URL in theme or no theme loaded');
             }
             
-            // Fallback: Speech Gradebook logo image (no custom institution logo)
-            logo.innerHTML = '<img src="assets/logo-dark-bg.png" alt="Speech Gradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">';
+            // Fallback: SpeechGradebook logo image (no custom institution logo)
+            logo.innerHTML = '<img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">';
             logo.style.backgroundColor = '#ffffff';
-            console.log('✓ Logo updated with default Speech Gradebook image');
+            console.log('✓ Logo updated with default SpeechGradebook image');
         }
         
         // Route user to appropriate interface based on their tier
         async function routeToInterface() {
             console.log('🎯 Routing to interface for tier:', userTier);
+            
+            // Check for student evaluation view link
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewMode = urlParams.get('view');
+            const evalId = urlParams.get('evalId');
+            const studentId = urlParams.get('studentId');
+            
+            if (viewMode === 'evaluation' && evalId && studentId) {
+                // Show student view of evaluation
+                await showStudentEvaluationView(evalId, studentId);
+                return; // Don't continue with normal routing
+            }
             
             // Determine interface type based on account tier
             let interfaceType = 'demo'; // default
@@ -6564,6 +7039,113 @@ ssh amcclu12@login.isaac.utk.edu
             routeToInterface();
         }
         
+        // Show student view of evaluation (read-only, no login required)
+        async function showStudentEvaluationView(evalId, studentId) {
+            console.log('📧 Showing student evaluation view:', evalId, studentId);
+            
+            // Show main app
+            showMainApp();
+            
+            // Load evaluation from Supabase (public read should work if RLS allows)
+            let evaluation = null;
+            let videoUrl = null;
+            let audioUrl = null;
+            
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('evaluations')
+                        .select('*')
+                        .eq('id', evalId)
+                        .eq('student_id', studentId)
+                        .single();
+                    
+                    if (data && !error) {
+                        evaluation = data.evaluation_data;
+                        if (typeof evaluation === 'string') {
+                            try { evaluation = JSON.parse(evaluation); } catch (_) { evaluation = null; }
+                        }
+                        if (evaluation && data.transcript != null) evaluation.transcript = data.transcript;
+                        videoUrl = data.video_url || null;
+                        audioUrl = data.audio_url || null;
+                        if (videoUrl) evaluation.video_url = videoUrl;
+                        if (audioUrl) evaluation.audio_url = audioUrl;
+                    } else {
+                        console.error('Error loading evaluation:', error);
+                    }
+                } catch (e) {
+                    console.error('Error accessing evaluation:', e);
+                }
+            }
+            
+            if (!evaluation) {
+                document.getElementById('mainApp').innerHTML = `
+                    <div style="padding: 3rem; text-align: center;">
+                        <h2 style="color: var(--error);">Evaluation Not Found</h2>
+                        <p style="color: var(--text-light); margin-top: 1rem;">The evaluation you're looking for could not be found or is no longer available.</p>
+                        <p style="color: var(--text-light); margin-top: 0.5rem;">Please contact your instructor if you believe this is an error.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Set evaluation results for display
+            evaluationResults = evaluation;
+            
+            // Show evaluation section and display results (read-only)
+            const evalSection = document.getElementById('evaluateSection');
+            if (evalSection) {
+                evalSection.classList.add('active');
+                // Hide other sections
+                ['dashboardSection', 'settingsSection', 'helpSection'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('active');
+                });
+            }
+            
+            // Hide all steps and show results
+            ['uploadStep', 'detailsStep', 'processingStep'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            const resultsStep = document.getElementById('resultsStep');
+            if (resultsStep) {
+                resultsStep.classList.remove('hidden');
+            }
+            
+            // Display results (read-only - hide edit buttons)
+            displayResults(evaluation);
+            
+            // Hide save/edit buttons for student view
+            const saveBtn = document.querySelector('button[onclick="openSaveModal()"]');
+            const moveBtn = document.getElementById('moveEvalBtn');
+            const editBtns = document.querySelectorAll('button[onclick*="edit"]');
+            if (saveBtn) saveBtn.style.display = 'none';
+            if (moveBtn) moveBtn.style.display = 'none';
+            editBtns.forEach(btn => {
+                if (btn && btn.onclick && btn.onclick.toString().includes('edit')) {
+                    btn.style.display = 'none';
+                }
+            });
+            
+            // Add student view banner
+            const resultsContent = document.getElementById('resultsContent');
+            if (resultsContent) {
+                const banner = document.createElement('div');
+                banner.style.cssText = 'background: #e3f2fd; border-left: 4px solid #2196f3; padding: 1rem 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;';
+                banner.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="info" style="width:1.25em;height:1.25em;"></i>
+                        <strong style="color: #1976d2;">Student View</strong>
+                    </div>
+                    <p style="margin: 0.5rem 0 0 0; color: #1565c0; font-size: 0.9rem;">This is a read-only view of your evaluation. Contact your instructor with any questions.</p>
+                `;
+                resultsContent.insertBefore(banner, resultsContent.firstChild);
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: banner });
+            }
+        }
+        
         function showMainApp() {
             var loadingEl = document.getElementById('authLoadingOverlay');
             if (loadingEl) loadingEl.classList.add('hidden');
@@ -6945,10 +7527,10 @@ ssh amcclu12@login.isaac.utk.edu
                 domain: 'utk.edu',
                 headerBg: '#4B4B4B',  /* Smokey Gray */
                 footerBg: '#4B4B4B',  /* Smokey Gray */
-                favicon: 'assets/logo-light-bg.png',  /* Tab favicon always Speech Gradebook */
+                favicon: 'assets/logo-light-bg.png',  /* Tab favicon always SpeechGradebook */
                 logoUrl: 'assets/utk-logo.png',
                 branding: {
-                    appName: 'Speech Gradebook',
+                    appName: 'SpeechGradebook',
                     tagline: 'Instructor-Informed Speech Assessment'
                 },
                 colors: {
@@ -6973,7 +7555,7 @@ ssh amcclu12@login.isaac.utk.edu
                         { text: 'Title IX', url: 'https://titleix.utk.edu/' },
                         { text: 'IT Help', url: 'https://oit.utk.edu/help' }
                     ],
-                    copyright: '© 2026 Speech Gradebook',
+                    copyright: '© 2026 SpeechGradebook',
                     additionalText: 'The flagship campus of the University of Tennessee System'
                 }
             },
@@ -6983,10 +7565,10 @@ ssh amcclu12@login.isaac.utk.edu
                 domain: 'utk.edu',
                 headerBg: '#4B4B4B',
                 footerBg: '#4B4B4B',
-                favicon: 'assets/logo-light-bg.png',  /* Tab favicon always Speech Gradebook */
+                favicon: 'assets/logo-light-bg.png',  /* Tab favicon always SpeechGradebook */
                 logoUrl: 'assets/utk-logo.png',
                 branding: {
-                    appName: 'Speech Gradebook',
+                    appName: 'SpeechGradebook',
                     tagline: 'Instructor-Informed Speech Assessment'
                 },
                 colors: {
@@ -7011,16 +7593,16 @@ ssh amcclu12@login.isaac.utk.edu
                         { text: 'Title IX', url: 'https://titleix.utk.edu/' },
                         { text: 'IT Help', url: 'https://oit.utk.edu/help' }
                     ],
-                    copyright: '© 2026 Speech Gradebook',
+                    copyright: '© 2026 SpeechGradebook',
                     additionalText: 'The flagship campus of the University of Tennessee System'
                 }
             },
             'default': {
-                name: 'Speech Gradebook',
+                name: 'SpeechGradebook',
                 shortName: 'SG',
                 domain: null,
                 branding: {
-                    appName: 'Speech Gradebook',
+                    appName: 'SpeechGradebook',
                     tagline: 'Instructor-Informed Speech Assessment'
                 },
                 colors: {
@@ -7043,7 +7625,7 @@ ssh amcclu12@login.isaac.utk.edu
                         { text: 'Privacy Policy', url: 'privacy.html' },
                         { text: 'Terms of Service', url: 'terms.html' }
                     ],
-                    copyright: '© 2026 Speech Gradebook',
+                    copyright: '© 2026 SpeechGradebook',
                     additionalText: null
                 }
             }
@@ -7053,7 +7635,7 @@ ssh amcclu12@login.isaac.utk.edu
         // Select a package to load its colors; then customize as needed before saving.
         const BRANDING_PACKAGES = {
             'default': {
-                name: 'Speech Gradebook Default',
+                name: 'SpeechGradebook Default',
                 primary: '#1e3a5f',
                 header: '#142940',
                 secondary: '#8b9dc3',
@@ -7073,9 +7655,10 @@ ssh amcclu12@login.isaac.utk.edu
         };
 
         // ===== GLOBAL STATE =====
-        console.log('🚀 Speech Gradebook JavaScript Loading...');
+        console.log('🚀 SpeechGradebook JavaScript Loading...');
         let currentTenant = 'default';
         let uploadedFile = null;
+        let evaluationAbortController = null; // Global abort controller for canceling evaluations
         let evaluationResults = null;
         /** Original AI output (sections + timeline_markers) before any instructor edits. Set when we receive the API response; stored in evaluation_data.model_output_original on first save for "AI vs instructor" training. */
         let modelOutputOriginal = null;
@@ -7218,7 +7801,7 @@ ssh amcclu12@login.isaac.utk.edu
             // Check authentication status (loading overlay hides when this completes)
             await checkAuth();
             
-            // Apply tenant only when user is logged in (main app). Login screen always keeps Speech Gradebook default theme.
+            // Apply tenant only when user is logged in (main app). Login screen always keeps SpeechGradebook default theme.
             if (currentUser) {
                 const savedTenant = (typeof localStorage !== 'undefined' && localStorage.getItem('current_tenant')) || null;
                 const tenantSel = document.getElementById('tenantSelect');
@@ -7238,7 +7821,7 @@ ssh amcclu12@login.isaac.utk.edu
                 }
                 console.log('✓ Tenant applied:', currentTenant, savedTenant ? '(from localStorage)' : '(default or institution)');
             }
-            // When not logged in, theme stays at default (set by showAuthScreen → resetThemeToDefault) so login page is always Speech Gradebook theme
+            // When not logged in, theme stays at default (set by showAuthScreen → resetThemeToDefault) so login page is always SpeechGradebook theme
             
             // Initialize file upload
             initializeFileUpload();
@@ -12392,6 +12975,39 @@ Earlier:
                 </div>
             `;
             
+            // Add video/audio player if media URL exists
+            const videoUrl = evaluation.video_url || null;
+            const audioUrl = evaluation.audio_url || null;
+            const mediaUrl = videoUrl || audioUrl;
+            
+            if (mediaUrl) {
+                detailsHTML += `
+                    <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h4 style="margin: 0; color: var(--primary);"><span class="icon-with-text"><i data-lucide="${videoUrl ? 'video' : 'headphones'}"></i> ${videoUrl ? 'Video Recording' : 'Audio Recording'}</span></h4>
+                        </div>
+                        ${videoUrl ? `
+                        <video controls style="width: 100%; max-width: 600px; border-radius: 0.5rem; background: #000;">
+                            <source src="${escapeHtml(videoUrl)}" type="video/mp4">
+                            <source src="${escapeHtml(videoUrl)}" type="video/webm">
+                            <source src="${escapeHtml(videoUrl)}" type="video/quicktime">
+                            Your browser does not support the video tag.
+                        </video>
+                        ` : `
+                        <audio controls style="width: 100%; max-width: 500px;">
+                            <source src="${escapeHtml(audioUrl)}" type="audio/mpeg">
+                            <source src="${escapeHtml(audioUrl)}" type="audio/mp3">
+                            <source src="${escapeHtml(audioUrl)}" type="audio/wav">
+                            Your browser does not support the audio tag.
+                        </audio>
+                        `}
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.75rem;">
+                            ${videoUrl ? 'Watch the recorded speech video.' : 'Listen to the recorded speech audio.'}
+                        </p>
+                    </div>
+                `;
+            }
+            
             // Parse evaluation_data if it's a string
             let evalData = evaluation.evaluation_data;
             if (typeof evalData === 'string') {
@@ -14735,12 +15351,12 @@ SpeechGradebook Research Team`;
                     footer.style.background = config.footerBg;
                     footer.style.backgroundImage = 'none';
                 }
-                // Tab favicon always Speech Gradebook (never institution/tenant logo)
+                // Tab favicon always SpeechGradebook (never institution/tenant logo)
                 if (faviconEl) {
                     faviconEl.href = 'assets/logo-light-bg.png';
                     faviconEl.type = 'image/png';
                 }
-                // Login screen always shows Speech Gradebook logo (never institution/tenant logo)
+                // Login screen always shows SpeechGradebook logo (never institution/tenant logo)
                 const authLogoImg = document.getElementById('authLogoImg');
                 if (authLogoImg) authLogoImg.src = 'assets/logo-light-bg.png';
                 // UTK Torch Theme: full Torch design tokens from utk-theme-preview.html (both UTK and UTK Torch use this)
@@ -14794,7 +15410,7 @@ SpeechGradebook Research Team`;
             const appLogoEl = document.getElementById('appLogo');
             if (appLogoEl) {
                 if (tenantId === 'default') {
-                    appLogoEl.innerHTML = '<img src="assets/logo-dark-bg.png" alt="Speech Gradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">';
+                    appLogoEl.innerHTML = '<img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">';
                     appLogoEl.style.backgroundColor = '#ffffff';
                 } else if (config.logoUrl) {
                     appLogoEl.innerHTML = '<img src="' + config.logoUrl + '" alt="' + (config.name || 'Logo') + '" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">';
@@ -14804,7 +15420,7 @@ SpeechGradebook Research Team`;
                     appLogoEl.style.backgroundColor = '#ffffff';
                 }
             }
-            document.title = 'Speech Gradebook';
+            document.title = 'SpeechGradebook';
             
             // Apply footer
             const footerLinks = document.getElementById('footerLinks');
@@ -14897,9 +15513,78 @@ SpeechGradebook Research Team`;
             if (fileInfo) fileInfo.classList.remove('hidden');
             const continueBtn = document.getElementById('continueButtonContainer');
             if (continueBtn) continueBtn.style.display = 'block';
+            
+            // Show class/student selection if user has classes
+            const uploadClassStudentContainer = document.getElementById('uploadClassStudentContainer');
+            if (uploadClassStudentContainer) {
+                try {
+                    const classes = JSON.parse(getUserItem('classes') || '[]');
+                    if (classes && classes.length > 0) {
+                        uploadClassStudentContainer.style.display = 'block';
+                        populateUploadClassSelector();
+                    }
+                } catch (e) {
+                    console.warn('Could not load classes for upload assignment:', e);
+                }
+            }
+        }
+        
+        // Populate class selector in upload step
+        function populateUploadClassSelector() {
+            try {
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                const sel = document.getElementById('uploadClassSel');
+                if (!sel) return;
+                sel.innerHTML = '<option value="">-- Select Class (Optional) --</option>';
+                for (let i = 0; i < classes.length; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = classes[i].name + ' - ' + classes[i].semester + ' ' + classes[i].year;
+                    sel.appendChild(opt);
+                }
+            } catch (e) {
+                console.error('Error populating upload class selector:', e);
+            }
+        }
+        
+        // Load students for selected class in upload step
+        function loadUploadStudents() {
+            try {
+                const classSel = document.getElementById('uploadClassSel');
+                if (!classSel) return;
+                const idx = classSel.value;
+                const studentSel = document.getElementById('uploadStudentSel');
+                if (!studentSel) return;
+                studentSel.innerHTML = '<option value="">-- Select Student (Optional) --</option>';
+                if (!idx) return;
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                const classData = classes[idx];
+                if (classData && classData.roster) {
+                    for (let i = 0; i < classData.roster.length; i++) {
+                        const student = classData.roster[i];
+                        const opt = document.createElement('option');
+                        opt.value = i;
+                        opt.textContent = (student.firstName || '') + ' ' + (student.lastName || '');
+                        studentSel.appendChild(opt);
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading upload students:', e);
+            }
         }
 
         function handleFile(file) {
+            // Check file size limit (50MB) - reject immediately if over limit
+            const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+            if (file.size > MAX_FILE_SIZE) {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                alert('File exceeds 50MB, please compress your file and try again.\n\nFile size: ' + sizeMB + ' MB\nMaximum allowed: 50 MB');
+                // Clear the file input
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) fileInput.value = '';
+                return;
+            }
+            
             const isVideo = (file.type || '').startsWith('video/');
             const overLimit = file.size > COMPRESS_VIDEO_MAX_BYTES;
             if (isVideo && overLimit) {
@@ -14953,6 +15638,58 @@ SpeechGradebook Research Team`;
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
+        // ===== LOAD CLASSES AND STUDENTS FOR EVALUATION =====
+        function loadEvalClasses() {
+            const classSelect = document.getElementById('evalClassSelect');
+            if (!classSelect) return;
+            
+            // Clear existing options except None and Other
+            classSelect.innerHTML = '<option value="">-- None --</option><option value="other">Other</option>';
+            
+            try {
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                classes.forEach((cls, index) => {
+                    const option = document.createElement('option');
+                    option.value = cls.id || index;
+                    option.textContent = cls.name || `Class ${index + 1}`;
+                    classSelect.appendChild(option);
+                });
+            } catch (e) {
+                console.warn('Could not load classes for evaluation:', e);
+            }
+        }
+        
+        function loadEvalStudents() {
+            const classSelect = document.getElementById('evalClassSelect');
+            const studentSelect = document.getElementById('evalStudentSelect');
+            if (!classSelect || !studentSelect) return;
+            
+            const classValue = classSelect.value;
+            studentSelect.innerHTML = '<option value="">-- None --</option>';
+            
+            if (!classValue || classValue === '' || classValue === 'other') {
+                return;
+            }
+            
+            try {
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                const classData = classes.find(c => (c.id === classValue || c.name === classValue) || 
+                    (Array.isArray(classes) && classes[parseInt(classValue)]));
+                
+                if (classData && classData.roster && Array.isArray(classData.roster)) {
+                    classData.roster.forEach((student, index) => {
+                        const option = document.createElement('option');
+                        option.value = student.id || student.studentId || index;
+                        const studentName = (student.firstName || '') + ' ' + (student.lastName || '');
+                        option.textContent = studentName.trim() || `Student ${index + 1}`;
+                        studentSelect.appendChild(option);
+                    });
+                }
+            } catch (e) {
+                console.warn('Could not load students for evaluation:', e);
+            }
+        }
+        
         // ===== STEP NAVIGATION =====
         function moveToStep(step) {
             currentStep = step;
@@ -14973,6 +15710,11 @@ SpeechGradebook Research Team`;
                 } else if (i === step) {
                     stepEl.classList.add('active');
                 }
+            }
+            
+            // Load classes when showing step 2
+            if (step === 2) {
+                loadEvalClasses();
             }
             
             // Update card header based on step
@@ -15000,6 +15742,11 @@ SpeechGradebook Research Team`;
             }
         }
 
+        async function updateRubricSelectorForClass() {
+            // Re-populate rubric selector based on selected class
+            await populateRubricSelector();
+        }
+        
         async function populateRubricSelector() {
             const select = document.getElementById('rubricSelect');
             if (!select) return;
@@ -15007,35 +15754,24 @@ SpeechGradebook Research Team`;
             const rubrics = await getAllRubrics();
             const classes = JSON.parse(getUserItem('classes') || '[]');
             
+            // Get selected class
+            const classSelect = document.getElementById('evalClassSelect');
+            const selectedClassId = classSelect?.value;
+            const selectedClass = selectedClassId && selectedClassId !== '' && selectedClassId !== 'other' 
+                ? classes.find(c => (c.id === selectedClassId || c.name === selectedClassId) || 
+                    (Array.isArray(classes) && classes[parseInt(selectedClassId)]))
+                : null;
+            
             // Clear existing options except the first one
             select.innerHTML = '<option value="">-- Select a Rubric --</option>';
             
             // Separate rubrics by type
             const defaultRubrics = rubrics.filter(r => r.id === 'default');
             
-            // Filter unassigned rubrics (no courseId or courseIds)
-            const unassignedRubrics = rubrics.filter(r => {
-                if (r.id === 'default') return false;
-                const hasOldCourseId = r.courseId && r.courseId !== '';
-                const hasNewCourseIds = r.courseIds && Array.isArray(r.courseIds) && r.courseIds.length > 0;
-                return !hasOldCourseId && !hasNewCourseIds;
-            });
+            // Filter rubrics for the selected class
+            const classRubrics = [];
+            const generalRubrics = [];
             
-            // Add default rubric
-            if (defaultRubrics.length > 0) {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = 'System Default';
-                defaultRubrics.forEach(rubric => {
-                    const option = document.createElement('option');
-                    option.value = rubric.id;
-                    option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
-                    optgroup.appendChild(option);
-                });
-                select.appendChild(optgroup);
-            }
-            
-            // Group rubrics by course NAME (not ID) to consolidate sections
-            const rubricsByCourse = {};
             rubrics.filter(r => r.id !== 'default').forEach(rubric => {
                 // Get courseIds for this rubric (handle both old and new format)
                 let courseIds = [];
@@ -15045,62 +15781,161 @@ SpeechGradebook Research Team`;
                     courseIds = [rubric.courseId];
                 }
                 
-                // Add rubric to each course it's assigned to
-                courseIds.forEach(courseId => {
-                    const course = classes.find(c => c.id === courseId);
-                    if (course) {
-                        // Use course name + semester + year as key
-                        const courseKey = `${course.name}|${course.semester}|${course.year}`;
-                        if (!rubricsByCourse[courseKey]) {
-                            rubricsByCourse[courseKey] = {
-                                name: course.name,
-                                semester: course.semester,
-                                year: course.year,
-                                rubrics: []
-                            };
-                        }
-                        // Avoid duplicates
-                        if (!rubricsByCourse[courseKey].rubrics.find(r => r.id === rubric.id)) {
-                            rubricsByCourse[courseKey].rubrics.push(rubric);
-                        }
-                    }
+                // Check if rubric is assigned to the selected class
+                const isForSelectedClass = selectedClass && courseIds.some(courseId => {
+                    return courseId === selectedClass.id || 
+                           courseId === selectedClass.name ||
+                           (Array.isArray(classes) && classes[parseInt(courseId)]?.id === selectedClass.id);
                 });
+                
+                // Check if rubric is unassigned (general)
+                const isUnassigned = courseIds.length === 0 || 
+                    (!rubric.courseId && (!rubric.courseIds || rubric.courseIds.length === 0));
+                
+                if (isForSelectedClass) {
+                    classRubrics.push(rubric);
+                } else if (isUnassigned) {
+                    generalRubrics.push(rubric);
+                }
             });
             
-            // Add course-specific rubrics grouped by course name
-            Object.keys(rubricsByCourse).sort().forEach(courseKey => {
-                const courseGroup = rubricsByCourse[courseKey];
+            // If a class is selected, show class rubrics first, then general rubrics
+            if (selectedClass) {
+                // Add class-specific rubrics first
+                if (classRubrics.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = `${selectedClass.name || 'Class'} Rubrics`;
+                    classRubrics.forEach(rubric => {
+                        const option = document.createElement('option');
+                        option.value = rubric.id;
+                        option.textContent = `${rubric.name} (${rubric.totalPoints || 0} pts)`;
+                        if (rubric.speechType) {
+                            option.textContent += ` - ${rubric.speechType}`;
+                        }
+                        optgroup.appendChild(option);
+                    });
+                    select.appendChild(optgroup);
+                }
                 
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = `${courseGroup.name} - ${courseGroup.semester} ${courseGroup.year}`;
+                // Add general/unassigned rubrics at the bottom
+                if (generalRubrics.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = 'General Rubrics';
+                    generalRubrics.forEach(rubric => {
+                        const option = document.createElement('option');
+                        option.value = rubric.id;
+                        option.textContent = `${rubric.name} (${rubric.totalPoints || 0} pts)`;
+                        if (rubric.speechType) {
+                            option.textContent += ` - ${rubric.speechType}`;
+                        }
+                        optgroup.appendChild(option);
+                    });
+                    select.appendChild(optgroup);
+                }
                 
-                courseGroup.rubrics.forEach(rubric => {
-                    const option = document.createElement('option');
-                    option.value = rubric.id;
-                    option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
-                    if (rubric.speechType) {
-                        option.textContent += ` - ${rubric.speechType}`;
+                // Add default rubric at the very end
+                if (defaultRubrics.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = 'System Default';
+                    defaultRubrics.forEach(rubric => {
+                        const option = document.createElement('option');
+                        option.value = rubric.id;
+                        option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                        optgroup.appendChild(option);
+                    });
+                    select.appendChild(optgroup);
+                }
+            } else {
+                // If no class is selected, show all rubrics grouped by course (original behavior)
+                // Group rubrics by course NAME (not ID) to consolidate sections
+                const rubricsByCourse = {};
+                rubrics.filter(r => r.id !== 'default').forEach(rubric => {
+                    // Get courseIds for this rubric (handle both old and new format)
+                    let courseIds = [];
+                    if (rubric.courseIds && Array.isArray(rubric.courseIds)) {
+                        courseIds = rubric.courseIds;
+                    } else if (rubric.courseId) {
+                        courseIds = [rubric.courseId];
                     }
-                    optgroup.appendChild(option);
+                    
+                    // Add rubric to each course it's assigned to
+                    courseIds.forEach(courseId => {
+                        const course = classes.find(c => c.id === courseId);
+                        if (course) {
+                            // Use course name + semester + year as key
+                            const courseKey = `${course.name}|${course.semester}|${course.year}`;
+                            if (!rubricsByCourse[courseKey]) {
+                                rubricsByCourse[courseKey] = {
+                                    name: course.name,
+                                    semester: course.semester,
+                                    year: course.year,
+                                    rubrics: []
+                                };
+                            }
+                            // Avoid duplicates
+                            if (!rubricsByCourse[courseKey].rubrics.find(r => r.id === rubric.id)) {
+                                rubricsByCourse[courseKey].rubrics.push(rubric);
+                            }
+                        }
+                    });
                 });
                 
-                select.appendChild(optgroup);
-            });
-            
-            // Add unassigned custom rubrics
-            if (unassignedRubrics.length > 0) {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = 'Rubrics (No Course)';
-                unassignedRubrics.forEach(rubric => {
-                    const option = document.createElement('option');
-                    option.value = rubric.id;
-                    option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
-                    if (rubric.speechType) {
-                        option.textContent += ` - ${rubric.speechType}`;
-                    }
-                    optgroup.appendChild(option);
+                // Add course-specific rubrics grouped by course name
+                Object.keys(rubricsByCourse).sort().forEach(courseKey => {
+                    const courseGroup = rubricsByCourse[courseKey];
+                    
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = `${courseGroup.name} - ${courseGroup.semester} ${courseGroup.year}`;
+                    
+                    courseGroup.rubrics.forEach(rubric => {
+                        const option = document.createElement('option');
+                        option.value = rubric.id;
+                        option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                        if (rubric.speechType) {
+                            option.textContent += ` - ${rubric.speechType}`;
+                        }
+                        optgroup.appendChild(option);
+                    });
+                    
+                    select.appendChild(optgroup);
                 });
-                select.appendChild(optgroup);
+                
+                // Filter unassigned rubrics (no courseId or courseIds)
+                const unassignedRubrics = rubrics.filter(r => {
+                    if (r.id === 'default') return false;
+                    const hasOldCourseId = r.courseId && r.courseId !== '';
+                    const hasNewCourseIds = r.courseIds && Array.isArray(r.courseIds) && r.courseIds.length > 0;
+                    return !hasOldCourseId && !hasNewCourseIds;
+                });
+                
+                // Add unassigned custom rubrics
+                if (unassignedRubrics.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = 'Rubrics (No Course)';
+                    unassignedRubrics.forEach(rubric => {
+                        const option = document.createElement('option');
+                        option.value = rubric.id;
+                        option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                        if (rubric.speechType) {
+                            option.textContent += ` - ${rubric.speechType}`;
+                        }
+                        optgroup.appendChild(option);
+                    });
+                    select.appendChild(optgroup);
+                }
+                
+                // Add default rubric at the end
+                if (defaultRubrics.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = 'System Default';
+                    defaultRubrics.forEach(rubric => {
+                        const option = document.createElement('option');
+                        option.value = rubric.id;
+                        option.textContent = `${rubric.name} (${rubric.totalPoints} pts)`;
+                        optgroup.appendChild(option);
+                    });
+                    select.appendChild(optgroup);
+                }
             }
             
             // Pre-select the Self-Introduction rubric if available
@@ -15326,10 +16161,110 @@ SpeechGradebook Research Team`;
             hintEl.style.display = (apiUrl.indexOf('localhost') !== -1) ? 'block' : 'none';
         }
 
+        // ===== RE-EVALUATE FROM STORED VIDEO/AUDIO URL =====
+        async function reEvaluateFromUrl(mediaUrl, isVideo) {
+            if (!mediaUrl) {
+                alert('No media URL available for re-evaluation.');
+                return;
+            }
+            
+            if (!confirm('Re-evaluate this ' + (isVideo ? 'video' : 'audio') + '? This will create a new evaluation.')) {
+                return;
+            }
+            
+            try {
+                updateProcessingMessage('Downloading ' + (isVideo ? 'video' : 'audio') + ' file...');
+                showUploadProgress();
+                updateUploadProgress(10, 'Downloading media file...');
+                
+                // Fetch the media file from URL
+                const response = await fetch(mediaUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to download media file: ' + response.statusText);
+                }
+                
+                updateUploadProgress(50, 'Processing media file...');
+                const blob = await response.blob();
+                
+                // Determine file extension and MIME type
+                const urlPath = new URL(mediaUrl).pathname;
+                const extension = urlPath.split('.').pop() || (isVideo ? 'mp4' : 'mp3');
+                const mimeType = isVideo 
+                    ? (extension === 'webm' ? 'video/webm' : extension === 'mov' ? 'video/quicktime' : 'video/mp4')
+                    : (extension === 'wav' ? 'audio/wav' : extension === 'm4a' ? 'audio/mp4' : 'audio/mpeg');
+                
+                // Create File object from blob
+                const fileName = 'reevaluation.' + extension;
+                const file = new File([blob], fileName, { type: mimeType });
+                
+                updateUploadProgress(80, 'Preparing for evaluation...');
+                
+                // Get current evaluation settings
+                const assignmentType = evaluationResults?.assignmentType || document.getElementById('assignmentType')?.value || 'Speech';
+                const rubricId = document.getElementById('rubricSelect')?.value;
+                if (!rubricId) {
+                    throw new Error('Please select a rubric first.');
+                }
+                const selectedRubric = await getRubricById(rubricId);
+                if (!selectedRubric) {
+                    throw new Error('Selected rubric not found');
+                }
+                
+                const apiProvider = document.getElementById('evalApiProvider')?.value || 'qwen';
+                const apiKey = await getEvaluationApiKey(apiProvider);
+                
+                // Set the file as uploaded
+                uploadedFile = file;
+                
+                updateUploadProgress(90, 'Starting evaluation...');
+                hideUploadProgress();
+                
+                // Move to processing step
+                moveToStep(3);
+                
+                // Run evaluation
+                console.log('Re-evaluating from stored media URL:', mediaUrl);
+                const result = await evaluateSpeech(apiKey, file, assignmentType, selectedRubric, apiProvider);
+                console.log('✓ Re-evaluation complete');
+                
+                result.aiProvider = apiProvider;
+                // Preserve video/audio URL in results
+                if (isVideo) {
+                    result.video_url = mediaUrl;
+                } else {
+                    result.audio_url = mediaUrl;
+                }
+                evaluationResults = result;
+                modelOutputOriginal = (result && result.sections) ? { sections: JSON.parse(JSON.stringify(result.sections)), timeline_markers: Array.isArray(result.timeline_markers) ? result.timeline_markers.slice() : [] } : null;
+                
+                moveToStep(4);
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('Re-evaluation error:', error);
+                hideUploadProgress();
+                alert('Error re-evaluating: ' + error.message);
+            }
+        }
+        
+        // ===== CANCEL EVALUATION =====
+        function cancelEvaluation() {
+            if (evaluationAbortController) {
+                evaluationAbortController.abort();
+                evaluationAbortController = null;
+                console.log('Evaluation cancelled by user');
+                showNotification('Evaluation cancelled', 'info', 3000);
+                moveToStep(2); // Return to details step
+            }
+        }
+        
         // ===== SPEECH EVALUATION =====
         async function processAndEvaluate() {
             console.log('=== processAndEvaluate START ===');
             console.log('uploadedFile:', uploadedFile);
+            
+            // Create new abort controller for this evaluation
+            evaluationAbortController = new AbortController();
             
             // Reset correction log for new evaluation
             correctionLog = [];
@@ -15377,7 +16312,36 @@ SpeechGradebook Research Team`;
             console.log('✓ Rubric selected');
 
             const assignmentType = document.getElementById('assignmentType').value;
-            const studentName = 'Student'; // Removed student name input field
+            
+            // Get student name from details step if class/student were selected
+            let studentName = 'Student';
+            let selectedClassId = null;
+            let selectedStudentId = null;
+            try {
+                const evalClassSelect = document.getElementById('evalClassSelect');
+                const evalStudentSelect = document.getElementById('evalStudentSelect');
+                const classValue = evalClassSelect?.value;
+                const studentValue = evalStudentSelect?.value;
+                
+                if (classValue && classValue !== '' && classValue !== 'other') {
+                    selectedClassId = classValue;
+                    if (studentValue && studentValue !== '') {
+                        selectedStudentId = studentValue;
+                        const classes = JSON.parse(getUserItem('classes') || '[]');
+                        const classData = classes.find(c => c.id === classValue || c.name === classValue);
+                        if (classData && classData.roster) {
+                            const student = classData.roster.find(s => (s.id === studentValue || s.studentId === studentValue) || 
+                                (Array.isArray(classData.roster) && classData.roster[parseInt(studentValue)]));
+                            if (student) {
+                                studentName = (student.firstName || '') + ' ' + (student.lastName || '');
+                                if (!studentName.trim()) studentName = 'Student';
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not get student name from details selection:', e);
+            }
             
             console.log('Student name:', studentName);
             console.log('Assignment type:', assignmentType);
@@ -15399,16 +16363,38 @@ SpeechGradebook Research Team`;
                 // Pass rubric and provider to evaluation function
                 console.log('Calling evaluateSpeech...');
                 const result = await evaluateSpeech(apiKey, uploadedFile, assignmentType, selectedRubric, apiProvider);
+                
+                // Check if evaluation was cancelled
+                if (evaluationAbortController && evaluationAbortController.signal.aborted) {
+                    console.log('Evaluation was cancelled');
+                    return;
+                }
+                
                 console.log('✓ Evaluation complete');
                 result.aiProvider = apiProvider;
+                // Set student name if it was selected during details step
+                if (studentName && studentName !== 'Student') {
+                    result.studentName = studentName;
+                }
+                // Store selected class and student IDs for saving
+                result.selectedClassId = selectedClassId;
+                result.selectedStudentId = selectedStudentId;
                 evaluationResults = result;
                 modelOutputOriginal = (result && result.sections) ? { sections: JSON.parse(JSON.stringify(result.sections)), timeline_markers: Array.isArray(result.timeline_markers) ? result.timeline_markers.slice() : [] } : null;
                 moveToStep(4);
                 displayResults(result);
             } catch (error) {
+                // Check if error is from cancellation
+                if (error.name === 'AbortError' || (evaluationAbortController && evaluationAbortController.signal.aborted)) {
+                    console.log('Evaluation cancelled');
+                    return;
+                }
                 console.error('EVALUATION ERROR:', error);
                 alert('Error evaluating speech: ' + error.message);
                 moveToStep(2);
+            } finally {
+                // Clear abort controller after evaluation completes
+                evaluationAbortController = null;
             }
         }
 
@@ -15715,6 +16701,11 @@ SpeechGradebook Research Team`;
         }
 
         async function evaluateSpeech(apiKey, file, assignmentType, rubric, apiProvider = 'finetuned') {
+            // Check if evaluation was cancelled
+            if (evaluationAbortController && evaluationAbortController.signal.aborted) {
+                throw new DOMException('Evaluation cancelled', 'AbortError');
+            }
+            
             console.log('>>> evaluateSpeech called');
             console.log('    API Provider:', apiProvider);
             console.log('    API key:', apiKey ? 'Present' : 'Missing');
@@ -15799,14 +16790,22 @@ SpeechGradebook Research Team`;
                     }
                 }
                 updateProcessingMessage('Sending file to SpeechGradebook Text Model (Mistral) server (transcription + evaluation)...');
+                showUploadProgress();
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('rubric', JSON.stringify(rubric));
                 if (videoNotes) formData.append('video_notes', videoNotes);
-                const response = await fetch(apiUrl + '/evaluate_with_file', {
-                    method: 'POST',
-                    body: formData
-                });
+                let response;
+                try {
+                    response = await fetchWithProgress(apiUrl + '/evaluate_with_file', {
+                        method: 'POST',
+                        body: formData
+                    }, (percent) => {
+                        updateUploadProgress(percent, 'Uploading file...');
+                    });
+                } finally {
+                    hideUploadProgress();
+                }
                 if (!response.ok) {
                     const errText = await response.text();
                     if (response.status === 501) {
@@ -15875,14 +16874,21 @@ SpeechGradebook Research Team`;
             }
             try {
                 updateProcessingMessage('SpeechGradebook Text + Video Model (Qwen) is evaluating the video (content and delivery)...');
+                showUploadProgress();
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('rubric', JSON.stringify(normalizeRubricForApi(rubric)));
-                const response = await fetch(baseUrl + '/evaluate_video', {
-                    method: 'POST',
-                    body: formData,
-                    redirect: 'follow'   // Follow HTTP→HTTPS redirects so users don't get errors when accessing via http:// or mixed links
-                });
+                let response;
+                try {
+                    response = await fetchWithProgress(baseUrl + '/evaluate_video', {
+                        method: 'POST',
+                        body: formData
+                    }, (percent) => {
+                        updateUploadProgress(percent, 'Uploading video...');
+                    });
+                } finally {
+                    hideUploadProgress();
+                }
                 if (!response.ok) {
                     const errText = await response.text();
                     if (response.status === 503) {
@@ -16874,11 +17880,108 @@ Ensure every subcategory receives a grade. Include "video_notes" as a single par
         }
         
         // Helper function to update processing message
-        function updateProcessingMessage(message) {
+        /* Apple HIG: Enhanced processing message updates */
+        function updateProcessingMessage(message, submessage = null) {
             const messageElement = document.getElementById('processingMessage');
+            const submessageElement = document.getElementById('processingSubmessage');
+            
             if (messageElement) {
                 messageElement.textContent = message;
+                // Add smooth transition
+                messageElement.style.opacity = '0';
+                setTimeout(() => {
+                    messageElement.style.transition = 'opacity var(--motion-fast) var(--motion-ease)';
+                    messageElement.style.opacity = '1';
+                }, 50);
             }
+            
+            if (submessageElement) {
+                if (submessage) {
+                    submessageElement.textContent = submessage;
+                    submessageElement.style.display = 'block';
+                    submessageElement.style.opacity = '0';
+                    setTimeout(() => {
+                        submessageElement.style.transition = 'opacity var(--motion-fast) var(--motion-ease)';
+                        submessageElement.style.opacity = '1';
+                    }, 50);
+                } else {
+                    submessageElement.style.display = 'none';
+                }
+            }
+        }
+        
+        // Helper functions for upload progress tracking
+        function showUploadProgress() {
+            const container = document.getElementById('uploadProgressContainer');
+            if (container) container.style.display = 'block';
+        }
+        
+        function hideUploadProgress() {
+            const container = document.getElementById('uploadProgressContainer');
+            if (container) container.style.display = 'none';
+        }
+        
+        function updateUploadProgress(percent, text) {
+            const bar = document.getElementById('uploadProgressBar');
+            const percentEl = document.getElementById('uploadProgressPercent');
+            const textEl = document.getElementById('uploadProgressText');
+            if (bar) bar.style.width = Math.min(100, Math.max(0, percent)) + '%';
+            if (percentEl) percentEl.textContent = Math.round(percent) + '%';
+            if (textEl && text) textEl.textContent = text;
+        }
+        
+        // Fetch with upload progress tracking (uses XMLHttpRequest for progress events)
+        function fetchWithProgress(url, options, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                const formData = options.body;
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable && onProgress) {
+                        const percent = (e.loaded / e.total) * 100;
+                        onProgress(percent, 'Uploading file...');
+                    }
+                });
+                
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // Try to parse as JSON, fallback to text
+                        let response;
+                        try {
+                            response = JSON.parse(xhr.responseText);
+                        } catch {
+                            response = xhr.responseText;
+                        }
+                        resolve({
+                            ok: true,
+                            status: xhr.status,
+                            json: async () => Promise.resolve(response),
+                            text: async () => Promise.resolve(xhr.responseText)
+                        });
+                    } else {
+                        reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+                    }
+                });
+                
+                xhr.addEventListener('error', () => {
+                    reject(new Error('Network error'));
+                });
+                
+                xhr.addEventListener('abort', () => {
+                    reject(new Error('Request aborted'));
+                });
+                
+                xhr.open(options.method || 'POST', url);
+                
+                // Set headers if provided
+                if (options.headers) {
+                    Object.keys(options.headers).forEach(key => {
+                        xhr.setRequestHeader(key, options.headers[key]);
+                    });
+                }
+                
+                xhr.send(formData);
+            });
         }
         
         // Phase 2a: Process audio/video file and convert to base64
@@ -18300,6 +19403,12 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
 
             // Show editing mode banner if editing
+            // Show move button if editing a saved evaluation
+            const moveBtn = document.getElementById('moveEvalBtn');
+            if (moveBtn) {
+                moveBtn.style.display = editingEvaluationId ? 'inline-flex' : 'none';
+            }
+            
             if (editingEvaluationId) {
                 var showAddVideo = !editingEvaluationVideoUrl || editingEvaluationVideoUrl === '';
                 html += `
@@ -18323,6 +19432,11 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 `;
             }
             
+            // Check for video/audio URL (from editingEvaluationVideoUrl or results object)
+            const videoUrl = editingEvaluationVideoUrl || results.video_url || null;
+            const audioUrl = results.audio_url || null;
+            const mediaUrl = videoUrl || audioUrl;
+            
             html += `
                 <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
                     <strong>Student:</strong> ${escapeHtml(results.studentName || '')}<br>
@@ -18330,7 +19444,39 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     <strong>Assignment:</strong> ${escapeHtml(results.assignmentType || '')}<br>
                     <strong>Speech Time:</strong> ${escapeHtml(results.speechTime || '')}
                 </div>
-                
+            `;
+            
+            // Add video/audio player if media URL exists
+            if (mediaUrl) {
+                html += `
+                    <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="margin: 0; color: var(--primary);"><span class="icon-with-text"><i data-lucide="${videoUrl ? 'video' : 'headphones'}"></i> ${videoUrl ? 'Video Recording' : 'Audio Recording'}</span></h3>
+                            ${editingEvaluationId ? '' : '<button onclick="reEvaluateFromUrl(\'' + escapeHtml(mediaUrl) + '\', ' + (videoUrl ? 'true' : 'false') + ')" class="btn-secondary" style="padding: 0.5rem 1rem;"><span class="icon-with-text"><i data-lucide="refresh-cw"></i> Re-evaluate</span></button>'}
+                        </div>
+                        ${videoUrl ? `
+                        <video id="evaluationVideoPlayer" controls style="width: 100%; max-width: 800px; border-radius: 0.5rem; background: #000;">
+                            <source src="${escapeHtml(videoUrl)}" type="video/mp4">
+                            <source src="${escapeHtml(videoUrl)}" type="video/webm">
+                            <source src="${escapeHtml(videoUrl)}" type="video/quicktime">
+                            Your browser does not support the video tag.
+                        </video>
+                        ` : `
+                        <audio id="evaluationAudioPlayer" controls style="width: 100%; max-width: 600px;">
+                            <source src="${escapeHtml(audioUrl)}" type="audio/mpeg">
+                            <source src="${escapeHtml(audioUrl)}" type="audio/mp3">
+                            <source src="${escapeHtml(audioUrl)}" type="audio/wav">
+                            Your browser does not support the audio tag.
+                        </audio>
+                        `}
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.75rem;">
+                            ${videoUrl ? 'Watch the recorded speech video.' : 'Listen to the recorded speech audio.'}
+                        </p>
+                    </div>
+                `;
+            }
+            
+            html += `
                 <div class="score-banner">
                     <h2 style="color: white;">Final Score</h2>
                     <div class="score-value">${escapeHtml(String(results.totalScore || 0))} / ${escapeHtml(String(results.maxScore || 0))}</div>
@@ -18484,6 +19630,11 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
             
             document.getElementById('resultsContent').innerHTML = html;
+            
+            // Re-initialize Lucide icons for new content
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: document.getElementById('resultsContent') });
+            }
             
             // Update correction count badge if corrections exist
             if (typeof updateCorrectionCount === 'function') {
@@ -19120,63 +20271,223 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
         }
         
         // Notification helper
-        function showNotification(message, type = 'info') {
+        /* Apple HIG: Enhanced Notification System */
+        function showNotification(message, type = 'info', duration = 4000) {
+            // Remove any existing notifications to prevent stacking
+            const existing = document.querySelectorAll('.notification-toast');
+            existing.forEach(n => n.remove());
+            
+            // Get CSS variable values from computed styles
+            const root = document.documentElement;
             const colors = {
-                success: '#28a745',
-                error: '#dc3545',
-                info: '#17a2b8'
+                success: getComputedStyle(root).getPropertyValue('--success').trim() || '#059669',
+                error: getComputedStyle(root).getPropertyValue('--error').trim() || '#dc2626',
+                warning: getComputedStyle(root).getPropertyValue('--warning').trim() || '#d97706',
+                info: getComputedStyle(root).getPropertyValue('--primary').trim() || '#1e3a5f'
+            };
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'alert-circle',
+                warning: 'alert-triangle',
+                info: 'info'
             };
             
             const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.setAttribute('role', 'alert');
+            notification.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+            
             notification.style.cssText = `
                 position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${colors[type]};
+                top: var(--space-lg);
+                right: var(--space-lg);
+                background: ${colors[type] || colors.info};
                 color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                padding: var(--space-md) var(--space-lg);
+                border-radius: var(--radius-md);
+                box-shadow: var(--elevation-3);
                 z-index: 10000;
-                animation: slideIn 0.3s ease-out;
+                display: flex;
+                align-items: center;
+                gap: var(--space-sm);
+                max-width: 400px;
+                min-width: 280px;
+                animation: notificationSlideIn var(--motion-normal) var(--motion-ease-out);
+                font-size: var(--text-body-size);
+                line-height: 1.5;
             `;
-            notification.textContent = message;
+            
+            // Add icon
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', icons[type] || icons.info);
+            icon.style.cssText = 'width: 1.25rem; height: 1.25rem; flex-shrink: 0;';
+            notification.appendChild(icon);
+            
+            // Add message
+            const messageEl = document.createElement('span');
+            messageEl.textContent = message;
+            notification.appendChild(messageEl);
+            
+            // Add close button
+            const closeBtn = document.createElement('button');
+            closeBtn.setAttribute('aria-label', 'Close notification');
+            closeBtn.innerHTML = '<i data-lucide="x"></i>';
+            closeBtn.style.cssText = `
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: white;
+                width: 1.5rem;
+                height: 1.5rem;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+                padding: 0;
+                transition: background-color var(--motion-fast) var(--motion-ease);
+            `;
+            closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255, 255, 255, 0.3)';
+            closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+            closeBtn.onclick = () => {
+                notification.style.animation = 'notificationSlideOut var(--motion-normal) var(--motion-ease-in)';
+                setTimeout(() => notification.remove(), 250);
+            };
+            notification.appendChild(closeBtn);
             
             document.body.appendChild(notification);
             
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: notification });
+            }
+            
+            // Auto-dismiss
+            const timeoutId = setTimeout(() => {
+                notification.style.animation = 'notificationSlideOut var(--motion-normal) var(--motion-ease-in)';
+                setTimeout(() => notification.remove(), 250);
+            }, duration);
+            
+            // Store timeout ID for manual close
+            notification._timeoutId = timeoutId;
+        }
+        
+        // Add notification animations
+        if (!document.querySelector('#notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes notificationSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateX(100%);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                @keyframes notificationSlideOut {
+                    from {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateX(100%);
+                    }
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    @keyframes notificationSlideIn,
+                    @keyframes notificationSlideOut {
+                        from, to {
+                            opacity: 1;
+                            transform: none;
+                        }
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
 
-        /** Show a notification with an Undo button. undoCallback is called when user clicks Undo. */
+        /** Apple HIG: Show a notification with an Undo button. undoCallback is called when user clicks Undo. */
         function showNotificationWithUndo(message, undoLabel, undoCallback, durationMs) {
             durationMs = durationMs || 8000;
-            const colors = { success: '#28a745', error: '#dc3545', info: '#17a2b8' };
+            
+            // Remove any existing notifications
+            const existing = document.querySelectorAll('.notification-toast');
+            existing.forEach(n => n.remove());
+            
             const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.setAttribute('role', 'alert');
+            notification.setAttribute('aria-live', 'polite');
+            
             notification.style.cssText = `
-                position: fixed; top: 20px; right: 20px; background: ${colors.info};
-                color: white; padding: 1rem 1.5rem; border-radius: 0.5rem;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000;
-                animation: slideIn 0.3s ease-out; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+                position: fixed;
+                top: var(--space-lg);
+                right: var(--space-lg);
+                background: var(--primary);
+                color: white;
+                padding: var(--space-md) var(--space-lg);
+                border-radius: var(--radius-md);
+                box-shadow: var(--elevation-3);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: var(--space-sm);
+                max-width: 400px;
+                min-width: 280px;
+                animation: notificationSlideIn var(--motion-normal) var(--motion-ease-out);
+                font-size: var(--text-body-size);
+                line-height: 1.5;
             `;
+            
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', 'info');
+            icon.style.cssText = 'width: 1.25rem; height: 1.25rem; flex-shrink: 0;';
+            notification.appendChild(icon);
+            
             const text = document.createElement('span');
             text.textContent = message;
+            text.style.flex = '1';
+            notification.appendChild(text);
+            
             const undoBtn = document.createElement('button');
             undoBtn.textContent = undoLabel || 'Undo';
-            undoBtn.style.cssText = 'background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.8); color: white; padding: 0.35rem 0.75rem; border-radius: 0.35rem; cursor: pointer; font-weight: 600;';
+            undoBtn.setAttribute('aria-label', 'Undo action');
+            undoBtn.style.cssText = `
+                background: rgba(255,255,255,0.25);
+                border: 1px solid rgba(255,255,255,0.8);
+                color: white;
+                padding: var(--space-xs) var(--space-sm);
+                border-radius: var(--radius-sm);
+                cursor: pointer;
+                font-weight: 600;
+                font-size: var(--text-caption-size);
+                transition: background-color var(--motion-fast) var(--motion-ease);
+            `;
+            undoBtn.onmouseenter = () => undoBtn.style.background = 'rgba(255,255,255,0.35)';
+            undoBtn.onmouseleave = () => undoBtn.style.background = 'rgba(255,255,255,0.25)';
             undoBtn.onclick = () => {
                 if (typeof undoCallback === 'function') undoCallback();
-                notification.remove();
-                clearTimeout(tid);
+                notification.style.animation = 'notificationSlideOut var(--motion-normal) var(--motion-ease-in)';
+                setTimeout(() => notification.remove(), 250);
+                if (tid) clearTimeout(tid);
             };
-            notification.appendChild(text);
             notification.appendChild(undoBtn);
+            
             document.body.appendChild(notification);
+            
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: notification });
+            }
+            
             const tid = setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => notification.remove(), 300);
+                notification.style.animation = 'notificationSlideOut var(--motion-normal) var(--motion-ease-in)';
+                setTimeout(() => notification.remove(), 250);
             }, durationMs);
         }
 
@@ -19355,24 +20666,101 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
         
         window.exportEvaluationHTML = exportEvaluationHTML;
 
-        function emailResults() {
+        async function emailResults() {
             if (!evaluationResults) {
                 alert('No evaluation results to email.');
                 return;
             }
             
-            // Prompt for student email
-            const studentEmail = prompt('Enter student email address:');
+            // Get evaluation ID and student ID for shareable link
+            let evaluationId = editingEvaluationId;
+            let studentId = editingStudentId;
+            let studentEmail = '';
             
-            if (!studentEmail || !studentEmail.includes('@')) {
-                alert('Please enter a valid email address.');
+            // If editing, try to get student email from Supabase
+            if (editingEvaluationId && supabaseClient) {
+                try {
+                    const { data: evalData } = await supabaseClient
+                        .from('evaluations')
+                        .select('student_id, course_students!inner(email)')
+                        .eq('id', editingEvaluationId)
+                        .single();
+                    
+                    if (evalData) {
+                        studentId = evalData.student_id || studentId;
+                        // Get student email separately
+                        if (studentId) {
+                            const { data: studentData } = await supabaseClient
+                                .from('course_students')
+                                .select('email')
+                                .eq('id', studentId)
+                                .single();
+                            if (studentData) {
+                                studentEmail = studentData.email || '';
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not load student email from Supabase:', e);
+                }
+            }
+            
+            // If not editing, try to get from current save selection
+            if (!evaluationId || !studentId) {
+                const saveClassIdx = document.getElementById('saveClassSel')?.value || document.getElementById('uploadClassSel')?.value;
+                const saveStudentIdx = document.getElementById('saveStudentSel')?.value || document.getElementById('uploadStudentSel')?.value;
+                if (saveClassIdx && saveStudentIdx) {
+                    try {
+                        const classes = JSON.parse(getUserItem('classes') || '[]');
+                        const classData = classes[saveClassIdx];
+                        const student = classData?.roster?.[saveStudentIdx];
+                        if (student) {
+                            studentId = student.supabaseId || student.id;
+                            studentEmail = student.email || '';
+                            // Try to find existing evaluation ID
+                            if (student.evaluations && student.evaluations.length > 0) {
+                                const latestEval = student.evaluations[student.evaluations.length - 1];
+                                evaluationId = latestEval.supabaseId || latestEval.id;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Could not get student info for email:', e);
+                    }
+                }
+            }
+            
+            // Generate shareable link if we have IDs
+            let shareableLink = '';
+            if (evaluationId && studentId) {
+                const baseUrl = window.location.origin + window.location.pathname;
+                shareableLink = `${baseUrl}?view=evaluation&evalId=${encodeURIComponent(evaluationId)}&studentId=${encodeURIComponent(studentId)}`;
+            }
+            
+            // Prompt for student email (pre-fill if we have it)
+            const emailPrompt = studentEmail 
+                ? `Enter student email address:\n\n(Current: ${studentEmail})`
+                : 'Enter student email address:';
+            const enteredEmail = prompt(emailPrompt, studentEmail || '');
+            
+            if (!enteredEmail || !enteredEmail.includes('@')) {
+                if (enteredEmail !== null) { // User didn't cancel
+                    alert('Please enter a valid email address.');
+                }
                 return;
             }
             
-            const subject = `Speech Evaluation Results - ${evaluationResults.assignmentType}`;
-            const body = `Dear Student,\n\nYour speech evaluation results are ready.\n\nFinal Score: ${evaluationResults.totalScore} / ${evaluationResults.maxScore}\nGrade: ${evaluationResults.letterGrade || 'N/A'}\n\nPlease contact your instructor for the complete evaluation details.\n\nBest regards`;
+            const subject = `Speech Evaluation Results - ${evaluationResults.assignmentType || 'Speech'}`;
+            let body = `Dear Student,\n\nYour speech evaluation results are ready.\n\nFinal Score: ${evaluationResults.totalScore || 0} / ${evaluationResults.maxScore || 0}\nGrade: ${evaluationResults.letterGrade || 'N/A'}\n\n`;
             
-            const mailtoLink = `mailto:${studentEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            if (shareableLink) {
+                body += `View your complete evaluation results and watch your speech video here:\n${shareableLink}\n\n`;
+            } else {
+                body += `Please contact your instructor to view your complete evaluation details.\n\n`;
+            }
+            
+            body += `Please contact your instructor if you have any questions.\n\nBest regards`;
+            
+            const mailtoLink = `mailto:${enteredEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.open(mailtoLink);
         }
 
@@ -21705,6 +23093,12 @@ Return ONLY the JSON object, nothing else.`;
                     if (typeof evaluation === 'string') try { evaluation = JSON.parse(evaluation); } catch (_) { evaluation = null; }
                     if (evaluation && data.transcript != null) evaluation.transcript = data.transcript;
                     editingEvaluationVideoUrl = data.video_url || null;
+                    // Store video/audio URLs in evaluation object for display
+                    if (data.video_url) evaluation.video_url = data.video_url;
+                    if (data.audio_url) evaluation.audio_url = data.audio_url;
+                    // Also store in editingEvaluationVideoUrl for backward compatibility
+                    if (data.video_url) editingEvaluationVideoUrl = data.video_url;
+                    else if (data.audio_url) editingEvaluationVideoUrl = data.audio_url;
                 } else if (error) {
                     console.error('Supabase error:', error);
                 }
@@ -21757,6 +23151,9 @@ Return ONLY the JSON object, nothing else.`;
             // Set the evaluation as current for editing
             evaluationResults = evaluation;
             correctionLog = evaluation.corrections || [];
+            // Preserve video/audio URLs if they exist in the data
+            if (data && data.video_url) evaluationResults.video_url = data.video_url;
+            if (data && data.audio_url) evaluationResults.audio_url = data.audio_url;
             console.log('Set evaluationResults and correctionLog');
             
             // Hide all main sections
@@ -22087,6 +23484,11 @@ Return ONLY the JSON object, nothing else.`;
             try {
                 var classes = JSON.parse(getUserItem('classes') || '[]');
                 var sel = document.getElementById('saveClassSel');
+                if (!sel) {
+                    console.error('openSaveModal: saveClassSel element not found');
+                    alert('Error: Save modal elements not found. Please refresh the page.');
+                    return;
+                }
                 sel.innerHTML = '<option value="">-- Select Class --</option>';
                 for (var i = 0; i < classes.length; i++) {
                     var opt = document.createElement('option');
@@ -22094,16 +23496,49 @@ Return ONLY the JSON object, nothing else.`;
                     opt.textContent = classes[i].name + ' - ' + classes[i].semester + ' ' + classes[i].year;
                     sel.appendChild(opt);
                 }
-                document.getElementById('saveModal').style.display = 'flex';
+                
+                // Pre-select class/student if they were chosen during upload
+                const uploadClassIdx = document.getElementById('uploadClassSel')?.value;
+                const uploadStudentIdx = document.getElementById('uploadStudentSel')?.value;
+                if (uploadClassIdx) {
+                    sel.value = uploadClassIdx;
+                    loadSaveStudents();
+                    if (uploadStudentIdx) {
+                        const studentSel = document.getElementById('saveStudentSel');
+                        if (studentSel) {
+                            setTimeout(() => {
+                                studentSel.value = uploadStudentIdx;
+                            }, 100);
+                        }
+                    }
+                }
+                
+                var saveModal = document.getElementById('saveModal');
+                if (!saveModal) {
+                    console.error('openSaveModal: saveModal element not found');
+                    alert('Error: Save modal not found. Please refresh the page.');
+                    return;
+                }
+                saveModal.style.display = 'flex';
             } catch(e) {
-                console.error(e);
+                console.error('openSaveModal error:', e);
+                alert('Error opening save modal: ' + (e.message || String(e)));
             }
         }
 
         function loadSaveStudents() {
             try {
-                var idx = document.getElementById('saveClassSel').value;
+                var classSel = document.getElementById('saveClassSel');
+                if (!classSel) {
+                    console.error('loadSaveStudents: saveClassSel element not found');
+                    return;
+                }
+                var idx = classSel.value;
                 var sel = document.getElementById('saveStudentSel');
+                if (!sel) {
+                    console.error('loadSaveStudents: saveStudentSel element not found');
+                    return;
+                }
                 sel.innerHTML = '<option value="">-- Select Student --</option>';
                 if (!idx) return;
                 var classes = JSON.parse(getUserItem('classes') || '[]');
@@ -22156,11 +23591,19 @@ Return ONLY the JSON object, nothing else.`;
                 } else {
                     // INSERT new evaluation (original behavior)
                     var savedLocallyOnly = false;
-                    var cIdx = document.getElementById('saveClassSel').value;
-                    var sIdx = document.getElementById('saveStudentSel').value;
+                    // Check if class/student were selected during upload
+                    var cIdx = document.getElementById('uploadClassSel')?.value || document.getElementById('saveClassSel').value;
+                    var sIdx = document.getElementById('uploadStudentSel')?.value || document.getElementById('saveStudentSel').value;
+                    
+                    // If not set during upload, require selection in save modal
                     if (!cIdx || sIdx === '') {
-                        alert('Please select both class and student');
-                        return;
+                        // Try to get from save modal
+                        cIdx = document.getElementById('saveClassSel')?.value;
+                        sIdx = document.getElementById('saveStudentSel')?.value;
+                        if (!cIdx || sIdx === '') {
+                            alert('Please select both class and student');
+                            return;
+                        }
                     }
                     if (!evaluationResults) {
                         alert('No evaluation to save');
@@ -22409,7 +23852,197 @@ Return ONLY the JSON object, nothing else.`;
         }
 
         function closeSaveModal() {
-            document.getElementById('saveModal').style.display = 'none';
+            var saveModal = document.getElementById('saveModal');
+            if (saveModal) {
+                saveModal.style.display = 'none';
+            }
+        }
+        
+        // ===== MOVE EVALUATION FUNCTIONS =====
+        let movingEvaluationId = null;
+        let movingStudentId = null;
+        let movingCourseId = null;
+        
+        function openMoveEvalModal() {
+            // Only show if we're editing a saved evaluation
+            if (!editingEvaluationId) {
+                alert('This feature is only available when editing a saved evaluation.');
+                return;
+            }
+            
+            movingEvaluationId = editingEvaluationId;
+            movingStudentId = editingStudentId;
+            
+            try {
+                var classes = JSON.parse(getUserItem('classes') || '[]');
+                var sel = document.getElementById('moveClassSel');
+                if (!sel) {
+                    console.error('openMoveEvalModal: moveClassSel element not found');
+                    alert('Error: Move modal elements not found. Please refresh the page.');
+                    return;
+                }
+                sel.innerHTML = '<option value="">-- Select Class --</option>';
+                for (var i = 0; i < classes.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = classes[i].name + ' - ' + classes[i].semester + ' ' + classes[i].year;
+                    sel.appendChild(opt);
+                }
+                var moveModal = document.getElementById('moveEvalModal');
+                if (!moveModal) {
+                    console.error('openMoveEvalModal: moveEvalModal element not found');
+                    alert('Error: Move modal not found. Please refresh the page.');
+                    return;
+                }
+                moveModal.style.display = 'flex';
+            } catch(e) {
+                console.error('openMoveEvalModal error:', e);
+                alert('Error opening move modal: ' + (e.message || String(e)));
+            }
+        }
+        
+        function closeMoveEvalModal() {
+            var moveModal = document.getElementById('moveEvalModal');
+            if (moveModal) {
+                moveModal.style.display = 'none';
+            }
+            movingEvaluationId = null;
+            movingStudentId = null;
+            movingCourseId = null;
+        }
+        
+        function loadMoveStudents() {
+            try {
+                var classSel = document.getElementById('moveClassSel');
+                if (!classSel) {
+                    console.error('loadMoveStudents: moveClassSel element not found');
+                    return;
+                }
+                var idx = classSel.value;
+                var sel = document.getElementById('moveStudentSel');
+                if (!sel) {
+                    console.error('loadMoveStudents: moveStudentSel element not found');
+                    return;
+                }
+                sel.innerHTML = '<option value="">-- Select Student --</option>';
+                if (!idx) return;
+                var classes = JSON.parse(getUserItem('classes') || '[]');
+                var classData = classes[idx];
+                if (classData && classData.roster) {
+                    for (var i = 0; i < classData.roster.length; i++) {
+                        var student = classData.roster[i];
+                        var opt = document.createElement('option');
+                        opt.value = i;
+                        opt.textContent = (student.firstName || '') + ' ' + (student.lastName || '');
+                        sel.appendChild(opt);
+                    }
+                }
+            } catch(e) {
+                console.error('loadMoveStudents error:', e);
+            }
+        }
+        
+        async function doMoveEval() {
+            try {
+                if (!movingEvaluationId) {
+                    alert('No evaluation selected to move.');
+                    return;
+                }
+                
+                var cIdx = document.getElementById('moveClassSel').value;
+                var sIdx = document.getElementById('moveStudentSel').value;
+                if (!cIdx || sIdx === '') {
+                    alert('Please select both class and student');
+                    return;
+                }
+                
+                var classes = JSON.parse(getUserItem('classes') || '[]');
+                var classData = classes[cIdx];
+                var student = classData.roster[sIdx];
+                
+                // Get Supabase IDs
+                const courseSupabaseId = classData.supabaseId || classData.id;
+                const studentSupabaseId = student.supabaseId || student.id;
+                
+                // Update in Supabase if available
+                if (supabaseClient && currentUser && movingEvaluationId) {
+                    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                    if (uuidRegex.test(courseSupabaseId) && uuidRegex.test(studentSupabaseId)) {
+                        try {
+                            const { error } = await supabaseClient
+                                .from('evaluations')
+                                .update({
+                                    course_id: courseSupabaseId,
+                                    student_id: studentSupabaseId,
+                                    updated_at: new Date().toISOString()
+                                })
+                                .eq('id', movingEvaluationId);
+                            
+                            if (error) {
+                                throw error;
+                            }
+                            
+                            console.log('✓ Evaluation moved in Supabase');
+                        } catch (error) {
+                            console.error('Error moving evaluation in Supabase:', error);
+                            alert('Error moving evaluation in database: ' + error.message);
+                            return;
+                        }
+                    }
+                }
+                
+                // Update in localStorage
+                try {
+                    // Find and remove from old location
+                    var oldClasses = JSON.parse(getUserItem('classes') || '[]');
+                    for (var i = 0; i < oldClasses.length; i++) {
+                        var oldClass = oldClasses[i];
+                        if (oldClass.roster) {
+                            for (var j = 0; j < oldClass.roster.length; j++) {
+                                var oldStudent = oldClass.roster[j];
+                                if (oldStudent.evaluations) {
+                                    var evalIndex = oldStudent.evaluations.findIndex(function(e) {
+                                        return e.id === movingEvaluationId || e.supabaseId === movingEvaluationId;
+                                    });
+                                    if (evalIndex !== -1) {
+                                        var evalRec = oldStudent.evaluations[evalIndex];
+                                        oldStudent.evaluations.splice(evalIndex, 1);
+                                        
+                                        // Add to new location
+                                        if (!student.evaluations) {
+                                            student.evaluations = [];
+                                        }
+                                        student.evaluations.push(evalRec);
+                                        classes[cIdx].roster[sIdx] = student;
+                                        setUserItem('classes', JSON.stringify(classes));
+                                        console.log('✓ Evaluation moved in localStorage');
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error moving evaluation in localStorage:', e);
+                }
+                
+                if (typeof showAnalyticsToast === 'function') {
+                    showAnalyticsToast('Evaluation moved to ' + student.firstName + ' ' + student.lastName + ' in ' + classData.name + '.', 4000);
+                } else {
+                    alert('Success. Evaluation moved to ' + student.firstName + ' ' + student.lastName + ' in ' + classData.name + '.');
+                }
+                
+                closeMoveEvalModal();
+                
+                // Refresh the view if we're viewing a class
+                if (currentClassId) {
+                    viewClass(currentClassId);
+                }
+            } catch(e) {
+                console.error('Error moving evaluation:', e);
+                if (typeof showAnalyticsToast === 'function') showAnalyticsToast('Error: ' + e.message, 6000);
+                else alert('Error: ' + e.message);
+            }
         }
     </script>
     </div> <!-- End mainApp -->
