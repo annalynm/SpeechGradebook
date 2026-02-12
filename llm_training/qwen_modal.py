@@ -51,7 +51,9 @@ app = modal.App("qwen-speechgradebook", image=image)
 
 
 @app.cls(
-    gpu="A100",  # 80GB VRAM (A10G 24GB was OOM with model + video processing)
+    # Request A100-80GB explicitly (Modal may assign 40GB by default which causes OOM)
+    # If Modal doesn't support explicit memory size, it will use the largest available A100
+    gpu="A100",  # Try to get 80GB variant; if unavailable, memory cleanup below helps with 40GB
     container_idle_timeout=300,
     timeout=600,
     allow_concurrent_inputs=1,

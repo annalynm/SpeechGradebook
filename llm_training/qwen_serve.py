@@ -170,6 +170,19 @@ async def analyze_video(file: UploadFile = File(...)):
 
         return {"video_notes": video_notes}
     finally:
+        # Memory cleanup to prevent OOM on subsequent requests
+        try:
+            import gc
+            import torch
+            # Clear PyTorch cache
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+            # Force garbage collection
+            gc.collect()
+        except Exception as cleanup_error:
+            print(f"[analyze_video] Memory cleanup warning: {cleanup_error!s}", flush=True)
+        # Clean up temp file
         try:
             os.unlink(tmp_path)
         except OSError:
@@ -838,6 +851,19 @@ async def evaluate_video(
         print(f"[evaluate_video] 500: {e!s}", flush=True)
         raise HTTPException(status_code=500, detail=str(e))
     finally:
+        # Memory cleanup to prevent OOM on subsequent requests
+        try:
+            import gc
+            import torch
+            # Clear PyTorch cache
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+            # Force garbage collection
+            gc.collect()
+        except Exception as cleanup_error:
+            print(f"[evaluate_video] Memory cleanup warning: {cleanup_error!s}", flush=True)
+        # Clean up temp file
         try:
             os.unlink(tmp_path)
         except OSError:
@@ -970,6 +996,19 @@ async def extract_rubric(file: UploadFile = File(...)):
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"Failed to parse rubric JSON: {e}")
     finally:
+        # Memory cleanup to prevent OOM on subsequent requests
+        try:
+            import gc
+            import torch
+            # Clear PyTorch cache
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+            # Force garbage collection
+            gc.collect()
+        except Exception as cleanup_error:
+            print(f"[extract_rubric] Memory cleanup warning: {cleanup_error!s}", flush=True)
+        # Clean up temp file
         try:
             if img_path and os.path.exists(img_path):
                 os.unlink(img_path)
