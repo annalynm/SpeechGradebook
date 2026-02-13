@@ -51,10 +51,11 @@ app = modal.App("qwen-speechgradebook", image=image)
 
 
 @app.cls(
-    # Using T4 GPU for cost efficiency (~$0.01-0.03 per evaluation vs ~$0.60 with A100)
-    # T4 has 16GB VRAM; 4-bit quantization (load_in_4bit=True) helps fit the model
-    # If you encounter OOM errors with large videos, consider switching back to A100
-    gpu="T4",  # Cost-effective option: ~$0.80/hour vs ~$4-5/hour for A100
+    # Using A100 GPU for sufficient memory (40GB VRAM)
+    # T4 (14GB VRAM) was causing OOM errors with larger videos
+    # A100 costs ~$4-5/hour vs ~$0.80/hour for T4, but provides reliable evaluations
+    # Cost per evaluation: ~$0.05-0.15 with A100 (vs ~$0.01-0.03 with T4, but OOM failures)
+    gpu="A100",  # Switched from T4 due to OOM errors - A100 has 40GB VRAM
     container_idle_timeout=300,
     timeout=600,
     allow_concurrent_inputs=1,
@@ -69,6 +70,8 @@ class QwenService:
         sys.path.insert(0, "/app")
         from llm_training import qwen_serve
         self.qwen_serve = qwen_serve
+        # A100 has 40GB VRAM, so we can use 4-bit quantization for cost savings
+        # or load in full precision. 4-bit is fine and saves memory.
         qwen_serve._load_model("Qwen/Qwen2.5-VL-7B-Instruct", load_in_4bit=True)
 
     @modal.asgi_app(label="qwen-speechgradebook")

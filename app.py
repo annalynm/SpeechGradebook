@@ -205,17 +205,61 @@ async def log_llm_export_requests(request, call_next):
                     print(f"[COST_TRACKING] Evaluation started - File size: {file_size_mb:.2f} MB, Timestamp: {time.time()}")
                     
                     async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
-                        r = await client.post(f"{base}/evaluate_video", files=files, data=data)
+                        try:
+                            r = await client.post(f"{base}/evaluate_video", files=files, data=data)
+                        except httpx.TimeoutException as e:
+                            elapsed_time = time.time() - start_time
+                            error_msg = f"Qwen service timeout after {elapsed_time:.1f}s. The evaluation may be taking too long or the service may be unavailable."
+                            print(f"[COST_TRACKING] Evaluation failed - Timeout: {elapsed_time:.2f}s")
+                            print(f"[ERROR] {error_msg}")
+                            return JSONResponse(status_code=504, content={"detail": error_msg})
+                        except httpx.RequestError as e:
+                            elapsed_time = time.time() - start_time
+                            error_msg = f"Failed to connect to Qwen service: {str(e)}. Check QWEN_API_URL and ensure the Modal service is running."
+                            print(f"[COST_TRACKING] Evaluation failed - Connection error: {elapsed_time:.2f}s")
+                            print(f"[ERROR] {error_msg}")
+                            return JSONResponse(status_code=503, content={"detail": error_msg})
                     
                     # Calculate and log cost metrics
                     elapsed_time = time.time() - start_time
-                    # T4 GPU cost: ~$0.000222/second
-                    estimated_cost = elapsed_time * 0.000222
+                    # A100 GPU cost: ~$0.0011-0.0014/second (using average of $0.00125)
+                    estimated_cost = elapsed_time * 0.00125
                     
                     print(f"[COST_TRACKING] Evaluation completed - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
                     
                     if 300 <= r.status_code < 400:
                         return JSONResponse(status_code=502, content={"detail": "Qwen service returned redirect (3xx). Check QWEN_API_URL—use https, no trailing slash. Ensure the Qwen tunnel/URL is correct."})
+                    
+                    # If 500 error, try to extract more details from response
+                    if r.status_code == 500:
+                        error_detail = "Internal Server Error"
+                        try:
+                            error_json = r.json()
+                            if isinstance(error_json, dict) and "detail" in error_json:
+                                error_detail = error_json["detail"]
+                            elif isinstance(error_json, dict) and "error" in error_json:
+                                error_detail = error_json["error"]
+                        except:
+                            # If JSON parsing fails, try to get text
+                            try:
+                                error_text = r.text[:500]  # First 500 chars
+                                if error_text:
+                                    error_detail = error_text
+                            except:
+                                pass
+                        
+                        print(f"[ERROR] Qwen service returned 500: {error_detail}")
+                        print(f"[ERROR] This may indicate: OOM (Out of Memory) error, model loading issue, or video processing failure.")
+                        print(f"[ERROR] Check Modal logs at https://modal.com/apps for detailed error information.")
+                        
+                        # Provide more helpful error message
+                        if "OOM" in error_detail or "out of memory" in error_detail.lower() or "CUDA" in error_detail:
+                            error_detail = f"Out of Memory error: {error_detail}. T4 GPU may not have enough memory for this video. Consider using a smaller video or switching to A100 GPU."
+                        elif "model" in error_detail.lower() and ("not loaded" in error_detail.lower() or "load" in error_detail.lower()):
+                            error_detail = f"Model loading error: {error_detail}. The Qwen model may not have loaded correctly on Modal. Check Modal deployment logs."
+                        
+                        return JSONResponse(status_code=500, content={"detail": f"Qwen evaluation failed: {error_detail}"})
+                    
                     return Response(content=r.content, status_code=r.status_code, media_type="application/json")
                 if path == "/qwen-api/analyze_video" and file_part and hasattr(file_part, "read"):
                     start_time = time.time()

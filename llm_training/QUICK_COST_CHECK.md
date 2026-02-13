@@ -1,10 +1,12 @@
-# Quick Cost Check - Modal T4 GPU
+# Quick Cost Check - Modal A100 GPU
 
 ## Current Configuration
-- **GPU:** T4 (16GB VRAM)
-- **Cost per second:** ~$0.000222
-- **Cost per hour:** ~$0.80
-- **Expected cost per evaluation:** ~$0.01-0.03 (10-30 seconds)
+- **GPU:** A100 (40GB VRAM) - Switched from T4 due to OOM errors
+- **Cost per second:** ~$0.0011-0.0014
+- **Cost per hour:** ~$4-5
+- **Expected cost per evaluation:** ~$0.05-0.15 (30-90 seconds)
+
+**Note:** T4 (14GB VRAM) was causing Out of Memory errors with larger videos, so we switched to A100 for reliability.
 
 ## How to Monitor Costs
 
@@ -29,20 +31,20 @@ python llm_training/monitor_modal_costs.py
 
 ## Cost Estimates
 
-| Evaluations | Estimated Cost (T4) |
-|-------------|---------------------|
-| 50 | $0.50-1.50 |
-| 100 | $1-3 |
-| 400 | $4-12 |
-| 1,000 | $10-30 |
+| Evaluations | Estimated Cost (A100) |
+|-------------|----------------------|
+| 50 | $2.50-7.50 |
+| 100 | $5-15 |
+| 400 | $20-60 |
+| 1,000 | $50-150 |
 
 ## Red Flags
 
 ⚠️ **Investigate if you see:**
-- Cost >$0.05 per evaluation
-- OOM (Out of Memory) errors in logs
-- Monthly cost >$50
-- Evaluation times consistently >60 seconds
+- Cost >$0.20 per evaluation (may indicate inefficiency)
+- OOM (Out of Memory) errors in logs (shouldn't happen with A100)
+- Monthly cost >$200 (may need optimization)
+- Evaluation times consistently >120 seconds
 
 ## Next Steps After Deployment
 
@@ -52,8 +54,8 @@ python llm_training/monitor_modal_costs.py
    ```
 
 2. **Test 2-3 evaluations** and check:
-   - No OOM errors
-   - Cost per evaluation is ~$0.01-0.03
+   - No OOM errors (shouldn't occur with A100)
+   - Cost per evaluation is ~$0.05-0.15
    - Evaluation completes successfully
 
 3. **Monitor for first week:**

@@ -2,17 +2,25 @@
 
 This guide helps you track and monitor costs for the Qwen evaluation service on Modal.
 
-## Quick Cost Reference (T4 GPU)
+## Current Configuration: A100 GPU
+
+**Note:** Switched from T4 to A100 due to Out of Memory (OOM) errors. T4 (14GB VRAM) was insufficient for larger videos.
+
+## Quick Cost Reference (A100 GPU)
 
 | Evaluations/Month | Estimated Cost |
 |-------------------|----------------|
-| 50 | ~$0.50-1.50 |
-| 100 | ~$1-3 |
-| 400 | ~$4-12 |
-| 1,000 | ~$10-30 |
-| 2,000 | ~$20-60 |
+| 50 | ~$2.50-7.50 |
+| 100 | ~$5-15 |
+| 400 | ~$20-60 |
+| 1,000 | ~$50-150 |
+| 2,000 | ~$100-300 |
 
-**Cost per evaluation:** ~$0.01-0.03 (10-30 seconds of GPU time)
+**Cost per evaluation:** ~$0.05-0.15 (30-90 seconds of GPU time)
+
+**A100 vs T4:**
+- **A100:** ~$4-5/hour, 40GB VRAM, reliable (no OOM)
+- **T4:** ~$0.80/hour, 14GB VRAM, causes OOM with larger videos
 
 ## Monitoring Methods
 

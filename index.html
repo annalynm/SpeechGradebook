@@ -742,6 +742,64 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
+        /* Persistent Evaluation Saved Indicator */
+        .evaluation-saved-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: var(--space-lg);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            animation: evaluationSavedIn 0.3s ease;
+        }
+        .evaluation-saved-indicator.hidden {
+            display: none;
+        }
+        .evaluation-saved-indicator .icon-with-text {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .evaluation-saved-indicator .icon-with-text i {
+            color: white;
+        }
+        .evaluation-saved-dismiss {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+        .evaluation-saved-dismiss:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .evaluation-saved-dismiss i {
+            width: 1rem;
+            height: 1rem;
+            color: white;
+        }
+        @keyframes evaluationSavedIn {
+            from {
+                opacity: 0;
+                transform: translateY(-0.5rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         /* Apple HIG: Dropdown animation */
         @keyframes dropdownSlideIn {
             from {
@@ -2578,6 +2636,13 @@
 
                 <!-- Step 4: Results -->
                 <div id="resultsStep" class="hidden">
+                    <!-- Persistent Evaluation Saved Indicator -->
+                    <div id="evaluationSavedIndicator" class="evaluation-saved-indicator hidden">
+                        <span class="icon-with-text"><i data-lucide="check-circle"></i> <span id="evaluationSavedMessage">Evaluation saved</span></span>
+                        <button onclick="hideEvaluationSavedIndicator()" class="evaluation-saved-dismiss" aria-label="Dismiss" title="Dismiss">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
                     <div id="resultsContent"></div>
                     <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl); flex-wrap: wrap;">
                         <button onclick="openSaveModal()"><span class="icon-with-text"><i data-lucide="save"></i> Save Results</span></button>
@@ -2607,9 +2672,12 @@
                         <option value="">-- Select Student --</option>
                     </select>
                 </div>
+                <div id="saveModalStatus" style="display:none;margin:1rem 0;padding:0.75rem;background:#e3f2fd;border-radius:0.5rem;color:#1976d2;">
+                    <span class="icon-with-text"><i data-lucide="loader" style="animation:spin 1s linear infinite;"></i> Saving evaluation...</span>
+                </div>
                 <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:2rem;">
-                    <button onclick="closeSaveModal()" style="padding:0.75rem 1.5rem;background:#6c757d;color:white;border:none;border-radius:0.5rem;cursor:pointer;"><span class="icon-with-text"><i data-lucide="x"></i> Cancel</span></button>
-                    <button onclick="doSaveEval()" style="padding:0.75rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:600;"><span class="icon-with-text"><i data-lucide="check"></i> Save</span></button>
+                    <button onclick="closeSaveModal()" id="saveModalCancelBtn" style="padding:0.75rem 1.5rem;background:#6c757d;color:white;border:none;border-radius:0.5rem;cursor:pointer;"><span class="icon-with-text"><i data-lucide="x"></i> Cancel</span></button>
+                    <button onclick="doSaveEval()" id="saveModalSaveBtn" style="padding:0.75rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:600;"><span class="icon-with-text"><i data-lucide="check"></i> Save</span></button>
                 </div>
             </div>
         </div>
@@ -3551,13 +3619,14 @@ ssh amcclu12@login.isaac.utk.edu
                 <div id="consentLinksMessage" style="margin-bottom: 1rem; color: var(--text-light); font-size: 0.9rem;"></div>
                 <div id="consentLinksContainer" class="hidden">
                     <div class="consent-actions">
+                        <button type="button" onclick="sendAllConsentEmails()" class="btn btn-small"><span class="icon-with-text"><i data-lucide="mail"></i> Send all emails</span></button>
                         <button type="button" onclick="copyAllConsentLinks()" class="btn-secondary btn-small">Copy all links</button>
                         <button type="button" onclick="downloadConsentCSV()" class="btn-secondary btn-small">Download CSV</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table class="data-table" id="consentLinksTable">
                             <thead>
-                                <tr><th>Student</th><th>Email</th><th>Consent link</th><th>Action</th></tr>
+                                <tr><th>Student</th><th>Email</th><th>Consent link</th><th>Actions</th></tr>
                             </thead>
                             <tbody id="consentLinksTableBody"></tbody>
                         </table>
@@ -9225,17 +9294,52 @@ Earlier:
                 const emailEsc = escapeHtml(row.email);
                 return `<tr>
                     <td>${nameEsc}</td>
-                    <td>${emailEsc}</td>
-                    <td><a href="${linkEsc}" target="_blank" rel="noopener">${linkEsc}</a></td>
-                    <td><button type="button" class="copy-consent-link" data-link="${escapeHtml(row.link)}" style="padding:0.25rem 0.5rem;">Copy</button></td>
+                    <td>${emailEsc || '<span style="color:var(--text-light);font-style:italic;">No email</span>'}</td>
+                    <td><a href="${linkEsc}" target="_blank" rel="noopener" style="word-break:break-all;">${linkEsc}</a></td>
+                    <td style="white-space:nowrap;">
+                        ${row.email ? `<button type="button" class="send-consent-email" data-email="${escapeHtml(row.email)}" data-name="${escapeHtml(row.name)}" data-link="${escapeHtml(row.link)}" style="padding:0.25rem 0.5rem;margin-right:0.5rem;" title="Send email to ${escapeHtml(row.name)}"><span class="icon-with-text"><i data-lucide="mail" style="width:0.875rem;height:0.875rem;"></i> Email</span></button>` : ''}
+                        <button type="button" class="copy-consent-link" data-link="${escapeHtml(row.link)}" style="padding:0.25rem 0.5rem;" title="Copy link"><span class="icon-with-text"><i data-lucide="copy" style="width:0.875rem;height:0.875rem;"></i> Copy</span></button>
+                    </td>
                 </tr>`;
             }).join('');
             tbody.querySelectorAll('.copy-consent-link').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const link = this.getAttribute('data-link');
-                    if (link) navigator.clipboard.writeText(link).then(() => { this.textContent = 'Copied!'; setTimeout(() => { this.textContent = 'Copy'; }, 1500); });
+                    if (link) {
+                        navigator.clipboard.writeText(link).then(() => { 
+                            const icon = this.querySelector('i');
+                            const originalIcon = icon ? icon.getAttribute('data-lucide') : 'copy';
+                            if (icon) {
+                                icon.setAttribute('data-lucide', 'check');
+                                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: this });
+                            }
+                            setTimeout(() => { 
+                                if (icon) {
+                                    icon.setAttribute('data-lucide', originalIcon);
+                                    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: this });
+                                }
+                            }, 1500);
+                        });
+                    }
                 });
             });
+            
+            // Add event listeners for send email buttons
+            tbody.querySelectorAll('.send-consent-email').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const email = this.getAttribute('data-email');
+                    const name = this.getAttribute('data-name');
+                    const link = this.getAttribute('data-link');
+                    if (email && link) {
+                        sendConsentEmail(email, name, link);
+                    }
+                });
+            });
+            
+            // Re-initialize Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: tbody });
+            }
         }
 
         function copyAllConsentLinks() {
@@ -9262,6 +9366,113 @@ Earlier:
             a.download = 'consent-links.csv';
             a.click();
             URL.revokeObjectURL(a.href);
+        }
+        
+        // Send consent email to a single student
+        function sendConsentEmail(email, studentName, consentLink) {
+            if (!email || !consentLink) {
+                alert('Email address or consent link is missing.');
+                return;
+            }
+            
+            // Get course name if available
+            const courseSelect = document.getElementById('consentCourseSelect');
+            let courseName = 'your course';
+            if (courseSelect && courseSelect.value) {
+                const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+                if (selectedOption) {
+                    courseName = selectedOption.textContent;
+                }
+            }
+            
+            const subject = encodeURIComponent('Data Use Consent Request - ' + courseName);
+            const body = encodeURIComponent(
+                'Dear ' + studentName + ',\n\n' +
+                'Your instructor is requesting your consent for data use in ' + courseName + '.\n\n' +
+                'Your course and evaluation data may be used for:\n' +
+                '• Grading\n' +
+                '• Platform and AI improvement\n' +
+                '• Research\n' +
+                '• Potential sharing or licensing to third parties (e.g., researchers or partners)\n\n' +
+                'You can still be evaluated if you do not consent; your data will then be stored only on your instructor\'s device and not used for research, improvement, or third-party sharing.\n\n' +
+                'Please click the link below to provide your consent:\n' +
+                consentLink + '\n\n' +
+                'Thank you,\n' +
+                'SpeechGradebook'
+            );
+            
+            const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+            window.open(mailtoLink);
+        }
+        
+        // Send consent emails to all students
+        function sendAllConsentEmails() {
+            if (!lastConsentLinks || lastConsentLinks.length === 0) {
+                alert('No consent links available. Please generate links first.');
+                return;
+            }
+            
+            const studentsWithEmail = lastConsentLinks.filter(link => link.email && link.email.trim());
+            if (studentsWithEmail.length === 0) {
+                alert('No students have email addresses. Cannot send emails.');
+                return;
+            }
+            
+            // Get course name if available
+            const courseSelect = document.getElementById('consentCourseSelect');
+            let courseName = 'your course';
+            if (courseSelect && courseSelect.value) {
+                const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+                if (selectedOption) {
+                    courseName = selectedOption.textContent;
+                }
+            }
+            
+            // Create a single email with all consent links (BCC all students)
+            const bccEmails = studentsWithEmail.map(link => link.email).join(',');
+            const subject = encodeURIComponent('Data Use Consent Request - ' + courseName);
+            
+            // Create body with individual links for each student
+            let bodyText = 'Dear Students,\n\n';
+            bodyText += 'Your instructor is requesting your consent for data use in ' + courseName + '.\n\n';
+            bodyText += 'Your course and evaluation data may be used for:\n';
+            bodyText += '• Grading\n';
+            bodyText += '• Platform and AI improvement\n';
+            bodyText += '• Research\n';
+            bodyText += '• Potential sharing or licensing to third parties (e.g., researchers or partners)\n\n';
+            bodyText += 'You can still be evaluated if you do not consent; your data will then be stored only on your instructor\'s device and not used for research, improvement, or third-party sharing.\n\n';
+            bodyText += 'Please click your individual consent link below:\n\n';
+            
+            studentsWithEmail.forEach(link => {
+                bodyText += link.name + ':\n' + link.link + '\n\n';
+            });
+            
+            bodyText += 'Thank you,\nSpeechGradebook';
+            
+            const body = encodeURIComponent(bodyText);
+            
+            // Option 1: Send one email with BCC (if email client supports it)
+            const mailtoLink = `mailto:?bcc=${bccEmails}&subject=${subject}&body=${body}`;
+            
+            // Show confirmation dialog
+            const confirmMsg = `This will open your email client to send consent links to ${studentsWithEmail.length} student(s).\n\n` +
+                             `Note: Some email clients may not support BCC in mailto: links. If that's the case, you can:\n` +
+                             `1. Copy all links and send individual emails\n` +
+                             `2. Use the "Copy all links" button and paste into your email\n\n` +
+                             `Continue?`;
+            
+            if (confirm(confirmMsg)) {
+                window.open(mailtoLink);
+                
+                // Also show option to copy email addresses
+                const copyEmails = confirm('Would you like to copy all email addresses to your clipboard?');
+                if (copyEmails) {
+                    navigator.clipboard.writeText(bccEmails).then(() => {
+                        const msg = document.getElementById('consentLinksMessage');
+                        if (msg) msg.textContent = 'Email addresses copied to clipboard.';
+                    });
+                }
+            }
         }
 
         function showAdmin() {
@@ -15945,6 +16156,11 @@ SpeechGradebook Research Team`;
                 s.style.display = 'none'; // CRITICAL: Actually hide the section
             });
             
+            // Hide evaluation saved indicator when navigating away from evaluation section
+            if (sectionId !== 'evaluateSection') {
+                hideEvaluationSavedIndicator();
+            }
+            
             // Show selected section
             const selectedSection = document.getElementById(sectionId);
             if (selectedSection) {
@@ -16356,6 +16572,11 @@ SpeechGradebook Research Team`;
             document.getElementById('detailsStep').classList.add('hidden');
             document.getElementById('processingStep').classList.add('hidden');
             document.getElementById('resultsStep').classList.add('hidden');
+            
+            // Hide evaluation saved indicator when leaving results step
+            if (step !== 4) {
+                hideEvaluationSavedIndicator();
+            }
             
             // Update step indicators
             for (let i = 1; i <= 4; i++) {
@@ -17037,6 +17258,29 @@ SpeechGradebook Research Team`;
                 // Store selected class and student IDs for saving
                 result.selectedClassId = selectedClassId;
                 result.selectedStudentId = selectedStudentId;
+                
+                // Store course name if class was selected
+                if (selectedClassId) {
+                    try {
+                        const classes = JSON.parse(getUserItem('classes') || '[]');
+                        const classData = classes.find(c => c.id === selectedClassId || c.name === selectedClassId);
+                        if (classData) {
+                            result.courseName = classData.name + (classData.semester ? ' - ' + classData.semester + ' ' + classData.year : '');
+                        }
+                    } catch (e) {
+                        console.warn('Could not store course name:', e);
+                    }
+                }
+                
+                // Store speech date and assignment type from form
+                const speechDateEl = document.getElementById('speechDate');
+                if (speechDateEl && speechDateEl.value) {
+                    result.speechDate = speechDateEl.value;
+                }
+                if (assignmentType) {
+                    result.assignmentType = assignmentType;
+                }
+                
                 evaluationResults = result;
                 modelOutputOriginal = (result && result.sections) ? { sections: JSON.parse(JSON.stringify(result.sections)), timeline_markers: Array.isArray(result.timeline_markers) ? result.timeline_markers.slice() : [] } : null;
                 moveToStep(4);
@@ -20154,16 +20398,44 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
             
             // Check for video/audio URL (from editingEvaluationVideoUrl or results object)
-            const videoUrl = editingEvaluationVideoUrl || results.video_url || null;
-            const audioUrl = results.audio_url || null;
+            // Also check if uploadedFile exists (for newly evaluated files)
+            let videoUrl = editingEvaluationVideoUrl || results.video_url || null;
+            let audioUrl = results.audio_url || null;
+            let localMediaUrl = null;
+            
+            // If no URL but uploadedFile exists, create object URL for display
+            if (!videoUrl && !audioUrl && typeof uploadedFile !== 'undefined' && uploadedFile) {
+                localMediaUrl = URL.createObjectURL(uploadedFile);
+                if (uploadedFile.type && uploadedFile.type.startsWith('video/')) {
+                    videoUrl = localMediaUrl;
+                } else if (uploadedFile.type && uploadedFile.type.startsWith('audio/')) {
+                    audioUrl = localMediaUrl;
+                }
+            }
+            
             const mediaUrl = videoUrl || audioUrl;
+            
+            // Get course name if available
+            let courseName = results.courseName || '';
+            if (!courseName && results.selectedClassId) {
+                try {
+                    const classes = JSON.parse(getUserItem('classes') || '[]');
+                    const classData = classes.find(c => c.id === results.selectedClassId || c.name === results.selectedClassId);
+                    if (classData) {
+                        courseName = classData.name + (classData.semester ? ' - ' + classData.semester + ' ' + classData.year : '');
+                    }
+                } catch (e) {
+                    console.warn('Could not get course name:', e);
+                }
+            }
             
             html += `
                 <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    ${courseName ? `<strong>Course:</strong> ${escapeHtml(courseName)}<br>` : ''}
                     <strong>Student:</strong> ${escapeHtml(results.studentName || '')}<br>
                     <strong>Date:</strong> ${escapeHtml(results.speechDate || '')}<br>
                     <strong>Assignment:</strong> ${escapeHtml(results.assignmentType || '')}<br>
-                    <strong>Speech Time:</strong> ${escapeHtml(results.speechTime || '')}
+                    ${results.speechTime ? `<strong>Speech Time:</strong> ${escapeHtml(results.speechTime)}<br>` : ''}
                 </div>
             `;
             
@@ -21525,7 +21797,30 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             document.getElementById('studentForm').reset();
             document.getElementById('fileInfo').classList.add('hidden');
             document.getElementById('fileInput').value = '';
+            hideEvaluationSavedIndicator(); // Hide indicator when starting over
             moveToStep(1);
+        }
+        
+        // Show persistent "Evaluation Saved" indicator
+        function showEvaluationSavedIndicator(message) {
+            const indicator = document.getElementById('evaluationSavedIndicator');
+            const messageEl = document.getElementById('evaluationSavedMessage');
+            if (indicator && messageEl) {
+                messageEl.textContent = message || 'Evaluation saved';
+                indicator.classList.remove('hidden');
+                // Re-initialize Lucide icons for the indicator
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+        }
+        
+        // Hide persistent "Evaluation Saved" indicator
+        function hideEvaluationSavedIndicator() {
+            const indicator = document.getElementById('evaluationSavedIndicator');
+            if (indicator) {
+                indicator.classList.add('hidden');
+            }
         }
 
         // ===== CLASSES MANAGEMENT =====
@@ -24260,18 +24555,34 @@ Return ONLY the JSON object, nothing else.`;
                     sel.appendChild(opt);
                 }
                 
-                // Pre-select class/student if they were chosen during evaluation (step 2)
+                // Pre-select class/student if they were chosen during evaluation (step 2) or stored in evaluationResults
                 const evalClassSelect = document.getElementById('evalClassSelect');
                 const evalStudentSelect = document.getElementById('evalStudentSelect');
-                const evalClassValue = evalClassSelect?.value;
-                const evalStudentValue = evalStudentSelect?.value;
+                let evalClassValue = evalClassSelect?.value;
+                let evalStudentValue = evalStudentSelect?.value;
+                
+                // Also check evaluationResults for stored class/student IDs
+                if ((!evalClassValue || evalClassValue === '' || evalClassValue === 'other') && evaluationResults && evaluationResults.selectedClassId) {
+                    evalClassValue = evaluationResults.selectedClassId;
+                }
+                if ((!evalStudentValue || evalStudentValue === '') && evaluationResults && evaluationResults.selectedStudentId) {
+                    evalStudentValue = evaluationResults.selectedStudentId;
+                }
                 
                 if (evalClassValue && evalClassValue !== '' && evalClassValue !== 'other') {
                     // Find the index of the selected class
-                    const classIndex = classes.findIndex(c => 
-                        (c.id === evalClassValue || c.name === evalClassValue) ||
-                        (Array.isArray(classes) && classes[parseInt(evalClassValue)])
-                    );
+                    const classIndex = classes.findIndex(c => {
+                        // Try multiple matching strategies
+                        if (c.id === evalClassValue || c.name === evalClassValue) return true;
+                        if (c.supabaseId === evalClassValue) return true;
+                        // Try array index if it's a number
+                        const numVal = parseInt(evalClassValue);
+                        if (!isNaN(numVal) && numVal >= 0 && numVal < classes.length) {
+                            return classes[numVal] === c;
+                        }
+                        return false;
+                    });
+                    
                     if (classIndex !== -1) {
                         sel.value = classIndex;
                         loadSaveStudents();
@@ -24282,15 +24593,22 @@ Return ONLY the JSON object, nothing else.`;
                                     // Find the student index in the class roster
                                     const selectedClass = classes[classIndex];
                                     if (selectedClass && selectedClass.roster) {
-                                        const studentIndex = selectedClass.roster.findIndex(s =>
-                                            (s.id === evalStudentValue || s.studentId === evalStudentValue) ||
-                                            (Array.isArray(selectedClass.roster) && selectedClass.roster[parseInt(evalStudentValue)])
-                                        );
+                                        const studentIndex = selectedClass.roster.findIndex(s => {
+                                            // Try multiple matching strategies
+                                            if (s.id === evalStudentValue || s.studentId === evalStudentValue) return true;
+                                            if (s.supabaseId === evalStudentValue) return true;
+                                            // Try array index if it's a number
+                                            const numVal = parseInt(evalStudentValue);
+                                            if (!isNaN(numVal) && numVal >= 0 && numVal < selectedClass.roster.length) {
+                                                return selectedClass.roster[numVal] === s;
+                                            }
+                                            return false;
+                                        });
                                         if (studentIndex !== -1) {
                                             studentSel.value = studentIndex;
                                         }
                                     }
-                                }, 100);
+                                }, 200); // Increased timeout to ensure loadSaveStudents completes
                             }
                         }
                     }
@@ -24337,6 +24655,18 @@ Return ONLY the JSON object, nothing else.`;
 
         async function doSaveEval() {
             try {
+                // Show saving indicator
+                const statusEl = document.getElementById('saveModalStatus');
+                const cancelBtn = document.getElementById('saveModalCancelBtn');
+                const saveBtn = document.getElementById('saveModalSaveBtn');
+                if (statusEl) statusEl.style.display = 'block';
+                if (cancelBtn) cancelBtn.disabled = true;
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<span class="icon-with-text"><i data-lucide="loader" style="animation:spin 1s linear infinite;"></i> Saving...</span>';
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: saveBtn });
+                }
+                
                 // Check account tier for save permission
                 if (!hasResearchAccess()) {
                     const upgrade = confirm(
@@ -24586,7 +24916,13 @@ Return ONLY the JSON object, nothing else.`;
                                         .single();
                                     
                                     if (csError) {
-                                        console.warn('Could not find course_students record:', csError);
+                                        // PGRST116 means "0 rows found" - expected when student isn't enrolled in Supabase
+                                        // This is a warning, not an error - evaluation will still save to localStorage
+                                        if (csError.code !== 'PGRST116') {
+                                            console.warn('Could not find course_students record:', csError);
+                                        } else {
+                                            console.log('Student not enrolled in course_students table (will save locally only)');
+                                        }
                                         // Try to continue anyway - maybe the student isn't in the course_students table yet
                                     } else if (courseStudent) {
                                         courseStudentId = courseStudent.id;
@@ -24603,8 +24939,9 @@ Return ONLY the JSON object, nothing else.`;
                                 const consent = await getStudentConsentForStorage(courseSupabaseId, studentSupabaseId);
                                 if (consent) {
                                     if (!courseStudentId) {
-                                        console.warn('⚠️ No course_students ID found - evaluation may not save correctly to Supabase');
-                                        console.warn('The student may need to be enrolled in the course in Supabase first');
+                                        // This is expected if student isn't enrolled in Supabase course_students table
+                                        // Evaluation will save to localStorage, but Supabase save may fail
+                                        console.log('ℹ️ Student not in course_students table - evaluation will save locally (Supabase save may fail)');
                                         // Still try to save, but it will likely fail
                                     }
                                     
@@ -24646,12 +24983,37 @@ Return ONLY the JSON object, nothing else.`;
                         log.debug('Supabase not available or user not logged in');
                     }
                     
-                    if (savedLocallyOnly) {
-                        if (typeof showAnalyticsToast === 'function') showAnalyticsToast('Evaluation saved for ' + student.firstName + ' ' + student.lastName + ' (stored locally).', 5000);
-                        else alert('Success. Evaluation saved for ' + student.firstName + ' ' + student.lastName + ' (stored locally — student has not consented to cloud/research use).');
+                    // Hide saving indicator and re-enable buttons
+                    const statusEl = document.getElementById('saveModalStatus');
+                    const cancelBtn = document.getElementById('saveModalCancelBtn');
+                    const saveBtn = document.getElementById('saveModalSaveBtn');
+                    if (statusEl) statusEl.style.display = 'none';
+                    if (cancelBtn) cancelBtn.disabled = false;
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '<span class="icon-with-text"><i data-lucide="check"></i> Save</span>';
+                        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: saveBtn });
+                    }
+                    
+                    // Show persistent indicator
+                    const message = savedLocallyOnly 
+                        ? 'Evaluation saved for ' + student.firstName + ' ' + student.lastName + ' (stored locally).'
+                        : 'Evaluation saved for ' + student.firstName + ' ' + student.lastName + '.';
+                    showEvaluationSavedIndicator(message);
+                    
+                    // Also show toast for immediate feedback
+                    if (typeof showAnalyticsToast === 'function') {
+                        if (savedLocallyOnly) {
+                            showAnalyticsToast('Evaluation saved for ' + student.firstName + ' ' + student.lastName + ' (stored locally).', 5000);
+                        } else {
+                            showAnalyticsToast('Evaluation saved for ' + student.firstName + ' ' + student.lastName + '.', 4000);
+                        }
                     } else {
-                        if (typeof showAnalyticsToast === 'function') showAnalyticsToast('Evaluation saved for ' + student.firstName + ' ' + student.lastName + '.', 4000);
-                        else alert('Success. Evaluation saved for ' + student.firstName + ' ' + student.lastName);
+                        if (savedLocallyOnly) {
+                            alert('Success. Evaluation saved for ' + student.firstName + ' ' + student.lastName + ' (stored locally — student has not consented to cloud/research use).');
+                        } else {
+                            alert('Success. Evaluation saved for ' + student.firstName + ' ' + student.lastName);
+                        }
                     }
                     closeSaveModal();
                 }
@@ -24802,6 +25164,14 @@ Return ONLY the JSON object, nothing else.`;
             var saveModal = document.getElementById('saveModal');
             if (saveModal) {
                 saveModal.style.display = 'none';
+                // Hide saving indicator
+                const statusEl = document.getElementById('saveModalStatus');
+                if (statusEl) statusEl.style.display = 'none';
+                // Re-enable buttons
+                const cancelBtn = document.getElementById('saveModalCancelBtn');
+                const saveBtn = document.getElementById('saveModalSaveBtn');
+                if (cancelBtn) cancelBtn.disabled = false;
+                if (saveBtn) saveBtn.disabled = false;
             }
         }
         
