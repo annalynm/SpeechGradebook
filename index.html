@@ -2131,14 +2131,14 @@
                     <div class="spinner" aria-label="Loading"></div>
                     <div>
                         <h3 style="margin: 0 0 var(--space-sm) 0; color: var(--text);">
-                            <span class="icon-with-text"><i data-lucide="loader"></i> Evaluating Speech...</span>
+                            <span class="icon-with-text"><i data-lucide="loader"></i> Evaluating Speech</span>
                         </h3>
-                        <p id="processingMessage" class="loading-state-message">Analyzing speech content and delivery...</p>
+                        <p id="processingMessage" class="loading-state-message">Analyzing content and delivery</p>
                         <p id="processingSubmessage" class="loading-state-submessage" style="display: none;"></p>
                     </div>
                     <div id="uploadProgressContainer" style="margin-top: var(--space-lg); max-width: 500px; width: 100%; display: none;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm);">
-                            <span id="uploadProgressText" style="font-size: var(--text-caption-size); color: var(--text-light);">Uploading file...</span>
+                            <span id="uploadProgressText" style="font-size: var(--text-caption-size); color: var(--text-light);">Uploading file</span>
                             <span id="uploadProgressPercent" style="font-size: var(--text-caption-size); color: var(--primary); font-weight: 600;">0%</span>
                         </div>
                         <div style="background: var(--bg-alt); height: 8px; border-radius: var(--radius-sm); overflow: hidden; position: relative;">
@@ -3846,7 +3846,7 @@ ssh amcclu12@login.isaac.utk.edu
                 <div id="uploadProgress" class="hidden" style="margin: 1.5rem 0; padding: 1rem; background: var(--bg); border-radius: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                         <div class="spinner"></div>
-                        <span id="uploadProgressText">Processing rubric...</span>
+                        <span id="uploadProgressText">Processing rubric</span>
                     </div>
                     <div style="background: white; height: 8px; border-radius: 4px; overflow: hidden;">
                         <div id="uploadProgressBar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s;"></div>
@@ -16173,9 +16173,9 @@ SpeechGradebook Research Team`;
             }
             
             try {
-                updateProcessingMessage('Downloading ' + (isVideo ? 'video' : 'audio') + ' file...');
+                updateProcessingMessage('Downloading ' + (isVideo ? 'video' : 'audio') + ' file');
                 showUploadProgress();
-                updateUploadProgress(10, 'Downloading media file...');
+                updateUploadProgress(10, 'Downloading media file');
                 
                 // Fetch the media file from URL
                 const response = await fetch(mediaUrl);
@@ -16183,7 +16183,7 @@ SpeechGradebook Research Team`;
                     throw new Error('Failed to download media file: ' + response.statusText);
                 }
                 
-                updateUploadProgress(50, 'Processing media file...');
+                updateUploadProgress(50, 'Processing media file');
                 const blob = await response.blob();
                 
                 // Determine file extension and MIME type
@@ -16197,7 +16197,7 @@ SpeechGradebook Research Team`;
                 const fileName = 'reevaluation.' + extension;
                 const file = new File([blob], fileName, { type: mimeType });
                 
-                updateUploadProgress(80, 'Preparing for evaluation...');
+                updateUploadProgress(80, 'Preparing for evaluation');
                 
                 // Get current evaluation settings
                 const assignmentType = evaluationResults?.assignmentType || document.getElementById('assignmentType')?.value || 'Speech';
@@ -16216,7 +16216,7 @@ SpeechGradebook Research Team`;
                 // Set the file as uploaded
                 uploadedFile = file;
                 
-                updateUploadProgress(90, 'Starting evaluation...');
+                updateUploadProgress(90, 'Starting evaluation');
                 // Don't hide progress yet - let it switch to finalizing mode
                 
                 // Move to processing step
@@ -16407,7 +16407,7 @@ SpeechGradebook Research Team`;
         // ===== DEMO MODE EVALUATION =====
         async function generateDemoEvaluation(file, assignmentType, rubric) {
             console.log('>>> Generating demo evaluation');
-            updateProcessingMessage('Generating realistic demo feedback...');
+            updateProcessingMessage('Generating realistic demo feedback');
             
             // Simulate processing delay
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -16784,7 +16784,7 @@ SpeechGradebook Research Team`;
                 const qwenUrl = getQwenApiUrl();
                 const geminiKey = typeof localStorage !== 'undefined' ? localStorage.getItem('gemini_api_key') || '' : '';
                 if (isVideo && (qwenUrl || geminiKey)) {
-                    updateProcessingMessage('Getting video notes (body movement, eye contact, etc.)...');
+                    updateProcessingMessage('Getting video notes (body movement, eye contact, etc.)');
                     try {
                         if (qwenUrl) {
                             videoNotes = await getVideoNotesFromQwen(file, qwenUrl);
@@ -16795,7 +16795,7 @@ SpeechGradebook Research Team`;
                         console.warn('Video notes unavailable, continuing with transcript only:', e.message);
                     }
                 }
-                updateProcessingMessage('Sending file to SpeechGradebook Text Model (Mistral) server (transcription + evaluation)...');
+                updateProcessingMessage('Sending file to SpeechGradebook Text Model (Mistral) server (transcription + evaluation)');
                 showUploadProgress();
                 const formData = new FormData();
                 formData.append('file', file);
@@ -16807,10 +16807,10 @@ SpeechGradebook Research Team`;
                         method: 'POST',
                         body: formData
                     }, (percent) => {
-                        updateUploadProgress(percent, 'Uploading file...');
+                        updateUploadProgress(percent, 'Uploading file');
                     });
                     // Upload complete - switch to finalizing mode (updateUploadProgress handles this)
-                    updateUploadProgress(100, 'Finalizing Evaluation...');
+                    updateUploadProgress(100, 'Finalizing');
                 } finally {
                     // Don't hide here - let it stay visible during evaluation
                 }
@@ -16829,7 +16829,7 @@ SpeechGradebook Research Team`;
                     throw new Error(errText || 'SpeechGradebook Text Model (Mistral) server error: ' + response.status);
                 }
                 const data = await response.json();
-                updateProcessingMessage('Calculating final scores...');
+                updateProcessingMessage('Calculating final scores');
                 const duration = await getVideoDuration(file);
                 const result = formatFinetunedResults(data, rubric, duration, videoNotes);
                 // Hide progress now that evaluation is complete
@@ -16884,7 +16884,7 @@ SpeechGradebook Research Team`;
                 throw new Error('Qwen (Video) evaluator requires a video file. Please upload a video (e.g. MP4, WebM).');
             }
             try {
-                updateProcessingMessage('SpeechGradebook Text + Video Model (Qwen) is evaluating the video (content and delivery)...');
+                updateProcessingMessage('SpeechGradebook Text + Video Model (Qwen) is evaluating the video (content and delivery)');
                 showUploadProgress();
                 const formData = new FormData();
                 formData.append('file', file);
@@ -16895,10 +16895,10 @@ SpeechGradebook Research Team`;
                         method: 'POST',
                         body: formData
                     }, (percent) => {
-                        updateUploadProgress(percent, 'Uploading video...');
+                        updateUploadProgress(percent, 'Uploading video');
                     });
                     // Upload complete - switch to finalizing mode (updateUploadProgress handles this)
-                    updateUploadProgress(100, 'Finalizing Evaluation...');
+                    updateUploadProgress(100, 'Finalizing');
                 } finally {
                     // Don't hide here - let it stay visible during evaluation
                 }
@@ -16923,7 +16923,7 @@ SpeechGradebook Research Team`;
                 }
                 const data = await response.json();
                 console.log('Qwen API raw response:', data);
-                updateProcessingMessage('Calculating final scores...');
+                updateProcessingMessage('Calculating final scores');
                 const duration = await getVideoDuration(file);
                 const result = formatFinetunedResults(data, rubric, duration, '');
                 // Hide progress now that evaluation is complete
@@ -17034,20 +17034,20 @@ SpeechGradebook Research Team`;
                 // If file is video, extract audio automatically
                 if (file.type.startsWith('video/')) {
                     console.log('>>> Video detected, extracting audio...');
-                    updateProcessingMessage('Extracting audio from video...');
+                    updateProcessingMessage('Extracting audio from video');
                     audioFile = await extractAudioFromVideo(file);
                     console.log('✓ Audio extracted from video');
                 }
                 
                 // Phase 2a: File Processing - Convert audio to base64
                 console.log('>>> Phase 2a: Processing audio file...');
-                updateProcessingMessage('Processing audio file...');
+                updateProcessingMessage('Processing audio file');
                 const { base64Audio, mediaType, duration } = await processAudioFile(audioFile);
                 console.log('✓ Audio processed:', mediaType, duration);
                 
                 // Phase 2b: Speech Transcription
                 console.log('>>> Phase 2b: Transcribing speech...');
-                updateProcessingMessage('Transcribing speech...');
+                updateProcessingMessage('Transcribing speech');
                 const transcript = await transcribeSpeech(apiKey, base64Audio, mediaType);
                 console.log('✓ Transcription received, length:', transcript.length);
                 
@@ -17056,11 +17056,11 @@ SpeechGradebook Research Team`;
                 }
                 
                 // Phase 2c: AI Evaluation Against Rubric
-                updateProcessingMessage('Analyzing speech against rubric...');
+                updateProcessingMessage('Analyzing speech against rubric');
                 const aiEvaluation = await evaluateWithClaudeAI(apiKey, transcript, rubric);
                 
                 // Phase 2d: Results Validation & Formatting
-                updateProcessingMessage('Calculating final scores...');
+                updateProcessingMessage('Calculating final scores');
                 const results = formatEvaluationResults(aiEvaluation, rubric, transcript, duration);
                 
                 return results;
@@ -17143,25 +17143,25 @@ SpeechGradebook Research Team`;
                 if (file.type.startsWith('image/')) {
                     // Direct image upload
                     console.log('>>> Phase 1: Processing uploaded image...');
-                    updateProcessingMessage('Processing image...');
+                    updateProcessingMessage('Processing image');
                     frameBase64 = await fileToBase64(file);
                     console.log('✓ Image processed');
                 } else {
                     // Extract frame from video
                     console.log('>>> Phase 1: Extracting frame from video...');
-                    updateProcessingMessage('Extracting video frame...');
+                    updateProcessingMessage('Extracting video frame');
                     frameBase64 = await extractVideoFrame(file);
                     console.log('✓ Video frame extracted');
                 }
                 
                 // Phase 2: Send to GPT-4o for analysis
                 console.log('>>> Phase 2: Analyzing with GPT-4o...');
-                updateProcessingMessage('Analyzing speech delivery...');
+                updateProcessingMessage('Analyzing speech delivery');
                 const gptEvaluation = await analyzeWithGPT4o(apiKey, frameBase64, rubric);
                 console.log('✓ GPT-4o analysis complete');
                 
                 // Phase 3: Format results
-                updateProcessingMessage('Calculating final scores...');
+                updateProcessingMessage('Calculating final scores');
                 const duration = file.type.startsWith('image/') ? '0:00' : await getVideoDuration(file);
                 const results = formatGPTResults(gptEvaluation, rubric, duration);
                 
@@ -17543,18 +17543,18 @@ Ensure every subcategory receives a grade. Be honest about limitations while bei
             try {
                 // Phase 1: Convert file to base64
                 console.log('>>> Phase 1: Processing video/audio file...');
-                updateProcessingMessage('Processing video file...');
+                updateProcessingMessage('Processing video file');
                 const base64Data = await fileToBase64(file);
                 console.log('✓ File converted to base64');
                 
                 // Phase 2: Send to Gemini for comprehensive analysis
                 console.log('>>> Phase 2: Analyzing video with Gemini...');
-                updateProcessingMessage('Analyzing speech content and delivery...');
+                updateProcessingMessage('Analyzing speech content and delivery');
                 const geminiEvaluation = await analyzeWithGemini(apiKey, base64Data, file.type, rubric);
                 console.log('✓ Gemini analysis complete');
                 
                 // Phase 3: Format results
-                updateProcessingMessage('Calculating final scores...');
+                updateProcessingMessage('Calculating final scores');
                 const duration = await getVideoDuration(file);
                 const results = formatGeminiResults(geminiEvaluation, rubric, duration);
                 
@@ -17961,7 +17961,7 @@ Ensure every subcategory receives a grade. Include "video_notes" as a single par
                 
                 // Update text to "Finalizing Evaluation"
                 if (textEl) {
-                    textEl.textContent = 'Finalizing Evaluation...';
+                    textEl.textContent = 'Finalizing';
                 }
                 
                 // Start countdown timer
@@ -18004,7 +18004,7 @@ Ensure every subcategory receives a grade. Include "video_notes" as a single par
                 xhr.upload.addEventListener('progress', (e) => {
                     if (e.lengthComputable && onProgress) {
                         const percent = (e.loaded / e.total) * 100;
-                        onProgress(percent, 'Uploading file...');
+                        onProgress(percent, 'Uploading file');
                     }
                 });
                 
