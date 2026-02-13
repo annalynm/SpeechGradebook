@@ -225,12 +225,40 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        
+        /* Left section: Logo + Navigation */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* Navigation on left side */
+        .primary-nav {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        /* Right section: Search and Account menu */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            flex-shrink: 0;
         }
         
         .logo-section {
             display: flex;
             align-items: center;
             gap: var(--space-md);
+            flex-shrink: 0;
+            min-width: 0; /* Allow text truncation */
         }
         
         .logo {
@@ -272,6 +300,14 @@
             color: white;
             font-size: 1.8rem;
             margin-bottom: var(--space-xs);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .app-title {
+            min-width: 0; /* Allow text truncation */
+            flex: 0 1 auto;
         }
         
         .tagline {
@@ -279,33 +315,212 @@
             opacity: 0.9;
         }
         
-        /* Navigation - Apple HIG: Proper spacing */
-        nav {
+        /* Navigation - Apple HIG: Clean, spacious design with better hierarchy */
+        /* Primary Navigation: Core workflows */
+        nav.primary-nav {
             font-family: var(--body-font);
             display: flex;
-            gap: var(--space-lg);
+            gap: var(--space-md);
+            align-items: center;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        
+        /* Utility Navigation: Search and Account */
+        .utility-nav {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            flex-shrink: 0;
         }
         
         .nav-link {
             color: white;
             text-decoration: none;
-            padding: var(--space-sm) var(--space-md);
+            padding: var(--space-sm) var(--space-lg);
             border-radius: var(--radius-md);
-            transition: background var(--motion-normal) var(--motion-ease);
+            transition: all var(--motion-normal) var(--motion-ease);
             min-height: 2.75rem;
             display: inline-flex;
             align-items: center;
             box-sizing: border-box;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            white-space: nowrap;
+            position: relative;
+            flex-shrink: 0;
         }
+        
+        /* Account Dropdown */
+        .account-dropdown-wrapper {
+            position: relative;
+        }
+        
+        .account-dropdown-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.75rem;
+            height: 2.75rem;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all var(--motion-normal) var(--motion-ease);
+            flex-shrink: 0;
+        }
+        
+        .account-dropdown-trigger:hover {
+            background: rgba(255,255,255,0.12);
+        }
+        
+        .account-dropdown-trigger:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+        
+        .account-dropdown-trigger[aria-expanded="true"] {
+            background: rgba(255,255,255,0.18);
+        }
+        
+        .account-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        
+        .user-display-name {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .account-dropdown-menu {
+            position: absolute;
+            top: calc(100% + var(--space-xs));
+            right: 0;
+            min-width: 220px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--elevation-3);
+            z-index: 1000;
+            padding: var(--space-xs) 0;
+            margin-top: var(--space-xs);
+        }
+        
+        .account-dropdown-menu.hidden {
+            display: none;
+        }
+        
+        .dropdown-header {
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .dropdown-user-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9375rem;
+            transition: background var(--motion-fast) var(--motion-ease);
+            cursor: pointer;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--bg-alt);
+        }
+        
+        .dropdown-item i {
+            width: 1rem;
+            height: 1rem;
+            color: var(--text-light);
+        }
+        
+        /* Logout item - ensure dark text for visibility */
+        .dropdown-item-logout {
+            color: var(--text) !important;
+            font-weight: 500;
+        }
+        
+        .dropdown-item-logout i {
+            color: var(--text) !important;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: var(--space-xs) 0;
+        }
+        
+        /* Evaluation actions dropdown */
+        .eval-actions-dropdown {
+            position: relative;
+        }
+        
+        .eval-actions-menu button:hover {
+            background: var(--bg-alt) !important;
+        }
+        
+        .eval-actions-menu button:focus {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: -2px;
+        }
+        
+        #userDisplay {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
         .nav-link:focus-visible {
             outline: 2px solid white;
             outline-offset: 2px;
         }
+        
         .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-1px);
         }
+        
         .nav-link.active {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.18);
+            font-weight: 600;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: white;
+            border-radius: var(--radius-full);
+        }
+        
+        /* Reduce icon size in nav for cleaner look */
+        .nav-link .icon-with-text i {
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        .nav-link .icon-with-text {
+            gap: var(--space-sm);
         }
         
         /* Main Content - Apple HIG: Generous spacing */
@@ -602,13 +817,71 @@
             font-size: 0.9rem;
             color: var(--text-light);
         }
+        /* Expandable Search */
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-icon-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.75rem;
+            height: 2.75rem;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all var(--motion-normal) var(--motion-ease);
+            flex-shrink: 0;
+        }
+        
+        .search-icon-button:hover {
+            background: rgba(255,255,255,0.12);
+        }
+        
+        .search-icon-button:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+        
+        .search-icon-button i {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        
         .account-search-wrap {
             position: relative;
-            flex: 1;
+            flex: 1 1 auto;
             max-width: 280px;
             min-width: 180px;
-            margin: 0 1rem;
+            margin: 0 var(--space-md);
             cursor: text;
+        }
+        
+        .account-search-wrap.search-expandable {
+            position: absolute;
+            right: 0;
+            top: 0;
+            max-width: 400px;
+            min-width: 280px;
+            margin: 0;
+            opacity: 0;
+            transform: scaleX(0.8);
+            transform-origin: right;
+            pointer-events: none;
+            transition: opacity var(--motion-normal) var(--motion-ease), 
+                        transform var(--motion-normal) var(--motion-ease);
+            z-index: 1001;
+        }
+        
+        .account-search-wrap.search-expandable:not(.hidden) {
+            opacity: 1;
+            transform: scaleX(1);
+            pointer-events: all;
         }
         .account-search-input {
             width: 100%;
@@ -1553,7 +1826,7 @@
         }
         
         .footer-links a {
-            color: white;
+            color: white !important;
             text-decoration: none;
             opacity: 0.8;
             transition: opacity 0.3s;
@@ -1561,6 +1834,17 @@
         
         .footer-links a:hover {
             opacity: 1;
+        }
+        
+        /* Ensure all footer text is white */
+        footer p,
+        footer #footerCopyright,
+        footer #footerAdditional {
+            color: white !important;
+        }
+        
+        footer a {
+            color: white !important;
         }
         
         /* Modal / Overlay */
@@ -1711,26 +1995,134 @@
             border-color: var(--info-border);
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-                gap: 0.5rem;
+        /* Responsive - Tablet and below */
+        @media (max-width: 1200px) {
+            .app-title h1 {
+                font-size: 1.5rem;
             }
-            
+            .tagline {
+                font-size: 0.85rem;
+            }
+            .nav-link {
+                padding: var(--space-sm) var(--space-md);
+                font-size: 0.875rem;
+            }
+            .nav-link .icon-with-text i {
+                width: 0.875rem;
+                height: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .header-content {
+                gap: var(--space-sm);
+            }
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+            .app-title h1 {
+                font-size: 1.35rem;
+            }
+            .account-search-wrap {
+                max-width: 240px;
+                min-width: 150px;
+                margin: 0 var(--space-sm);
+            }
+            nav {
+                gap: var(--space-sm);
+            }
+            .nav-link {
+                padding: var(--space-xs) var(--space-sm);
+                font-size: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .logo-section {
+                flex: 0 0 auto;
+            }
+            .app-title h1 {
+                font-size: 1.2rem;
+            }
+            .account-search-wrap {
+                max-width: 200px;
+                min-width: 120px;
+            }
+            .nav-link span.icon-with-text {
+                display: flex;
+            }
+            .nav-link .icon-with-text i {
+                margin-right: 0.25rem;
+            }
+            .account-dropdown-trigger {
+                padding: var(--space-xs) var(--space-sm);
+                font-size: 0.875rem;
+            }
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: stretch;
             }
-            #accountSearchWrap {
+            
+            .header-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .logo-section {
+                justify-content: center;
+            }
+            
+            .primary-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: var(--space-sm);
+            }
+            
+            .search-wrapper {
                 order: 3;
-                max-width: 100%;
-                width: 100%;
-                margin: 0;
+            }
+            
+            .account-search-wrap.search-expandable {
+                position: fixed;
+                top: var(--space-lg);
+                left: var(--space-md);
+                right: var(--space-md);
+                max-width: none;
+                min-width: 0;
+                width: auto;
+            }
+            
+            .nav-link {
+                padding: var(--space-sm) var(--space-md);
+            }
+            
+            .header-right {
+                justify-content: center;
             }
             
             .classes-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+            .app-title h1 {
+                font-size: 1.1rem;
+            }
+            .nav-link {
+                font-size: 0.8125rem;
+                padding: var(--space-xs) var(--space-sm);
             }
         }
         
@@ -1982,29 +2374,63 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;"></div>
-                    <div class="app-title">
-                        <h1 id="appName">SpeechGradebook</h1>
-                        <div class="tagline" id="appTagline">Instructor-Informed Speech Assessment</div>
+                <!-- Left Section: Logo + Navigation -->
+                <div class="header-left">
+                    <div class="logo-section">
+                        <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;"></div>
+                        <div class="app-title">
+                            <h1 id="appName">SpeechGradebook</h1>
+                            <div class="tagline" id="appTagline">Instructor-Informed Speech Assessment</div>
+                        </div>
+                    </div>
+                    <!-- Primary Navigation: Core workflows -->
+                    <nav class="primary-nav">
+                        <a href="#" class="nav-link active" id="navDashboard" onclick="showDashboard(); return false;"><span class="icon-with-text"><i data-lucide="layout-dashboard"></i> Dashboard</span></a>
+                        <a href="#" class="nav-link" id="navEvaluate" onclick="showEvaluate(); return false;"><span class="icon-with-text"><i data-lucide="mic"></i> Evaluate Speech</span></a>
+                    </nav>
+                </div>
+                
+                <!-- Right Section: Search and Account Menu -->
+                <div class="header-right">
+                    <!-- Expandable Search: Icon-triggered -->
+                    <div class="search-wrapper">
+                        <button class="search-icon-button" id="searchIconButton" onclick="toggleSearch(); return false;" aria-label="Search" aria-expanded="false">
+                            <i data-lucide="search"></i>
+                        </button>
+                        <div id="accountSearchWrap" class="account-search-wrap search-expandable hidden">
+                            <input type="text" id="accountSearchInput" placeholder="Search" 
+                                   class="account-search-input"
+                                   aria-label="Search courses, students, rubrics, and instructors" autocomplete="off">
+                            <div id="accountSearchResults" class="account-search-results hidden" role="listbox" aria-label="Search results"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Dropdown -->
+                    <div class="account-dropdown-wrapper">
+                        <button class="account-dropdown-trigger" id="accountDropdownTrigger" onclick="toggleAccountDropdown(); return false;" aria-label="Account menu" aria-expanded="false" title="Account menu">
+                            <!-- Apple HIG recommends user icon for account menus (hamburger is for navigation) -->
+                            <i data-lucide="user" class="account-icon"></i>
+                            <!-- Keep userDisplay hidden but available for screen readers -->
+                            <span id="userDisplay" class="visually-hidden"></span>
+                        </button>
+                        <div class="account-dropdown-menu hidden" id="accountDropdownMenu" role="menu">
+                            <div class="dropdown-header">
+                                <span id="userDisplayDropdown" class="dropdown-user-name"></span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="showSettings(); closeAccountDropdown(); return false;" role="menuitem">
+                                <i data-lucide="settings"></i> Settings
+                            </a>
+                            <a href="#" class="dropdown-item" onclick="showHelp(); closeAccountDropdown(); return false;" role="menuitem">
+                                <i data-lucide="help-circle"></i> Support
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item dropdown-item-logout" id="logoutLink" onclick="logout(); return false;" role="menuitem">
+                                <i data-lucide="log-out"></i> Logout
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div id="accountSearchWrap" class="account-search-wrap" onclick="document.getElementById('accountSearchInput')?.focus()">
-                    <input type="text" id="accountSearchInput" placeholder="Search" 
-                           class="account-search-input"
-                           aria-label="Search courses, students, rubrics, and instructors" autocomplete="off">
-                    <div id="accountSearchResults" class="account-search-results hidden" role="listbox" aria-label="Search results"></div>
-                </div>
-                <nav>
-                    <a href="#" class="nav-link" id="navEvaluate" onclick="showEvaluate(); return false;"><span class="icon-with-text"><i data-lucide="mic"></i> Evaluate Speech</span></a>
-                    <a href="#" class="nav-link active" id="navDashboard" onclick="showDashboard(); return false;"><span class="icon-with-text"><i data-lucide="layout-dashboard"></i> Dashboard</span></a>
-                    <a href="#" class="nav-link" id="navSettings" onclick="showSettings(); return false;"><span class="icon-with-text"><i data-lucide="settings"></i> Settings</span></a>
-                    <a href="#" class="nav-link" id="navHelp" onclick="showHelp(); return false;"><span class="icon-with-text"><i data-lucide="help-circle"></i> Support</span></a>
-                    
-                    <a href="#" id="logoutLink" class="nav-link" onclick="logout(); return false;" aria-label="Log out">
-                        <span id="userDisplay"></span> <span class="icon-with-text"><i data-lucide="log-out"></i> Logout</span>
-                    </a>
-                </nav>
             </div>
         </div>
     </header>
@@ -2155,7 +2581,7 @@
                     <div id="resultsContent"></div>
                     <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl); flex-wrap: wrap;">
                         <button onclick="openSaveModal()"><span class="icon-with-text"><i data-lucide="save"></i> Save Results</span></button>
-                        <button onclick="openMoveEvalModal()" class="btn-secondary" id="moveEvalBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="move"></i> Move to Different Class/Student</span></button>
+                        <button onclick="openMoveEvalModal(editingEvaluationId, editingCourseId, editingStudentId)" class="btn-secondary" id="moveEvalBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="move"></i> Move to Different Class/Student</span></button>
                         <button onclick="downloadPDF()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="file-text"></i> Download Report (HTML)</span></button>
                         <button onclick="emailResults()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="mail"></i> Email Results</span></button>
                         <button onclick="viewCorrectionHistory()" class="btn-secondary" id="viewCorrectionsBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="clipboard-list"></i> View Corrections (<span id="correctionCount">0</span>)</span></button>
@@ -2192,7 +2618,7 @@
         <div id="moveEvalModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
             <div style="background:white;padding:2rem;border-radius:1rem;max-width:500px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
                 <h3 style="margin-top:0;color:var(--primary);"><span class="icon-with-text"><i data-lucide="move"></i> Move Evaluation</span></h3>
-                <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem;">Move this evaluation to a different class and/or student.</p>
+                <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem;">Move this evaluation to a different class and/or student. This is useful if an evaluation was accidentally saved to the wrong student.</p>
                 <div style="margin:1.5rem 0;">
                     <label style="display:block;font-weight:600;margin-bottom:0.5rem;">New Class:</label>
                     <select id="moveClassSel" onchange="loadMoveStudents()" style="width:100%;padding:0.75rem;font-size:1rem;border:2px solid #ddd;border-radius:0.5rem;">
@@ -2504,8 +2930,8 @@
                             <select id="analyticsGlobalCourse" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All courses</option></select>
                         </div>
                         <div class="filter-actions" style="margin-left: auto;">
-                            <button type="button" id="analyticsGlobalReset" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" aria-label="Reset filters">Reset</button>
-                            <button type="button" id="analyticsGlobalApply" class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background: var(--primary); color: white;" aria-label="Apply filters">Apply</button>
+                            <button type="button" id="analyticsGlobalReset" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; min-width: 80px; height: 2.25rem; box-sizing: border-box;" aria-label="Reset filters">Reset</button>
+                            <button type="button" id="analyticsGlobalApply" class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background: var(--primary); color: white; min-width: 80px; height: 2.25rem; box-sizing: border-box;" aria-label="Apply filters">Apply</button>
                             <span id="analyticsLastUpdated" class="last-updated" style="align-self: center;"></span>
                         </div>
                         </div>
@@ -5786,6 +6212,9 @@ ssh amcclu12@login.isaac.utk.edu
             // Route to appropriate interface (each interface handles its own UI setup)
             await routeToInterface();
             
+            // Update user display with name from profile (now that loadUserTier has completed)
+            updateUserDisplay();
+            
             // Apply Demo Theme Customizer from sessionStorage if in demo mode
             if (userTier === 'demo' && typeof applyDemoTheme === 'function') applyDemoTheme();
             
@@ -5853,6 +6282,34 @@ ssh amcclu12@login.isaac.utk.edu
             log.debug('Loading theme for institution_id:', institutionId);
             
             try {
+                // First, get the institution name to verify it's University of Tennessee
+                const { data: institution, error: instError } = await supabaseClient
+                    .from('institutions')
+                    .select('id, name')
+                    .eq('id', institutionId)
+                    .single();
+                
+                if (instError || !institution) {
+                    console.warn('[loadInstitutionalTheme] Could not load institution', institutionId, '- using SpeechGradebook default.', instError?.message);
+                    currentUser.theme = null;
+                    currentInstitutionTheme = null;
+                    resetThemeToDefault();
+                    return;
+                }
+                
+                const isUniversityOfTennessee = institution.name && 
+                    (institution.name.toLowerCase().includes('university of tennessee') || 
+                     institution.name.toLowerCase().includes('utk'));
+                
+                // Only load theme if it's University of Tennessee, otherwise use default
+                if (!isUniversityOfTennessee) {
+                    console.log('[loadInstitutionalTheme] Institution', institution.name, 'is not University of Tennessee - using SpeechGradebook default theme.');
+                    currentUser.theme = null;
+                    currentInstitutionTheme = null;
+                    resetThemeToDefault();
+                    return;
+                }
+                
                 const { data, error } = await supabaseClient
                     .from('institution_themes')
                     .select('*')
@@ -5880,8 +6337,10 @@ ssh amcclu12@login.isaac.utk.edu
                     
                     currentUser.theme = data;
                     currentInstitutionTheme = data; // Store globally
+                    currentInstitution = institution; // Store institution for later use
                     
                     log.debug('✓ Theme loaded successfully');
+                    log.debug('   Institution:', institution.name);
                     log.debug('   Institution ID:', data.institution_id);
                     log.debug('   Primary color:', data.primary_color);
                     log.debug('   Header color:', data.header_bg_color);
@@ -5891,8 +6350,8 @@ ssh amcclu12@login.isaac.utk.edu
                     log.debug('   Body font:', data.font_body || 'default');
                     
                     // Apply theme to CSS immediately
-                    console.log('[loadInstitutionalTheme] Applying theme for institution', data.institution_id);
-                    applyThemeToCSS(data);
+                    console.log('[loadInstitutionalTheme] Applying theme for institution', institution.name);
+                    applyThemeToCSS(data, institution.name);
                     
                     // Apply fonts if set
                     if (data.font_heading || data.font_body) {
@@ -6288,12 +6747,17 @@ ssh amcclu12@login.isaac.utk.edu
         
         // Apply custom institutional theme to CSS (e.g. University of Tennessee).
         // Only called when institution_themes has a row for this institution.
-        function applyThemeToCSS(theme) {
+        function applyThemeToCSS(theme, institutionName) {
             if (!theme) return;
             
             const root = document.documentElement;
             
             log.debug('🎨 Applying custom institutional theme...');
+            
+            // Verify this is University of Tennessee before applying Torch theme
+            const isUniversityOfTennessee = institutionName && 
+                (institutionName.toLowerCase().includes('university of tennessee') || 
+                 institutionName.toLowerCase().includes('utk'));
             
             // Apply colors to CSS variables
             if (theme.primary_color) {
@@ -6367,10 +6831,12 @@ ssh amcclu12@login.isaac.utk.edu
             // Update logo based on institution
             updateInstitutionLogo();
             
-            // When institution theme is UTK Torch (orange primary, gray header), apply full Torch styling
-            // so University of Tennessee institution users get the Torch look regardless of tenant selector
-            const isUTKTorch = theme.primary_color && theme.primary_color.toLowerCase() === '#ff8200' &&
+            // Only apply UTK Torch styling if this is actually University of Tennessee
+            // Check both institution name and color values for safety
+            const isUTKTorch = isUniversityOfTennessee &&
+                theme.primary_color && theme.primary_color.toLowerCase() === '#ff8200' &&
                 theme.header_bg_color && theme.header_bg_color.toLowerCase() === '#4b4b4b';
+            
             if (isUTKTorch) {
                 root.classList.add('theme-torch', 'theme-utk-torch');
                 root.style.setProperty('--smokey', '#4B4B4B');
@@ -6389,6 +6855,7 @@ ssh amcclu12@login.isaac.utk.edu
                 const faviconEl = document.getElementById('faviconLink');
                 if (faviconEl) { faviconEl.href = 'assets/logo-light-bg.png'; faviconEl.type = 'image/png'; }
             } else {
+                // Remove Torch theme classes for non-UTK institutions
                 root.classList.remove('theme-torch', 'theme-utk-torch');
                 root.style.removeProperty('--smokey');
                 root.style.removeProperty('--link-blue');
@@ -6396,10 +6863,12 @@ ssh amcclu12@login.isaac.utk.edu
             
             // Log what was applied
             log.debug('✓ Theme applied successfully');
+            log.debug('  - Institution:', institutionName || 'Unknown');
             log.debug('  - Primary:', theme.primary_color);
             log.debug('  - Background:', theme.bg_primary);
             console.log('  - Text:', theme.text_primary);
             console.log('  - Mode:', theme.is_dark_mode ? 'Dark' : 'Light');
+            console.log('  - UTK Torch applied:', isUTKTorch);
         }
         
         // Update logo based on institution
@@ -7146,6 +7615,156 @@ ssh amcclu12@login.isaac.utk.edu
             }
         }
         
+        // Update user display to show name instead of email
+        function updateUserDisplay() {
+            const userDisplayEl = document.getElementById('userDisplay');
+            const userDisplayDropdown = document.getElementById('userDisplayDropdown');
+            let displayName = 'Demo';
+            if (currentUser) {
+                // Prioritize full_name from user_profiles (loaded by loadUserTier)
+                // Fall back to user_metadata.full_name, then email
+                displayName = currentUser.full_name || 
+                              currentUser.user_metadata?.full_name || 
+                              currentUser.email || 
+                              'User';
+            }
+            if (userDisplayEl) {
+                userDisplayEl.textContent = displayName;
+            }
+            if (userDisplayDropdown) {
+                userDisplayDropdown.textContent = displayName;
+            }
+        }
+        
+        // Account Dropdown Functions
+        function toggleAccountDropdown() {
+            const trigger = document.getElementById('accountDropdownTrigger');
+            const menu = document.getElementById('accountDropdownMenu');
+            if (!trigger || !menu) return;
+            
+            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+            trigger.setAttribute('aria-expanded', !isExpanded);
+            menu.classList.toggle('hidden', isExpanded);
+            
+            // Close dropdown when clicking outside
+            if (!isExpanded) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeAccountDropdownOnOutsideClick, true);
+                }, 0);
+            } else {
+                document.removeEventListener('click', closeAccountDropdownOnOutsideClick, true);
+            }
+        }
+        
+        function closeAccountDropdown() {
+            const trigger = document.getElementById('accountDropdownTrigger');
+            const menu = document.getElementById('accountDropdownMenu');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            if (menu) menu.classList.add('hidden');
+            document.removeEventListener('click', closeAccountDropdownOnOutsideClick, true);
+        }
+        
+        function closeAccountDropdownOnOutsideClick(event) {
+            const wrapper = document.querySelector('.account-dropdown-wrapper');
+            if (wrapper && !wrapper.contains(event.target)) {
+                closeAccountDropdown();
+            }
+        }
+        
+        // Evaluation actions dropdown functions
+        function toggleEvalActionsDropdown(evalId) {
+            const btn = document.getElementById('evalActionsBtn_' + evalId);
+            const menu = document.getElementById('evalActionsMenu_' + evalId);
+            if (!btn || !menu) return;
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.eval-actions-menu:not(.hidden)').forEach(m => {
+                if (m.id !== 'evalActionsMenu_' + evalId) {
+                    m.classList.add('hidden');
+                }
+            });
+            
+            const isExpanded = !menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', isExpanded);
+            
+            // Close dropdown when clicking outside
+            if (!isExpanded) {
+                setTimeout(() => {
+                    document.addEventListener('click', (e) => closeEvalActionsDropdownOnOutsideClick(e, evalId), true);
+                }, 0);
+            } else {
+                document.removeEventListener('click', (e) => closeEvalActionsDropdownOnOutsideClick(e, evalId), true);
+            }
+        }
+        
+        function closeEvalActionsDropdown(evalId) {
+            const menu = document.getElementById('evalActionsMenu_' + evalId);
+            if (menu) {
+                menu.classList.add('hidden');
+            }
+        }
+        
+        function closeEvalActionsDropdownOnOutsideClick(event, evalId) {
+            const dropdown = document.querySelector('#evalActionsMenu_' + evalId)?.closest('.eval-actions-dropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                closeEvalActionsDropdown(evalId);
+                document.removeEventListener('click', (e) => closeEvalActionsDropdownOnOutsideClick(e, evalId), true);
+            }
+        }
+        
+        // Expandable Search Functions
+        function toggleSearch() {
+            const button = document.getElementById('searchIconButton');
+            const searchWrap = document.getElementById('accountSearchWrap');
+            const searchInput = document.getElementById('accountSearchInput');
+            
+            if (!button || !searchWrap) return;
+            
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+            searchWrap.classList.toggle('hidden', isExpanded);
+            
+            // Focus input when expanded
+            if (!isExpanded && searchInput) {
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 100);
+            }
+            
+            // Close search when clicking outside
+            if (!isExpanded) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeSearchOnOutsideClick, true);
+                }, 0);
+            } else {
+                document.removeEventListener('click', closeSearchOnOutsideClick, true);
+            }
+        }
+        
+        function closeSearchOnOutsideClick(event) {
+            const wrapper = document.querySelector('.search-wrapper');
+            if (wrapper && !wrapper.contains(event.target)) {
+                const button = document.getElementById('searchIconButton');
+                const searchWrap = document.getElementById('accountSearchWrap');
+                if (button) button.setAttribute('aria-expanded', 'false');
+                if (searchWrap) searchWrap.classList.add('hidden');
+                document.removeEventListener('click', closeSearchOnOutsideClick, true);
+            }
+        }
+        
+        // Close search when pressing Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const searchWrap = document.getElementById('accountSearchWrap');
+                const button = document.getElementById('searchIconButton');
+                if (searchWrap && !searchWrap.classList.contains('hidden')) {
+                    if (button) button.setAttribute('aria-expanded', 'false');
+                    searchWrap.classList.add('hidden');
+                    document.removeEventListener('click', closeSearchOnOutsideClick, true);
+                }
+            }
+        });
+        
         function showMainApp() {
             var loadingEl = document.getElementById('authLoadingOverlay');
             if (loadingEl) loadingEl.classList.add('hidden');
@@ -7158,13 +7777,8 @@ ssh amcclu12@login.isaac.utk.edu
                 mainOverlay.style.display = 'flex';
             }
             
-            const userDisplayEl = document.getElementById('userDisplay');
-            if (userDisplayEl) {
-                const displayName = currentUser
-                    ? (currentUser.full_name || currentUser.user_metadata?.full_name || currentUser.email)
-                    : 'Demo';
-                userDisplayEl.textContent = displayName;
-            }
+            // Update user display with name (will be updated again after loadUserTier completes)
+            updateUserDisplay();
             
             // Remove demo banner when user is not in demo mode; repeat a few times in case UI adds it later
             if (userTier !== 'demo') {
@@ -9504,7 +10118,7 @@ Earlier:
                 font_body: document.getElementById('themeBodyFont').value
             };
             
-            applyThemeToCSS(theme);
+            applyThemeToCSS(theme, currentInstitution?.name || null);
             
             // Apply fonts
             const root = document.documentElement;
@@ -12680,7 +13294,19 @@ Earlier:
                         <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(eval.instructorName)}</td>
                         <td style="text-align: center; font-weight: 600; color: ${scoreColor};">${eval.overallScore === 'N/A' ? 'N/A' : `${eval.overallScore}%`}</td>
                         <td style="text-align: center;">
-                            <button type="button" onclick="viewEvaluationDetails('${evalId}')" class="btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.875rem;">View</button>
+                            <div class="eval-actions-dropdown" style="position: relative; display: inline-block;">
+                                <button type="button" class="btn-secondary eval-actions-btn" id="evalActionsBtn_${evalId}" onclick="toggleEvalActionsDropdown('${evalId}')" style="padding: 0.25rem 0.6rem; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    Actions <i data-lucide="chevron-down" style="width:0.75rem;height:0.75rem;"></i>
+                                </button>
+                                <div class="eval-actions-menu hidden" id="evalActionsMenu_${evalId}" style="position: absolute; top: 100%; right: 0; margin-top: 0.25rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--elevation-3); z-index: 1000; min-width: 150px; padding: 0.25rem 0;">
+                                    <button type="button" onclick="viewEvaluationDetails('${evalId}'); closeEvalActionsDropdown('${evalId}'); return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem;">
+                                        <i data-lucide="eye" style="width:1rem;height:1rem;"></i> View
+                                    </button>
+                                    <button type="button" onclick="openMoveEvalModal('${evalId}', '${eval.course_id || ''}', '${eval.student_id || ''}'); closeEvalActionsDropdown('${evalId}'); return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; border-top: 1px solid var(--border);">
+                                        <i data-lucide="move" style="width:1rem;height:1rem;"></i> Move
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -12692,6 +13318,14 @@ Earlier:
                     </div>
                 </div>
             `;
+            
+            // Initialize Lucide icons for action buttons in the table
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: tempDiv });
+            }
+            html = tempDiv.innerHTML;
             
             // Pagination controls
             const from = start + 1;
@@ -12916,13 +13550,30 @@ Earlier:
                         <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(eval.instructorName)}</td>
                         <td style="text-align: center; font-weight: 600; color: ${scoreColor};">${eval.overallScore === 'N/A' ? 'N/A' : `${eval.overallScore}%`}</td>
                         <td style="text-align: center;">
-                            <button type="button" onclick="viewEvaluationDetails('${evalId}')" class="btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.875rem;">View</button>
+                            <div class="eval-actions-dropdown" style="position: relative; display: inline-block;">
+                                <button type="button" class="btn-secondary eval-actions-btn" id="evalActionsBtn_${evalId}" onclick="toggleEvalActionsDropdown('${evalId}')" style="padding: 0.25rem 0.6rem; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    Actions <i data-lucide="chevron-down" style="width:0.75rem;height:0.75rem;"></i>
+                                </button>
+                                <div class="eval-actions-menu hidden" id="evalActionsMenu_${evalId}" style="position: absolute; top: 100%; right: 0; margin-top: 0.25rem; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--elevation-3); z-index: 1000; min-width: 150px; padding: 0.25rem 0;">
+                                    <button type="button" onclick="viewEvaluationDetails('${evalId}'); closeEvalActionsDropdown('${evalId}'); return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem;">
+                                        <i data-lucide="eye" style="width:1rem;height:1rem;"></i> View
+                                    </button>
+                                    <button type="button" onclick="openMoveEvalModal('${evalId}', '${eval.course_id || ''}', '${eval.student_id || ''}'); closeEvalActionsDropdown('${evalId}'); return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; border-top: 1px solid var(--border);">
+                                        <i data-lucide="move" style="width:1rem;height:1rem;"></i> Move
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 `;
             });
             
             tbody.innerHTML = html;
+            
+            // Initialize Lucide icons for action buttons
+            if (typeof lucide !== 'undefined' && lucide.createIcons && tbody) {
+                lucide.createIcons({ root: tbody });
+            }
             
             const totalCount = (analyticsData.evaluations || []).length;
             const isFiltered = evals.length !== totalCount;
@@ -13076,9 +13727,14 @@ Earlier:
                         </div>
                         ${detailsHTML}
                         <div style="margin-top:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
-                            <button type="button" onclick="openComparePicker('${evaluation.id}')" style="padding:0.75rem 1.25rem;background:var(--bg-alt);color:var(--primary);border:1px solid var(--primary);border-radius:0.5rem;cursor:pointer;font-weight:500;">
-                                <span class="icon-with-text"><i data-lucide="git-compare" style="width:1em;height:1em;"></i> Compare with another speech</span>
-                            </button>
+                            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                                <button type="button" onclick="openComparePicker('${evaluation.id}')" style="padding:0.75rem 1.25rem;background:var(--bg-alt);color:var(--primary);border:1px solid var(--primary);border-radius:0.5rem;cursor:pointer;font-weight:500;">
+                                    <span class="icon-with-text"><i data-lucide="git-compare" style="width:1em;height:1em;"></i> Compare with another speech</span>
+                                </button>
+                                <button type="button" onclick="closeEvaluationDetailsModal(); openMoveEvalModal('${evaluation.id}', '${evaluation.course_id || ''}', '${evaluation.student_id || ''}');" style="padding:0.75rem 1.25rem;background:var(--bg-alt);color:var(--primary);border:1px solid var(--primary);border-radius:0.5rem;cursor:pointer;font-weight:500;">
+                                    <span class="icon-with-text"><i data-lucide="move" style="width:1em;height:1em;"></i> Move Evaluation</span>
+                                </button>
+                            </div>
                             <button onclick="closeEvaluationDetailsModal()" style="padding:0.75rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:0.5rem;cursor:pointer;">
                                 Close
                             </button>
@@ -23721,23 +24377,70 @@ Return ONLY the JSON object, nothing else.`;
                     let sIdx = null;
                     
                     // Check step 2 selectors first
+                    let courseSupabaseId = null;
+                    let studentSupabaseId = null;
+                    
                     if (evalClassSelect?.value && evalClassSelect.value !== '' && evalClassSelect.value !== 'other') {
                         const classes = JSON.parse(getUserItem('classes') || '[]');
-                        const classIndex = classes.findIndex(c => 
-                            (c.id === evalClassSelect.value || c.name === evalClassSelect.value) ||
-                            (Array.isArray(classes) && classes[parseInt(evalClassSelect.value)])
-                        );
-                        if (classIndex !== -1) {
+                        const classValue = evalClassSelect.value;
+                        
+                        // Try to find class by Supabase ID, name, or index
+                        let classIndex = -1;
+                        let foundClass = null;
+                        
+                        // Check if it's a numeric index
+                        if (!isNaN(parseInt(classValue)) && parseInt(classValue) >= 0) {
+                            const idx = parseInt(classValue);
+                            if (idx < classes.length) {
+                                classIndex = idx;
+                                foundClass = classes[idx];
+                            }
+                        }
+                        
+                        // If not found, search by ID or name
+                        if (classIndex === -1) {
+                            classIndex = classes.findIndex(c => 
+                                c.id === classValue || 
+                                c.supabaseId === classValue ||
+                                c.name === classValue
+                            );
+                            if (classIndex !== -1) {
+                                foundClass = classes[classIndex];
+                            }
+                        }
+                        
+                        if (classIndex !== -1 && foundClass) {
                             cIdx = classIndex;
-                            if (evalStudentSelect?.value && evalStudentSelect.value !== '') {
-                                const selectedClass = classes[classIndex];
+                            courseSupabaseId = foundClass.supabaseId || foundClass.id;
+                            
+                            if (evalStudentSelect?.value && evalStudentSelect.value !== '' && evalStudentSelect.value !== 'none') {
+                                const studentValue = evalStudentSelect.value;
+                                const selectedClass = foundClass;
+                                
                                 if (selectedClass && selectedClass.roster) {
-                                    const studentIndex = selectedClass.roster.findIndex(s =>
-                                        (s.id === evalStudentSelect.value || s.studentId === evalStudentSelect.value) ||
-                                        (Array.isArray(selectedClass.roster) && selectedClass.roster[parseInt(evalStudentSelect.value)])
-                                    );
+                                    let studentIndex = -1;
+                                    
+                                    // Check if it's a numeric index
+                                    if (!isNaN(parseInt(studentValue)) && parseInt(studentValue) >= 0) {
+                                        const idx = parseInt(studentValue);
+                                        if (idx < selectedClass.roster.length) {
+                                            studentIndex = idx;
+                                        }
+                                    }
+                                    
+                                    // If not found, search by ID
+                                    if (studentIndex === -1) {
+                                        studentIndex = selectedClass.roster.findIndex(s =>
+                                            s.id === studentValue || 
+                                            s.supabaseId === studentValue ||
+                                            s.studentId === studentValue
+                                        );
+                                    }
+                                    
                                     if (studentIndex !== -1) {
                                         sIdx = studentIndex;
+                                        const foundStudent = selectedClass.roster[studentIndex];
+                                        studentSupabaseId = foundStudent.supabaseId || foundStudent.id;
                                     }
                                 }
                             }
@@ -23745,14 +24448,20 @@ Return ONLY the JSON object, nothing else.`;
                     }
                     
                     // If not set in step 2, try save modal
-                    if (!cIdx || sIdx === '') {
-                        cIdx = document.getElementById('saveClassSel')?.value;
-                        sIdx = document.getElementById('saveStudentSel')?.value;
-                        if (!cIdx || sIdx === '') {
+                    if (cIdx === null || cIdx === undefined || sIdx === null || sIdx === undefined) {
+                        const saveClassSel = document.getElementById('saveClassSel');
+                        const saveStudentSel = document.getElementById('saveStudentSel');
+                        
+                        if (saveClassSel?.value !== '' && saveClassSel?.value !== undefined && 
+                            saveStudentSel?.value !== '' && saveStudentSel?.value !== undefined) {
+                            cIdx = parseInt(saveClassSel.value);
+                            sIdx = parseInt(saveStudentSel.value);
+                        } else {
                             alert('Please select both class and student');
                             return;
                         }
                     }
+                    
                     if (!evaluationResults) {
                         alert('No evaluation to save');
                         return;
@@ -23760,8 +24469,60 @@ Return ONLY the JSON object, nothing else.`;
                     
                     // Get class and student info
                     var classes = JSON.parse(getUserItem('classes') || '[]');
+                    
+                    // Ensure cIdx and sIdx are valid numbers
+                    if (cIdx === null || cIdx === undefined || isNaN(cIdx) || cIdx < 0 || cIdx >= classes.length) {
+                        alert('Invalid class selection. Please try again.');
+                        return;
+                    }
+                    
+                    if (sIdx === null || sIdx === undefined || isNaN(sIdx) || sIdx < 0) {
+                        alert('Invalid student selection. Please try again.');
+                        return;
+                    }
+                    
                     var classData = classes[cIdx];
+                    if (!classData) {
+                        console.error('doSaveEval: Class data not found at index', cIdx);
+                        alert('Class not found. Please try again.');
+                        return;
+                    }
+                    
+                    if (!classData.roster || !Array.isArray(classData.roster)) {
+                        console.error('doSaveEval: Class has no roster array', { classData });
+                        alert('Class has no students. Please select a different class.');
+                        return;
+                    }
+                    
+                    if (sIdx >= classData.roster.length) {
+                        console.error('doSaveEval: Student index out of range', { sIdx, rosterLength: classData.roster.length });
+                        alert('Invalid student selection. Please try again.');
+                        return;
+                    }
+                    
                     var student = classData.roster[sIdx];
+                    if (!student) {
+                        console.error('doSaveEval: Student not found at index', sIdx);
+                        alert('Student not found. Please try again.');
+                        return;
+                    }
+                    
+                    console.log('doSaveEval: Saving evaluation', {
+                        classIndex: cIdx,
+                        studentIndex: sIdx,
+                        className: classData.name,
+                        studentName: (student.firstName || '') + ' ' + (student.lastName || ''),
+                        courseSupabaseId: courseSupabaseId || 'not set',
+                        studentSupabaseId: studentSupabaseId || 'not set'
+                    });
+                    
+                    // Use Supabase IDs if we found them, otherwise use the ones from classData/student
+                    if (!courseSupabaseId) {
+                        courseSupabaseId = classData.supabaseId || classData.id;
+                    }
+                    if (!studentSupabaseId) {
+                        studentSupabaseId = student.supabaseId || student.id;
+                    }
                     
                     if (!student.evaluations) {
                         student.evaluations = [];
@@ -23788,9 +24549,8 @@ Return ONLY the JSON object, nothing else.`;
                     if (supabaseClient && currentUser) {
                         const rubricId = document.getElementById('rubricSelect').value;
                         
-                        // Get Supabase IDs if they exist
-                        const courseSupabaseId = classData.supabaseId || classData.id;
-                        const studentSupabaseId = student.supabaseId || student.id;
+                        // Use the Supabase IDs we found earlier (or fallback to classData/student)
+                        // courseSupabaseId and studentSupabaseId are already set above
                         
                         // Get rubric's Supabase ID
                         const rubrics = await getAllRubrics();
@@ -23804,21 +24564,54 @@ Return ONLY the JSON object, nothing else.`;
                             user: currentUser.id
                         });
                         
-                        // Only save if all IDs are valid UUIDs
+                        // Only save if course ID is a valid UUID
                         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-                        const validIds = uuidRegex.test(courseSupabaseId) && 
-                                       uuidRegex.test(studentSupabaseId) && 
-                                       (!rubricSupabaseId || uuidRegex.test(rubricSupabaseId));
+                        const courseIdValid = uuidRegex.test(courseSupabaseId);
+                        const rubricIdValid = !rubricSupabaseId || uuidRegex.test(rubricSupabaseId);
                         
-                        if (validIds) {
+                        if (courseIdValid && rubricIdValid) {
                             try {
+                                // Get the course_students ID (not the students table ID)
+                                // The evaluations table expects student_id to be the course_students.id
+                                let courseStudentId = null;
+                                
+                                if (uuidRegex.test(studentSupabaseId)) {
+                                    // studentSupabaseId is a students table ID, we need course_students.id
+                                    const { data: courseStudent, error: csError } = await supabaseClient
+                                        .from('course_students')
+                                        .select('id')
+                                        .eq('course_id', courseSupabaseId)
+                                        .eq('student_id', studentSupabaseId)
+                                        .is('deleted_locally_at', null)
+                                        .single();
+                                    
+                                    if (csError) {
+                                        console.warn('Could not find course_students record:', csError);
+                                        // Try to continue anyway - maybe the student isn't in the course_students table yet
+                                    } else if (courseStudent) {
+                                        courseStudentId = courseStudent.id;
+                                    }
+                                } else {
+                                    // studentSupabaseId might already be a course_students ID, or it's not a UUID
+                                    // Try using it directly if it's a UUID
+                                    if (uuidRegex.test(studentSupabaseId)) {
+                                        courseStudentId = studentSupabaseId;
+                                    }
+                                }
+                                
                                 // Phase 3: consent check before saving to cloud (no consent = local only)
                                 const consent = await getStudentConsentForStorage(courseSupabaseId, studentSupabaseId);
                                 if (consent) {
+                                    if (!courseStudentId) {
+                                        console.warn('⚠️ No course_students ID found - evaluation may not save correctly to Supabase');
+                                        console.warn('The student may need to be enrolled in the course in Supabase first');
+                                        // Still try to save, but it will likely fail
+                                    }
+                                    
                                     const result = await saveEvaluationToSupabase(
                                         evaluationResults,
                                         courseSupabaseId,
-                                        studentSupabaseId,
+                                        courseStudentId || studentSupabaseId, // Use course_students ID if found, otherwise fallback
                                         rubricSupabaseId,
                                         selectedRubric,
                                         uploadedFile || null
@@ -23827,13 +24620,19 @@ Return ONLY the JSON object, nothing else.`;
                                         console.log('✓ Evaluation saved to Supabase with ID:', result.id);
                                     } else {
                                         console.warn('⚠️ Supabase save returned null - check console for errors');
+                                        // Don't show error to user if it saved locally - it's still useful
                                     }
                                 } else {
                                     savedLocallyOnly = true;
                                     console.log('✓ Evaluation not sent to cloud (student has not consented); stored in localStorage only.');
                                 }
                             } catch (error) {
-                                console.error('Error saving evaluation:', error);
+                                console.error('❌ Error saving evaluation to Supabase:', error);
+                                // Evaluation was already saved to localStorage, so this is not critical
+                                // But log it for debugging
+                                if (error.message) {
+                                    console.error('Error details:', error.message);
+                                }
                             }
                         } else {
                             console.warn('⚠️ Invalid UUIDs for Supabase save:', {
@@ -24011,82 +24810,331 @@ Return ONLY the JSON object, nothing else.`;
         let movingStudentId = null;
         let movingCourseId = null;
         
-        function openMoveEvalModal() {
-            // Only show if we're editing a saved evaluation
-            if (!editingEvaluationId) {
-                alert('This feature is only available when editing a saved evaluation.');
+        async function openMoveEvalModal(evalId, currentCourseId, currentStudentId) {
+            // Can be called from editing a saved evaluation or from a list view
+            const evaluationId = evalId || editingEvaluationId;
+            
+            if (!evaluationId) {
+                alert('No evaluation selected to move.');
                 return;
             }
             
-            movingEvaluationId = editingEvaluationId;
-            movingStudentId = editingStudentId;
+            movingEvaluationId = evaluationId;
+            movingStudentId = currentStudentId || editingStudentId;
+            movingCourseId = currentCourseId || editingCourseId;
+            
+            const moveModal = document.getElementById('moveEvalModal');
+            if (!moveModal) {
+                console.error('openMoveEvalModal: moveEvalModal element not found');
+                alert('Error: Move modal not found. Please refresh the page.');
+                return;
+            }
+            
+            const classSel = document.getElementById('moveClassSel');
+            if (!classSel) {
+                console.error('openMoveEvalModal: moveClassSel element not found');
+                alert('Error: Move modal elements not found. Please refresh the page.');
+                return;
+            }
+            
+            // Show loading state
+            classSel.innerHTML = '<option value="">Loading classes...</option>';
+            moveModal.style.display = 'flex';
             
             try {
-                var classes = JSON.parse(getUserItem('classes') || '[]');
-                var sel = document.getElementById('moveClassSel');
-                if (!sel) {
-                    console.error('openMoveEvalModal: moveClassSel element not found');
-                    alert('Error: Move modal elements not found. Please refresh the page.');
-                    return;
+                // Load courses from Supabase if available
+                if (supabaseClient && currentUser) {
+                    const { data: courses, error } = await supabaseClient
+                        .from('courses')
+                        .select('id, name, semester, year, institution_id')
+                        .order('year', { ascending: false })
+                        .order('semester', { ascending: false })
+                        .order('name', { ascending: true });
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    if (courses && courses.length > 0) {
+                        classSel.innerHTML = '<option value="">-- Select Class --</option>';
+                        courses.forEach(course => {
+                            const opt = document.createElement('option');
+                            opt.value = course.id;
+                            opt.textContent = `${course.name} - ${course.semester} ${course.year}`;
+                            opt.dataset.courseId = course.id;
+                            classSel.appendChild(opt);
+                        });
+                        
+                        // Pre-select current course if provided
+                        if (movingCourseId) {
+                            classSel.value = movingCourseId;
+                            await loadMoveStudents();
+                        }
+                    } else {
+                        classSel.innerHTML = '<option value="">No classes available</option>';
+                    }
+                } else {
+                    // Fallback to localStorage
+                    var classes = JSON.parse(getUserItem('classes') || '[]');
+                    classSel.innerHTML = '<option value="">-- Select Class --</option>';
+                    for (var i = 0; i < classes.length; i++) {
+                        var opt = document.createElement('option');
+                        opt.value = i;
+                        opt.textContent = classes[i].name + ' - ' + classes[i].semester + ' ' + classes[i].year;
+                        opt.dataset.courseId = classes[i].supabaseId || classes[i].id;
+                        classSel.appendChild(opt);
+                    }
                 }
-                sel.innerHTML = '<option value="">-- Select Class --</option>';
-                for (var i = 0; i < classes.length; i++) {
-                    var opt = document.createElement('option');
-                    opt.value = i;
-                    opt.textContent = classes[i].name + ' - ' + classes[i].semester + ' ' + classes[i].year;
-                    sel.appendChild(opt);
-                }
-                var moveModal = document.getElementById('moveEvalModal');
-                if (!moveModal) {
-                    console.error('openMoveEvalModal: moveEvalModal element not found');
-                    alert('Error: Move modal not found. Please refresh the page.');
-                    return;
-                }
-                moveModal.style.display = 'flex';
             } catch(e) {
                 console.error('openMoveEvalModal error:', e);
-                alert('Error opening move modal: ' + (e.message || String(e)));
+                alert('Error loading classes: ' + (e.message || String(e)));
+                classSel.innerHTML = '<option value="">Error loading classes</option>';
             }
         }
         
         function closeMoveEvalModal() {
-            var moveModal = document.getElementById('moveEvalModal');
+            const moveModal = document.getElementById('moveEvalModal');
             if (moveModal) {
                 moveModal.style.display = 'none';
             }
             movingEvaluationId = null;
             movingStudentId = null;
             movingCourseId = null;
+            
+            // Clear selects
+            const classSel = document.getElementById('moveClassSel');
+            const studentSel = document.getElementById('moveStudentSel');
+            if (classSel) classSel.value = '';
+            if (studentSel) studentSel.innerHTML = '<option value="">-- Select Student --</option>';
         }
         
-        function loadMoveStudents() {
+        // Helper function to open move modal from anywhere (e.g., from evaluation lists)
+        // Usage: openMoveEvalModalFromList(evaluationId, currentCourseId, currentStudentId)
+        function openMoveEvalModalFromList(evalId, courseId, studentId) {
+            if (!evalId) {
+                alert('No evaluation ID provided.');
+                return;
+            }
+            openMoveEvalModal(evalId, courseId, studentId);
+        }
+        
+        // Add move buttons to evaluation cards in student evaluation lists
+        // This function can be called after evaluation cards are rendered
+        function addMoveButtonsToEvaluationCards() {
+            // Find all evaluation cards (they should have data attributes with evaluation IDs)
+            const evalCards = document.querySelectorAll('[data-evaluation-id], .eval-card, [class*="eval"]');
+            
+            evalCards.forEach(card => {
+                // Skip if move button already exists
+                if (card.querySelector('.move-eval-btn')) return;
+                
+                // Try to get evaluation ID from data attribute or card structure
+                const evalId = card.getAttribute('data-evaluation-id') || 
+                              card.getAttribute('data-eval-id') ||
+                              card.getAttribute('id')?.replace('eval-', '');
+                
+                if (!evalId) return;
+                
+                // Try to get course and student IDs from data attributes or parent context
+                const courseId = card.getAttribute('data-course-id') || 
+                                card.closest('[data-course-id]')?.getAttribute('data-course-id') || '';
+                const studentId = card.getAttribute('data-student-id') || 
+                                 card.closest('[data-student-id]')?.getAttribute('data-student-id') || '';
+                
+                // Find where to add the button (look for existing action buttons or icons area)
+                const actionArea = card.querySelector('.eval-actions, .card-actions, [class*="action"]') ||
+                                 card.querySelector('.eval-icons, [class*="icon"]') ||
+                                 card.querySelector('div:last-child');
+                
+                if (actionArea) {
+                    const moveBtn = document.createElement('button');
+                    moveBtn.className = 'move-eval-btn btn-secondary';
+                    moveBtn.style.cssText = 'padding: 0.25rem 0.5rem; font-size: 0.875rem; margin-left: 0.5rem;';
+                    moveBtn.setAttribute('title', 'Move evaluation to different student');
+                    moveBtn.setAttribute('onclick', `openMoveEvalModal('${evalId}', '${courseId}', '${studentId}'); return false;`);
+                    moveBtn.innerHTML = '<i data-lucide="move" style="width:0.875rem;height:0.875rem;"></i>';
+                    
+                    actionArea.appendChild(moveBtn);
+                    
+                    // Initialize icon
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: moveBtn });
+                    }
+                }
+            });
+        }
+        
+        // Call this function after evaluations are loaded/rendered
+        // You can also call it manually: addMoveButtonsToEvaluationCards();
+        
+        // Auto-add move buttons to evaluation cards when they appear in the DOM
+        // This uses a MutationObserver to watch for new evaluation cards
+        if (typeof MutationObserver !== 'undefined') {
+            const evalCardObserver = new MutationObserver((mutations) => {
+                let shouldCheck = false;
+                mutations.forEach((mutation) => {
+                    if (mutation.addedNodes.length > 0) {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.classList && (
+                                    node.classList.contains('eval-card') ||
+                                    node.querySelector('.eval-card') ||
+                                    node.getAttribute('data-evaluation-id') ||
+                                    node.getAttribute('data-eval-id')
+                                )) {
+                                    shouldCheck = true;
+                                }
+                            }
+                        });
+                    }
+                });
+                if (shouldCheck) {
+                    setTimeout(addMoveButtonsToEvaluationCards, 100);
+                }
+            });
+            
+            // Start observing when DOM is ready
+            if (document.body) {
+                evalCardObserver.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            } else {
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (document.body) {
+                        evalCardObserver.observe(document.body, {
+                            childList: true,
+                            subtree: true
+                        });
+                    }
+                });
+            }
+        }
+        
+        async function loadMoveStudents() {
             try {
-                var classSel = document.getElementById('moveClassSel');
+                const classSel = document.getElementById('moveClassSel');
                 if (!classSel) {
                     console.error('loadMoveStudents: moveClassSel element not found');
                     return;
                 }
-                var idx = classSel.value;
-                var sel = document.getElementById('moveStudentSel');
-                if (!sel) {
+                
+                const courseId = classSel.value;
+                const studentSel = document.getElementById('moveStudentSel');
+                if (!studentSel) {
                     console.error('loadMoveStudents: moveStudentSel element not found');
                     return;
                 }
-                sel.innerHTML = '<option value="">-- Select Student --</option>';
-                if (!idx) return;
-                var classes = JSON.parse(getUserItem('classes') || '[]');
-                var classData = classes[idx];
-                if (classData && classData.roster) {
-                    for (var i = 0; i < classData.roster.length; i++) {
-                        var student = classData.roster[i];
-                        var opt = document.createElement('option');
-                        opt.value = i;
-                        opt.textContent = (student.firstName || '') + ' ' + (student.lastName || '');
-                        sel.appendChild(opt);
+                
+                studentSel.innerHTML = '<option value="">Loading students...</option>';
+                
+                if (!courseId) {
+                    studentSel.innerHTML = '<option value="">-- Select Student --</option>';
+                    return;
+                }
+                
+                // Load students from Supabase if available
+                if (supabaseClient && currentUser && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId)) {
+                    try {
+                        const { data: courseStudents, error } = await supabaseClient
+                            .from('course_students')
+                            .select(`
+                                id,
+                                student_id,
+                                students!inner(id, first_name, last_name)
+                            `)
+                            .eq('course_id', courseId)
+                            .is('deleted_locally_at', null)
+                            .order('first_name', { foreignTable: 'students', ascending: true });
+                        
+                        if (error) {
+                            throw error;
+                        }
+                        
+                        if (courseStudents && courseStudents.length > 0) {
+                            studentSel.innerHTML = '<option value="">-- Select Student --</option>';
+                            
+                            // Sort students alphabetically
+                            const sortedStudents = courseStudents
+                                .map(cs => ({
+                                    id: cs.student_id || cs.students?.id,
+                                    firstName: cs.students?.first_name || '',
+                                    lastName: cs.students?.last_name || ''
+                                }))
+                                .sort((a, b) => {
+                                    const nameA = (a.firstName + ' ' + a.lastName).trim().toLowerCase();
+                                    const nameB = (b.firstName + ' ' + b.lastName).trim().toLowerCase();
+                                    return nameA.localeCompare(nameB);
+                                });
+                            
+                            sortedStudents.forEach(student => {
+                                const opt = document.createElement('option');
+                                opt.value = student.id;
+                                opt.textContent = `${student.firstName} ${student.lastName}`.trim() || 'Unnamed Student';
+                                studentSel.appendChild(opt);
+                            });
+                        } else {
+                            studentSel.innerHTML = '<option value="">No students in this class</option>';
+                        }
+                    } catch (error) {
+                        console.error('Error loading students from Supabase:', error);
+                        // Fallback to localStorage
+                        loadMoveStudentsFromLocalStorage(courseId);
                     }
+                } else {
+                    // Fallback to localStorage
+                    loadMoveStudentsFromLocalStorage(courseId);
                 }
             } catch(e) {
                 console.error('loadMoveStudents error:', e);
+                const studentSel = document.getElementById('moveStudentSel');
+                if (studentSel) {
+                    studentSel.innerHTML = '<option value="">Error loading students</option>';
+                }
+            }
+        }
+        
+        function loadMoveStudentsFromLocalStorage(courseIdOrIndex) {
+            try {
+                const studentSel = document.getElementById('moveStudentSel');
+                if (!studentSel) return;
+                
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                let classData = null;
+                
+                // Check if courseIdOrIndex is a UUID (Supabase ID) or an index
+                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseIdOrIndex);
+                
+                if (isUUID) {
+                    // Find by Supabase ID
+                    classData = classes.find(c => (c.supabaseId || c.id) === courseIdOrIndex);
+                } else {
+                    // Use as index
+                    const idx = parseInt(courseIdOrIndex);
+                    if (!isNaN(idx) && idx >= 0 && idx < classes.length) {
+                        classData = classes[idx];
+                    }
+                }
+                
+                studentSel.innerHTML = '<option value="">-- Select Student --</option>';
+                
+                if (classData && classData.roster) {
+                    // Sort students alphabetically
+                    const sortedRoster = [...classData.roster].sort((a, b) => {
+                        const nameA = ((a.firstName || '') + ' ' + (a.lastName || '')).trim().toLowerCase();
+                        const nameB = ((b.firstName || '') + ' ' + (b.lastName || '')).trim().toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    });
+                    
+                    sortedRoster.forEach((student, i) => {
+                        const opt = document.createElement('option');
+                        opt.value = student.supabaseId || student.id || i;
+                        opt.textContent = `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Unnamed Student';
+                        studentSel.appendChild(opt);
+                    });
+                }
+            } catch(e) {
+                console.error('loadMoveStudentsFromLocalStorage error:', e);
             }
         }
         
@@ -24097,52 +25145,106 @@ Return ONLY the JSON object, nothing else.`;
                     return;
                 }
                 
-                var cIdx = document.getElementById('moveClassSel').value;
-                var sIdx = document.getElementById('moveStudentSel').value;
-                if (!cIdx || sIdx === '') {
+                const courseId = document.getElementById('moveClassSel').value;
+                const studentId = document.getElementById('moveStudentSel').value;
+                
+                if (!courseId || !studentId) {
                     alert('Please select both class and student');
                     return;
                 }
                 
-                var classes = JSON.parse(getUserItem('classes') || '[]');
-                var classData = classes[cIdx];
-                var student = classData.roster[sIdx];
+                // Get course and student names for confirmation message
+                let courseName = 'the selected class';
+                let studentName = 'the selected student';
                 
-                // Get Supabase IDs
-                const courseSupabaseId = classData.supabaseId || classData.id;
-                const studentSupabaseId = student.supabaseId || student.id;
-                
-                // Update in Supabase if available
-                if (supabaseClient && currentUser && movingEvaluationId) {
-                    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-                    if (uuidRegex.test(courseSupabaseId) && uuidRegex.test(studentSupabaseId)) {
-                        try {
-                            const { error } = await supabaseClient
-                                .from('evaluations')
-                                .update({
-                                    course_id: courseSupabaseId,
-                                    student_id: studentSupabaseId,
-                                    updated_at: new Date().toISOString()
-                                })
-                                .eq('id', movingEvaluationId);
-                            
-                            if (error) {
-                                throw error;
+                // Try to get names from Supabase
+                if (supabaseClient && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId)) {
+                    try {
+                        const { data: course } = await supabaseClient
+                            .from('courses')
+                            .select('name')
+                            .eq('id', courseId)
+                            .single();
+                        if (course) courseName = course.name;
+                        
+                        const { data: student } = await supabaseClient
+                            .from('students')
+                            .select('first_name, last_name')
+                            .eq('id', studentId)
+                            .single();
+                        if (student) {
+                            studentName = `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Unnamed Student';
+                        }
+                    } catch (e) {
+                        console.warn('Could not fetch course/student names:', e);
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const classes = JSON.parse(getUserItem('classes') || '[]');
+                    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId);
+                    let classData = null;
+                    
+                    if (isUUID) {
+                        classData = classes.find(c => (c.supabaseId || c.id) === courseId);
+                    } else {
+                        const idx = parseInt(courseId);
+                        if (!isNaN(idx) && idx >= 0 && idx < classes.length) {
+                            classData = classes[idx];
+                        }
+                    }
+                    
+                    if (classData) {
+                        courseName = classData.name;
+                        if (classData.roster) {
+                            const student = classData.roster.find(s => 
+                                (s.supabaseId || s.id) === studentId || 
+                                s.id === studentId
+                            );
+                            if (student) {
+                                studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Unnamed Student';
                             }
-                            
-                            console.log('✓ Evaluation moved in Supabase');
-                        } catch (error) {
-                            console.error('Error moving evaluation in Supabase:', error);
-                            alert('Error moving evaluation in database: ' + error.message);
-                            return;
                         }
                     }
                 }
                 
-                // Update in localStorage
+                const courseSupabaseId = courseId;
+                const studentSupabaseId = studentId;
+                
+                // Update in Supabase
+                const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (supabaseClient && currentUser && movingEvaluationId && 
+                    uuidRegex.test(courseSupabaseId) && uuidRegex.test(studentSupabaseId)) {
+                    try {
+                        const { error } = await supabaseClient
+                            .from('evaluations')
+                            .update({
+                                course_id: courseSupabaseId,
+                                student_id: studentSupabaseId,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', movingEvaluationId);
+                        
+                        if (error) {
+                            throw error;
+                        }
+                        
+                        console.log('✓ Evaluation moved in Supabase');
+                    } catch (error) {
+                        console.error('Error moving evaluation in Supabase:', error);
+                        alert('Error moving evaluation in database: ' + error.message);
+                        return;
+                    }
+                } else if (!uuidRegex.test(courseSupabaseId) || !uuidRegex.test(studentSupabaseId)) {
+                    alert('Invalid course or student ID. Please ensure you are using a valid class and student.');
+                    return;
+                }
+                
+                // Update in localStorage (for backward compatibility)
                 try {
+                    const oldClasses = JSON.parse(getUserItem('classes') || '[]');
+                    let evalRec = null;
+                    
                     // Find and remove from old location
-                    var oldClasses = JSON.parse(getUserItem('classes') || '[]');
                     for (var i = 0; i < oldClasses.length; i++) {
                         var oldClass = oldClasses[i];
                         if (oldClass.roster) {
@@ -24153,38 +25255,69 @@ Return ONLY the JSON object, nothing else.`;
                                         return e.id === movingEvaluationId || e.supabaseId === movingEvaluationId;
                                     });
                                     if (evalIndex !== -1) {
-                                        var evalRec = oldStudent.evaluations[evalIndex];
+                                        evalRec = oldStudent.evaluations[evalIndex];
                                         oldStudent.evaluations.splice(evalIndex, 1);
-                                        
-                                        // Add to new location
-                                        if (!student.evaluations) {
-                                            student.evaluations = [];
-                                        }
-                                        student.evaluations.push(evalRec);
-                                        classes[cIdx].roster[sIdx] = student;
-                                        setUserItem('classes', JSON.stringify(classes));
-                                        console.log('✓ Evaluation moved in localStorage');
                                         break;
                                     }
                                 }
                             }
+                            if (evalRec) break;
+                        }
+                    }
+                    
+                    // Add to new location if found
+                    if (evalRec) {
+                        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseSupabaseId);
+                        let targetClass = null;
+                        
+                        if (isUUID) {
+                            targetClass = oldClasses.find(c => (c.supabaseId || c.id) === courseSupabaseId);
+                        } else {
+                            const idx = parseInt(courseSupabaseId);
+                            if (!isNaN(idx) && idx >= 0 && idx < oldClasses.length) {
+                                targetClass = oldClasses[idx];
+                            }
+                        }
+                        
+                        if (targetClass && targetClass.roster) {
+                            const targetStudent = targetClass.roster.find(s => 
+                                (s.supabaseId || s.id) === studentSupabaseId
+                            );
+                            if (targetStudent) {
+                                if (!targetStudent.evaluations) {
+                                    targetStudent.evaluations = [];
+                                }
+                                targetStudent.evaluations.push(evalRec);
+                                setUserItem('classes', JSON.stringify(oldClasses));
+                                console.log('✓ Evaluation moved in localStorage');
+                            }
                         }
                     }
                 } catch (e) {
-                    console.error('Error moving evaluation in localStorage:', e);
+                    console.warn('Could not update localStorage (this is okay if using Supabase):', e);
                 }
                 
-                if (typeof showAnalyticsToast === 'function') {
-                    showAnalyticsToast('Evaluation moved to ' + student.firstName + ' ' + student.lastName + ' in ' + classData.name + '.', 4000);
+                // Show success message
+                if (typeof showNotification === 'function') {
+                    showNotification(`Evaluation moved to ${studentName} in ${courseName}.`, 'success');
+                } else if (typeof showAnalyticsToast === 'function') {
+                    showAnalyticsToast(`Evaluation moved to ${studentName} in ${courseName}.`, 4000);
                 } else {
-                    alert('Success. Evaluation moved to ' + student.firstName + ' ' + student.lastName + ' in ' + classData.name + '.');
+                    alert(`Success. Evaluation moved to ${studentName} in ${courseName}.`);
                 }
                 
                 closeMoveEvalModal();
                 
-                // Refresh the view if we're viewing a class
-                if (currentClassId) {
-                    viewClass(currentClassId);
+                // Refresh the current view
+                if (typeof window.location !== 'undefined') {
+                    // Reload the page to refresh all views
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else if (currentClassId) {
+                    if (typeof viewClass === 'function') {
+                        viewClass(currentClassId);
+                    }
                 }
             } catch(e) {
                 console.error('Error moving evaluation:', e);

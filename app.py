@@ -178,6 +178,10 @@ async def log_llm_export_requests(request, call_next):
                 file_part = form.get("file")
                 rubric_part = form.get("rubric") if path == "/qwen-api/evaluate_video" else None
                 if path == "/qwen-api/evaluate_video":
+                    import time
+                    start_time = time.time()
+                    evaluation_start = time.time()
+                    
                     if not file_part or not hasattr(file_part, "read"):
                         return JSONResponse(status_code=400, content={"detail": "Missing or invalid file"})
                     if rubric_part is None:
@@ -195,22 +199,43 @@ async def log_llm_export_requests(request, call_next):
                     body = await file_part.read()
                     files = {"file": (getattr(file_part, "filename", None) or "video", body, getattr(file_part, "content_type", None) or "application/octet-stream")}
                     data = {"rubric": rubric_str}
+                    
+                    # Log evaluation start for cost tracking
+                    file_size_mb = len(body) / (1024 * 1024)
+                    print(f"[COST_TRACKING] Evaluation started - File size: {file_size_mb:.2f} MB, Timestamp: {time.time()}")
+                    
                     async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
                         r = await client.post(f"{base}/evaluate_video", files=files, data=data)
+                    
+                    # Calculate and log cost metrics
+                    elapsed_time = time.time() - start_time
+                    # T4 GPU cost: ~$0.000222/second
+                    estimated_cost = elapsed_time * 0.000222
+                    
+                    print(f"[COST_TRACKING] Evaluation completed - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
+                    
                     if 300 <= r.status_code < 400:
                         return JSONResponse(status_code=502, content={"detail": "Qwen service returned redirect (3xx). Check QWEN_API_URL—use https, no trailing slash. Ensure the Qwen tunnel/URL is correct."})
                     return Response(content=r.content, status_code=r.status_code, media_type="application/json")
                 if path == "/qwen-api/analyze_video" and file_part and hasattr(file_part, "read"):
+                    start_time = time.time()
                     body = await file_part.read()
                     files = {"file": (getattr(file_part, "filename", None) or "video", body, getattr(file_part, "content_type", None) or "application/octet-stream")}
                     async with httpx.AsyncClient(timeout=120.0) as client:
                         r = await client.post(f"{base}/analyze_video", files=files)
+                    elapsed_time = time.time() - start_time
+                    estimated_cost = elapsed_time * 0.000222
+                    print(f"[COST_TRACKING] Video analysis - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
                     return Response(content=r.content, status_code=r.status_code, media_type="application/json")
                 if path == "/qwen-api/extract_rubric" and file_part and hasattr(file_part, "read"):
+                    start_time = time.time()
                     body = await file_part.read()
                     files = {"file": (getattr(file_part, "filename", None) or "rubric", body, getattr(file_part, "content_type", None) or "application/octet-stream")}
                     async with httpx.AsyncClient(timeout=300.0) as client:
                         r = await client.post(f"{base}/extract_rubric", files=files)
+                    elapsed_time = time.time() - start_time
+                    estimated_cost = elapsed_time * 0.000222
+                    print(f"[COST_TRACKING] Rubric extraction - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
                     return Response(content=r.content, status_code=r.status_code, media_type="application/json")
             except Exception as e:
                 return JSONResponse(status_code=503, content={"detail": f"Qwen proxy error: {e!s}"}, media_type="application/json")

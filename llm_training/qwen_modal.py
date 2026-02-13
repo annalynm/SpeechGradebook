@@ -51,9 +51,10 @@ app = modal.App("qwen-speechgradebook", image=image)
 
 
 @app.cls(
-    # Request A100-80GB explicitly (Modal may assign 40GB by default which causes OOM)
-    # If Modal doesn't support explicit memory size, it will use the largest available A100
-    gpu="A100",  # Try to get 80GB variant; if unavailable, memory cleanup below helps with 40GB
+    # Using T4 GPU for cost efficiency (~$0.01-0.03 per evaluation vs ~$0.60 with A100)
+    # T4 has 16GB VRAM; 4-bit quantization (load_in_4bit=True) helps fit the model
+    # If you encounter OOM errors with large videos, consider switching back to A100
+    gpu="T4",  # Cost-effective option: ~$0.80/hour vs ~$4-5/hour for A100
     container_idle_timeout=300,
     timeout=600,
     allow_concurrent_inputs=1,

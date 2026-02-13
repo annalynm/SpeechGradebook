@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeechGradebook</title>
+    <link rel="icon" id="faviconLink" href="assets/logo-light-bg.png" type="image/png">
+    
+    <!-- Fonts (Bunny Fonts - privacy-friendly, less blocked than Google Fonts) -->
+    <link href="https://fonts.bunny.net/css?family=Montserrat:400,500,600,700|Source+Sans+3:400,600,700|Roboto:400,500,700|Open+Sans:400,600,700|Crimson+Pro:400,600,700|Work+Sans:400,600,700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Config: served dynamically by Python app when env vars set; fallback to static config.js -->
+    <script src="config.js"></script>
+    <!-- Lucide Icons (replaces emojis in UI) -->
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.js"></script>
+    
+    <style>
+        /* SpeechGradebook theme (default) - dark blue. Custom themes (e.g. University of Tennessee) override via JS from institution_themes. */
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #142940;
+            --primary-light: #2d4a6f;
+            --secondary: #c8a882;
+            --accent: #d4af37;
+            
+            /* Apple HIG: Text colors with WCAG AA contrast (4.5:1 on white) */
+            --text: #1a1a1a;              /* High contrast for body text (WCAG AAA: 16.6:1) */
+            --text-secondary: #4a4a4a;     /* Secondary text (WCAG AA: 7.1:1) */
+            --text-light: #6b6b6b;        /* Light text (WCAG AA: 4.6:1) - minimum for body */
+            --text-disabled: #9a9a9a;     /* Disabled text (WCAG AA: 2.8:1 - only for disabled states) */
+            
+            /* Apple HIG: Background colors */
+            --bg: #fafbfc;
+            --bg-alt: #f1f4f7;
+            --bg-hover: #e8ecf0;
+            --card: #ffffff;
+            --border: #d1d5db;
+            --border-light: #e5e7eb;
+            
+            /* Apple HIG: Semantic colors with proper contrast */
+            --success: #059669;           /* Green - WCAG AA on white (3.2:1) - use with white text or darker shade */
+            --success-bg: #d1fae5;       /* Light green background */
+            --success-text: #065f46;     /* Dark green text (WCAG AA: 7.1:1) */
+            --success-border: #10b981;    /* Success border */
+            
+            --warning: #d97706;           /* Orange - WCAG AA on white (3.0:1) */
+            --warning-bg: #fef3c7;        /* Light orange background */
+            --warning-text: #92400e;      /* Dark orange text (WCAG AA: 7.4:1) */
+            --warning-border: #f59e0b;    /* Warning border */
+            
+            --error: #b91c1c;             /* Red - WCAG AA on white (4.5:1) */
+            --error-bg: #fee2e2;          /* Light red background */
+            --error-text: #991b1b;        /* Dark red text (WCAG AA: 7.0:1) */
+            --error-border: #dc2626;      /* Error border */
+            
+            --info: #0284c7;               /* Blue - WCAG AA on white (3.2:1) */
+            --info-bg: #dbeafe;           /* Light blue background */
+            --info-text: #0c4a6e;         /* Dark blue text (WCAG AA: 7.8:1) */
+            --info-border: #3b82f6;       /* Info border */
+            
+            /* Apple HIG: Interactive states with proper contrast */
+            --link: #2563eb;              /* Link color (WCAG AA: 4.6:1 on white) */
+            --link-hover: #1d4ed8;        /* Link hover (WCAG AA: 5.8:1) */
+            --link-visited: #7c3aed;       /* Visited link (WCAG AA: 4.7:1) */
+            
+            /* Apple HIG: Focus indicators */
+            --focus-ring: #2563eb;        /* Focus ring color */
+            --focus-ring-offset: 2px;     /* Focus ring offset */
+            --heading-font: 'Roboto', sans-serif;
+            --body-font: 'Roboto', sans-serif;
+            --heading-weight: 700;
+            --body-weight: 400;
+            /* Typography hierarchy */
+            --text-title-size: 1.5rem;
+            --text-title-weight: 700;
+            --text-headline-size: 1.25rem;
+            --text-headline-weight: 600;
+            --text-body-size: 1rem;
+            --text-caption-size: 0.875rem;
+            
+            /* Apple HIG: Spacing System (8px base unit) */
+            --space-xs: 0.25rem;   /* 4px */
+            --space-sm: 0.5rem;     /* 8px */
+            --space-md: 1rem;       /* 16px */
+            --space-lg: 1.5rem;     /* 24px */
+            --space-xl: 2rem;       /* 32px */
+            --space-2xl: 3rem;      /* 48px */
+            --space-3xl: 4rem;      /* 64px */
+            
+            /* Apple HIG: Elevation System (for depth) */
+            --elevation-0: none;
+            --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --elevation-2: 0 3px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --elevation-3: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            --elevation-4: 0 15px 30px rgba(0, 0, 0, 0.12), 0 5px 10px rgba(0, 0, 0, 0.08);
+            
+            /* Apple HIG: Motion (respects prefers-reduced-motion) */
+            --motion-fast: 0.15s;
+            --motion-normal: 0.25s;
+            --motion-slow: 0.35s;
+            --motion-ease: cubic-bezier(0.4, 0.0, 0.2, 1);
+            --motion-ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+            --motion-ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+            
+            /* Apple HIG: Border Radius */
+            --radius-sm: 0.375rem;  /* 6px */
+            --radius-md: 0.5rem;     /* 8px */
+            --radius-lg: 0.75rem;    /* 12px */
+            --radius-xl: 1rem;       /* 16px */
+            --radius-full: 9999px;
+        }
+        
+        /* Apple HIG: Respect prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Targeted approach: Only force normal weight on text content elements */
+        /* This prevents custom fonts from appearing bold while preserving button styles */
+        p, span, a:not(.button):not(.btn):not(.nav-link),
+        li, td, label:not([for]), 
+        .class-card, .student-card, .eval-card,
+        .class-meta, .class-stats, .stat-label,
+        textarea, input[type="text"], input[type="email"], input[type="password"], select {
+            font-weight: 400 !important;
+            font-style: normal !important;
+        }
+        
+        /* Explicitly allow bold for semantic elements */
+        h1, h2, h3, h4, h5, h6,
+        strong, b, .font-bold,
+        th {
+            font-weight: 700 !important;
+        }
+        
+        /* Explicitly allow italic for semantic elements */
+        em, i, .font-italic {
+            font-style: italic !important;
+        }
+        
+        /* Preserve button and UI element weights (semi-bold for clarity) */
+        button, .btn, .button,
+        input[type="button"], input[type="submit"],
+        .nav-link,
+        .card-header,
+        .step-label.active {
+            font-weight: 600 !important;
+        }
+        
+        body {
+            font-family: var(--body-font);
+            font-weight: 400; /* Always normal weight */
+            font-style: normal; /* Always normal style */
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--heading-font);
+            font-weight: 700; /* Always bold for headings */
+            font-style: normal; /* Always normal style */
+            color: var(--primary);
+        }
+        
+        /* Typography hierarchy (Apple HIG–aligned) — single source of truth */
+        .text-title { font-size: var(--text-title-size); font-weight: var(--text-title-weight); line-height: 1.3; color: var(--text); }
+        .text-headline { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); line-height: 1.35; color: var(--text); }
+        .text-body { font-size: var(--text-body-size); font-weight: 400; line-height: 1.6; color: var(--text); }
+        .text-body-secondary { font-size: 0.9375rem; font-weight: 400; color: var(--text-secondary); line-height: 1.5; }
+        .text-caption { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; }
+        /* Apply hierarchy to components */
+        .card-header, .dashboard-shell-title, .modal-box h3, .class-header {
+            font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); line-height: 1.35; font-family: var(--heading-font);
+        }
+        .card-header { 
+            color: var(--primary); 
+            margin-bottom: var(--space-lg); 
+            border-bottom: 2px solid var(--border); 
+            padding-bottom: var(--space-md); 
+        }
+        .modal-box h3 { margin: 0 0 0.75rem 0; color: var(--primary); }
+        .class-header { color: var(--primary); margin-bottom: var(--space-sm); }
+        .dashboard-shell-title { margin-bottom: 0.25rem; color: var(--text); }
+        .dashboard-shell-subtitle, .modal-box p, .empty-state .empty-state-desc, .kpi-card .kpi-title, .chart-card .chart-subtitle, .chart-card .chart-description {
+            font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4;
+        }
+        .dashboard-shell-subtitle { margin-bottom: var(--space-lg); }
+        .modal-box p { margin: 0 0 var(--space-md) 0; color: var(--text-light); line-height: 1.5; }
+        .empty-state .empty-state-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); margin-bottom: 0.35rem; color: var(--text); line-height: 1.35; }
+        .stat-value { font-size: var(--text-title-size); font-weight: var(--text-title-weight); color: var(--primary); }
+        .stat-label, .kpi-card .kpi-subtext, .kpi-card .kpi-footer, .chart-card .chart-footer { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; }
+        .class-meta { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.5; margin-bottom: var(--space-md); }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+        
+        /* Header - Apple HIG: Clear hierarchy, proper elevation */
+        header {
+            font-family: var(--body-font);
+            background: var(--primary-dark);
+            color: white;
+            padding: var(--space-lg) 0;
+            box-shadow: var(--elevation-2);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: var(--primary);
+            flex-shrink: 0; /* Prevent compression */
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
+        }
+        /* Header logo circle: always pure white on account pages (no yellow/theme tint) */
+        header .logo,
+        header #appLogo {
+            position: relative;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+        }
+        header #appLogo img {
+            position: relative;
+            z-index: 0;
+        }
+        
+        .app-title h1 {
+            font-family: var(--heading-font);
+            font-weight: 700;
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Navigation - Apple HIG: Clean, spacious design with better hierarchy */
+        nav {
+            font-family: var(--body-font);
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            transition: all var(--motion-normal) var(--motion-ease);
+            min-height: 2.75rem;
+            display: inline-flex;
+            align-items: center;
+            box-sizing: border-box;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .nav-link:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-1px);
+        }
+        
+        .nav-link.active {
+            background: rgba(255,255,255,0.18);
+            font-weight: 600;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: white;
+            border-radius: var(--radius-full);
+        }
+        
+        /* Reduce icon size in nav for cleaner look */
+        .nav-link .icon-with-text i {
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        .nav-link .icon-with-text {
+            gap: var(--space-sm);
+        }
+        
+        /* Main Content - Apple HIG: Generous spacing */
+        main {
+            font-family: var(--body-font);
+            padding: var(--space-xl) 0;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Cards - Apple HIG: Proper spacing and elevation */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--elevation-1);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .card-header {
+            font-family: var(--heading-font);
+            font-size: var(--text-headline-size);
+            font-weight: var(--text-headline-weight);
+            line-height: 1.35;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+        .card-header.text-title { font-size: 1.5rem; font-weight: 700; line-height: 1.3; }
+        
+        /* Analytics tabs: affordance + responsive */
+        .analytics-tablist {
+            flex-wrap: nowrap;
+            min-width: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .analytics-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--text-light);
+            font-weight: 400;
+            font-size: 1rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            border-radius: 0.25rem 0.25rem 0 0;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .analytics-tab:hover {
+            color: var(--text);
+            background: rgba(0,0,0,0.03);
+        }
+        .analytics-tab:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+        .analytics-tab-active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(30, 58, 95, 0.06);
+            border-bottom-width: 3px;
+            border-bottom-style: solid;
+        }
+        
+        /* Instructor dashboard top-level tabs (Courses | Rubrics | Course Insights) */
+        .instructor-dashboard-tablist {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+            flex-wrap: wrap;
+        }
+        .instructor-dashboard-tab {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 0.25rem 0.25rem 0 0;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .instructor-dashboard-tab:hover {
+            color: var(--text);
+            background: rgba(0,0,0,0.04);
+        }
+        .instructor-dashboard-tab-active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(30, 58, 95, 0.06);
+        }
+
+        /* Settings section tabs (General | Consent | Admin) */
+        .settings-tablist {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+            flex-wrap: wrap;
+        }
+        .settings-tab {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 0.25rem 0.25rem 0 0;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .settings-tab:hover {
+            color: var(--text);
+            background: rgba(0,0,0,0.04);
+        }
+        .settings-tab-active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .settings-section-heading {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .settings-section-subheading {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        /* Support section tabs (Getting Started | User Manual | Technical Documentation) */
+        .support-tablist {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+            flex-wrap: wrap;
+        }
+        .support-tab {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 0.25rem 0.25rem 0 0;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .support-tab:hover {
+            color: var(--text);
+            background: rgba(0,0,0,0.04);
+        }
+        .support-tab-active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .support-tier-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            margin-left: 0.5rem;
+        }
+        .support-doc-panel { display: none; }
+        .support-doc-panel.active { display: block; }
+        #helpSection .support-doc-panel h3,
+        #helpSection .support-doc-panel h3 .icon-with-text {
+            font-family: var(--heading-font);
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        /* Toast for analytics success */
+        .analytics-toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            font-size: 0.9rem;
+            animation: analyticsToastIn 0.25s ease;
+        }
+        .analytics-toast a { color: #fff; text-decoration: underline; }
+        @keyframes analyticsToastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(0.5rem); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        /* Apple HIG: Dropdown animation */
+        @keyframes dropdownSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-0.5rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            @keyframes dropdownSlideIn {
+                from, to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+        }
+
+        /* Account-wide search dropdown */
+        .account-search-results {
+            position: absolute;
+            top: calc(100% + var(--space-xs));
+            left: 0;
+            right: 0;
+            max-height: 360px;
+            overflow-y: auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--elevation-3);
+            z-index: 1000;
+            padding: var(--space-sm) 0;
+            animation: dropdownSlideIn var(--motion-fast) var(--motion-ease-out);
+        }
+        .account-search-results.hidden { display: none !important; }
+        .account-search-results .search-group-label {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0.25rem;
+        }
+        .account-search-results .search-result-item {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border: none;
+            background: none;
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .account-search-results .search-result-item:hover,
+        .account-search-results .search-result-item:focus {
+            background: var(--bg-alt);
+            outline: none;
+        }
+        .account-search-results .search-result-item .search-result-sub {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.15rem;
+        }
+        .account-search-results .search-no-results {
+            padding: 1rem 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        .account-search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+            min-width: 180px;
+            margin: 0 1rem;
+            cursor: text;
+        }
+        .account-search-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            background: #ffffff !important;
+            color: #1f2937 !important;
+            position: relative;
+            z-index: 1;
+        }
+        .account-search-input::placeholder {
+            color: #6b7280 !important;
+        }
+        
+        /* Theme Customizer (Settings Admin tab) */
+        
+        /* HTML Color Codes–style picker: 2D saturation/lightness + hue strip */
+        .theme-color-picker-panel {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 1.25rem;
+            min-width: 280px;
+        }
+        .theme-color-picker-panel.open { display: block; }
+        .theme-color-picker-panel .picker-2d-wrap {
+            position: relative;
+            width: 240px;
+            height: 160px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .theme-color-picker-panel .picker-2d {
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(to bottom, #fff, transparent),
+                linear-gradient(to top, #000, transparent),
+                linear-gradient(to right, #808080, var(--picker-hue-color, #f00));
+            background-size: 100% 100%;
+        }
+        .theme-color-picker-panel .picker-2d-marker {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            margin: -7px 0 0 -7px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.4);
+            pointer-events: none;
+        }
+        .theme-color-picker-panel .picker-hue-wrap {
+            position: relative;
+            width: 240px;
+            height: 12px;
+            margin-top: 0.75rem;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            touch-action: none;
+            background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+        }
+        .theme-color-picker-panel .picker-hue-marker {
+            position: absolute;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            margin-left: -2px;
+            background: #fff;
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+        .theme-color-picker-panel .picker-codes {
+            margin-top: 0.75rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-color-picker-panel .picker-codes label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        .theme-color-picker-panel .picker-codes input {
+            padding: 0.35rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-family: ui-monospace, monospace;
+        }
+        .theme-color-picker-panel .picker-preview {
+            width: 36px;
+            height: 36px;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .theme-color-picker-panel .picker-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+        .theme-color-picker-panel .picker-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: rgba(0,0,0,0.35);
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color var(--motion-normal) var(--motion-ease),
+                        background-color var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
+            background: var(--bg-alt);
+            min-height: 2.75rem;  /* Ensure touch target minimum */
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: white;
+            transform: scale(1.01);
+        }
+        
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(30, 58, 95, 0.05);
+            transform: scale(1.02);
+        }
+        
+        .upload-zone:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+        
+        .file-info {
+            background: var(--success);
+            color: white;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="number"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: var(--body-font);
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+        }
+        
+        /* Apple HIG: Enhanced focus states for accessibility */
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
+            border-color: var(--primary);
+        }
+        
+        /* Apple HIG: Ensure links have proper contrast and focus states */
+        a:not(.btn):not(.button):not(.nav-link) {
+            color: var(--link);
+            text-decoration: none;
+            transition: color var(--motion-fast) var(--motion-ease);
+        }
+        
+        a:not(.btn):not(.button):not(.nav-link):hover {
+            color: var(--link-hover);
+            text-decoration: underline;
+        }
+        
+        a:not(.btn):not(.button):not(.nav-link):visited {
+            color: var(--link-visited);
+        }
+        
+        a:not(.btn):not(.button):not(.nav-link):focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Buttons - Apple HIG: Clear affordances, proper feedback */
+        button,
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease),
+                        box-shadow var(--motion-normal) var(--motion-ease);
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: var(--elevation-1);
+        }
+        
+        button:hover,
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        button:active,
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: var(--elevation-1);
+        }
+        
+        button:focus-visible,
+        .btn:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
+        }
+        
+        .btn-icon-only {
+            padding: 0.5rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon-only [data-lucide] { width: 1.25em; height: 1.25em; }
+        
+        /* Apple HIG: Button variants with proper contrast */
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #b89a6f;
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #047857;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #991b1b;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #b45309;
+            color: white;
+        }
+        
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #0369a1;
+            color: white;
+        }
+        
+        /* Minimum touch target (Apple HIG: ~44pt) for primary actions */
+        .btn:not(.btn-small):not(.btn-icon-only) {
+            min-height: 2.75rem;
+            min-width: 2.75rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* UTK Torch: primary buttons only (exclude tabs) – white bg, orange border, blue text */
+        html.theme-torch button:not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.settings-tab):not(.support-tab):not(.instructor-dashboard-tab):not(.analytics-tab),
+        html.theme-torch .btn:not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.settings-tab):not(.support-tab):not(.instructor-dashboard-tab):not(.analytics-tab) {
+            background: white !important;
+            color: #1a73c5 !important;
+            border: 2px solid var(--primary) !important;
+        }
+        html.theme-torch button:not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.settings-tab):not(.support-tab):not(.instructor-dashboard-tab):not(.analytics-tab):hover,
+        html.theme-torch .btn:not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.settings-tab):not(.support-tab):not(.instructor-dashboard-tab):not(.analytics-tab):hover {
+            background: #FFFBF7 !important;
+            color: #0d47a1 !important;
+            border-color: var(--primary-dark) !important;
+        }
+        /* UTK Torch: progress step circles – match Torch button style (white bg, orange border, blue number) */
+        html.theme-torch .step.active .step-circle {
+            background: white !important;
+            color: #1a73c5 !important;
+            border: 2px solid var(--primary) !important;
+        }
+        
+        /* UTK Torch Theme: tab styling from utk-theme-preview.html (light gray bg, blue when active) */
+        html.theme-utk-torch .settings-tab,
+        html.theme-utk-torch .support-tab,
+        html.theme-utk-torch .instructor-dashboard-tab,
+        html.theme-utk-torch .analytics-tab {
+            background: var(--bg-alt, #F0F0F0);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 0.25rem 0.25rem 0 0;
+        }
+        html.theme-utk-torch .settings-tab:hover,
+        html.theme-utk-torch .support-tab:hover,
+        html.theme-utk-torch .instructor-dashboard-tab:hover,
+        html.theme-utk-torch .analytics-tab:hover {
+            color: var(--link-blue, #1a73c5);
+            background: var(--bg, #FAFAFA);
+        }
+        html.theme-utk-torch .settings-tab-active,
+        html.theme-utk-torch .support-tab-active,
+        html.theme-utk-torch .instructor-dashboard-tab-active,
+        html.theme-utk-torch .analytics-tab-active {
+            background: white;
+            color: var(--link-blue, #1a73c5);
+            border-color: var(--border);
+            border-bottom: 2px solid white;
+        }
+        
+        /* Progress Steps - Apple HIG: Proper spacing and motion */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-xl);
+            position: relative;
+            gap: var(--space-md);
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 1.375rem;  /* Center of 2.75rem circle */
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--border);
+            z-index: 1;
+            transition: background-color var(--motion-normal) var(--motion-ease);
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Apple HIG: Step circles with proper touch targets and motion */
+        .step-circle {
+            width: 2.75rem;  /* 44pt minimum touch target */
+            height: 2.75rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            border-radius: 50%;
+            background: var(--border);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto var(--space-sm);
+            transition: background-color var(--motion-normal) var(--motion-ease),
+                        color var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
+            cursor: pointer;
+        }
+        
+        .step-circle:hover {
+            transform: scale(1.05);
+        }
+        
+        .step-circle:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+        
+        .step.active .step-circle {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: var(--success);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            transition: color var(--motion-normal) var(--motion-ease),
+                        font-weight var(--motion-normal) var(--motion-ease);
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Classes Grid */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+        
+        /* Data Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .data-table thead {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .data-table th:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+        
+        .data-table tbody tr {
+            transition: background-color var(--motion-fast) var(--motion-ease);
+        }
+        
+        .data-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+        
+        .data-table td {
+            padding: var(--space-md) var(--space-md);
+            color: var(--text);
+            min-height: 2.75rem;  /* Touch target minimum for clickable rows */
+        }
+        
+        .data-table td:last-child {
+            text-align: center;
+        }
+        
+        /* Filter Controls */
+        .filter-controls {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 0.5rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Apple HIG: Cards with proper elevation and spacing */
+        .class-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transition: border-color var(--motion-normal) var(--motion-ease),
+                        box-shadow var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
+            cursor: pointer;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .class-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--elevation-2);
+            transform: translateY(-1px);
+        }
+        
+        .class-card:active {
+            transform: translateY(0);
+            box-shadow: var(--elevation-1);
+        }
+        
+        .class-card:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+        
+        .class-header {
+            font-size: var(--text-headline-size);
+            font-weight: var(--text-headline-weight);
+            line-height: 1.35;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .class-meta {
+            font-size: var(--text-caption-size);
+            font-weight: 400;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: var(--space-md);
+        }
+        
+        .class-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: var(--text-title-size);
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: var(--text-caption-size);
+            font-weight: 400;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+        
+        /* Rubrics - Apple HIG: Proper spacing */
+        .rubrics-list {
+            display: grid;
+            gap: var(--space-md);
+        }
+        
+        .rubric-item {
+            background: var(--bg-alt);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color var(--motion-normal) var(--motion-ease),
+                        box-shadow var(--motion-normal) var(--motion-ease),
+                        transform var(--motion-fast) var(--motion-ease);
+            cursor: pointer;
+            min-height: 2.75rem;  /* Touch target minimum */
+        }
+        
+        .rubric-item:hover {
+            background: var(--bg-hover);
+            box-shadow: var(--elevation-1);
+            transform: translateX(2px);
+        }
+        
+        .rubric-item:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+        
+        .rubric-info h4 {
+            margin-bottom: var(--space-xs);
+        }
+        
+        .rubric-info p {
+            font-size: 0.9375rem;
+            font-weight: 400;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        
+        .rubric-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        /* Apple HIG: Enhanced Loading States */
+        .spinner {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin var(--motion-slow) linear infinite;
+            margin: var(--space-xl) auto;
+            position: relative;
+        }
+        
+        /* Apple HIG: Skeleton loading for content */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-alt) 25%, var(--border) 50%, var(--bg-alt) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+            min-height: 1rem;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spin { 
+            display: inline-block; 
+            animation: spin var(--motion-slow) linear infinite; 
+            vertical-align: middle; 
+        }
+        
+        /* Apple HIG: Loading states with proper feedback */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2xl);
+            gap: var(--space-md);
+            text-align: center;
+        }
+        
+        .loading-state .spinner {
+            margin: 0;
+        }
+        
+        .loading-state-message {
+            color: var(--text-light);
+            font-size: var(--text-body-size);
+            line-height: 1.5;
+        }
+        
+        .loading-state-submessage {
+            color: var(--text-light);
+            font-size: var(--text-caption-size);
+            margin-top: var(--space-xs);
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .spinner, .spin, .auth-loading-spinner, .skeleton { 
+                animation: none; 
+            }
+            .spinner { 
+                border-top-color: var(--primary); 
+                opacity: 0.85; 
+            }
+            .skeleton {
+                background: var(--bg-alt);
+            }
+        }
+
+        /* Analytics dashboard — typography hierarchy */
+        .dashboard-shell-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); line-height: 1.35; margin-bottom: 0.25rem; color: var(--text); }
+        .dashboard-shell-subtitle { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; margin-bottom: 1.5rem; }
+        .global-filter-bar {
+            display: flex; flex-direction: column; gap: 0;
+            padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-lg);
+            border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-alt);
+        }
+        .global-filter-bar-row {
+            display: flex; flex-wrap: nowrap; align-items: flex-end; gap: var(--space-md) var(--space-lg);
+            overflow: visible; min-width: 0; padding-bottom: var(--space-xs);
+        }
+        .global-filter-bar-row > * { flex-shrink: 0; }
+        .global-filter-bar label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--text-light); }
+        .global-filter-bar select, .global-filter-bar input[type="date"] {
+            padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;
+        }
+        .global-filter-bar .filter-actions { margin-left: auto; padding-left: 1rem; border-left: 1px solid var(--border); display: flex; gap: 0.5rem; align-items: center; }
+        .global-filter-bar .last-updated { font-size: 0.75rem; color: var(--text-light); margin-left: 0.5rem; }
+        /* Custom multi-select filter dropdowns (match Sort dropdown look) */
+        .filter-dropdown { position: relative; display: flex; flex-direction: column; gap: 0.25rem; }
+        .filter-dropdown .filter-dropdown-trigger {
+            padding: var(--space-sm) var(--space-md); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.875rem; min-width: 8rem;
+            min-height: 2.75rem;  /* Touch target minimum */
+            background: var(--bg); color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);
+            transition: border-color var(--motion-normal) var(--motion-ease),
+                        background-color var(--motion-fast) var(--motion-ease);
+        }
+        .filter-dropdown .filter-dropdown-trigger:hover { 
+            border-color: var(--primary);
+            background: var(--bg-alt);
+        }
+        .filter-dropdown .filter-dropdown-trigger:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+        .filter-dropdown .filter-dropdown-trigger::after { content: ''; border: 0.35rem solid transparent; border-top-color: currentColor; margin-left: auto; }
+        .filter-dropdown .filter-dropdown-panel {
+            display: none; position: absolute; top: 100%; left: 0; min-width: 100%; margin-top: var(--space-xs);
+            background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--elevation-3);
+            max-height: 14rem; overflow-y: auto; z-index: 9999; padding: var(--space-xs) 0; min-height: 2rem;
+            animation: dropdownSlideIn var(--motion-fast) var(--motion-ease-out);
+        }
+        .filter-dropdown.open .filter-dropdown-panel { display: block; }
+        .filter-dropdown .filter-dropdown-item {
+            padding: var(--space-sm) var(--space-md); 
+            min-height: 2.75rem;  /* Touch target minimum */
+            cursor: pointer; display: flex; align-items: center; gap: var(--space-sm); font-size: 0.875rem;
+            transition: background-color var(--motion-fast) var(--motion-ease);
+        }
+        .filter-dropdown .filter-dropdown-item:hover { 
+            background: var(--bg-hover);
+        }
+        .filter-dropdown .filter-dropdown-item:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: -2px;
+        }
+        .filter-dropdown .filter-dropdown-item .filter-dropdown-check { width: 1rem; flex-shrink: 0; color: var(--primary); font-weight: bold; display: inline-flex; align-items: center; justify-content: center; }
+        .filter-dropdown .filter-dropdown-item .filter-dropdown-check svg { width: 1rem; height: 1rem; }
+        .filter-dropdown .filter-dropdown-item:not(.selected) .filter-dropdown-check { visibility: hidden; }
+        /* Export preview + Evaluations table: header with sort + filter dropdown (inner flex keeps th as table-cell for column alignment) */
+        #exportPreviewTable thead th .export-th-inner,
+        #analyticsEvaluationsTable thead th .export-th-inner { display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+        #exportPreviewTable thead th .export-th-sort,
+        #analyticsEvaluationsTable thead th .export-th-sort { flex: 1; min-width: 0; cursor: pointer; user-select: none; }
+        #exportPreviewTable thead th .export-th-filter,
+        #analyticsEvaluationsTable thead th .export-th-filter {
+            flex-shrink: 0; padding: 0.2rem 0.35rem; border: none; background: rgba(255,255,255,0.2); color: #fff;
+            border-radius: 0.25rem; cursor: pointer; font-size: 0.7rem; line-height: 1;
+        }
+        #exportPreviewTable thead th .export-th-filter:hover,
+        #analyticsEvaluationsTable thead th .export-th-filter:hover { background: rgba(255,255,255,0.35); }
+        #exportPreviewTable thead th .export-th-filter.has-filter,
+        #analyticsEvaluationsTable thead th .export-th-filter.has-filter { background: rgba(255,255,255,0.5); }
+        /* Data Export tab: top bar stays on one line; ensure Export button is visible */
+        #exportTabTopBar { flex-wrap: nowrap !important; white-space: nowrap !important; min-width: 0; overflow-x: auto; }
+        #exportTabTopBar > * { flex-shrink: 0; }
+        #analyticsExportBtn { display: inline-block !important; visibility: visible !important; min-width: 7rem; opacity: 1 !important; }
+        #exportPreviewTable thead th.export-th-center .export-th-inner,
+        #analyticsEvaluationsTable thead th.export-th-center .export-th-inner { justify-content: center; }
+        .export-header-filter-panel {
+            position: fixed; z-index: 200; background: var(--bg); border: 1px solid var(--border);
+            border-radius: 0.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); max-height: 280px; min-width: 160px;
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+        .export-header-filter-panel .export-filter-toolbar { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 0.5rem; flex-shrink: 0; font-size: 0.75rem; }
+        .export-header-filter-panel .export-filter-toolbar a { color: var(--primary); cursor: pointer; text-decoration: underline; }
+        .export-header-filter-panel .export-filter-list { overflow-y: auto; padding: 0.25rem 0; max-height: 220px; }
+        .export-header-filter-panel .export-filter-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.6rem; cursor: pointer; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .export-header-filter-panel .export-filter-item:hover { background: var(--bg-alt); }
+        .export-header-filter-panel .export-filter-item input { margin: 0; flex-shrink: 0; }
+        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg); }
+        .kpi-card {
+            border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg); background: var(--bg);
+            box-shadow: var(--elevation-1);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: var(--border); }
+        .kpi-card .kpi-title { font-size: var(--text-caption-size); font-weight: 500; color: var(--text-light); margin-bottom: 0.5rem; letter-spacing: 0.01em; line-height: 1.4; }
+        .kpi-card .kpi-value { font-size: var(--text-title-size); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; color: var(--text); }
+        .kpi-card .kpi-subtext { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); margin-top: 0.35rem; line-height: 1.4; }
+        .kpi-card .kpi-meta { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        .kpi-card .kpi-badge { font-size: 0.6875rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid; letter-spacing: 0.02em; }
+        .kpi-card .kpi-badge.ok { background: rgba(16,185,129,0.12); color: var(--success); border-color: rgba(16,185,129,0.3); }
+        .kpi-card .kpi-badge.limited { background: rgba(245,158,11,0.12); color: var(--warning); border-color: rgba(245,158,11,0.3); }
+        .kpi-card .kpi-badge.insufficient { background: var(--bg-alt); color: var(--text-light); border-color: var(--border); }
+        .kpi-card .kpi-footer { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); margin-top: 0.5rem; line-height: 1.4; }
+        .kpi-card .kpi-footer a { color: var(--primary); text-decoration: underline; cursor: pointer; }
+        .kpi-card .kpi-title:hover, .chart-card .chart-title:hover { color: var(--primary); }
+        /* Chart cards — HIG: focused, clear hierarchy */
+        .chart-card {
+            border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg); background: var(--bg);
+            box-shadow: var(--elevation-1);
+            min-width: 0; overflow: hidden;
+            transition: box-shadow var(--motion-normal) var(--motion-ease);
+        }
+        .chart-card:hover { box-shadow: var(--elevation-2); }
+        .chart-card .chart-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); margin-bottom: var(--space-xs); letter-spacing: -0.01em; color: var(--text); line-height: 1.35; }
+        .chart-card .chart-subtitle { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); margin-bottom: var(--space-xs); line-height: 1.4; }
+        .chart-card .chart-description { font-size: var(--text-caption-size); font-weight: 400; color: var(--text); margin-bottom: var(--space-md); line-height: 1.45; }
+        .chart-card .chart-body {
+            min-height: 180px; border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--bg-alt); overflow-x: auto; padding: var(--space-md);
+        }
+        .chart-card .chart-body .chart-bars { display: flex; flex-direction: column; gap: var(--space-md); }
+        .chart-card .chart-body .chart-bar-row {
+            display: flex; flex-direction: column; gap: 0.35rem;
+        }
+        .chart-card .chart-body .chart-bar-row [role="img"] { display: flex; flex-direction: column; gap: 0.35rem; }
+        .chart-card .chart-body .chart-bar-label-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.875rem; }
+        .chart-card .chart-body .chart-bar-label { font-weight: 500; color: var(--text); }
+        .chart-card .chart-body .chart-bar-value { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+        .chart-card .chart-body .chart-bar-track {
+            height: 10px; background: var(--border); border-radius: 6px; overflow: hidden;
+        }
+        .chart-card .chart-body .chart-bar-fill {
+            height: 100%; border-radius: 6px; transition: width 0.35s ease;
+        }
+        .chart-card .chart-body .chart-bar-fill.data-high { background: var(--success); }
+        .chart-card .chart-body .chart-bar-fill.data-medium { background: var(--warning); }
+        .chart-card .chart-body .chart-bar-fill.data-low { background: var(--error); }
+        .chart-card .chart-body .data-table { width: 100%; table-layout: auto; border-collapse: collapse; font-size: 0.875rem; }
+        .chart-card .chart-body .data-table caption { font-size: 0.8125rem; color: var(--text-light); text-align: left; padding: 0 0 0.5rem 0; }
+        .chart-card .chart-body .data-table th {
+            text-align: left; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+            color: var(--text-light); padding: 0.625rem 0.75rem; background: var(--bg-alt); border-bottom: 2px solid var(--border);
+        }
+        .chart-card .chart-body .data-table th[scope="col"]:first-child { border-radius: 6px 0 0 0; }
+        .chart-card .chart-body .data-table th[scope="col"]:last-child { border-radius: 0 6px 0 0; }
+        .chart-card .chart-body .data-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .chart-card .chart-body .data-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+        .chart-card .chart-body .data-table tbody tr:last-child td { border-bottom: none; }
+        .chart-card .chart-body .data-table th.num, .chart-card .chart-body .data-table td.num { text-align: right; }
+        .chart-card .chart-footer { font-size: 0.875rem; font-weight: 400; color: var(--text-light); margin-top: 0.75rem; line-height: 1.4; }
+        .chart-card .chart-footer a { color: var(--primary); text-decoration: underline; cursor: pointer; }
+        .dashboard-charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg); }
+        
+        /* Score Display */
+        .score-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .score-percentage {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        footer {
+            font-family: var(--body-font);
+            background: var(--primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: white !important;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+        }
+        
+        /* Ensure all footer text is white */
+        footer p,
+        footer #footerCopyright,
+        footer #footerAdditional {
+            color: white !important;
+        }
+        
+        footer a {
+            color: white !important;
+        }
+        
+        footer a {
+            color: white !important;
+        }
+        
+        /* Modal / Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay[hidden] { display: none !important; }
+        /* Apple HIG: Modals with proper elevation and spacing */
+        .modal-box {
+            background: var(--card);
+            padding: var(--space-xl) var(--space-2xl);
+            border-radius: var(--radius-lg);
+            max-width: 440px;
+            width: 100%;
+            box-shadow: var(--elevation-4);
+            border: 1px solid var(--border);
+        }
+        .modal-box h3 {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.35;
+            color: var(--primary);
+        }
+        .modal-box p { margin: 0 0 1rem 0; font-size: 0.9375rem; font-weight: 400; color: var(--text-light); line-height: 1.5; }
+        .modal-box .modal-actions { margin-top: 1.25rem; }
+        .info-box {
+            background: var(--bg-alt);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.25rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.9375rem;
+            font-weight: 400;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .consent-toolbar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        .consent-toolbar .form-group { margin-bottom: 0; }
+        .consent-toolbar select {
+            min-width: 240px;
+            padding: 0.6rem 0.75rem;
+        }
+        .consent-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Utility Classes */
+        .skip-link {
+            position: absolute;
+            top: -3rem;
+            left: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            z-index: 10002;
+            border-radius: 0 0 0.5rem 0;
+            transition: top 0.2s;
+        }
+        .skip-link:focus {
+            top: 0;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        /* Keyboard focus visible (accessibility): clear focus ring for interactive elements */
+        button:focus-visible,
+        .btn:focus-visible,
+        a:focus-visible,
+        [role="button"]:focus-visible,
+        [role="tab"]:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-2 {
+            margin-top: 2rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 2rem;
+        }
+        
+        /* Apple HIG: Alert styles with semantic colors and proper contrast */
+        .alert {
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+        
+        .alert-error {
+            background: var(--error-bg);
+            color: var(--error-text);
+            border-color: var(--error-border);
+        }
+        
+        .alert-warning {
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            border-color: var(--warning-border);
+        }
+        
+        .alert-info {
+            background: var(--info-bg);
+            color: var(--info-text);
+            border-color: var(--info-border);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            #accountSearchWrap {
+                order: 3;
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+            }
+            
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Edit functionality animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Auth / Login page – theme colors and logo */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1rem;
+        }
+        .auth-card {
+            background: var(--card);
+            padding: 2.5rem 3rem;
+            border-radius: 1rem;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            border: 2px solid var(--border);
+        }
+        .auth-card .auth-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--card);
+            border: 2px solid var(--border);
+        }
+        .auth-card .auth-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .auth-card h2 {
+            font-family: var(--heading-font);
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.75rem;
+        }
+        .auth-card .auth-tagline {
+            color: var(--text-light);
+            margin: 0.35rem 0 0 0;
+            font-size: 0.95rem;
+        }
+        .auth-card .form-group label { color: var(--text); }
+        .auth-divider {
+            text-align: center;
+            color: var(--text-light);
+            margin: 1.25rem 0;
+            font-size: 0.9rem;
+        }
+        .auth-card .btn-demo {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background: var(--secondary);
+            color: var(--text);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .auth-card .btn-demo:hover {
+            background: var(--accent);
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+        /* Full-page loading overlay until auth check completes */
+        #authLoadingOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+        #authLoadingOverlay.hidden { display: none; }
+        #authLoadingOverlay .auth-loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #authLoadingOverlay p { margin: 0; font-size: 1rem; font-weight: 500; }
+        @media (prefers-reduced-motion: reduce) {
+            #authLoadingOverlay .auth-loading-spinner { animation: none; border-top-color: white; opacity: 0.9; }
+        }
+        /* Typography: use global hierarchy for empty states */
+        .empty-state .empty-state-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); margin-bottom: 0.35rem; color: var(--text); line-height: 1.35; }
+        .empty-state .empty-state-desc { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); margin-bottom: 1.25rem; line-height: 1.45; }
+        .empty-state {
+            text-align: center; padding: 2.5rem 1.5rem; max-width: 22rem; margin: 0 auto;
+        }
+        .empty-state .empty-state-icon { width: 2.5rem; height: 2.5rem; margin: 0 auto 1rem; color: var(--text-light); display: block; }
+        .empty-state .empty-state-action { margin-top: 0.5rem; }
+
+        /* Lucide icons inline with text */
+        [data-lucide] { width: 1.1em; height: 1.1em; vertical-align: -0.2em; stroke-width: 2; flex-shrink: 0; }
+        .icon-with-text { display: inline-flex; align-items: center; gap: 0.35em; }
+        /* Keep icon+text buttons from looking lopsided (icon left, text right, centered) */
+        button .icon-with-text,
+        .btn .icon-with-text { display: inline-flex; align-items: center; gap: 0.35em; }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay: shown until checkAuth() completes so login page doesn't flash during reload -->
+    <div id="authLoadingOverlay" class="auth-loading-overlay">
+        <div class="auth-loading-spinner" aria-hidden="true"></div>
+        <p>Loading…</p>
+    </div>
+    <!-- Login/Register Screen: visible by default so we don't flash main app before checkAuth() -->
+    <div id="authScreen" class="auth-screen">
+        <div id="configMissingBanner" class="hidden" style="max-width: 28rem; margin: 0 auto 1rem; padding: 1rem; background: var(--error); color: #fff; border-radius: 8px; font-size: 0.9rem; text-align: center;">
+            <strong>Supabase not configured.</strong> Login will not work until the server has <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> set. On Render: Dashboard → your service → Environment → add these variables, then redeploy.
+        </div>
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="auth-logo"><img id="authLogoImg" src="assets/logo-light-bg.png" alt="SpeechGradebook" /></div>
+                <h2><span class="icon-with-text"><i data-lucide="graduation-cap" style="width:1.25em;height:1.25em;"></i> SpeechGradebook</span></h2>
+                <p class="auth-tagline">Instructor-Informed Speech Assessment</p>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginFormDiv">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: var(--space-md) var(--space-lg); font-size: 1rem;"><span class="icon-with-text"><i data-lucide="log-in"></i> Login</span></button>
+                </form>
+                <p class="auth-divider">or</p>
+                <button type="button" class="btn-demo" onclick="enterDemoMode();"><span class="icon-with-text"><i data-lucide="play"></i> Try demo</span></button>
+                <p class="text-caption" style="text-align: center; margin-top: 1.5rem;">
+                    Don't have an account? <a href="#" onclick="showRegisterForm(); return false;" style="color: var(--primary); font-weight: 600;" class="icon-with-text"><i data-lucide="user-plus"></i> Create one</a>
+                </p>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerFormDiv" class="hidden">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text);"><span class="icon-with-text"><i data-lucide="user-plus"></i> Create your account</span></h3>
+                <p id="registerNonInvitedHint" class="text-body-secondary" style="margin-bottom: var(--space-md); padding: var(--space-md); background: var(--bg-alt); border-radius: var(--radius-md);">
+                    Without an invitation link, you must use a <strong>.edu</strong> email and your request will need approval by an administrator after you confirm your email.
+                </p>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input type="text" id="registerName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required placeholder="you@university.edu">
+                        <small id="registerEmailHint" style="color: var(--text-light);">Use a .edu address if you don’t have an invitation.</small>
+                    </div>
+                    <div class="form-group" id="registerRoleGroup">
+                        <label for="registerRole">Requested role</label>
+                        <select id="registerRole" required>
+                            <option value="instructor">Instructor</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <small style="color: var(--text-light);">Non-invited accounts require administrator approval.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
+                        <small style="color: var(--text-light);">At least 6 characters</small>
+                    </div>
+                    <button type="submit" style="width: 100%; padding: var(--space-md) var(--space-lg); font-size: 1rem;"><span class="icon-with-text"><i data-lucide="user-plus"></i> Create Account</span></button>
+                </form>
+                <p style="text-align: center; margin-top: 1.5rem; color: var(--text-light);">
+                    Already have an account? <a href="#" onclick="showLoginForm(); return false;" class="text-caption icon-with-text" style="color: var(--primary); font-weight: 600;"><i data-lucide="log-in"></i> Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending approval: shown when user is logged in but approval_status = pending_approval -->
+    <div id="pendingApprovalScreen" style="display: none; min-height: 100vh; align-items: center; justify-content: center;" class="auth-screen">
+        <div class="auth-card" style="max-width: 28rem;">
+            <h3 style="margin-bottom: var(--space-md); color: var(--text);"><span class="icon-with-text"><i data-lucide="clock"></i> Account pending approval</span></h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">Your account request has been received. Please confirm your email (check your inbox) and wait for an administrator to approve your account. You will not have access until then.</p>
+            <button type="button" onclick="logout(); return false;" class="btn" style="width: 100%;"><span class="icon-with-text"><i data-lucide="log-out"></i> Logout</span></button>
+        </div>
+    </div>
+
+    <!-- Main App: hidden until checkAuth() confirms session -->
+    <div id="mainApp" style="display: none;">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <!-- Covers main app until tier/theme/interface load (prevents flash of wrong theme or courses) -->
+    <div id="mainAppLoadingOverlay" style="display: none; position: fixed; inset: 0; background: var(--bg, #1a1a2e); z-index: 9998; align-items: center; justify-content: center; flex-direction: column; gap: 1rem;">
+        <div class="auth-loading-spinner" aria-hidden="true"></div>
+        <p style="color: var(--text-light, #94a3b8); font-size: 1rem;">Loading…</p>
+    </div>
+    <!-- One-time instructor LLM consent (user agreement style) -->
+    <div id="instructorConsentOverlay" class="modal-overlay" hidden>
+        <div class="modal-box">
+            <h3>Data use agreement</h3>
+            <p>Your evaluation content may be used to improve the speech assessment model. This supports research and product improvement while keeping data anonymized where used for training.</p>
+            <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+                <input type="checkbox" id="instructorConsentCheckbox" style="margin-top: 0.2rem;">
+                <span class="text-body-secondary">I agree that my evaluation content may be used for LLM training and research.</span>
+            </label>
+            <div class="modal-actions">
+                <button type="button" id="instructorConsentSubmit" disabled class="btn">Continue</button>
+            </div>
+        </div>
+    </div>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/logo-dark-bg.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;"></div>
+                    <div class="app-title">
+                        <h1 id="appName">SpeechGradebook</h1>
+                        <div class="tagline" id="appTagline">Instructor-Informed Speech Assessment</div>
+                    </div>
+                </div>
+                <div id="accountSearchWrap" class="account-search-wrap" onclick="document.getElementById('accountSearchInput')?.focus()">
+                    <input type="text" id="accountSearchInput" placeholder="Search" 
+                           class="account-search-input"
+                           aria-label="Search courses, students, rubrics, and instructors" autocomplete="off">
+                    <div id="accountSearchResults" class="account-search-results hidden" role="listbox" aria-label="Search results"></div>
+                </div>
+                <nav>
+                    <a href="#" class="nav-link" id="navEvaluate" onclick="showEvaluate(); return false;"><span class="icon-with-text"><i data-lucide="mic"></i> Evaluate Speech</span></a>
+                    <a href="#" class="nav-link active" id="navDashboard" onclick="showDashboard(); return false;"><span class="icon-with-text"><i data-lucide="layout-dashboard"></i> Dashboard</span></a>
+                    <a href="#" class="nav-link" id="navSettings" onclick="showSettings(); return false;"><span class="icon-with-text"><i data-lucide="settings"></i> Settings</span></a>
+                    <a href="#" class="nav-link" id="navHelp" onclick="showHelp(); return false;"><span class="icon-with-text"><i data-lucide="help-circle"></i> Support</span></a>
+                    
+                    <a href="#" id="logoutLink" class="nav-link" onclick="logout(); return false;" aria-label="Log out">
+                        <span id="userDisplay"></span> <span class="icon-with-text"><i data-lucide="log-out"></i> Logout</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" tabindex="-1">
+        <!-- Evaluate Section -->
+        <section id="evaluateSection" class="section" aria-label="Evaluate a speech">
+            <div class="card">
+                <div class="card-header" id="evaluateCardHeader"><span class="icon-with-text"><i data-lucide="mic"></i> Evaluate a Speech</span></div>
+                
+                <div class="progress-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Upload</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Details</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Evaluate</div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Results</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Upload -->
+                <div id="uploadStep">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon"><i data-lucide="upload" style="width:3rem;height:3rem;"></i></div>
+                        <h3><span class="icon-with-text"><i data-lucide="mic"></i> Upload Speech Recording</span></h3>
+                        <p>Click or drag & drop your audio/video file here</p>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
+                            Supported: MP3, MP4, WAV, M4A, WebM, MOV<br>
+                            <strong style="color: var(--primary);">Maximum file size: 50 MB</strong><br>
+                            Files over 50 MB cannot be uploaded. Please compress your file and try again.
+                        </p>
+                    </div>
+                    <input type="file" id="fileInput" accept="audio/*,video/*,image/*" style="display: none;">
+                    <div id="fileInfo" class="file-info hidden">
+                        <span id="fileName"></span>
+                        <button onclick="removeFile()" class="btn-small btn-danger"><span class="icon-with-text"><i data-lucide="trash-2"></i> Remove</span></button>
+                    </div>
+                    
+                    <!-- Optional: Assign to class/student on upload -->
+                    <div id="continueButtonContainer" style="margin-top: 2rem; display: none;">
+                        <button onclick="moveToStep(2)" id="continueToDetails"><span class="icon-with-text">Continue to Details <i data-lucide="arrow-right"></i></span></button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Details -->
+                <div id="detailsStep" class="hidden">
+                    <form id="studentForm">
+                        <div class="form-group">
+                            <label for="evalClassSelect">Class (Optional)</label>
+                            <select id="evalClassSelect" onchange="loadEvalStudents(); updateRubricSelectorForClass();">
+                                <option value="">-- None --</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Select a class to assign this evaluation, or choose "None" if not applicable.
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="evalStudentSelect">Student (Optional)</label>
+                            <select id="evalStudentSelect">
+                                <option value="">-- None --</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Select a student from the chosen class, or choose "None" if not applicable.
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="rubricSelect">Evaluation Rubric *</label>
+                            <select id="rubricSelect" required>
+                                <option value="">-- Select a Rubric --</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Choose which rubric to use for evaluation. <a href="#" onclick="showDashboard(); return false;" style="color: var(--primary);">Manage rubrics</a>
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="speechDate">Speech Date</label>
+                            <input type="date" id="speechDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentType">Assignment Type</label>
+                            <select id="assignmentType">
+                                <option value="Speech">Speech</option>
+                                <option value="Presentation">Presentation</option>
+                                <option value="Group Presentation">Group Presentation</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="evalApiProvider">Evaluation provider</label>
+                            <select id="evalApiProvider" onchange="updateEvalProviderHint()">
+                                <option value="gemini" data-api-provider>Google Gemini</option>
+                                <option value="finetuned">SpeechGradebook Text Model (Mistral)</option>
+                                <option value="qwen" data-api-provider selected>SpeechGradebook Text + Video Model (Qwen)</option>
+                                <option value="demo" data-demo-only>Demo (mock scores)</option>
+                                <option value="claude" data-api-provider>Anthropic Claude</option>
+                                <option value="gpt4o" data-api-provider>OpenAI GPT-4o</option>
+                            </select>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+                                <strong>Evaluations use the SpeechGradebook Text + Video Model (Qwen) by default.</strong> Qwen runs on Modal (serverless GPU). Set <code>QWEN_API_URL</code> on Render to your Modal URL. Alternative providers (Gemini, OpenAI, Claude) can be used by setting API keys in Settings → General → API Keys. See <a href="RECOMMENDED_SETUP.md" target="_blank" rel="noopener" style="color: var(--primary);">RECOMMENDED_SETUP.md</a> for the full guide.
+                            </p>
+                        </div>
+                        <p id="localhostServerHint" style="font-size: 0.9rem; color: var(--primary); margin-top: 0.25rem; display: none;">
+                            Using local server. Start it first: in a terminal, go to the SpeechGradebook folder and run <code>./run_local.sh</code> (or <code>uvicorn app:app --host 0.0.0.0 --port 8000</code>).
+                        </p>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="button" onclick="moveToStep(1)" class="btn-secondary"><span class="icon-with-text"><i data-lucide="arrow-left"></i> Back</span></button>
+                            <button type="submit" id="submitEvaluationBtn"><span class="icon-with-text">Continue to Evaluation <i data-lucide="arrow-right"></i></span></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 3: Processing - Apple HIG: Clear loading state with feedback -->
+                <div id="processingStep" class="hidden loading-state">
+                    <div class="spinner" aria-label="Loading"></div>
+                    <div>
+                        <h3 style="margin: 0 0 var(--space-sm) 0; color: var(--text);">
