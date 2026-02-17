@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Scheme Option 2: Academic but Contemporary</title>
+    <link href="https://fonts.bunny.net/css?family=Roboto:400,600,700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #475569;
+            --accent: #06b6d4;
+            
+            --text: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-light: #6b6b6b;
+            
+            --bg: #fafbfc;
+            --bg-alt: #f1f4f7;
+            --card: #ffffff;
+            --border: #d1d5db;
+            
+            --success: #059669;
+            --warning: #d97706;
+            --error: #b91c1c;
+            --info: #0284c7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .scheme-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .scheme-subtitle {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        
+        .header-preview {
+            background: var(--primary-dark);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-preview h2 {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-alt);
+            border-color: var(--primary);
+        }
+        
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-alt);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .swatch-color {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .swatch-info {
+            flex: 1;
+        }
+        
+        .swatch-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+        
+        .swatch-value {
+            font-family: monospace;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="scheme-title">Option 2: Academic but Contemporary</h1>
+        <p class="scheme-subtitle">Deep academic blue with modern cyan accents - maintains academic feel while feeling fresh</p>
+        
+        <div class="header-preview">
+            <h2>SpeechGradebook</h2>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);">Dashboard</button>
+                <button class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);">Evaluate</button>
+            </div>
+        </div>
+        
+        <div class="components-grid">
+            <div class="card">
+                <div class="card-header">Color Palette</div>
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: var(--primary);"></div>
+                    <div class="swatch-info">
+                        <div class="swatch-name">Primary</div>
+                        <div class="swatch-value">#1e40af</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: var(--secondary);"></div>
+                    <div class="swatch-info">
+                        <div class="swatch-name">Secondary</div>
+                        <div class="swatch-value">#475569</div>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: var(--accent);"></div>
+                    <div class="swatch-info">
+                        <div class="swatch-name">Accent</div>
+                        <div class="swatch-value">#06b6d4</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Buttons</div>
+                <div class="button-group">
+                    <button class="btn btn-primary">Save Results</button>
+                    <button class="btn btn-secondary">Cancel</button>
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem;">Semantic Colors:</div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span style="background: var(--success); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;">Success</span>
+                        <span style="background: var(--warning); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;">Warning</span>
+                        <span style="background: var(--error); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;">Error</span>
+                        <span style="background: var(--info); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;">Info</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Sample Card</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">This is a sample card showing how content looks with this color scheme.</p>
+                <div class="stat-card">
+                    <div class="stat-value">95.2%</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">Why This Works</div>
+            <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.5rem;">
+                <li>Deep academic blue maintains traditional educational feel</li>
+                <li>Cyan accent adds modern energy and approachability</li>
+                <li>Steel gray secondary is professional and versatile</li>
+                <li>Balances academic tradition with contemporary design</li>
+                <li>Feels scholarly yet accessible</li>
+            </ul>
+        </div>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

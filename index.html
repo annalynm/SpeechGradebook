@@ -19,25 +19,26 @@
     <style>
         /* SpeechGradebook theme (default) - dark blue. Custom themes (e.g. University of Tennessee) override via JS from institution_themes. */
         :root {
+            /* SpeechGradebook Light Theme (Option 7) */
             --primary: #1e3a5f;
             --primary-dark: #142940;
             --primary-light: #2d4a6f;
-            --secondary: #c8a882;
-            --accent: #d4af37;
+            --secondary: #5a6c7d;
+            --accent: #4a6fa5;
             
-            /* Apple HIG: Text colors with WCAG AA contrast (4.5:1 on white) */
+            /* Apple HIG: Text colors with WCAG AA contrast (4.5:1 on white) - Option 7 */
             --text: #1a1a1a;              /* High contrast for body text (WCAG AAA: 16.6:1) */
             --text-secondary: #4a4a4a;     /* Secondary text (WCAG AA: 7.1:1) */
             --text-light: #6b6b6b;        /* Light text (WCAG AA: 4.6:1) - minimum for body */
             --text-disabled: #9a9a9a;     /* Disabled text (WCAG AA: 2.8:1 - only for disabled states) */
             
-            /* Apple HIG: Background colors */
-            --bg: #fafbfc;
-            --bg-alt: #f1f4f7;
-            --bg-hover: #e8ecf0;
-            --card: #ffffff;
-            --border: #d1d5db;
-            --border-light: #e5e7eb;
+            /* Apple HIG: Background colors - Option 7 */
+            --bg: #fafbfc;                 /* Subtle off-white for reduced eye strain */
+            --bg-alt: #f1f4f7;             /* Secondary background for cards/panels */
+            --bg-hover: #e8ecf0;           /* Hover state background */
+            --card: #ffffff;               /* Card background - white for clarity */
+            --border: #d1d5db;             /* Border color with good contrast */
+            --border-light: #e5e7eb;       /* Lighter borders for subtle separation */
             
             /* Apple HIG: Semantic colors with proper contrast */
             --success: #059669;           /* Green - WCAG AA on white (3.2:1) - use with white text or darker shade */
@@ -110,6 +111,192 @@
             --radius-lg: 0.75rem;    /* 12px */
             --radius-xl: 1rem;       /* 16px */
             --radius-full: 9999px;
+        }
+        
+        /* Dark Mode Variables - Refined for accessibility and aesthetics */
+        :root[data-theme="dark"] {
+            /* Primary colors - lighter for better visibility on dark backgrounds */
+            --primary: #5a8fc7;              /* Lighter blue for better contrast */
+            --primary-dark: #4a7fb7;        /* Slightly darker primary */
+            --primary-light: #6a9fd7;       /* Light primary variant */
+            --secondary: #9bb0d4;           /* Lighter secondary */
+            --accent: #e5c158;              /* Brighter accent for visibility */
+            
+            /* Dark mode text colors - optimized for WCAG AA/AAA contrast on dark backgrounds */
+            --text: #ffffff;                 /* Pure white for maximum contrast (WCAG AAA: 21:1 on #1d1d1f) */
+            --text-secondary: #e5e5e7;      /* Light gray for secondary text (WCAG AA: 12.6:1) */
+            --text-light: #b8b8ba;         /* Medium gray for light text (WCAG AA: 7.1:1) */
+            --text-disabled: #8e8e93;        /* Disabled text (WCAG AA: 4.5:1) */
+            
+            /* Dark mode background colors - refined Apple-style dark mode */
+            --bg: #1d1d1f;                  /* Slightly lighter than pure black for reduced eye strain */
+            --bg-alt: #2d2d30;              /* Secondary background (cards, panels) */
+            --bg-hover: #3a3a3d;            /* Hover state background */
+            --card: #2d2d30;                /* Card background - distinct from main bg */
+            --border: #48484a;              /* Visible borders with good contrast */
+            --border-light: #3a3a3d;        /* Lighter borders for subtle separation */
+            
+            /* Dark mode semantic colors - optimized for dark backgrounds */
+            --success: #34c759;             /* Apple System Green - brighter for visibility */
+            --success-bg: rgba(52, 199, 89, 0.15);  /* Subtle green background */
+            --success-text: #34c759;         /* Green text */
+            --success-border: #34c759;      /* Green border */
+            
+            --warning: #ff9500;              /* Apple System Orange - brighter */
+            --warning-bg: rgba(255, 149, 0, 0.15);  /* Subtle orange background */
+            --warning-text: #ff9500;        /* Orange text */
+            --warning-border: #ff9500;      /* Orange border */
+            
+            --error: #ff3b30;               /* Apple System Red - brighter */
+            --error-bg: rgba(255, 59, 48, 0.15);    /* Subtle red background */
+            --error-text: #ff3b30;          /* Red text */
+            --error-border: #ff3b30;        /* Red border */
+            
+            --info: #007aff;                 /* Apple System Blue - brighter */
+            --info-bg: rgba(0, 122, 255, 0.15);   /* Subtle blue background */
+            --info-text: #007aff;           /* Blue text */
+            --info-border: #007aff;         /* Blue border */
+            
+            /* Dark mode interactive states - optimized for visibility */
+            --link: #64b5f6;                /* Light blue for links */
+            --link-hover: #90caf9;          /* Lighter blue on hover */
+            --link-visited: #ba68c8;        /* Purple for visited links */
+            
+            /* Dark mode focus indicators */
+            --focus-ring: #007aff;           /* Blue focus ring */
+            
+            /* Dark mode elevation adjustments - lighter shadows for dark backgrounds */
+            --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --elevation-2: 0 3px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+            --elevation-3: 0 10px 20px rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.4);
+            --elevation-4: 0 15px 30px rgba(0, 0, 0, 0.6), 0 5px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Dark mode specific overrides for better contrast and aesthetics */
+        :root[data-theme="dark"] input[type="text"],
+        :root[data-theme="dark"] input[type="email"],
+        :root[data-theme="dark"] input[type="password"],
+        :root[data-theme="dark"] input[type="number"],
+        :root[data-theme="dark"] input[type="url"],
+        :root[data-theme="dark"] textarea,
+        :root[data-theme="dark"] select {
+            background: var(--card);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        
+        :root[data-theme="dark"] input[type="text"]:focus,
+        :root[data-theme="dark"] input[type="email"]:focus,
+        :root[data-theme="dark"] input[type="password"]:focus,
+        :root[data-theme="dark"] input[type="number"]:focus,
+        :root[data-theme="dark"] input[type="url"]:focus,
+        :root[data-theme="dark"] textarea:focus,
+        :root[data-theme="dark"] select:focus {
+            border-color: var(--primary);
+            background: var(--card);
+        }
+        
+        /* Dark mode tab hover states */
+        :root[data-theme="dark"] .analytics-tab:hover,
+        :root[data-theme="dark"] .settings-tab:hover,
+        :root[data-theme="dark"] .support-tab:hover,
+        :root[data-theme="dark"] .instructor-dashboard-tab:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        :root[data-theme="dark"] .analytics-tab-active,
+        :root[data-theme="dark"] .settings-tab-active,
+        :root[data-theme="dark"] .support-tab-active,
+        :root[data-theme="dark"] .instructor-dashboard-tab-active {
+            background: rgba(90, 143, 199, 0.15); /* Primary color with transparency */
+        }
+        
+        /* Dark mode card hover */
+        :root[data-theme="dark"] .card:hover {
+            border-color: rgba(90, 143, 199, 0.3); /* Primary color border */
+        }
+        
+        /* Dark mode dropdown hover */
+        :root[data-theme="dark"] .dropdown-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        /* Dark mode code blocks */
+        :root[data-theme="dark"] code {
+            background: var(--bg-alt);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        /* Dark mode header adjustments */
+        :root[data-theme="dark"] header {
+            border-bottom: 1px solid var(--border);
+        }
+        
+        /* Option 7 Dark Theme specific overrides - fixes glare and contrast issues */
+        .theme-option7-dark .data-table tbody tr {
+            background: var(--card) !important;
+            color: var(--text) !important;
+        }
+        
+        .theme-option7-dark .data-table tbody tr:hover {
+            background: var(--bg-hover) !important;
+        }
+        
+        .theme-option7-dark .data-table td {
+            color: var(--text) !important;
+            background: transparent !important;
+        }
+        
+        /* Fix any white backgrounds that cause glare */
+        .theme-option7-dark .card,
+        .theme-option7-dark .class-card,
+        .theme-option7-dark .kpi-card,
+        .theme-option7-dark .chart-card {
+            background: var(--card) !important;
+            color: var(--text) !important;
+        }
+        
+        /* Fix search inputs and form elements */
+        .theme-option7-dark input[type="text"],
+        .theme-option7-dark input[type="email"],
+        .theme-option7-dark input[type="password"],
+        .theme-option7-dark input[type="search"],
+        .theme-option7-dark textarea,
+        .theme-option7-dark select {
+            background: var(--card) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+        
+        /* Fix filter controls and panels */
+        .theme-option7-dark .filter-controls {
+            background: var(--bg-alt) !important;
+        }
+        
+        /* Fix chart table headers */
+        .theme-option7-dark .chart-card .data-table th {
+            background: var(--bg-alt) !important;
+            color: var(--text) !important;
+        }
+        
+        /* Ensure table headers maintain contrast */
+        .theme-option7-dark .data-table thead {
+            background: var(--primary) !important;
+            color: white !important;
+        }
+        
+        /* Fix any elements with hardcoded white backgrounds */
+        .theme-option7-dark [style*="background: white"],
+        .theme-option7-dark [style*="background: #fff"],
+        .theme-option7-dark [style*="background: #ffffff"] {
+            background: var(--card) !important;
+        }
+        
+        /* Ensure readable text in all contexts */
+        .theme-option7-dark .text-light,
+        .theme-option7-dark .text-secondary {
+            color: var(--text-light) !important;
         }
         
         /* Apple HIG: Respect prefers-reduced-motion */
@@ -903,8 +1090,13 @@
             padding: 1rem 1.25rem;
             border-radius: 0.5rem;
             margin-bottom: var(--space-lg);
+            margin-top: 0;
             box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
             animation: evaluationSavedIn 0.3s ease;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            box-sizing: border-box;
         }
         .evaluation-saved-indicator.hidden {
             display: none;
@@ -2091,10 +2283,16 @@
             opacity: 0.15; transition: opacity 0.3s ease;
         }
         .chart-line-dot {
-            fill: var(--primary); stroke: white; stroke-width: 2; r: 5;
+            fill: var(--primary); stroke: white; stroke-width: 2; r: 11; /* Increased for 44pt touch target */
             transition: r 0.2s ease;
+            cursor: pointer;
         }
-        .chart-line-dot:hover { r: 7; }
+        .chart-line-dot:hover { r: 13; }
+        .chart-line-dot:focus {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            r: 13;
+        }
         .chart-line-grid {
             stroke: var(--border); stroke-width: 1; stroke-dasharray: 2,2; opacity: 0.5;
         }
@@ -2112,6 +2310,21 @@
         }
         .chart-donut-segment:hover {
             opacity: 0.8; transform: scale(1.05);
+        }
+        .chart-donut-segment:focus {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            opacity: 0.8;
+        }
+        /* Larger hit area for donut segments (44pt minimum) */
+        .chart-donut-hit-area {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            pointer-events: all;
         }
         .chart-donut-center {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -2133,15 +2346,47 @@
             flex: 1; background: linear-gradient(to top, var(--primary) 0%, var(--primary-light) 100%);
             border-radius: 4px 4px 0 0; min-height: 4px; transition: all 0.3s ease;
             position: relative; box-shadow: 0 2px 4px rgba(30, 58, 95, 0.2);
+            cursor: pointer;
+            min-width: 44px; /* Ensure touch target minimum */
         }
         .chart-histogram-bar:hover {
             background: linear-gradient(to top, var(--primary-light) 0%, var(--primary) 100%);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(30, 58, 95, 0.3);
         }
+        .chart-histogram-bar:focus {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            transform: translateY(-2px);
+        }
         .chart-histogram-label {
             position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
             font-size: 0.75rem; color: var(--text-light); white-space: nowrap;
+        }
+        
+        /* Respect prefers-reduced-motion for chart animations */
+        @media (prefers-reduced-motion: reduce) {
+            .chart-line-dot,
+            .chart-donut-segment,
+            .chart-histogram-bar {
+                transition: none;
+            }
+            .chart-line-dot:hover,
+            .chart-line-dot:focus,
+            .chart-donut-segment:hover,
+            .chart-donut-segment:focus,
+            .chart-histogram-bar:hover,
+            .chart-histogram-bar:focus {
+                transform: none;
+            }
+        }
+        
+        /* Colorblind-friendly patterns for donut charts */
+        .chart-donut-pattern-emissions {
+            fill: url(#pattern-emissions);
+        }
+        .chart-donut-pattern-offset {
+            fill: url(#pattern-offset);
         }
         .chart-card .chart-body .chart-bars { display: flex; flex-direction: column; gap: var(--space-md); }
         .chart-card .chart-body .chart-bar-row {
@@ -2352,6 +2597,20 @@
         .hidden {
             display: none !important;
         }
+        /* Screen reader only - visually hidden but accessible to assistive tech */
+        .sr-only,
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
         .visually-hidden {
             position: absolute;
             width: 1px;
@@ -2989,14 +3248,8 @@
                         </button>
                     </div>
                     <div id="resultsContent"></div>
-                    <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl); flex-wrap: wrap;">
-                        <button onclick="openSaveModal()"><span class="icon-with-text"><i data-lucide="save"></i> Save Results</span></button>
-                        <button onclick="openMoveEvalModal(editingEvaluationId, editingCourseId, editingStudentId)" class="btn-secondary" id="moveEvalBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="move"></i> Move to Different Class/Student</span></button>
-                        <button onclick="downloadPDF()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="file-text"></i> Download Report (HTML)</span></button>
-                        <button onclick="emailResults()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="mail"></i> Email Results</span></button>
-                        <button onclick="viewCorrectionHistory()" class="btn-secondary" id="viewCorrectionsBtn" style="display: none;"><span class="icon-with-text"><i data-lucide="clipboard-list"></i> View Corrections (<span id="correctionCount">0</span>)</span></button>
-                        ${editingEvaluationId ? `<button onclick="cancelEdit()" class="btn-secondary" style="background: #dc2626; color: white; border-color: #dc2626;"><span class="icon-with-text"><i data-lucide="x"></i> Cancel Edit</span></button>` : ''}
-                        <button onclick="startOver()" class="btn-secondary"><span class="icon-with-text"><i data-lucide="refresh-cw"></i> Start Over</span></button>
+                    <div id="resultsActionButtons" style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; padding: 16px 0;">
+                        <!-- Buttons will be dynamically inserted here -->
                     </div>
                 </div>
             </div>
@@ -3928,6 +4181,14 @@ ssh amcclu12@login.isaac.utk.edu
                     </select>
                 </div>
 
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
+                        <span class="icon-with-text"><i data-lucide="moon"></i> Dark Mode</span>
+                    </label>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem; margin-left: 2rem;">Switch between light and dark themes</p>
+                </div>
+
                 <div id="apiKeysSectionSuperAdminOnly" style="margin-top: 2rem;">
                     <h3 class="settings-section-heading"><span class="icon-with-text"><i data-lucide="key"></i> Qwen Service URL</span></h3>
                     <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1.5rem;">
@@ -4022,6 +4283,11 @@ ssh amcclu12@login.isaac.utk.edu
                             <select id="demoBrandingPackageSelect" onchange="onDemoBrandingPackageChange(this.value)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
                                 <option value="default">SpeechGradebook Default</option>
                                 <option value="utk-wds">UTK WDS (University of Tennessee, Knoxville)</option>
+                                <option value="option4">Option 4: Sophisticated Navy</option>
+                                <option value="option7">Option 7: Current Primary Refined</option>
+                                <option value="option7-apple">Option 7: Current Primary Refined (Apple-aligned)</option>
+                                <option value="option7-dark">Option 7: Dark Theme</option>
+                                <option value="option8">Option 8: Ideal Apple HIG</option>
                             </select>
                         </div>
                         <h4 class="settings-section-subheading" style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="palette"></i> Theme colors</span></h4>
@@ -5748,6 +6014,17 @@ ssh amcclu12@login.isaac.utk.edu
             input: () => `padding: ${getSpacing('md')}`,
             modal: () => `padding: ${getSpacing('xl')} ${getSpacing('2xl')}`
         };
+        
+        // Chart accessibility helper functions
+        function showChartPointDetails(element) {
+            const title = element.getAttribute('title') || element.getAttribute('aria-label') || 'Chart point';
+            alert(title); // In a production app, this could show a tooltip or modal
+        }
+        
+        function showChartSegmentDetails(element) {
+            const title = element.getAttribute('title') || element.getAttribute('aria-label') || 'Chart segment';
+            alert(title); // In a production app, this could show a tooltip or modal
+        }
         
         function escapeHtml(text) {
             if (text == null) return '';
@@ -7621,19 +7898,22 @@ ssh amcclu12@login.isaac.utk.edu
         // or institution has no theme row. Header uses same color as footer (solid #1e3a5f).
         function resetThemeToDefault() {
             const root = document.documentElement;
-            root.classList.remove('theme-torch', 'theme-utk-torch');
+            // Always use light theme for login screen
+            root.removeAttribute('data-theme');
+            root.classList.remove('theme-torch', 'theme-utk-torch', 'theme-option7-dark');
             root.style.removeProperty('--smokey');
             root.style.removeProperty('--link-blue');
+            // Apply SpeechGradebook Light Theme (Option 7)
             root.style.setProperty('--primary', '#1e3a5f');
             root.style.setProperty('--primary-dark', '#142940');
-            root.style.setProperty('--secondary', '#c8a882');
-            root.style.setProperty('--accent', '#d4af37');
-            root.style.setProperty('--text', '#2c3e50');
-            root.style.setProperty('--text-light', '#6c757d');
+            root.style.setProperty('--secondary', '#5a6c7d');
+            root.style.setProperty('--accent', '#4a6fa5');
+            root.style.setProperty('--text', '#1a1a1a');
+            root.style.setProperty('--text-light', '#6b6b6b');
             root.style.setProperty('--bg', '#fafbfc');
             root.style.setProperty('--bg-alt', '#f1f4f7');
             root.style.setProperty('--card', '#ffffff');
-            root.style.setProperty('--border', '#e1e8ed');
+            root.style.setProperty('--border', '#d1d5db');
             root.style.setProperty('--success', '#059669');
             root.style.setProperty('--warning', '#d97706');
             root.style.setProperty('--error', '#b91c1c');
@@ -7673,6 +7953,41 @@ ssh amcclu12@login.isaac.utk.edu
                 primary: '#FF8200', primaryDark: '#4B4B4B', secondary: '#1a73c5', accent: '#FF8200',
                 text: '#4B4B4B', textLight: '#6B6B6B', bg: '#FAFAFA', bgAlt: '#F0F0F0',
                 card: '#ffffff', border: '#E0E0E0', success: '#059669', warning: '#d97706', error: '#b91c1c'
+            },
+            'option4': {
+                primary: '#1a2332', primaryDark: '#0f1419', secondary: '#4a5568', accent: '#5b7fa6',
+                text: '#1a1a1a', textLight: '#6b6b6b', bg: '#f8f9fa', bgAlt: '#e9ecef',
+                card: '#ffffff', border: '#dee2e6', success: '#28a745', warning: '#ffc107', error: '#dc3545'
+            },
+            'option7': {
+                primary: '#1e3a5f', primaryDark: '#142940', secondary: '#5a6c7d', accent: '#4a6fa5',
+                text: '#1a1a1a', textLight: '#6b6b6b', bg: '#fafbfc', bgAlt: '#f1f4f7',
+                card: '#ffffff', border: '#d1d5db', success: '#059669', warning: '#d97706', error: '#b91c1c'
+            },
+            'speechgradebook-light': {
+                primary: '#1e3a5f', primaryDark: '#142940', secondary: '#5a6c7d', accent: '#4a6fa5',
+                text: '#1a1a1a', textLight: '#6b6b6b', bg: '#fafbfc', bgAlt: '#f1f4f7',
+                card: '#ffffff', border: '#d1d5db', success: '#059669', warning: '#d97706', error: '#b91c1c'
+            },
+            'option7-apple': {
+                primary: '#1e3a5f', primaryDark: '#142940', secondary: '#5a6c7d', accent: '#4a6fa5',
+                text: '#1a1a1a', textLight: '#6b6b6b', bg: '#fafbfc', bgAlt: '#f1f4f7',
+                card: '#ffffff', border: '#d1d5db', success: '#30D158', warning: '#FF9F0A', error: '#FF453A'
+            },
+            'option7-dark': {
+                primary: '#6ba5d7', primaryDark: '#1e3a5f', secondary: '#8bb5d7', accent: '#7bb5e7',
+                text: '#e8f0f8', textLight: '#b8c8d8', bg: '#121a24', bgAlt: '#1a2432',
+                card: '#1e2838', border: '#2d3a4d', success: '#34c759', warning: '#ff9500', error: '#ff3b30'
+            },
+            'speechgradebook-dark': {
+                primary: '#6ba5d7', primaryDark: '#1e3a5f', secondary: '#8bb5d7', accent: '#7bb5e7',
+                text: '#e8f0f8', textLight: '#b8c8d8', bg: '#121a24', bgAlt: '#1a2432',
+                card: '#1e2838', border: '#2d3a4d', success: '#34c759', warning: '#ff9500', error: '#ff3b30'
+            },
+            'option8': {
+                primary: '#007AFF', primaryDark: '#0051D5', secondary: '#5856D6', accent: '#5AC8FA',
+                text: '#000000', textLight: '#3C3C43', bg: '#F2F2F7', bgAlt: '#E5E5EA',
+                card: '#FFFFFF', border: '#C6C6C8', success: '#30D158', warning: '#FF9F0A', error: '#FF453A'
             }
         };
 
@@ -7696,7 +8011,27 @@ ssh amcclu12@login.isaac.utk.edu
             setDemoFormToBrandingPackage(value);
             applyDemoThemeFromForm();
             var status = document.getElementById('demoThemeStatus');
-            if (status) status.textContent = value === 'utk-wds' ? 'UTK WDS theme applied. You can tweak colors below.' : 'Default theme applied.';
+            if (status) {
+                if (value === 'utk-wds') {
+                    status.textContent = 'UTK WDS theme applied. You can tweak colors below.';
+                } else if (value === 'option4') {
+                    status.textContent = 'Option 4: Sophisticated Navy theme applied. You can tweak colors below.';
+                } else if (value === 'option7') {
+                    status.textContent = 'Option 7: Current Primary Refined theme applied. You can tweak colors below.';
+                } else if (value === 'option7-apple') {
+                    status.textContent = 'Option 7: Current Primary Refined (Apple-aligned) theme applied. Uses Apple system colors for semantic states.';
+                } else if (value === 'option7-dark') {
+                    status.textContent = 'Option 7: Dark Theme applied. Dark backgrounds with light headers and text for optimal contrast.';
+                } else if (value === 'speechgradebook-light') {
+                    status.textContent = 'SpeechGradebook Light Theme applied.';
+                } else if (value === 'speechgradebook-dark') {
+                    status.textContent = 'SpeechGradebook Dark Theme applied.';
+                } else if (value === 'option8') {
+                    status.textContent = 'Option 8: Ideal Apple HIG theme applied. Fully aligned with Apple Human Interface Guidelines.';
+                } else {
+                    status.textContent = 'Default theme applied.';
+                }
+            }
         }
         
         function getDemoTheme() {
@@ -7733,16 +8068,42 @@ ssh amcclu12@login.isaac.utk.edu
             var theme = getDemoTheme();
             if (!theme) return;
             var root = document.documentElement;
+            const isDarkMode = root.getAttribute('data-theme') === 'dark';
+            const isDarkTheme = theme.brandingPackage === 'option7-dark';
+            
+            // Add/remove theme class for CSS targeting
+            if (isDarkTheme) {
+                root.classList.add('theme-option7-dark');
+            } else {
+                root.classList.remove('theme-option7-dark');
+            }
+            
+            // Always apply primary colors (they work in both modes)
             if (theme.primary) root.style.setProperty('--primary', theme.primary);
             if (theme.primaryDark != null) root.style.setProperty('--primary-dark', theme.primaryDark);
             if (theme.secondary) root.style.setProperty('--secondary', theme.secondary);
             if (theme.accent) root.style.setProperty('--accent', theme.accent);
-            if (theme.text) root.style.setProperty('--text', theme.text);
-            if (theme.textLight) root.style.setProperty('--text-light', theme.textLight);
-            if (theme.bg) root.style.setProperty('--bg', theme.bg);
-            if (theme.bgAlt) root.style.setProperty('--bg-alt', theme.bgAlt);
-            if (theme.card) root.style.setProperty('--card', theme.card);
-            if (theme.border) root.style.setProperty('--border', theme.border);
+            
+            // For dark themes (like option7-dark), always apply the theme colors directly
+            // For other themes, only apply in light mode (let dark mode CSS handle dark mode toggle)
+            if (isDarkTheme || !isDarkMode) {
+                if (theme.text) root.style.setProperty('--text', theme.text);
+                if (theme.textLight) root.style.setProperty('--text-light', theme.textLight);
+                if (theme.bg) root.style.setProperty('--bg', theme.bg);
+                if (theme.bgAlt) root.style.setProperty('--bg-alt', theme.bgAlt);
+                if (theme.card) root.style.setProperty('--card', theme.card);
+                if (theme.border) root.style.setProperty('--border', theme.border);
+            } else {
+                // Remove light mode overrides so dark mode CSS can take effect
+                root.style.removeProperty('--text');
+                root.style.removeProperty('--text-light');
+                root.style.removeProperty('--bg');
+                root.style.removeProperty('--bg-alt');
+                root.style.removeProperty('--card');
+                root.style.removeProperty('--border');
+            }
+            
+            // Semantic colors can be set in both modes (they're adjusted in dark mode CSS)
             if (theme.success) root.style.setProperty('--success', theme.success);
             if (theme.warning) root.style.setProperty('--warning', theme.warning);
             if (theme.error) root.style.setProperty('--error', theme.error);
@@ -7763,9 +8124,19 @@ ssh amcclu12@login.isaac.utk.edu
                 var headerBg = theme.primaryDark != null ? theme.primaryDark : theme.primary;
                 header.style.background = headerBg;
                 header.style.backgroundImage = 'none';
-                var isDark = parseInt(String(headerBg).replace('#', ''), 16) < 0x808080;
+                // For dark themes, use light text; otherwise check if background is dark
+                var isDark = isDarkTheme || parseInt(String(headerBg).replace('#', ''), 16) < 0x808080;
                 header.style.color = isDark ? 'white' : '#2c3e50';
-                header.querySelectorAll('h1, .subtitle, #logoutLink, .nav-link').forEach(function(el) { if (el) el.style.color = ''; });
+                if (isDark) {
+                    // Ensure all header text is white for dark themes
+                    header.querySelectorAll('h1, .subtitle, #logoutLink, .nav-link').forEach(function(el) { 
+                        if (el) el.style.color = 'white'; 
+                    });
+                } else {
+                    header.querySelectorAll('h1, .subtitle, #logoutLink, .nav-link').forEach(function(el) { 
+                        if (el) el.style.color = ''; 
+                    });
+                }
             }
             var logo = document.getElementById('appLogo');
             if (logo) {
@@ -9545,6 +9916,69 @@ ssh amcclu12@login.isaac.utk.edu
                 text: '#4B4B4B',
                 fontHeading: "'Montserrat', sans-serif",
                 fontBody: "'Source Sans 3', -apple-system, sans-serif"
+            },
+            'option4': {
+                name: 'Option 4: Sophisticated Navy',
+                primary: '#1a2332',
+                header: '#0f1419',
+                secondary: '#4a5568',
+                text: '#1a1a1a',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
+            },
+            'option7': {
+                name: 'Option 7: Current Primary Refined',
+                primary: '#1e3a5f',
+                header: '#142940',
+                secondary: '#5a6c7d',
+                text: '#1a1a1a',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
+            },
+            'speechgradebook-light': {
+                name: 'SpeechGradebook Light Theme',
+                primary: '#1e3a5f',
+                header: '#142940',
+                secondary: '#5a6c7d',
+                text: '#1a1a1a',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
+            },
+            'option7-apple': {
+                name: 'Option 7: Current Primary Refined (Apple-aligned)',
+                primary: '#1e3a5f',
+                header: '#142940',
+                secondary: '#5a6c7d',
+                text: '#1a1a1a',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
+            },
+            'option7-dark': {
+                name: 'Option 7: Dark Theme',
+                primary: '#5a8fc7',
+                header: '#1e3a5f',
+                secondary: '#7a9fc7',
+                text: '#f5f7fa',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
+            },
+            'speechgradebook-dark': {
+                name: 'SpeechGradebook Dark Theme',
+                primary: '#6ba5d7',
+                header: '#1e3a5f',
+                secondary: '#8bb5d7',
+                text: '#e8f0f8',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
+            },
+            'option8': {
+                name: 'Option 8: Ideal Apple HIG',
+                primary: '#007AFF',
+                header: '#0051D5',
+                secondary: '#5856D6',
+                text: '#000000',
+                fontHeading: "'Roboto', sans-serif",
+                fontBody: "'Roboto', sans-serif"
             }
         };
 
@@ -9689,6 +10123,10 @@ ssh amcclu12@login.isaac.utk.edu
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('📄 DOM Content Loaded');
             
+            // Initialize dark mode (before other theme applications)
+            initDarkMode();
+            console.log('✓ Dark mode initialized');
+            
             // Test Supabase connection
             testSupabaseConnection();
             
@@ -9697,6 +10135,12 @@ ssh amcclu12@login.isaac.utk.edu
             
             // Apply tenant only when user is logged in (main app). Login screen always keeps SpeechGradebook default theme.
             if (currentUser) {
+                // Apply dark mode preference first (if enabled)
+                const isDark = getDarkModePreference();
+                if (isDark) {
+                    toggleDarkMode(true);
+                }
+                
                 const savedTenant = (typeof localStorage !== 'undefined' && localStorage.getItem('current_tenant')) || null;
                 const tenantSel = document.getElementById('tenantSelect');
                 if (savedTenant) {
@@ -9710,9 +10154,15 @@ ssh amcclu12@login.isaac.utk.edu
                     if (tenantSel) tenantSel.value = 'utk';
                 } else {
                     currentTenant = 'default';
-                    applyTenant('default');
+                    applyTenant(currentTenant);
                     if (tenantSel) tenantSel.value = 'default';
                 }
+                
+                // Re-apply dark mode after tenant (to override tenant colors if dark mode is enabled)
+                if (isDark) {
+                    toggleDarkMode(true);
+                }
+                
                 console.log('✓ Tenant applied:', currentTenant, savedTenant ? '(from localStorage)' : '(default or institution)');
             }
             // When not logged in, theme stays at default (set by showAuthScreen → resetThemeToDefault) so login page is always SpeechGradebook theme
@@ -9825,7 +10275,7 @@ ssh amcclu12@login.isaac.utk.edu
                 btn.disabled = true;
                 btn.textContent = 'Applying…';
                 try {
-                    await loadEnhancedAnalytics();
+                    await loadEnhancedAnalytics(true); // Show toast on Apply button click
                 } finally {
                     btn.disabled = false;
                     btn.textContent = origText;
@@ -9876,12 +10326,12 @@ ssh amcclu12@login.isaac.utk.edu
                 if (applyBtn && typeof loadEnhancedAnalytics === 'function') {
                     applyBtn.disabled = true;
                     applyBtn.textContent = 'Applying…';
-                    loadEnhancedAnalytics().finally(function() {
+                    loadEnhancedAnalytics(true).finally(function() { // Show toast on Apply button click
                         applyBtn.disabled = false;
                         applyBtn.textContent = 'Apply';
                     });
                 } else if (typeof loadEnhancedAnalytics === 'function') {
-                    loadEnhancedAnalytics();
+                    loadEnhancedAnalytics(true); // Show toast on filter change
                 }
             });
             if (typeof renderDashboardTabs === 'function') renderDashboardTabs();
@@ -10346,6 +10796,15 @@ ssh amcclu12@login.isaac.utk.edu
             var tab = (openTab === 'admin' || openTab === 'consent' || openTab === 'demo' || openTab === 'energy') ? openTab : (typeof userTier !== 'undefined' && userTier === 'demo' ? 'demo' : 'general');
             if (typeof switchSettingsTab === 'function') switchSettingsTab(tab);
             if (typeof updateApiKeysSectionVisibility === 'function') updateApiKeysSectionVisibility();
+            
+            // Initialize dark mode toggle
+            const isDark = getDarkModePreference();
+            updateDarkModeToggle(isDark);
+            
+            // Refresh icons after settings are shown
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                setTimeout(() => lucide.createIcons(), 100);
+            }
             
             // Restore normal spacing for main-content
             const mainContent = document.getElementById('main-content');
@@ -12476,7 +12935,12 @@ Earlier:
                     const emissionsArc = (emissionsPct / 100) * circumference;
                     const offsetArc = (offsetPct / 100) * circumference;
                     
-                    const donutHtml = '<div class="chart-donut-container"><svg class="chart-donut-svg" viewBox="0 0 100 100"><g><circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="8" /><circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="8" stroke-dasharray="' + emissionsArc + ' ' + circumference + '" stroke-dashoffset="0" class="chart-donut-segment" title="Emissions: ' + totalCo2Kg.toFixed(2) + ' kg" /><circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="' + offsetArc + ' ' + circumference + '" stroke-dashoffset="-' + emissionsArc + '" class="chart-donut-segment" title="Offset: ' + totalOffsetKg.toFixed(2) + ' kg" /></g></svg><div class="chart-donut-center"><div class="chart-donut-center-value" style="color: ' + (netEmissionsKg >= 0 ? 'var(--error-text)' : 'var(--success-text)') + ';">' + Math.abs(netEmissionsKg).toFixed(2) + '</div><div class="chart-donut-center-label">Net<br>Emissions<br><span style="font-size:0.7rem;color:var(--text-light);">' + (netEmissionsKg >= 0 ? 'kg' : 'kg offset') + '</span></div></div></div>';
+                    const donutId = 'emissions-donut-' + Math.random().toString(36).slice(2, 8);
+                    const donutDataTableId = donutId + '-data';
+                    const donutDataTable = '<table class="sr-only" id="' + donutDataTableId + '"><caption>Emissions and offset data</caption><thead><tr><th scope="col">Category</th><th scope="col">Amount (kg)</th><th scope="col">Percentage</th></tr></thead><tbody><tr><td>Emissions</td><td>' + totalCo2Kg.toFixed(2) + '</td><td>' + emissionsPct.toFixed(1) + '%</td></tr><tr><td>Offset</td><td>' + totalOffsetKg.toFixed(2) + '</td><td>' + offsetPct.toFixed(1) + '%</td></tr><tr><td>Net Emissions</td><td>' + netEmissionsKg.toFixed(2) + '</td><td>—</td></tr></tbody></table>';
+                    const emissionsAriaLabel = 'Emissions: ' + totalCo2Kg.toFixed(2) + ' kilograms, ' + emissionsPct.toFixed(1) + ' percent';
+                    const offsetAriaLabel = 'Offset: ' + totalOffsetKg.toFixed(2) + ' kilograms, ' + offsetPct.toFixed(1) + ' percent';
+                    const donutHtml = '<div class="chart-donut-container" style="position: relative;"><svg class="chart-donut-svg" viewBox="0 0 100 100" role="img" aria-label="Emissions versus offset donut chart" aria-describedby="' + donutDataTableId + '"><defs><pattern id="pattern-emissions-' + donutId + '" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="8" y2="8" stroke="#ef4444" stroke-width="1" opacity="0.5" /></pattern><pattern id="pattern-offset-' + donutId + '" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2" fill="#10b981" opacity="0.5" /></pattern></defs><g><circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="8" aria-hidden="true" /><circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="8" stroke-dasharray="' + emissionsArc + ' ' + circumference + '" stroke-dashoffset="0" class="chart-donut-segment" role="button" aria-label="' + escapeHtml(emissionsAriaLabel) + '" tabindex="0" title="Emissions: ' + totalCo2Kg.toFixed(2) + ' kg" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showChartSegmentDetails(this);}" /><circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="' + offsetArc + ' ' + circumference + '" stroke-dashoffset="-' + emissionsArc + '" class="chart-donut-segment" role="button" aria-label="' + escapeHtml(offsetAriaLabel) + '" tabindex="0" title="Offset: ' + totalOffsetKg.toFixed(2) + ' kg" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showChartSegmentDetails(this);}" /></g></svg><div class="chart-donut-hit-area" style="top: 50%; left: 50%; transform: translate(-50%, -50%);" aria-hidden="true" onclick="document.querySelector(\'.chart-donut-segment\')?.focus()"></div><div class="chart-donut-center"><div class="chart-donut-center-value" style="color: ' + (netEmissionsKg >= 0 ? 'var(--error-text)' : 'var(--success-text)') + ';">' + Math.abs(netEmissionsKg).toFixed(2) + '</div><div class="chart-donut-center-label">Net<br>Emissions<br><span style="font-size:0.7rem;color:var(--text-light);">' + (netEmissionsKg >= 0 ? 'kg' : 'kg offset') + '</span></div></div></div>' + donutDataTable;
                     
                     html += '<div class="chart-card" role="figure" aria-labelledby="chart-title-emissions-offset"><div class="chart-title text-headline" id="chart-title-emissions-offset"><span class="icon-with-text"><i data-lucide="pie-chart"></i> Emissions vs Offset</span></div><div class="chart-subtitle">Visual breakdown of CO₂ emissions and offsets</div><div class="chart-body" style="min-height: 280px; display: flex; align-items: center; justify-content: center;">' + donutHtml + '</div></div>';
                 }
@@ -12983,7 +13447,7 @@ Earlier:
         }
         
         // Load enhanced analytics
-        async function loadEnhancedAnalytics() {
+        async function loadEnhancedAnalytics(showToast = false) {
             if (!supabaseClient || !currentUser) {
                 const statsContainer = document.getElementById('overviewStatsContainer');
                 if (statsContainer) statsContainer.innerHTML = '<div style="text-align: center; padding: 2rem 1.5rem; color: var(--text-light);"><p style="font-weight: 600; color: var(--text);">Sign in to load analytics</p><p style="font-size: 0.9rem;">Analytics are available for instructors and department heads.</p></div>';
@@ -13200,6 +13664,7 @@ Earlier:
                         if (typeof switchAnalyticsTab === 'function') switchAnalyticsTab('overview');
                     }
                     if (typeof setAnalyticsLastUpdated === 'function') setAnalyticsLastUpdated();
+                    if (showToast && typeof showAnalyticsToast === 'function') showAnalyticsToast('Analytics updated.', 3000);
                     if (typeof loadFilteredCoursesForSuperAdmin === 'function') loadFilteredCoursesForSuperAdmin();
                     var hintEl = document.getElementById('analyticsFilterHint');
                     if (hintEl) {
@@ -13317,7 +13782,7 @@ Earlier:
                     if (typeof switchAnalyticsTab === 'function') switchAnalyticsTab('overview');
                 }
                 if (typeof setAnalyticsLastUpdated === 'function') setAnalyticsLastUpdated();
-                if (typeof showAnalyticsToast === 'function') showAnalyticsToast('Analytics updated.', 3000);
+                if (showToast && typeof showAnalyticsToast === 'function') showAnalyticsToast('Analytics updated.', 3000);
                 
                 console.log('✓ Analytics loaded:', { evaluations: evaluations.length, instructors: instructors.length, courses: uniqueCourses.length });
             } catch (error) {
@@ -13766,7 +14231,7 @@ Earlier:
                 var endEl = document.getElementById('analyticsEndDate');
                 if (startEl) startEl.value = '';
                 if (endEl) endEl.value = '';
-                if (typeof loadEnhancedAnalytics === 'function') loadEnhancedAnalytics();
+                if (typeof loadEnhancedAnalytics === 'function') loadEnhancedAnalytics(true); // Show toast on date reset
                 return;
             }
             var id = selectIds[type];
@@ -14196,12 +14661,16 @@ Earlier:
                     else scoreBins['81-100']++;
                 });
                 var maxBin = Math.max(...Object.values(scoreBins));
-                var histogramHtml = '<div class="chart-histogram">';
+                var histogramHtml = '<div class="chart-histogram" role="img" aria-label="Score distribution histogram">';
+                var histogramDataTable = '<table class="sr-only" id="histogram-data-table"><caption>Score distribution data</caption><thead><tr><th scope="col">Score Range</th><th scope="col">Count</th></tr></thead><tbody>';
                 Object.entries(scoreBins).forEach(function([range, count]) {
                     var height = maxBin > 0 ? Math.max(4, (count / maxBin) * 100) : 4;
-                    histogramHtml += '<div class="chart-histogram-bar" style="height: ' + height + '%;" title="' + range + ': ' + count + ' evaluations"><span class="chart-histogram-label">' + range + '</span></div>';
+                    var ariaLabel = 'Score range ' + range + ': ' + count + ' evaluation' + (count !== 1 ? 's' : '');
+                    histogramHtml += '<div class="chart-histogram-bar" style="height: ' + height + '%;" role="img" aria-label="' + escapeHtml(ariaLabel) + '" tabindex="0" title="' + range + ': ' + count + ' evaluations" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click();}"><span class="chart-histogram-label">' + range + '</span></div>';
+                    histogramDataTable += '<tr><td>' + escapeHtml(range) + '</td><td>' + count + '</td></tr>';
                 });
-                histogramHtml += '</div>';
+                histogramDataTable += '</tbody></table>';
+                histogramHtml += '</div>' + histogramDataTable;
                 
                 // Performance trend over time (line chart)
                 var trendData = [];
@@ -14234,11 +14703,17 @@ Earlier:
                         return x + ',' + y;
                     }).join(' ');
                     var areaPoints = '0,100 ' + points + ' 100,100';
-                    trendChartHtml = '<div class="chart-line-container"><svg class="chart-line-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.3" /><stop offset="100%" style="stop-color:var(--primary);stop-opacity:0.05" /></linearGradient></defs><polyline points="' + points + '" class="chart-line-path primary" fill="none" /><polygon points="' + areaPoints + '" class="chart-line-area" fill="url(#trendGradient)" />' + trendData.map(function(d, i) {
+                    var trendId = 'trend-chart-' + Math.random().toString(36).slice(2, 8);
+                    var trendDataTableId = trendId + '-data';
+                    var trendDataTable = '<table class="sr-only" id="' + trendDataTableId + '"><caption>Performance trend data</caption><thead><tr><th scope="col">Month</th><th scope="col">Average %</th><th scope="col">Count</th></tr></thead><tbody>' + trendData.map(function(d) {
+                        return '<tr><td>' + escapeHtml(d.month) + '</td><td>' + d.avg.toFixed(1) + '%</td><td>' + d.count + '</td></tr>';
+                    }).join('') + '</tbody></table>';
+                    trendChartHtml = '<div class="chart-line-container"><svg class="chart-line-svg" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Performance trend line chart" aria-describedby="' + trendDataTableId + '"><defs><linearGradient id="trendGradient' + trendId + '" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.3" /><stop offset="100%" style="stop-color:var(--primary);stop-opacity:0.05" /></linearGradient></defs><polyline points="' + points + '" class="chart-line-path primary" fill="none" aria-label="Average score trend line" /><polygon points="' + areaPoints + '" class="chart-line-area" fill="url(#trendGradient' + trendId + ')" aria-hidden="true" />' + trendData.map(function(d, i) {
                         var x = (i / (trendData.length - 1 || 1)) * 100;
                         var y = 100 - ((d.avg - minTrend) / range) * 100;
-                        return '<circle cx="' + x + '" cy="' + y + '" class="chart-line-dot" title="' + d.month + ': ' + d.avg.toFixed(1) + '% (n=' + d.count + ')" />';
-                    }).join('') + '</svg><div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-light);"><span>' + (trendData[0]?.month || '') + '</span><span>' + (trendData[trendData.length - 1]?.month || '') + '</span></div></div>';
+                        var ariaLabel = 'Month ' + d.month + ': ' + d.avg.toFixed(1) + ' percent average, ' + d.count + ' evaluation' + (d.count !== 1 ? 's' : '');
+                        return '<circle cx="' + x + '" cy="' + y + '" class="chart-line-dot" role="button" aria-label="' + escapeHtml(ariaLabel) + '" tabindex="0" title="' + d.month + ': ' + d.avg.toFixed(1) + '% (n=' + d.count + ')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showChartPointDetails(this);}" />';
+                    }).join('') + '</svg><div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-light);"><span>' + (trendData[0]?.month || '') + '</span><span>' + (trendData[trendData.length - 1]?.month || '') + '</span></div></div>' + trendDataTable;
                 } else {
                     trendChartHtml = '<p style="color:var(--text-light);padding:1rem;text-align:center;">No trend data available. Add evaluations with dates to see performance over time.</p>';
                 }
@@ -14251,7 +14726,11 @@ Earlier:
                     var notAttainingPct = 100 - attainmentPct;
                     var attainmentArc = (attainmentPct / 100) * circumference;
                     var notAttainingArc = (notAttainingPct / 100) * circumference;
-                    outcomeDonutHtml = '<div class="chart-donut-container"><svg class="chart-donut-svg" viewBox="0 0 100 100"><g><circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="8" /><circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="' + attainmentArc + ' ' + circumference + '" stroke-dashoffset="0" class="chart-donut-segment" title="' + attainmentPct + '% meeting threshold" /></g></svg><div class="chart-donut-center"><div class="chart-donut-center-value">' + attainmentPct + '%</div><div class="chart-donut-center-label">Meeting<br>Threshold</div></div></div>';
+                    var donutId = 'donut-chart-' + Math.random().toString(36).slice(2, 8);
+                    var donutDataTableId = donutId + '-data';
+                    var donutDataTable = '<table class="sr-only" id="' + donutDataTableId + '"><caption>Outcome attainment data</caption><thead><tr><th scope="col">Status</th><th scope="col">Percentage</th><th scope="col">Count</th></tr></thead><tbody><tr><td>Meeting threshold (≥60%)</td><td>' + attainmentPct + '%</td><td>' + (high + medium) + '</td></tr><tr><td>Below threshold</td><td>' + notAttainingPct + '%</td><td>' + low + '</td></tr></tbody></table>';
+                    var ariaLabel = attainmentPct + ' percent of evaluations meeting the 60 percent threshold';
+                    outcomeDonutHtml = '<div class="chart-donut-container" style="position: relative;"><svg class="chart-donut-svg" viewBox="0 0 100 100" role="img" aria-label="' + escapeHtml(ariaLabel) + '" aria-describedby="' + donutDataTableId + '"><g><circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="8" aria-hidden="true" /><circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="' + attainmentArc + ' ' + circumference + '" stroke-dashoffset="0" class="chart-donut-segment" role="button" aria-label="' + escapeHtml(attainmentPct + ' percent meeting threshold, ' + (high + medium) + ' evaluations') + '" tabindex="0" title="' + attainmentPct + '% meeting threshold" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showChartSegmentDetails(this);}" /></g></svg><div class="chart-donut-hit-area" style="top: 50%; left: 50%; transform: translate(-50%, -50%);" aria-hidden="true" onclick="document.querySelector(\'.chart-donut-segment\')?.focus()"></div><div class="chart-donut-center"><div class="chart-donut-center-value">' + attainmentPct + '%</div><div class="chart-donut-center-label">Meeting<br>Threshold</div></div></div>' + donutDataTable;
                 } else {
                     outcomeDonutHtml = '<p style="color:var(--text-light);padding:1rem;text-align:center;">No outcome data available.</p>';
                 }
@@ -17797,6 +18276,135 @@ SpeechGradebook Research Team`;
             }
         }
 
+        // ===== DARK MODE MANAGEMENT =====
+        const DARK_MODE_KEY = 'speech_dark_mode';
+        
+        function getDarkModePreference() {
+            try {
+                const saved = localStorage.getItem(DARK_MODE_KEY);
+                if (saved !== null) {
+                    return saved === 'true';
+                }
+                // Check system preference if no saved preference
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        function setDarkModePreference(enabled) {
+            try {
+                localStorage.setItem(DARK_MODE_KEY, enabled ? 'true' : 'false');
+            } catch (e) {
+                console.warn('Dark mode preference storage failed', e);
+            }
+        }
+        
+        function toggleDarkMode(enabled) {
+            const root = document.documentElement;
+            setDarkModePreference(enabled);
+            updateDarkModeToggle(enabled);
+            
+            if (enabled) {
+                // Apply SpeechGradebook Dark Theme
+                const darkTheme = DEMO_BRANDING_PACKAGES['speechgradebook-dark'] || DEMO_BRANDING_PACKAGES['option7-dark'];
+                root.classList.add('theme-option7-dark');
+                root.style.setProperty('--primary', darkTheme.primary);
+                root.style.setProperty('--primary-dark', darkTheme.primaryDark);
+                root.style.setProperty('--secondary', darkTheme.secondary);
+                root.style.setProperty('--accent', darkTheme.accent);
+                root.style.setProperty('--text', darkTheme.text);
+                root.style.setProperty('--text-light', darkTheme.textLight);
+                root.style.setProperty('--bg', darkTheme.bg);
+                root.style.setProperty('--bg-alt', darkTheme.bgAlt);
+                root.style.setProperty('--card', darkTheme.card);
+                root.style.setProperty('--border', darkTheme.border);
+                root.style.setProperty('--success', darkTheme.success);
+                root.style.setProperty('--warning', darkTheme.warning);
+                root.style.setProperty('--error', darkTheme.error);
+                
+                // Update header
+                const header = document.querySelector('header');
+                if (header) {
+                    header.style.background = darkTheme.primaryDark;
+                    header.style.color = 'white';
+                    header.querySelectorAll('h1, .subtitle, #logoutLink, .nav-link').forEach(el => {
+                        if (el) el.style.color = 'white';
+                    });
+                }
+                console.log('SpeechGradebook Dark Theme enabled');
+            } else {
+                // Apply SpeechGradebook Light Theme (Option 7)
+                const lightTheme = DEMO_BRANDING_PACKAGES['speechgradebook-light'] || DEMO_BRANDING_PACKAGES['option7'];
+                root.classList.remove('theme-option7-dark');
+                root.style.setProperty('--primary', lightTheme.primary);
+                root.style.setProperty('--primary-dark', lightTheme.primaryDark);
+                root.style.setProperty('--secondary', lightTheme.secondary);
+                root.style.setProperty('--accent', lightTheme.accent);
+                root.style.setProperty('--text', lightTheme.text);
+                root.style.setProperty('--text-light', lightTheme.textLight);
+                root.style.setProperty('--bg', lightTheme.bg);
+                root.style.setProperty('--bg-alt', lightTheme.bgAlt);
+                root.style.setProperty('--card', lightTheme.card);
+                root.style.setProperty('--border', lightTheme.border);
+                root.style.setProperty('--success', lightTheme.success);
+                root.style.setProperty('--warning', lightTheme.warning);
+                root.style.setProperty('--error', lightTheme.error);
+                
+                // Update header
+                const header = document.querySelector('header');
+                if (header) {
+                    header.style.background = lightTheme.primaryDark;
+                    header.style.color = 'white';
+                    header.querySelectorAll('h1, .subtitle, #logoutLink, .nav-link').forEach(el => {
+                        if (el) el.style.color = '';
+                    });
+                }
+                console.log('SpeechGradebook Light Theme enabled');
+            }
+            
+            // Refresh icons after theme change
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                setTimeout(() => lucide.createIcons(), 100);
+            }
+        }
+        
+        
+        function updateDarkModeToggle(enabled) {
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) {
+                toggle.checked = enabled;
+            }
+        }
+        
+        function initDarkMode() {
+            // Only apply dark mode if user is logged in (not on login screen)
+            const authScreen = document.getElementById('authScreen');
+            const isLoggedIn = !authScreen || authScreen.classList.contains('hidden');
+            
+            if (isLoggedIn) {
+                const isDark = getDarkModePreference();
+                toggleDarkMode(isDark);
+            } else {
+                // Login screen always uses light theme
+                resetThemeToDefault();
+            }
+        }
+        
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                // Only auto-switch if user hasn't manually set a preference
+                const saved = localStorage.getItem(DARK_MODE_KEY);
+                if (saved === null) {
+                    toggleDarkMode(e.matches);
+                }
+            });
+        }
+
         // ===== TENANT/THEME MANAGEMENT =====
         function switchTenant(tenantId) {
             currentTenant = tenantId;
@@ -17809,6 +18417,9 @@ SpeechGradebook Research Team`;
             
             // Apply colors
             const root = document.documentElement;
+            const isDarkMode = root.getAttribute('data-theme') === 'dark';
+            
+            // Always apply primary colors (they work in both modes)
             root.style.setProperty('--primary', config.colors.primary);
             root.style.setProperty('--primary-dark', config.colors.primaryDark);
             root.style.setProperty('--secondary', config.colors.secondary);
@@ -17842,22 +18453,35 @@ SpeechGradebook Research Team`;
                 // UTK Torch Theme: full Torch design tokens from utk-theme-preview.html (both UTK and UTK Torch use this)
                 root.classList.add('theme-utk-torch');
                 root.style.setProperty('--smokey', '#4B4B4B');
-                root.style.setProperty('--text', '#4B4B4B');
-                root.style.setProperty('--text-light', '#6B6B6B');
-                root.style.setProperty('--bg', '#FAFAFA');
-                root.style.setProperty('--bg-alt', '#F0F0F0');
-                root.style.setProperty('--border', '#E0E0E0');
                 root.style.setProperty('--link-blue', '#1a73c5');
+                // Only set light mode colors if not in dark mode
+                if (!isDarkMode) {
+                    root.style.setProperty('--text', '#4B4B4B');
+                    root.style.setProperty('--text-light', '#6B6B6B');
+                    root.style.setProperty('--bg', '#FAFAFA');
+                    root.style.setProperty('--bg-alt', '#F0F0F0');
+                    root.style.setProperty('--border', '#E0E0E0');
+                } else {
+                    // Remove light mode overrides so dark mode CSS can take effect
+                    root.style.removeProperty('--text');
+                    root.style.removeProperty('--text-light');
+                    root.style.removeProperty('--bg');
+                    root.style.removeProperty('--bg-alt');
+                    root.style.removeProperty('--border');
+                }
             } else {
                 root.classList.remove('theme-torch');
                 root.classList.remove('theme-utk-torch');
                 root.style.removeProperty('--smokey');
-                root.style.removeProperty('--text');
-                root.style.removeProperty('--text-light');
-                root.style.removeProperty('--bg');
-                root.style.removeProperty('--bg-alt');
-                root.style.removeProperty('--border');
                 root.style.removeProperty('--link-blue');
+                // Only remove light mode colors if not in dark mode (to let dark mode CSS work)
+                if (!isDarkMode) {
+                    root.style.removeProperty('--text');
+                    root.style.removeProperty('--text-light');
+                    root.style.removeProperty('--bg');
+                    root.style.removeProperty('--bg-alt');
+                    root.style.removeProperty('--border');
+                }
                 if (header) {
                     header.style.background = '';
                     header.style.backgroundImage = '';
@@ -18170,6 +18794,95 @@ SpeechGradebook Research Team`;
             }
         }
         
+        // Populate evaluation fields from pending values (called when step 2 is shown)
+        function populateEvalFieldsFromPending() {
+            if (!pendingClassIdForEval || !pendingStudentIdForEval) {
+                return;
+            }
+            
+            const classSelect = document.getElementById('evalClassSelect');
+            const studentSelect = document.getElementById('evalStudentSelect');
+            
+            if (!classSelect || !studentSelect) {
+                // Retry if elements aren't ready yet
+                setTimeout(populateEvalFieldsFromPending, 100);
+                return;
+            }
+            
+            try {
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                const classData = classes.find(c => c.id === pendingClassIdForEval);
+                
+                if (!classData) {
+                    console.warn('Class data not found for pending class ID:', pendingClassIdForEval);
+                    pendingClassIdForEval = null;
+                    pendingStudentIdForEval = null;
+                    return;
+                }
+                
+                // Find and select the class
+                let classFound = false;
+                for (let i = 0; i < classSelect.options.length; i++) {
+                    const option = classSelect.options[i];
+                    if (option.value === String(pendingClassIdForEval) || 
+                        option.value === pendingClassIdForEval ||
+                        (classData && option.textContent.includes(classData.name))) {
+                        classSelect.value = option.value;
+                        classFound = true;
+                        break;
+                    }
+                }
+                
+                if (!classFound) {
+                    console.warn('Could not find class option for:', pendingClassIdForEval);
+                    pendingClassIdForEval = null;
+                    pendingStudentIdForEval = null;
+                    return;
+                }
+                
+                // Trigger change to load students
+                classSelect.dispatchEvent(new Event('change'));
+                
+                // Wait for students to load, then select the student
+                setTimeout(() => {
+                    const student = classData.roster?.find(s => 
+                        s.id === pendingStudentIdForEval || 
+                        s.supabaseId === pendingStudentIdForEval ||
+                        s.studentId === pendingStudentIdForEval
+                    );
+                    
+                    if (!student) {
+                        console.warn('Student not found for pending student ID:', pendingStudentIdForEval);
+                        pendingClassIdForEval = null;
+                        pendingStudentIdForEval = null;
+                        return;
+                    }
+                    
+                    const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
+                    const studentValue = student.id || student.supabaseId || student.studentId;
+                    
+                    // Find and select the student
+                    for (let i = 0; i < studentSelect.options.length; i++) {
+                        const option = studentSelect.options[i];
+                        if (option.value === String(studentValue) || 
+                            option.value === studentValue ||
+                            option.textContent.trim() === studentName) {
+                            studentSelect.value = option.value;
+                            break;
+                        }
+                    }
+                    
+                    // Clear pending values after successful population
+                    pendingClassIdForEval = null;
+                    pendingStudentIdForEval = null;
+                }, 200);
+            } catch (e) {
+                console.error('Error populating eval fields from pending:', e);
+                pendingClassIdForEval = null;
+                pendingStudentIdForEval = null;
+            }
+        }
+        
         // ===== STEP NAVIGATION =====
         function moveToStep(step) {
             currentStep = step;
@@ -18200,6 +18913,13 @@ SpeechGradebook Research Team`;
             // Load classes when showing step 2
             if (step === 2) {
                 loadEvalClasses();
+                
+                // If we have pending class/student values from addEvaluationForStudent, populate them
+                if (pendingClassIdForEval && pendingStudentIdForEval) {
+                    setTimeout(() => {
+                        populateEvalFieldsFromPending();
+                    }, 150);
+                }
             }
             
             // Update card header based on step
@@ -22697,6 +23417,9 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 lucide.createIcons({ root: document.getElementById('resultsContent') });
             }
             
+            // Render action buttons dynamically
+            renderResultsActionButtons(isEditing);
+            
             // Set up video loading indicator and error handling
             const videoPlayer = document.getElementById('evaluationVideoPlayer');
             if (videoPlayer) {
@@ -24165,6 +24888,94 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             document.getElementById('fileInput').value = '';
             hideEvaluationSavedIndicator(); // Hide indicator when starting over
             moveToStep(1);
+        }
+        
+        // Render action buttons for results page (Apple HIG compliant)
+        function renderResultsActionButtons(isEditing) {
+            const buttonsContainer = document.getElementById('resultsActionButtons');
+            if (!buttonsContainer) return;
+            
+            // Clear existing buttons
+            buttonsContainer.innerHTML = '';
+            
+            // Apple HIG button styles
+            const primaryButtonStyle = 'background: #007AFF; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 17px; min-width: 88px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: -0.34px; box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);';
+            const secondaryButtonStyle = 'background: #ffffff; color: #1d1d1f; border: 1px solid #d2d2d7; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 17px; min-width: 88px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: -0.34px;';
+            const destructiveButtonStyle = 'background: #FF3B30; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 17px; min-width: 88px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: -0.34px;';
+            
+            // Primary action: Save Results
+            const saveBtn = document.createElement('button');
+            saveBtn.setAttribute('onclick', 'openSaveModal()');
+            saveBtn.setAttribute('style', primaryButtonStyle);
+            saveBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#0051D5"; this.style.boxShadow="0 4px 12px rgba(0, 122, 255, 0.4)"');
+            saveBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#007AFF"; this.style.boxShadow="0 2px 8px rgba(0, 122, 255, 0.3)"');
+            saveBtn.innerHTML = '<i data-lucide="save" style="width:18px;height:18px;"></i> Save Results';
+            buttonsContainer.appendChild(saveBtn);
+            
+            // Secondary actions
+            const moveBtn = document.createElement('button');
+            moveBtn.setAttribute('onclick', `openMoveEvalModal(editingEvaluationId, editingCourseId, editingStudentId)`);
+            moveBtn.setAttribute('class', 'btn-secondary');
+            moveBtn.setAttribute('id', 'moveEvalBtn');
+            moveBtn.setAttribute('style', secondaryButtonStyle + ' display: none;');
+            moveBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#f5f5f7"; this.style.borderColor="#007AFF"');
+            moveBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#ffffff"; this.style.borderColor="#d2d2d7"');
+            moveBtn.innerHTML = '<i data-lucide="move" style="width:18px;height:18px;"></i> Move to Different Class/Student';
+            buttonsContainer.appendChild(moveBtn);
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.setAttribute('onclick', 'downloadPDF()');
+            downloadBtn.setAttribute('class', 'btn-secondary');
+            downloadBtn.setAttribute('style', secondaryButtonStyle);
+            downloadBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#f5f5f7"; this.style.borderColor="#007AFF"');
+            downloadBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#ffffff"; this.style.borderColor="#d2d2d7"');
+            downloadBtn.innerHTML = '<i data-lucide="file-text" style="width:18px;height:18px;"></i> Download Report (HTML)';
+            buttonsContainer.appendChild(downloadBtn);
+            
+            const emailBtn = document.createElement('button');
+            emailBtn.setAttribute('onclick', 'emailResults()');
+            emailBtn.setAttribute('class', 'btn-secondary');
+            emailBtn.setAttribute('style', secondaryButtonStyle);
+            emailBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#f5f5f7"; this.style.borderColor="#007AFF"');
+            emailBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#ffffff"; this.style.borderColor="#d2d2d7"');
+            emailBtn.innerHTML = '<i data-lucide="mail" style="width:18px;height:18px;"></i> Email Results';
+            buttonsContainer.appendChild(emailBtn);
+            
+            const correctionsBtn = document.createElement('button');
+            correctionsBtn.setAttribute('onclick', 'viewCorrectionHistory()');
+            correctionsBtn.setAttribute('class', 'btn-secondary');
+            correctionsBtn.setAttribute('id', 'viewCorrectionsBtn');
+            correctionsBtn.setAttribute('style', secondaryButtonStyle + ' display: none;');
+            correctionsBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#f5f5f7"; this.style.borderColor="#007AFF"');
+            correctionsBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#ffffff"; this.style.borderColor="#d2d2d7"');
+            correctionsBtn.innerHTML = '<i data-lucide="clipboard-list" style="width:18px;height:18px;"></i> View Corrections (<span id="correctionCount">0</span>)';
+            buttonsContainer.appendChild(correctionsBtn);
+            
+            // Cancel Edit button (only when editing)
+            if (isEditing && editingEvaluationId) {
+                const cancelEditBtn = document.createElement('button');
+                cancelEditBtn.setAttribute('onclick', 'cancelEdit()');
+                cancelEditBtn.setAttribute('style', destructiveButtonStyle);
+                cancelEditBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#D70015"');
+                cancelEditBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#FF3B30"');
+                cancelEditBtn.innerHTML = '<i data-lucide="x" style="width:18px;height:18px;"></i> Cancel Edit';
+                buttonsContainer.appendChild(cancelEditBtn);
+            }
+            
+            // Start Over button
+            const startOverBtn = document.createElement('button');
+            startOverBtn.setAttribute('onclick', 'startOver()');
+            startOverBtn.setAttribute('class', 'btn-secondary');
+            startOverBtn.setAttribute('style', secondaryButtonStyle);
+            startOverBtn.setAttribute('onmouseover', 'this.style.backgroundColor="#f5f5f7"; this.style.borderColor="#007AFF"');
+            startOverBtn.setAttribute('onmouseout', 'this.style.backgroundColor="#ffffff"; this.style.borderColor="#d2d2d7"');
+            startOverBtn.innerHTML = '<i data-lucide="refresh-cw" style="width:18px;height:18px;"></i> Start Over';
+            buttonsContainer.appendChild(startOverBtn);
+            
+            // Initialize Lucide icons for the buttons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: buttonsContainer });
+            }
         }
         
         // Show persistent "Evaluation Saved" indicator
@@ -26303,6 +27114,10 @@ Return ONLY the JSON object, nothing else.`;
             deleteStudent(currentEditingStudentId);
         }
         
+        // Store values to autopopulate when step 2 is shown
+        let pendingClassIdForEval = null;
+        let pendingStudentIdForEval = null;
+        
         function addEvaluationForStudent(studentId) {
             if (!currentClassId) {
                 if (typeof showAnalyticsToast === 'function') showAnalyticsToast('No course selected', 4000);
@@ -26326,62 +27141,13 @@ Return ONLY the JSON object, nothing else.`;
                 return;
             }
             
-            // Show evaluation section and move to step 2
-            showEvaluate();
+            // Store the class and student IDs to populate when step 2 is shown
+            pendingClassIdForEval = currentClassId;
+            pendingStudentIdForEval = student.id || student.supabaseId || student.studentId;
             
-            // Wait a bit for the section to show, then populate and move to step 2
-            setTimeout(() => {
-                // Load classes first
-                loadEvalClasses();
-                
-                // Set the class
-                const classSelect = document.getElementById('evalClassSelect');
-                if (classSelect) {
-                    // Find the option that matches currentClassId (by id or by index)
-                    let foundOption = null;
-                    for (let i = 0; i < classSelect.options.length; i++) {
-                        const option = classSelect.options[i];
-                        if (option.value === String(currentClassId) || 
-                            option.value === currentClassId ||
-                            (classData && option.textContent.includes(classData.name))) {
-                            foundOption = option;
-                            break;
-                        }
-                    }
-                    if (foundOption) {
-                        classSelect.value = foundOption.value;
-                    } else {
-                        // Fallback: try to set by value directly
-                        classSelect.value = currentClassId;
-                    }
-                    // Trigger change to load students and update rubric selector
-                    classSelect.dispatchEvent(new Event('change'));
-                    
-                    // Wait for students to load, then select the student
-                    setTimeout(() => {
-                        const studentSelect = document.getElementById('evalStudentSelect');
-                        if (studentSelect) {
-                            // Find the option that matches this student
-                            const studentValue = student.id || student.supabaseId || student.studentId;
-                            const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
-                            
-                            // Try to find by value first
-                            for (let i = 0; i < studentSelect.options.length; i++) {
-                                const option = studentSelect.options[i];
-                                if (option.value === String(studentValue) || 
-                                    option.value === studentValue ||
-                                    option.textContent.trim() === studentName) {
-                                    studentSelect.value = option.value;
-                                    break;
-                                }
-                            }
-                        }
-                    }, 100);
-                }
-                
-                // Move to step 2
-                moveToStep(2);
-            }, 100);
+            // Show evaluation section and start at step 1
+            showEvaluate();
+            moveToStep(1);
         }
         
         async function editStudent(studentId) {
