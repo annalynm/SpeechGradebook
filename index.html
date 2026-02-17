@@ -9283,7 +9283,7 @@ ssh amcclu12@login.isaac.utk.edu
         }
         
         // Student actions dropdown function (Apple HIG style)
-        function toggleStudentActions(studentId, evt) {
+        window.toggleStudentActions = function(studentId, evt) {
             try {
                 const event = evt || window.event;
                 if (event) {
@@ -9291,11 +9291,34 @@ ssh amcclu12@login.isaac.utk.edu
                     event.preventDefault();
                 }
             const menu = document.getElementById('studentActionsMenu_' + studentId);
-            const btn = document.querySelector(`button[onclick*="toggleStudentActions('${studentId}')"]`);
-                if (!menu || !btn) {
-                    console.warn('Menu or button not found for student:', studentId);
-                    return false;
-                }
+            if (!menu) {
+                console.warn('Menu not found for student:', studentId);
+                return false;
+            }
+            
+            // Find the button - try multiple methods for reliability
+            let btn = null;
+            if (event && event.target) {
+                // First try: use the event target if it's a button
+                btn = event.target.closest('button');
+            }
+            if (!btn) {
+                // Second try: find by aria-haspopup in the same parent container
+                btn = menu.parentElement?.querySelector('button[aria-haspopup="true"]');
+            }
+            if (!btn) {
+                // Third try: find by onclick attribute containing the function name
+                btn = menu.parentElement?.querySelector(`button[onclick*="toggleStudentActions"]`);
+            }
+            if (!btn) {
+                // Fourth try: find any button in the parent container
+                btn = menu.parentElement?.querySelector('button');
+            }
+            
+            if (!btn) {
+                console.warn('Button not found for student:', studentId, 'Menu parent:', menu.parentElement);
+                return false;
+            }
             
             // Close all other student action menus first
             document.querySelectorAll('.student-actions-menu:not(.hidden)').forEach(m => {
@@ -9311,25 +9334,41 @@ ssh amcclu12@login.isaac.utk.edu
                 menu.classList.add('hidden');
                 btn.setAttribute('aria-expanded', 'false');
             } else {
+                // Remove hidden class first so we can measure the menu
                 menu.classList.remove('hidden');
                 btn.setAttribute('aria-expanded', 'true');
-                    
-                    // Position menu above button using fixed positioning to avoid clipping
-                    const btnRect = btn.getBoundingClientRect();
-                    menu.style.position = 'fixed';
-                    menu.style.right = Math.max(10, window.innerWidth - btnRect.right) + 'px';
-                    menu.style.top = Math.max(10, btnRect.top - menu.offsetHeight - 5) + 'px';
+                
+                // Position menu using fixed positioning to avoid clipping by table cells
+                const btnRect = btn.getBoundingClientRect();
+                menu.style.position = 'fixed';
+                menu.style.right = Math.max(10, window.innerWidth - btnRect.right) + 'px';
+                // Position below button, or above if not enough space
+                const spaceBelow = window.innerHeight - btnRect.bottom;
+                const spaceAbove = btnRect.top;
+                const estimatedMenuHeight = 200; // Approximate menu height
+                
+                if (spaceBelow >= estimatedMenuHeight || spaceBelow > spaceAbove) {
+                    // Position below button
+                    menu.style.top = (btnRect.bottom + 5) + 'px';
                     menu.style.bottom = 'auto';
-                    menu.style.left = 'auto';
-                    menu.style.zIndex = '99999';
-                    menu.style.maxHeight = (window.innerHeight - 20) + 'px';
-                    menu.style.overflowY = 'auto';
+                } else {
+                    // Position above button
+                    menu.style.top = 'auto';
+                    menu.style.bottom = Math.max(10, window.innerHeight - btnRect.top + 5) + 'px';
+                }
+                
+                menu.style.left = 'auto';
+                menu.style.zIndex = '99999';
+                menu.style.maxHeight = (window.innerHeight - 20) + 'px';
+                menu.style.overflowY = 'auto';
+                menu.style.display = 'block';
+                menu.style.visibility = 'visible';
                 
                 // Initialize icons in the menu
                 if (typeof lucide !== 'undefined' && lucide.createIcons) {
                     lucide.createIcons({ root: menu });
                 }
-                }
+            }
                 return false;
             } catch (error) {
                 console.error('Error in toggleStudentActions:', error);
