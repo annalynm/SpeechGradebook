@@ -71,10 +71,81 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.routing import APIRouter
 import httpx
 
+# Rate limiting
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+import base64
+
 # Import the evaluation API app (model loaded on startup if MODEL_PATH exists)
 from llm_training import serve_model
 
+# Initialize Sentry for error monitoring (optional, requires SENTRY_DSN env var)
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.fastapi import FastApiIntegration
+    from sentry_sdk.integrations.asyncio import AsyncioIntegration
+    
+    sentry_dsn = _get_env("SENTRY_DSN", "")
+    sentry_environment = _get_env("SENTRY_ENVIRONMENT", "production")
+    
+    if sentry_dsn:
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            environment=sentry_environment,
+            integrations=[
+                FastApiIntegration(),
+                AsyncioIntegration(),
+            ],
+            traces_sample_rate=0.1,  # 10% of transactions for performance monitoring
+            profiles_sample_rate=0.1,  # 10% of transactions for profiling
+            send_default_pii=False,  # Don't send PII by default
+        )
+        print(f"Sentry initialized for environment: {sentry_environment}")
+    else:
+        print("Sentry DSN not set; error monitoring disabled")
+except ImportError:
+    print("sentry-sdk not installed; error monitoring disabled")
+except Exception as e:
+    print(f"Failed to initialize Sentry: {e}")
+
 app = FastAPI(title="SpeechGradebook")
+
+# Rate limiting setup
+def get_rate_limit_key(request: Request) -> str:
+    """
+    Get rate limit key: user ID from Supabase auth token if available, otherwise IP address.
+    This allows 50 requests/hour per user, with IP fallback for unauthenticated requests.
+    """
+    # Try to extract user ID from Authorization header (Supabase JWT)
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]  # Remove "Bearer " prefix
+        try:
+            # Decode JWT payload (no verification needed for rate limiting key extraction)
+            # JWT format: header.payload.signature
+            parts = token.split(".")
+            if len(parts) >= 2:
+                # Decode payload (base64url)
+                payload = parts[1]
+                # Add padding if needed
+                payload += "=" * (4 - len(payload) % 4)
+                decoded = base64.urlsafe_b64decode(payload)
+                import json
+                claims = json.loads(decoded)
+                user_id = claims.get("sub")  # Supabase uses "sub" for user ID
+                if user_id:
+                    return f"user:{user_id}"
+        except Exception:
+            # If token parsing fails, fall back to IP
+            pass
+    
+    # Fallback to IP address
+    return f"ip:{get_remote_address(request)}"
+
+limiter = Limiter(key_func=get_rate_limit_key)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS so OPTIONS preflight succeeds for /qwen-api/* (e.g. when origin is speechgradebook.com and API is www.speechgradebook.com)
 _origins_env = os.environ.get("ALLOWED_ORIGINS", "").strip()
@@ -176,14 +247,39 @@ async def log_llm_export_requests(request, call_next):
             try:
                 form = await request.form()
                 file_part = form.get("file")
+                storage_url = form.get("storage_url")  # Alternative to file upload
                 rubric_part = form.get("rubric") if path == "/qwen-api/evaluate_video" else None
                 if path == "/qwen-api/evaluate_video":
+                    # Set Sentry user context
+                    _set_sentry_user_context(request)
+                    
+                    # Rate limiting: 50 evaluations per hour per user/IP
+                    rate_limit_key = get_rate_limit_key(request)
+                    # Use limiter's hit method which raises RateLimitExceeded if limit exceeded
+                    try:
+                        limiter.hit("50/hour", rate_limit_key)
+                    except RateLimitExceeded:
+                        # Log rate limit violation to Sentry
+                        try:
+                            import sentry_sdk
+                            sentry_sdk.capture_message(
+                                "Rate limit exceeded",
+                                level="warning",
+                                contexts={"rate_limit": {"key": rate_limit_key, "limit": "50/hour"}}
+                            )
+                        except Exception:
+                            pass
+                        return JSONResponse(
+                            status_code=429,
+                            content={
+                                "detail": "Rate limit exceeded. Maximum 50 evaluations per hour. Please try again later."
+                            }
+                        )
+                    
                     import time
                     start_time = time.time()
                     evaluation_start = time.time()
                     
-                    if not file_part or not hasattr(file_part, "read"):
-                        return JSONResponse(status_code=400, content={"detail": "Missing or invalid file"})
                     if rubric_part is None:
                         return JSONResponse(status_code=400, content={"detail": "Missing rubric"})
                     if isinstance(rubric_part, str):
@@ -196,17 +292,36 @@ async def log_llm_export_requests(request, call_next):
                         rubric_str = raw.decode("utf-8", errors="replace") if isinstance(raw, bytes) else str(raw)
                     else:
                         rubric_str = rubric_part.decode("utf-8", errors="replace") if hasattr(rubric_part, "decode") else str(rubric_part)
-                    body = await file_part.read()
-                    files = {"file": (getattr(file_part, "filename", None) or "video", body, getattr(file_part, "content_type", None) or "application/octet-stream")}
-                    data = {"rubric": rubric_str}
+                    
+                    # Support both file upload and storage URL
+                    if storage_url:
+                        # Use storage URL (direct upload path - bypasses Render memory)
+                        data = {"rubric": rubric_str, "storage_url": storage_url}
+                        files = None
+                        file_size_mb = 0  # Unknown when using URL
+                    elif file_part and hasattr(file_part, "read"):
+                        # Traditional file upload (fallback)
+                        body = await file_part.read()
+                        files = {"file": (getattr(file_part, "filename", None) or "video", body, getattr(file_part, "content_type", None) or "application/octet-stream")}
+                        data = {"rubric": rubric_str}
+                        file_size_mb = len(body) / (1024 * 1024)
+                    else:
+                        return JSONResponse(status_code=400, content={"detail": "Missing file or storage_url"})
                     
                     # Log evaluation start for cost tracking
-                    file_size_mb = len(body) / (1024 * 1024)
-                    print(f"[COST_TRACKING] Evaluation started - File size: {file_size_mb:.2f} MB, Timestamp: {time.time()}")
+                    if not storage_url:
+                        print(f"[COST_TRACKING] Evaluation started - File size: {file_size_mb:.2f} MB, Timestamp: {time.time()}")
+                    else:
+                        print(f"[COST_TRACKING] Evaluation started - Using storage URL: {storage_url}, Timestamp: {time.time()}")
                     
                     async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
                         try:
-                            r = await client.post(f"{base}/evaluate_video", files=files, data=data)
+                            if files:
+                                # Traditional file upload
+                                r = await client.post(f"{base}/evaluate_video", files=files, data=data)
+                            else:
+                                # Storage URL (Qwen API needs to support this)
+                                r = await client.post(f"{base}/evaluate_video", json=data, headers={"Content-Type": "application/json"})
                         except httpx.TimeoutException as e:
                             elapsed_time = time.time() - start_time
                             error_msg = f"Qwen service timeout after {elapsed_time:.1f}s. The evaluation may be taking too long or the service may be unavailable."
@@ -226,6 +341,23 @@ async def log_llm_export_requests(request, call_next):
                     estimated_cost = elapsed_time * 0.00125
                     
                     print(f"[COST_TRACKING] Evaluation completed - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
+                    
+                    # Log cost to database if evaluation was successful
+                    if r.status_code == 200:
+                        user_id, institution_id = _get_user_info_from_token(request)
+                        # Note: evaluation_id will be None here since it's created in frontend after save
+                        # Frontend can update cost_tracking record later with evaluation_id if needed
+                        await _log_cost_to_database(
+                            user_id=user_id,
+                            institution_id=institution_id,
+                            evaluation_id=None,  # Will be set when evaluation is saved in frontend
+                            gpu_seconds=elapsed_time,
+                            estimated_cost=estimated_cost,
+                            provider="modal",
+                            model_name="qwen",
+                            file_size_mb=file_size_mb,
+                            processing_time_seconds=elapsed_time
+                        )
                     
                     if 300 <= r.status_code < 400:
                         return JSONResponse(status_code=502, content={"detail": "Qwen service returned redirect (3xx). Check QWEN_API_URL—use https, no trailing slash. Ensure the Qwen tunnel/URL is correct."})
@@ -252,6 +384,23 @@ async def log_llm_export_requests(request, call_next):
                         print(f"[ERROR] This may indicate: OOM (Out of Memory) error, model loading issue, or video processing failure.")
                         print(f"[ERROR] Check Modal logs at https://modal.com/apps for detailed error information.")
                         
+                        # Log to Sentry
+                        try:
+                            import sentry_sdk
+                            sentry_sdk.capture_message(
+                                f"Qwen evaluation failed: {error_detail}",
+                                level="error",
+                                contexts={
+                                    "evaluation": {
+                                        "file_size_mb": file_size_mb,
+                                        "elapsed_time": elapsed_time,
+                                        "status_code": 500
+                                    }
+                                }
+                            )
+                        except Exception:
+                            pass
+                        
                         # Provide more helpful error message
                         if "OOM" in error_detail or "out of memory" in error_detail.lower() or "CUDA" in error_detail:
                             error_detail = f"Out of Memory error: {error_detail}. T4 GPU may not have enough memory for this video. Consider using a smaller video or switching to A100 GPU."
@@ -270,6 +419,21 @@ async def log_llm_export_requests(request, call_next):
                     elapsed_time = time.time() - start_time
                     estimated_cost = elapsed_time * 0.000222
                     print(f"[COST_TRACKING] Video analysis - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
+                    
+                    # Log cost to database if successful
+                    if r.status_code == 200:
+                        user_id, institution_id = _get_user_info_from_token(request)
+                        await _log_cost_to_database(
+                            user_id=user_id,
+                            institution_id=institution_id,
+                            gpu_seconds=elapsed_time,
+                            estimated_cost=estimated_cost,
+                            provider="modal",
+                            model_name="qwen",
+                            file_size_mb=len(body) / (1024 * 1024) if body else None,
+                            processing_time_seconds=elapsed_time
+                        )
+                    
                     return Response(content=r.content, status_code=r.status_code, media_type="application/json")
                 if path == "/qwen-api/extract_rubric" and file_part and hasattr(file_part, "read"):
                     start_time = time.time()
@@ -280,6 +444,21 @@ async def log_llm_export_requests(request, call_next):
                     elapsed_time = time.time() - start_time
                     estimated_cost = elapsed_time * 0.000222
                     print(f"[COST_TRACKING] Rubric extraction - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
+                    
+                    # Log cost to database if successful
+                    if r.status_code == 200:
+                        user_id, institution_id = _get_user_info_from_token(request)
+                        await _log_cost_to_database(
+                            user_id=user_id,
+                            institution_id=institution_id,
+                            gpu_seconds=elapsed_time,
+                            estimated_cost=estimated_cost,
+                            provider="modal",
+                            model_name="qwen",
+                            file_size_mb=len(body) / (1024 * 1024) if body else None,
+                            processing_time_seconds=elapsed_time
+                        )
+                    
                     return Response(content=r.content, status_code=r.status_code, media_type="application/json")
             except Exception as e:
                 return JSONResponse(status_code=503, content={"detail": f"Qwen proxy error: {e!s}"}, media_type="application/json")
@@ -323,6 +502,116 @@ def _get_env(key: str, default: str = "") -> str:
     if len(v) >= 2 and (v[0], v[-1]) in (('"', '"'), ("'", "'")):
         v = v[1:-1].strip()
     return v
+
+
+# Helper to set Sentry user context from request
+def _set_sentry_user_context(request: Request):
+    """Extract user ID from auth token and set Sentry user context."""
+    try:
+        import sentry_sdk
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+            try:
+                parts = token.split(".")
+                if len(parts) >= 2:
+                    payload = parts[1]
+                    payload += "=" * (4 - len(payload) % 4)
+                    decoded = base64.urlsafe_b64decode(payload)
+                    import json
+                    claims = json.loads(decoded)
+                    user_id = claims.get("sub")
+                    if user_id:
+                        sentry_sdk.set_user({"id": user_id})
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+# Helper to extract user info from auth token
+def _get_user_info_from_token(request: Request):
+    """Extract user_id and institution_id from Supabase JWT token."""
+    user_id = None
+    institution_id = None
+    
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+        try:
+            parts = token.split(".")
+            if len(parts) >= 2:
+                payload = parts[1]
+                payload += "=" * (4 - len(payload) % 4)
+                decoded = base64.urlsafe_b64decode(payload)
+                import json
+                claims = json.loads(decoded)
+                user_id = claims.get("sub")
+                # Note: institution_id is not in JWT, would need to query user_profiles
+                # For now, we'll insert cost record and let it be NULL, or query it
+        except Exception:
+            pass
+    
+    return user_id, institution_id
+
+
+# Helper to log cost to database
+async def _log_cost_to_database(
+    user_id: str = None,
+    institution_id: str = None,
+    evaluation_id: str = None,
+    gpu_seconds: float = 0,
+    estimated_cost: float = 0,
+    provider: str = "modal",
+    model_name: str = None,
+    file_size_mb: float = None,
+    processing_time_seconds: float = None
+):
+    """Log evaluation cost to cost_tracking table."""
+    try:
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            print("[COST_TRACKING] Cannot log to database: SUPABASE_SERVICE_ROLE_KEY not set")
+            return
+        
+        from supabase import create_client
+        supabase_client = create_client(supabase_url, supabase_service_key)
+        
+        # If we have user_id but not institution_id, try to get it from user_profiles
+        if user_id and not institution_id:
+            try:
+                profile = supabase_client.table("user_profiles").select("institution_id").eq("id", user_id).limit(1).execute()
+                if profile.data and len(profile.data) > 0:
+                    institution_id = profile.data[0].get("institution_id")
+            except Exception:
+                pass
+        
+        # Insert cost record
+        cost_record = {
+            "instructor_id": user_id,
+            "institution_id": institution_id,
+            "evaluation_id": evaluation_id,
+            "gpu_seconds": float(gpu_seconds),
+            "estimated_cost": float(estimated_cost),
+            "provider": provider,
+            "model_name": model_name,
+            "file_size_mb": float(file_size_mb) if file_size_mb else None,
+            "processing_time_seconds": float(processing_time_seconds) if processing_time_seconds else None
+        }
+        
+        # Remove None values
+        cost_record = {k: v for k, v in cost_record.items() if v is not None}
+        
+        result = supabase_client.table("cost_tracking").insert(cost_record).execute()
+        print(f"[COST_TRACKING] Logged to database: {estimated_cost:.4f} USD")
+        
+    except ImportError:
+        print("[COST_TRACKING] Cannot log to database: supabase package not installed")
+    except Exception as e:
+        print(f"[COST_TRACKING] Failed to log to database: {e}")
+        # Don't fail the request if cost logging fails
 
 
 def _slack_webhook_url() -> str:
@@ -459,6 +748,185 @@ def api_llm_export_status():
 app.mount("/api", serve_model.app)
 
 
+# Direct video upload endpoints (presigned URLs for Supabase Storage)
+@app.post("/api/generate-upload-url")
+async def generate_upload_url(request: Request):
+    """
+    Generate a presigned URL for direct video upload to Supabase Storage.
+    This bypasses Render's memory constraints by uploading directly from browser to Supabase.
+    
+    Requires:
+    - Authorization header with Supabase JWT token
+    - JSON body with: filename, content_type (optional), file_size (optional)
+    
+    Returns:
+    - upload_url: Presigned PUT URL for direct upload
+    - file_path: Path where file will be stored
+    - expires_at: When the URL expires
+    """
+    try:
+        # Extract user ID from auth token for file path
+        auth_header = request.headers.get("Authorization", "")
+        user_id = None
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+            try:
+                parts = token.split(".")
+                if len(parts) >= 2:
+                    payload = parts[1]
+                    payload += "=" * (4 - len(payload) % 4)
+                    decoded = base64.urlsafe_b64decode(payload)
+                    import json
+                    claims = json.loads(decoded)
+                    user_id = claims.get("sub")
+            except Exception:
+                pass
+        
+        if not user_id:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Authentication required. Please provide a valid Supabase JWT token."}
+            )
+        
+        # Get request body
+        try:
+            body = await request.json()
+        except Exception:
+            return JSONResponse(status_code=400, content={"detail": "Invalid JSON body"})
+        
+        filename = body.get("filename", "video.mp4")
+        content_type = body.get("content_type", "video/mp4")
+        file_size = body.get("file_size")  # Optional, for validation
+        
+        # Generate unique file path: {user_id}/{timestamp}_{filename}
+        import uuid
+        timestamp = int(time.time())
+        file_id = str(uuid.uuid4())[:8]
+        file_path = f"{user_id}/{timestamp}_{file_id}_{filename}"
+        
+        # Create Supabase client with service role key for presigned URL generation
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            return JSONResponse(
+                status_code=503,
+                content={"detail": "Supabase configuration missing. SUPABASE_SERVICE_ROLE_KEY required for presigned URLs."}
+            )
+        
+        try:
+            from supabase import create_client
+            supabase_client = create_client(supabase_url, supabase_service_key)
+            
+            bucket_name = "evaluation-media"
+            expires_in = 900  # 15 minutes in seconds
+            
+            # Supabase Storage doesn't use traditional presigned URLs like S3.
+            # Instead, we return the file path and the frontend uses Supabase JS client
+            # to upload directly. The JS client handles authentication automatically.
+            
+            # Return file path for frontend to use with Supabase JS client
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "file_path": file_path,
+                    "bucket": bucket_name,
+                    "expires_in": expires_in,
+                    "upload_instructions": "Use Supabase JS client: supabase.storage.from(bucket).upload(path, file)"
+                }
+            )
+        except ImportError:
+            return JSONResponse(
+                status_code=503,
+                content={"detail": "Supabase Python client not installed. Add 'supabase>=2.0.0' to requirements.txt"}
+            )
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"detail": f"Failed to generate upload URL: {str(e)}"}
+            )
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Error generating upload URL: {str(e)}"}
+        )
+
+
+@app.post("/api/confirm-upload")
+async def confirm_upload(request: Request):
+    """
+    Confirm that a file was successfully uploaded to Supabase Storage.
+    Returns the public URL for the uploaded file.
+    
+    Requires:
+    - Authorization header with Supabase JWT token
+    - JSON body with: file_path (path returned from generate-upload-url)
+    
+    Returns:
+    - storage_url: Public URL to access the uploaded file
+    - file_path: Confirmed file path
+    """
+    try:
+        # Extract user ID from auth token
+        auth_header = request.headers.get("Authorization", "")
+        user_id = None
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+            try:
+                parts = token.split(".")
+                if len(parts) >= 2:
+                    payload = parts[1]
+                    payload += "=" * (4 - len(payload) % 4)
+                    decoded = base64.urlsafe_b64decode(payload)
+                    import json
+                    claims = json.loads(decoded)
+                    user_id = claims.get("sub")
+            except Exception:
+                pass
+        
+        if not user_id:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Authentication required."}
+            )
+        
+        # Get request body
+        try:
+            body = await request.json()
+        except Exception:
+            return JSONResponse(status_code=400, content={"detail": "Invalid JSON body"})
+        
+        file_path = body.get("file_path")
+        if not file_path:
+            return JSONResponse(status_code=400, content={"detail": "Missing file_path"})
+        
+        # Verify file path belongs to this user (security check)
+        if not file_path.startswith(f"{user_id}/"):
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "File path does not belong to authenticated user"}
+            )
+        
+        # Construct public URL
+        supabase_url = _get_env("SUPABASE_URL").rstrip("/")
+        bucket_name = "evaluation-media"
+        storage_url = f"{supabase_url}/storage/v1/object/public/{bucket_name}/{file_path}"
+        
+        return JSONResponse(
+            status_code=200,
+            content={
+                "storage_url": storage_url,
+                "file_path": file_path,
+                "bucket": bucket_name
+            }
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Error confirming upload: {str(e)}"}
+        )
+
+
 @app.get("/")
 @app.get("/index.html")
 def serve_index():
@@ -477,5 +945,102 @@ def serve_index():
     )
 
 
-# Other static files (assets, consent.html, etc.)
-app.mount("/", StaticFiles(directory=str(_this_dir), html=True))
+# Explicit routes for common SPA paths (these will be matched before the catch-all)
+@app.get("/dashboard")
+def serve_dashboard():
+    """Serve index.html for dashboard route."""
+    path = _this_dir / "index.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+@app.get("/evaluate")
+@app.get("/settings")
+@app.get("/help")
+@app.get("/analytics")
+def serve_spa_page():
+    """Serve index.html for common SPA routes."""
+    path = _this_dir / "index.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+# Catch-all route for client-side routing (must be after all API routes)
+# This allows paths like /courses/123 to serve index.html for client-side routing
+# Note: FastAPI will match explicit routes (like @app.get("/")) before this catch-all
+@app.get("/{full_path:path}")
+def serve_spa_routes(full_path: str):
+    """
+    Serve index.html for all routes to support client-side routing.
+    First checks if the requested path is an actual file, if so serves it.
+    Otherwise serves index.html for SPA routing.
+    """
+    # Don't handle API routes
+    if (full_path.startswith("api/") or 
+        full_path.startswith("qwen-api/")):
+        return Response(status_code=404)
+    
+    # Normalize the path (remove leading slash if present)
+    normalized_path = full_path.lstrip("/")
+    
+    # Skip empty paths (should be handled by explicit "/" route)
+    if not normalized_path:
+        index_path = _this_dir / "index.html"
+        if not index_path.exists():
+            return Response(status_code=404)
+        return FileResponse(
+            index_path,
+            media_type="text/html",
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    
+    # Check if the requested path is an actual file that exists
+    file_path = _this_dir / normalized_path
+    if file_path.exists() and file_path.is_file():
+        # Serve the actual file
+        return FileResponse(file_path)
+    
+    # Don't handle files with extensions (they should have been caught above)
+    # But allow .html files to be served
+    last_segment = normalized_path.split("/")[-1]
+    if "." in last_segment and not last_segment.endswith(".html"):
+        return Response(status_code=404)
+    
+    # Serve index.html for all other routes (client-side routing)
+    index_path = _this_dir / "index.html"
+    if not index_path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        index_path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+# Static files (assets, etc.) - mounted after catch-all for specific paths
+app.mount("/assets", StaticFiles(directory=str(_this_dir / "assets"), html=False))

@@ -699,18 +699,54 @@ def _extract_json_from_response(text: str) -> dict | None:
 
 @app.post("/evaluate_video")
 async def evaluate_video(
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     rubric: str = Form(...),
+    storage_url: str = Form(None),
 ):
-    """Evaluate a speech video using the rubric. Returns same shape as SpeechGradebook Model: sections, overallComments, transcript."""
+    """
+    Evaluate a speech video using the rubric. Returns same shape as SpeechGradebook Model: sections, overallComments, transcript.
+    
+    Accepts either:
+    - file: Direct file upload (traditional method)
+    - storage_url: URL to video in Supabase Storage (direct upload path - bypasses Render memory)
+    """
     if model is None or processor is None:
         raise HTTPException(status_code=503, detail="Qwen model not loaded")
 
-    content_type = file.content_type or ""
-    fname = (file.filename or "").lower()
-    if "video" not in content_type and not fname.endswith((".mp4", ".webm", ".mov", ".avi", ".mkv")):
-        print(f"[evaluate_video] 400: bad file type content_type={content_type!r} filename={file.filename!r}", flush=True)
-        raise HTTPException(status_code=400, detail="Expected video file (MP4, WebM, etc.)")
+    # Support both file upload and storage URL
+    tmp_path = None
+    if storage_url:
+        # Fetch video from storage URL
+        print(f"[evaluate_video] Using storage URL: {storage_url}", flush=True)
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=300.0) as client:
+                video_response = await client.get(storage_url)
+                if video_response.status_code != 200:
+                    raise HTTPException(status_code=400, detail=f"Failed to fetch video from storage URL: {video_response.status_code}")
+                
+                # Save to temp file
+                suffix = Path(storage_url).suffix or ".mp4"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                    tmp.write(video_response.content)
+                    tmp_path = tmp.name
+        except Exception as e:
+            print(f"[evaluate_video] Failed to fetch from storage URL: {e!s}", flush=True)
+            raise HTTPException(status_code=400, detail=f"Failed to fetch video from storage URL: {str(e)}")
+    elif file:
+        # Traditional file upload
+        content_type = file.content_type or ""
+        fname = (file.filename or "").lower()
+        if "video" not in content_type and not fname.endswith((".mp4", ".webm", ".mov", ".avi", ".mkv")):
+            print(f"[evaluate_video] 400: bad file type content_type={content_type!r} filename={file.filename!r}", flush=True)
+            raise HTTPException(status_code=400, detail="Expected video file (MP4, WebM, etc.)")
+        
+        suffix = Path(file.filename or "video").suffix or ".mp4"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(await file.read())
+            tmp_path = tmp.name
+    else:
+        raise HTTPException(status_code=400, detail="Either 'file' or 'storage_url' must be provided")
 
     try:
         rubric_obj = json.loads(rubric)
@@ -747,11 +783,6 @@ async def evaluate_video(
         textbook_block=textbook_block,
         section_keys=section_keys,
     )
-
-    suffix = Path(file.filename or "video").suffix or ".mp4"
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        tmp.write(await file.read())
-        tmp_path = tmp.name
 
     try:
         import torch

@@ -46,6 +46,25 @@
         .preview-container {
             max-width: 1200px;
             margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .logo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .logo-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .scheme-title {
@@ -76,6 +95,26 @@
             color: white;
             font-size: 1.25rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo {
+            height: 40px;
+            width: auto;
+            display: block;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        
+        .logo-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
         }
         
         .components-grid {
@@ -239,7 +278,10 @@
         <p class="scheme-subtitle">Keeps your existing primary color (#1e3a5f) but replaces beige/gold with professional slate blue tones</p>
         
         <div class="header-preview">
-            <h2>SpeechGradebook</h2>
+            <h2>
+                <img src="assets/3d-logo-transparent.png" alt="SpeechGradebook Logo" class="logo">
+                SpeechGradebook
+            </h2>
             <div style="display: flex; gap: 1rem;">
                 <button class="btn btn-secondary" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">Dashboard</button>
                 <button class="btn btn-secondary" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">Evaluate</button>
@@ -305,6 +347,137 @@
                         <span style="background: var(--error); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;">Error</span>
                         <span style="background: var(--info); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;">Info</span>
                     </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Logo Comparison</div>
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div>
+                        <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.75rem; font-weight: 600;">On Dark Background (Header):</div>
+                        <div class="logo-grid">
+                            <div style="background: var(--primary-dark); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 0;">
+                                <img src="assets/3d-logo-transparent.png" alt="3D Logo" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: white; font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">3D Logo Transparent</span>
+                            </div>
+                            <div style="background: var(--primary-dark); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 0;">
+                                <img src="assets/transparent-logo2.png" alt="Transparent Logo 2" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: white; font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo 2</span>
+                            </div>
+                            <div style="background: var(--primary-dark); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 0;">
+                                <img src="assets/logo-transparent.png" alt="Transparent Logo" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: white; font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo</span>
+                            </div>
+                            <div style="background: var(--primary-dark); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 0;">
+                                <img src="assets/logo-transparent-4.png" alt="Transparent Logo 4" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: white; font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo 4</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.75rem; font-weight: 600;">On Light Background:</div>
+                        <div class="logo-grid">
+                            <div style="background: var(--card); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; border: 1px solid var(--border); min-width: 0;">
+                                <img src="assets/3d-logo-transparent.png" alt="3D Logo" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: var(--text); font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">3D Logo Transparent</span>
+                            </div>
+                            <div style="background: var(--card); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; border: 1px solid var(--border); min-width: 0;">
+                                <img src="assets/transparent-logo2.png" alt="Transparent Logo 2" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: var(--text); font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo 2</span>
+                            </div>
+                            <div style="background: var(--card); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; border: 1px solid var(--border); min-width: 0;">
+                                <img src="assets/logo-transparent.png" alt="Transparent Logo" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: var(--text); font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo</span>
+                            </div>
+                            <div style="background: var(--card); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; border: 1px solid var(--border); min-width: 0;">
+                                <img src="assets/logo-transparent-4.png" alt="Transparent Logo 4" class="logo" style="max-width: 100%;" onerror="this.style.display='none'">
+                                <span style="color: var(--text); font-weight: 600; font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo 4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Icon Size Comparison</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.875rem;">See how each logo looks at common icon sizes (favicon, desktop icon, etc.)</p>
+                <div class="logo-grid" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 0;">
+                        <div style="font-weight: 600; color: var(--text); font-size: 0.875rem; text-align: center; word-wrap: break-word;">3D Logo Transparent</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/3d-logo-transparent.png" alt="3D Logo" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">16×16</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/3d-logo-transparent.png" alt="3D Logo" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">32×32</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/3d-logo-transparent.png" alt="3D Logo" style="width: 64px; height: 64px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">64×64</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 0;">
+                        <div style="font-weight: 600; color: var(--text); font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo 2</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/transparent-logo2.png" alt="Transparent Logo 2" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">16×16</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/transparent-logo2.png" alt="Transparent Logo 2" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">32×32</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/transparent-logo2.png" alt="Transparent Logo 2" style="width: 64px; height: 64px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">64×64</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 0;">
+                        <div style="font-weight: 600; color: var(--text); font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/logo-transparent.png" alt="Transparent Logo" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">16×16</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/logo-transparent.png" alt="Transparent Logo" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">32×32</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/logo-transparent.png" alt="Transparent Logo" style="width: 64px; height: 64px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">64×64</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 0;">
+                        <div style="font-weight: 600; color: var(--text); font-size: 0.875rem; text-align: center; word-wrap: break-word;">Transparent Logo 4</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/logo-transparent-4.png" alt="Transparent Logo 4" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">16×16</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/logo-transparent-4.png" alt="Transparent Logo 4" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">32×32</span>
+                            </div>
+                            <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                <img src="assets/logo-transparent-4.png" alt="Transparent Logo 4" style="width: 64px; height: 64px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style="font-size: 0.75rem; color: var(--text-light);">64×64</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: var(--bg-alt); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <div style="font-weight: 600; color: var(--text); margin-bottom: 0.5rem; font-size: 0.875rem;">Design Recommendation:</div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; line-height: 1.6;">
+                        For desktop/web app icons, look for the logo that remains <strong>recognizable at 16×16</strong> (favicon size) and has <strong>good contrast</strong> at small sizes. 
+                        The 3D logo typically performs best because depth and shadows help maintain recognition when scaled down. 
+                        However, the best choice depends on which logo maintains its core shape and readability at the smallest size.
+                    </p>
                 </div>
             </div>
             

@@ -21,3 +21,9 @@ psycopg2-binary>=2.9.0
 # Testing (optional, for development)
 pytest>=7.0.0
 httpx>=0.24.0
+
+# Supabase client for presigned URLs
+supabase>=2.0.0
+
+# Error monitoring
+sentry-sdk[fastapi]>=1.38.0
