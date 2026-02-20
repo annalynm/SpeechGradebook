@@ -512,8 +512,7 @@
             filter: none; /* Logo has dark blue ribbon and white waves - visible on light backgrounds */
         }
         
-        /* Transparent logo styling for dark mode - invert to make visible on dark backgrounds */
-        /* The logo has dark blue ribbon and white waves, so inversion makes it light blue ribbon with dark waves */
+        /* Transparent logo styling for dark mode - keep original colors (no inversion) */
         :root[data-theme="dark"] .logo img[src*="3d-logo-transparent"],
         :root[data-theme="dark"] .logo img[src*="3d-logo-transparent.png"],
         :root[data-theme="dark"] #appLogo img[src*="3d-logo-transparent"],
@@ -526,7 +525,7 @@
         .theme-option7-dark #appLogo img[src*="3d-logo-transparent.png"],
         .theme-option7-dark .auth-logo img[src*="3d-logo-transparent"],
         .theme-option7-dark .auth-logo img[src*="3d-logo-transparent.png"] {
-            filter: invert(1) brightness(1.1) contrast(1.1); /* Invert colors for dark mode visibility */
+            filter: none; /* Keep original logo colors in dark mode */
         }
         
         /* Header logo circle: always pure white on account pages (no yellow/theme tint) */
@@ -537,13 +536,13 @@
             background-color: #ffffff !important;
         }
         
-        /* Dark mode header logo - use dark background for contrast */
+        /* Dark mode header logo - keep white background */
         :root[data-theme="dark"] header .logo,
         :root[data-theme="dark"] header #appLogo,
         .theme-option7-dark header .logo,
         .theme-option7-dark header #appLogo {
-            background: #1a1a1a !important;
-            background-color: #1a1a1a !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
         }
         
         header #appLogo img {
@@ -3816,15 +3815,15 @@
                             
                             <!-- Bulk Upload Form Fields -->
                             <div class="form-group" style="margin-bottom: 1rem;">
-                                <label for="bulkCourseSelect" class="required">Course <span style="color: var(--error);">*</span></label>
-                                <select id="bulkCourseSelect" required onchange="loadBulkStudents(); validateBulkUploadForm();" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
+                                <label for="bulkCourseSelect" class="required">Course</label>
+                                <select id="bulkCourseSelect" required onchange="handleBulkCourseChange();" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
                                     <option value="">-- Select Course --</option>
                                 </select>
                                 <p class="field-hint" style="margin-top: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Select the course for all videos in this batch.</p>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 1rem;">
-                                <label for="bulkRubricSelect" class="required">Evaluation Rubric <span style="color: var(--error);">*</span></label>
+                                <label for="bulkRubricSelect" class="required">Evaluation Rubric</label>
                                 <select id="bulkRubricSelect" required onchange="validateBulkUploadForm();" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
                                     <option value="">-- Select a Rubric --</option>
                                 </select>
@@ -21689,7 +21688,7 @@ SpeechGradebook Research Team`;
             
             // Populate course and rubric selectors
             populateBulkCourseSelector();
-            populateBulkRubricSelector();
+            populateBulkRubricSelector().catch(err => console.error('Error populating bulk rubric selector:', err));
         }
 
         async function populateBulkCourseSelector() {
@@ -21732,23 +21731,100 @@ SpeechGradebook Research Team`;
             }
         }
 
-        function populateBulkRubricSelector() {
+        async function populateBulkRubricSelector(courseId = null) {
             const select = document.getElementById('bulkRubricSelect');
-            if (!select) return;
+            if (!select) {
+                console.warn('[populateBulkRubricSelector] Select element not found');
+                return;
+            }
             
             select.innerHTML = '<option value="">-- Select a Rubric --</option>';
             
             try {
-                const rubrics = JSON.parse(getUserItem('rubrics') || '[]');
-                rubrics.forEach((rubric, idx) => {
+                // Use getAllRubrics() to get rubrics from Supabase
+                const allRubrics = await getAllRubrics();
+                console.log('[populateBulkRubricSelector] Total rubrics loaded:', allRubrics?.length || 0);
+                console.log('[populateBulkRubricSelector] Filtering for courseId:', courseId);
+                
+                if (!allRubrics || allRubrics.length === 0) {
+                    console.warn('No rubrics available for bulk upload');
+                    return;
+                }
+                
+                // Debug: Log courseIds for all rubrics to diagnose the issue
+                console.log('[populateBulkRubricSelector] All rubrics courseIds:', 
+                    allRubrics.map(r => ({ 
+                        name: r.name, 
+                        courseIds: r.courseIds,
+                        courseIdsString: JSON.stringify(r.courseIds)
+                    })));
+                
+                // Filter rubrics based on course selection
+                let filteredRubrics = allRubrics;
+                if (courseId) {
+                    const courseIdStr = String(courseId).toLowerCase().trim();
+                    console.log('[populateBulkRubricSelector] Filtering for courseId (normalized):', courseIdStr);
+                    
+                    // Show ONLY rubrics that are assigned to this course (exclude general rubrics)
+                    filteredRubrics = allRubrics.filter(rubric => {
+                        const courseIds = rubric.courseIds || [];
+                        // Convert to strings and normalize for comparison
+                        const courseIdsStr = courseIds.map(id => String(id).toLowerCase().trim());
+                        
+                        // Include ONLY if: course is in the rubric's course_ids array (exclude general rubrics)
+                        const isAssigned = courseIds.length > 0 && courseIdsStr.includes(courseIdStr);
+                        
+                        if (isAssigned) {
+                            console.log(`[populateBulkRubricSelector] Including rubric "${rubric.name}": assigned to course, courseIds=[${courseIdsStr.join(', ')}]`);
+                        } else {
+                            console.log(`[populateBulkRubricSelector] Excluding rubric "${rubric.name}": courseIds=[${courseIdsStr.join(', ')}], looking for=${courseIdStr}`);
+                        }
+                        return isAssigned;
+                    });
+                } else {
+                    // No course selected - show only general rubrics (no course assignments)
+                    filteredRubrics = allRubrics.filter(rubric => {
+                        const courseIds = rubric.courseIds || [];
+                        return courseIds.length === 0;
+                    });
+                    console.log('[populateBulkRubricSelector] No course selected - showing only general rubrics');
+                }
+                
+                console.log('[populateBulkRubricSelector] Filtered rubrics count:', filteredRubrics.length);
+                
+                if (filteredRubrics.length > 0) {
+                    filteredRubrics.forEach((rubric) => {
+                        const opt = document.createElement('option');
+                        // Use supabaseId if available, otherwise use id
+                        opt.value = rubric.supabaseId || rubric.id;
+                        opt.textContent = rubric.name || 'Unnamed Rubric';
+                        select.appendChild(opt);
+                    });
+                    console.log('[populateBulkRubricSelector] Added', filteredRubrics.length, 'options to dropdown. Dropdown now has', select.options.length, 'options total');
+                } else {
                     const opt = document.createElement('option');
-                    opt.value = rubric.id || idx;
-                    opt.textContent = rubric.name || `Rubric ${idx + 1}`;
+                    opt.value = '';
+                    opt.textContent = courseId ? 'No rubrics available for this course' : 'No general rubrics available';
+                    opt.disabled = true;
                     select.appendChild(opt);
-                });
+                    console.log('[populateBulkRubricSelector] No rubrics to show - added disabled option');
+                }
             } catch (e) {
                 console.error('Error populating bulk rubric selector:', e);
             }
+        }
+
+        async function handleBulkCourseChange() {
+            await loadBulkStudents();
+            await updateBulkRubricSelector();
+            validateBulkUploadForm();
+        }
+
+        async function updateBulkRubricSelector() {
+            const courseSelect = document.getElementById('bulkCourseSelect');
+            const courseId = courseSelect?.value || null;
+            console.log('[updateBulkRubricSelector] Course selected:', courseId);
+            await populateBulkRubricSelector(courseId);
         }
 
         async function loadBulkStudents() {
