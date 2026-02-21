@@ -854,6 +854,14 @@
             overflow: hidden;
         }
         
+        #resultsContent {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        
         .card::before {
             content: '';
             position: absolute;
@@ -28132,7 +28140,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         <span style="font-size: 13px; font-weight: 600; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px;">Jump to:</span>
                         ${hasMedia ? `<a href="#eval-media-section" onclick="document.getElementById('eval-media-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="${videoUrl ? 'video' : 'headphones'}" style="width:14px;height:14px;"></i> ${videoUrl ? 'Video' : 'Audio'}</a>` : ''}
                         ${hasMarkers ? `<a href="#eval-timeline-section" onclick="document.getElementById('eval-timeline-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="clock" style="width:14px;height:14px;"></i> Timeline</a>` : ''}
-                        <a href="#eval-score-section" onclick="document.getElementById('eval-score-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="award" style="width:14px;height:14px;"></i> Score</a>
+                        ${!isEditing ? `<a href="#eval-score-section" onclick="document.getElementById('eval-score-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="award" style="width:14px;height:14px;"></i> Score</a>` : ''}
                         <a href="#eval-categories-section" onclick="document.getElementById('eval-categories-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="list" style="width:14px;height:14px;"></i> Categories</a>
                         <a href="#eval-comments-section" onclick="document.getElementById('eval-comments-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="message-square" style="width:14px;height:14px;"></i> Comments</a>
                         ${hasTranscript ? `<a href="#eval-transcript-section" onclick="document.getElementById('eval-transcript-section')?.scrollIntoView({behavior: 'smooth', block: 'start'}); return false;" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f5f5f7; color: #007AFF; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; min-height: 32px;" onmouseover="this.style.background='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.background='#f5f5f7'"><i data-lucide="file-text" style="width:14px;height:14px;"></i> Transcript</a>` : ''}
@@ -28266,7 +28274,10 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 const videoSectionContent = `
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
                             <h3 style="margin: 0; font-size: 17px; font-weight: 600; color: #1d1d1f; display: flex; align-items: center; gap: 8px;"><i data-lucide="${videoUrl ? 'video' : 'headphones'}" style="width: 20px; height: 20px; color: #007AFF;"></i> ${videoUrl ? 'Video Recording' : 'Audio Recording'}</h3>
-                            ${editingEvaluationId ? '' : '<button onclick="reEvaluateFromUrl(\'' + escapeHtml(mediaUrl) + '\', ' + (videoUrl ? 'true' : 'false') + ')" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Text\', sans-serif;" onmouseover="this.style.backgroundColor=\'rgba(0, 122, 255, 0.1)\'" onmouseout="this.style.backgroundColor=\'transparent\'"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Re-evaluate</button>'}
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                ${videoUrl ? '<button id="popOutVideoBtn" onclick="toggleFloatingVideo()" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Text\', sans-serif;" onmouseover="this.style.backgroundColor=\'rgba(0, 122, 255, 0.1)\'" onmouseout="this.style.backgroundColor=\'transparent\'"><i data-lucide="maximize-2" style="width:16px;height:16px;"></i> Pop Out</button>' : ''}
+                                ${editingEvaluationId ? '' : '<button onclick="reEvaluateFromUrl(\'' + escapeHtml(mediaUrl) + '\', ' + (videoUrl ? 'true' : 'false') + ')" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Text\', sans-serif;" onmouseover="this.style.backgroundColor=\'rgba(0, 122, 255, 0.1)\'" onmouseout="this.style.backgroundColor=\'transparent\'"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Re-evaluate</button>'}
+                            </div>
                         </div>
                         <div style="position: relative;">
                             ${videoUrl ? `
@@ -28305,24 +28316,13 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         </p>
                 `;
                 
-                // Build video section with appropriate styling based on layout
-                if (useSplitScreen) {
-                    // Split-screen: video on left, sticky
-                    videoSectionHtml = `
-                        <div id="eval-video-sidebar" style="position: sticky; top: 20px; align-self: flex-start; width: 100%; max-width: 480px; flex-shrink: 0; margin-right: 24px;">
-                            <div id="eval-media-section" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e5e5e7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;">
-                                ${videoSectionContent}
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    // Vertical layout: video in normal flow
-                    videoSectionHtml = `
-                        <div id="eval-media-section" style="background: #ffffff; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e5e5e7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; scroll-margin-top: 80px;">
-                            ${videoSectionContent}
+                // Build video section - always use vertical layout for better editing experience
+                // Video can be popped out to float
+                videoSectionHtml = `
+                    <div id="eval-media-section" style="background: #ffffff; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e5e5e7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; scroll-margin-top: 80px; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+                        ${videoSectionContent}
                     </div>
                 `;
-                }
             }
             
             // Add timeline markers section right after video (at the top)
@@ -28502,13 +28502,18 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 console.warn('⚠️ NOT adding timeline markers section - shouldShowMarkersSection =', shouldShowMarkersSection);
             }
             
+            // Only show big blue final score section when NOT editing (score is already in summary card)
+            if (!isEditing) {
+                html += `
+                    <div id="eval-score-section" style="background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%); color: white; padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2); scroll-margin-top: 80px;">
+                        <h2 style="color: white; margin: 0 0 12px 0; font-size: 15px; font-weight: 600; letter-spacing: -0.24px;">Final Score</h2>
+                        <div style="font-size: 48px; font-weight: 700; line-height: 1; margin-bottom: 8px; letter-spacing: -0.96px;">${escapeHtml(String(results.totalScore || 0))} / ${escapeHtml(String(results.maxScore || 0))}</div>
+                        <div style="font-size: 20px; font-weight: 500; opacity: 0.9; letter-spacing: -0.4px;">${results.maxScore > 0 ? escapeHtml(((results.totalScore / results.maxScore) * 100).toFixed(1)) : '0'}%</div>
+                    </div>
+                `;
+            }
+            
             html += `
-                <div id="eval-score-section" style="background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%); color: white; padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2); scroll-margin-top: 80px;">
-                    <h2 style="color: white; margin: 0 0 12px 0; font-size: 15px; font-weight: 600; letter-spacing: -0.24px;">Final Score</h2>
-                    <div style="font-size: 48px; font-weight: 700; line-height: 1; margin-bottom: 8px; letter-spacing: -0.96px;">${escapeHtml(String(results.totalScore || 0))} / ${escapeHtml(String(results.maxScore || 0))}</div>
-                    <div style="font-size: 20px; font-weight: 500; opacity: 0.9; letter-spacing: -0.4px;">${results.maxScore > 0 ? escapeHtml(((results.totalScore / results.maxScore) * 100).toFixed(1)) : '0'}%</div>
-                </div>
-                
                 <div id="eval-categories-section" style="scroll-margin-top: 80px;">
                     <h3 style="margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; letter-spacing: -0.4px;">Detailed Scores by Category</h3>
                     <div style="display: grid; gap: 16px; margin-bottom: 24px;">
@@ -28647,35 +28652,68 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 .replace(/<div id="editingModeBanner"[^>]*>[\s\S]*?<\/div>/, '')
                 .replace(/<nav id="evalNavigationMenu"[^>]*>[\s\S]*?<\/nav>/, '');
             
-            if (useSplitScreen && videoSectionHtml) {
-                // Split-screen layout: video on left (sticky), evaluation content on right
-                finalHtml = `
-                    ${bannerHtml}
-                    ${navHtml}
-                    <div id="eval-split-screen-container" style="display: flex; gap: 24px; align-items: flex-start; margin-top: ${bannerHtml || navHtml ? '24px' : '0'};">
-                        ${videoSectionHtml}
-                        <div style="flex: 1; min-width: 0;">
-                            ${metadataHtml}
-                            ${contentHtml}
-                        </div>
+            // Always use vertical layout - video can be popped out to float
+            finalHtml = bannerHtml + navHtml + metadataHtml + (videoSectionHtml || '') + contentHtml;
+            
+            // Create floating video container and append directly to body (not inside resultsContent)
+            // This ensures position: fixed works correctly
+            let floatingContainer = document.getElementById('floating-video-container');
+            if (!floatingContainer) {
+                floatingContainer = document.createElement('div');
+                floatingContainer.id = 'floating-video-container';
+                floatingContainer.className = 'floating-video-hidden';
+                floatingContainer.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #e5e5e7;">
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #1d1d1f; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="video" style="width: 18px; height: 18px; color: #007AFF;"></i> Video Player
+                        </h3>
+                        <button onclick="toggleFloatingVideo()" style="background: transparent; border: none; color: #6e6e73; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'; this.style.color='#1d1d1f'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#6e6e73'">
+                            <i data-lucide="minimize-2" style="width:18px;height:18px;"></i>
+                        </button>
                     </div>
-                    <style>
-                        @media (max-width: 1024px) {
-                            #eval-split-screen-container {
-                                flex-direction: column !important;
-                            }
-                            #eval-video-sidebar {
-                                position: static !important;
-                                max-width: 100% !important;
-                                margin-right: 0 !important;
-                                margin-bottom: 24px !important;
+                    <div id="floating-video-content" style="padding: 16px;">
+                        <!-- Video will be moved here when popped out -->
+                    </div>
+                `;
+                document.body.appendChild(floatingContainer);
+                
+                // Add styles if not already present
+                if (!document.getElementById('floating-video-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'floating-video-styles';
+                    style.textContent = `
+                        .floating-video-hidden {
+                            display: none !important;
+                        }
+                        .floating-video-visible {
+                            display: block !important;
+                        }
+                        #floating-video-container {
+                            position: fixed !important;
+                            bottom: 20px !important;
+                            right: 20px !important;
+                            width: 400px !important;
+                            max-width: calc(100vw - 40px) !important;
+                            z-index: 10000 !important;
+                            background: #ffffff !important;
+                            border-radius: 12px !important;
+                            box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+                            border: 1px solid #e5e5e7 !important;
+                        }
+                        #floating-video-container video {
+                            width: 100%;
+                            border-radius: 8px;
+                            background: #000;
+                        }
+                        @media (max-width: 768px) {
+                            #floating-video-container {
+                                width: calc(100vw - 40px) !important;
+                                max-width: 400px !important;
                             }
                         }
-                    </style>
-                `;
-            } else {
-                // Vertical layout: normal flow
-                finalHtml = bannerHtml + navHtml + metadataHtml + (videoSectionHtml || '') + contentHtml;
+                    `;
+                    document.head.appendChild(style);
+                }
             }
             
             const resultsContentEl = document.getElementById('resultsContent');
@@ -28795,6 +28833,9 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
                 lucide.createIcons({ root: document.getElementById('resultsContent') });
             }
+            
+            // Initialize floating video functionality
+            initializeFloatingVideo();
             
             // Render action buttons dynamically
             renderResultsActionButtons(isEditing);
@@ -30270,6 +30311,201 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
         }
         
         // Render action buttons for results page (Apple HIG compliant)
+        // Floating video functionality
+        let isVideoFloating = false;
+        let originalVideoContainer = null;
+        
+        function toggleFloatingVideo() {
+            const videoSection = document.getElementById('eval-media-section');
+            const floatingContainer = document.getElementById('floating-video-container');
+            const floatingContent = document.getElementById('floating-video-content');
+            const popOutBtn = document.getElementById('popOutVideoBtn');
+            const videoPlayer = document.getElementById('evaluationVideoPlayer');
+            
+            if (!videoSection || !floatingContainer || !floatingContent) return;
+            
+            if (!isVideoFloating) {
+                // Pop out: move video to floating container
+                const videoWrapper = videoSection.querySelector('div[style*="position: relative"]');
+                if (videoWrapper && videoPlayer) {
+                    // Store original container
+                    originalVideoContainer = videoWrapper;
+                    
+                    // Clone the video wrapper
+                    const clonedWrapper = videoWrapper.cloneNode(true);
+                    clonedWrapper.style.width = '100%';
+                    clonedWrapper.style.maxWidth = '100%';
+                    
+                    // Move video to floating container
+                    floatingContent.innerHTML = '';
+                    floatingContent.appendChild(clonedWrapper);
+                    
+                    // Hide original video section
+                    videoSection.style.display = 'none';
+                    
+                    // Show floating container and ensure fixed positioning
+                    floatingContainer.style.display = 'block';
+                    floatingContainer.style.position = 'fixed';
+                    floatingContainer.style.bottom = '20px';
+                    floatingContainer.style.right = '20px';
+                    floatingContainer.style.top = 'auto';
+                    floatingContainer.style.left = 'auto';
+                    floatingContainer.style.zIndex = '10000';
+                    floatingContainer.classList.remove('floating-video-hidden');
+                    floatingContainer.classList.add('floating-video-visible');
+                    
+                    // Update button
+                    if (popOutBtn) {
+                        popOutBtn.innerHTML = '<i data-lucide="minimize-2" style="width:16px;height:16px;"></i> Dock';
+                        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                            lucide.createIcons({ root: popOutBtn });
+                        }
+                    }
+                    
+                    // Re-initialize video player in floating container
+                    const newVideoPlayer = floatingContent.querySelector('#evaluationVideoPlayer');
+                    if (newVideoPlayer && videoPlayer) {
+                        // Copy current time and state
+                        const currentTime = videoPlayer.currentTime;
+                        const wasPlaying = !videoPlayer.paused;
+                        
+                        // Set up new player
+                        newVideoPlayer.currentTime = currentTime;
+                        if (wasPlaying) {
+                            newVideoPlayer.play().catch(() => {});
+                        }
+                        
+                        // Set up double-click handler for markers
+                        if (editingEvaluationId) {
+                            newVideoPlayer.addEventListener('dblclick', function(e) {
+                                if (typeof window.addTimelineMarkerFromVideo === 'function') {
+                                    window.addTimelineMarkerFromVideo();
+                                }
+                            });
+                        }
+                    }
+                    
+                    isVideoFloating = true;
+                    
+                    // Ensure fixed positioning is maintained (fixed elements automatically follow scroll)
+                    // Add scroll listener to ensure position stays correct
+                    updateFloatingVideoPosition();
+                    
+                    // Listen to scroll on both window and any scrollable parent containers
+                    const scrollHandler = () => updateFloatingVideoPosition();
+                    window.addEventListener('scroll', scrollHandler, { passive: true, capture: true });
+                    window.addEventListener('resize', scrollHandler, { passive: true });
+                    
+                    // Also listen to scroll on resultsContent if it's scrollable
+                    const resultsContent = document.getElementById('resultsContent');
+                    if (resultsContent) {
+                        resultsContent.addEventListener('scroll', scrollHandler, { passive: true });
+                    }
+                }
+            } else {
+                // Dock: move video back to original location
+                if (originalVideoContainer && videoPlayer) {
+                    const floatingVideoPlayer = floatingContent.querySelector('#evaluationVideoPlayer');
+                    if (floatingVideoPlayer) {
+                        // Copy current time and state
+                        const currentTime = floatingVideoPlayer.currentTime;
+                        const wasPlaying = !floatingVideoPlayer.paused;
+                        
+                        // Restore original video section
+                        videoSection.style.display = 'block';
+                        
+                        // Restore video state
+                        if (videoPlayer) {
+                            videoPlayer.currentTime = currentTime;
+                            if (wasPlaying) {
+                                videoPlayer.play().catch(() => {});
+                            }
+                        }
+                    }
+                }
+                
+                // Hide floating container
+                floatingContainer.style.display = 'none';
+                floatingContainer.classList.add('floating-video-hidden');
+                floatingContainer.classList.remove('floating-video-visible');
+                floatingContent.innerHTML = '';
+                
+                // Update button
+                if (popOutBtn) {
+                    popOutBtn.innerHTML = '<i data-lucide="maximize-2" style="width:16px;height:16px;"></i> Pop Out';
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: popOutBtn });
+                    }
+                }
+                
+                isVideoFloating = false;
+                
+                // Remove scroll listeners
+                const scrollHandler = updateFloatingVideoPosition;
+                window.removeEventListener('scroll', scrollHandler, { capture: true });
+                window.removeEventListener('resize', scrollHandler);
+                
+                const resultsContent = document.getElementById('resultsContent');
+                if (resultsContent) {
+                    resultsContent.removeEventListener('scroll', scrollHandler);
+                }
+            }
+            
+            // Re-initialize icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: floatingContainer });
+            }
+        }
+        
+        function updateFloatingVideoPosition() {
+            const floatingContainer = document.getElementById('floating-video-container');
+            if (!floatingContainer || !isVideoFloating) return;
+            
+            // Force fixed positioning - this ensures it stays in viewport as you scroll
+            // Fixed positioning is relative to viewport, not document
+            floatingContainer.style.cssText = `
+                position: fixed !important;
+                bottom: 20px !important;
+                right: 20px !important;
+                top: auto !important;
+                left: auto !important;
+                width: 400px !important;
+                max-width: calc(100vw - 40px) !important;
+                z-index: 10000 !important;
+                background: #ffffff !important;
+                border-radius: 12px !important;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+                border: 1px solid #e5e5e7 !important;
+                display: block !important;
+            `;
+        }
+        
+        function initializeFloatingVideo() {
+            // Reset floating state when new evaluation is loaded
+            isVideoFloating = false;
+            originalVideoContainer = null;
+            
+            const floatingContainer = document.getElementById('floating-video-container');
+            if (floatingContainer) {
+                floatingContainer.style.display = 'none';
+                floatingContainer.classList.add('floating-video-hidden');
+                floatingContainer.classList.remove('floating-video-visible');
+            }
+            
+            // Remove any existing scroll listeners
+            const scrollHandler = updateFloatingVideoPosition;
+            window.removeEventListener('scroll', scrollHandler, { capture: true });
+            window.removeEventListener('resize', scrollHandler);
+            
+            const resultsContent = document.getElementById('resultsContent');
+            if (resultsContent) {
+                resultsContent.removeEventListener('scroll', scrollHandler);
+            }
+        }
+        
+        // Make functions globally available
+        window.toggleFloatingVideo = toggleFloatingVideo;
+        
         function renderResultsActionButtons(isEditing) {
             const buttonsContainer = document.getElementById('resultsActionButtons');
             if (!buttonsContainer) return;
