@@ -115,7 +115,7 @@ app = FastAPI(title="SpeechGradebook")
 def get_rate_limit_key(request: Request) -> str:
     """
     Get rate limit key: user ID from Supabase auth token if available, otherwise IP address.
-    This allows 50 requests/hour per user, with IP fallback for unauthenticated requests.
+    This allows 200 requests/hour per user (supports bulk uploads), with IP fallback for unauthenticated requests.
     """
     # Try to extract user ID from Authorization header (Supabase JWT)
     auth_header = request.headers.get("Authorization", "")
