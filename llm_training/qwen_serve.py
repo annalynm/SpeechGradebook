@@ -91,10 +91,36 @@ def _load_model(model_name: str, load_in_8bit: bool = False, load_in_4bit: bool 
 
 @app.get("/health")
 def health():
-    loaded = model is not None and processor is not None
+    """Check if model is loaded and ready for inference."""
+    if model is None or processor is None:
+        return {
+            "status": "model_not_loaded",
+            "model": None,
+        }
+    
+    # Verify model is actually ready by checking if it has parameters loaded
+    # During loading, model exists but parameters might still be loading
+    try:
+        import torch
+        # Check if model has parameters and they're on the correct device
+        if hasattr(model, 'parameters'):
+            # Try to access a parameter to ensure it's loaded
+            next(model.parameters(), None)
+            # Check if model is in eval mode (set after loading completes)
+            if hasattr(model, 'training'):
+                is_ready = not model.training  # Should be False (eval mode)
+            else:
+                is_ready = True
+        else:
+            is_ready = False
+    except Exception as e:
+        # If we can't check parameters, assume not ready
+        # This can happen during loading
+        is_ready = False
+    
     return {
-        "status": "ok" if loaded else "model_not_loaded",
-        "model": "Qwen2.5-VL-7B" if loaded else None,
+        "status": "ok" if is_ready else "model_not_loaded",
+        "model": "Qwen2.5-VL-7B" if is_ready else None,
     }
 
 

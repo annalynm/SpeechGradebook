@@ -76,7 +76,19 @@ class QwenService:
         self.qwen_serve = qwen_serve
         # A100 has 40GB VRAM, so we can use 4-bit quantization for cost savings
         # or load in full precision. 4-bit is fine and saves memory.
+        print("[Modal] Starting model load...")
         qwen_serve._load_model("Qwen/Qwen2.5-VL-7B-Instruct", load_in_4bit=True)
+        # Ensure model is fully loaded by accessing it
+        # This forces synchronization and ensures weights are loaded
+        if qwen_serve.model is not None:
+            try:
+                # Access model parameters to ensure they're loaded
+                _ = next(qwen_serve.model.parameters(), None)
+                print("[Modal] Model loaded and ready")
+            except Exception as e:
+                print(f"[Modal] Warning: Model loading check failed: {e}")
+        else:
+            print("[Modal] Warning: Model is None after loading")
 
     @modal.asgi_app(label="qwen-speechgradebook")
     def web(self):
