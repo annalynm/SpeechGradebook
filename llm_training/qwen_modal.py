@@ -56,14 +56,15 @@ app = modal.App("qwen-speechgradebook", image=image)
     # A100 costs ~$4-5/hour vs ~$0.80/hour for T4, but provides reliable evaluations
     # Cost per evaluation: ~$0.05-0.15 with A100 (vs ~$0.01-0.03 with T4, but OOM failures)
     gpu="A100",  # Switched from T4 due to OOM errors - A100 has 40GB VRAM
-    scaledown_window=300,  # Updated from container_idle_timeout
+    scaledown_window=600,  # Increased from 300s to 600s (10 min) to prevent scale-down during bulk uploads
     timeout=600,
     secrets=[
         modal.Secret.from_name("hf-token"),  # HF_TOKEN for faster Hugging Face downloads
         # modal.Secret.from_name("supabase-db"),  # Uncomment to enable textbook RAG; create secret first
     ],
 )
-@modal.concurrent(max_inputs=1)  # Updated from allow_concurrent_inputs=1
+@modal.concurrent(max_inputs=2)  # Increased from 1 to 2 to allow concurrent processing for bulk uploads
+# With A100 40GB VRAM and 4-bit quantization, we can safely handle 2 concurrent video evaluations
 class QwenService:
     """Load Qwen2.5-VL on GPU and serve the FastAPI app."""
 
