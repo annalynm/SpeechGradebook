@@ -26043,6 +26043,14 @@ Ensure every subcategory receives a grade. Include "video_notes" as a single par
         let currentStage = null;
         let videoDuration = null; // Will be set from file if available
         
+        // Update processing stage (for bulk upload progress tracking)
+        function updateProcessingStage(stage) {
+            currentStage = stage;
+            // Stage can be: 'upload', 'transcribe', 'analyze', 'score'
+            // This function is called to track progress during bulk uploads
+            // The stage information can be used for progress updates if needed
+        }
+        
         // Helper functions for upload progress tracking
         function showUploadProgress(fileSize = null) {
             const container = document.getElementById('uploadProgressContainer');
