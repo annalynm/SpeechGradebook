@@ -24197,8 +24197,8 @@ SpeechGradebook Research Team`;
             
             // Check Qwen service health before starting (for bulk uploads, this prevents all failures)
             // Use the Render proxy endpoint /qwen-api/health instead of direct Modal URL
+            const currentVideoMessage = document.getElementById('bulkCurrentVideoMessage');
             try {
-                const currentVideoMessage = document.getElementById('bulkCurrentVideoMessage');
                 if (currentVideoMessage) currentVideoMessage.textContent = 'Checking service status...';
                 
                 const healthController = new AbortController();
@@ -24210,36 +24210,46 @@ SpeechGradebook Research Team`;
                 clearTimeout(healthTimeout);
                 
                 if (!healthResponse.ok) {
-                    throw new Error(`Health check returned ${healthResponse.status}`);
-                }
-                
-                const healthData = await healthResponse.json();
-                
-                if (healthData.status === 'model_not_loaded') {
-                    if (currentVideoMessage) currentVideoMessage.textContent = 'Service is starting (cold start)... Waiting 60 seconds...';
-                    // Wait 60 seconds for model to load (cold starts can take this long)
-                    await new Promise(resolve => setTimeout(resolve, 60000));
-                    // Check again
-                    const retryController = new AbortController();
-                    const retryTimeout = setTimeout(() => retryController.abort(), 30000);
-                    const retryResponse = await fetch('/qwen-api/health', { 
-                        method: 'GET', 
-                        signal: retryController.signal 
-                    });
-                    clearTimeout(retryTimeout);
-                    
-                    if (!retryResponse.ok) {
-                        throw new Error(`Retry health check returned ${retryResponse.status}`);
+                    // If 503, the service might be cold starting - proceed with retry logic
+                    if (healthResponse.status === 503) {
+                        console.warn('Health check returned 503 - service may be cold starting. Proceeding with retry logic.');
+                        if (currentVideoMessage) {
+                            currentVideoMessage.textContent = 'Service may be starting (cold start). Will retry with delays...';
+                        }
+                        // Don't return - let the retry logic handle it
+                    } else {
+                        throw new Error(`Health check returned ${healthResponse.status}`);
                     }
+                } else {
+                    const healthData = await healthResponse.json();
                     
-                    const retryData = await retryResponse.json();
-                    if (retryData.status !== 'ok') {
-                        alert('Qwen service is still loading. Please wait 1-2 minutes and try again. The first request after idle takes time to load the model.');
-                        return;
+                    if (healthData.status === 'model_not_loaded') {
+                        if (currentVideoMessage) currentVideoMessage.textContent = 'Service is starting (cold start)... Waiting 60 seconds...';
+                        // Wait 60 seconds for model to load (cold starts can take this long)
+                        await new Promise(resolve => setTimeout(resolve, 60000));
+                        // Check again
+                        const retryController = new AbortController();
+                        const retryTimeout = setTimeout(() => retryController.abort(), 30000);
+                        const retryResponse = await fetch('/qwen-api/health', { 
+                            method: 'GET', 
+                            signal: retryController.signal 
+                        });
+                        clearTimeout(retryTimeout);
+                        
+                        if (!retryResponse.ok) {
+                            console.warn('Retry health check returned ' + retryResponse.status + ' - proceeding with retry logic');
+                            // Don't return - let retry logic handle it
+                        } else {
+                            const retryData = await retryResponse.json();
+                            if (retryData.status !== 'ok') {
+                                console.warn('Service still not ready - proceeding with retry logic');
+                                // Don't return - let retry logic handle it
+                            }
+                        }
+                    } else if (healthData.status !== 'ok') {
+                        console.warn('Service status is not ok - proceeding with retry logic');
+                        // Don't return - let retry logic handle it
                     }
-                } else if (healthData.status !== 'ok') {
-                    alert('Qwen service is not ready. Please check the service status and try again.');
-                    return;
                 }
             } catch (error) {
                 console.warn('Health check failed, proceeding anyway:', error);
