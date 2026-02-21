@@ -24862,7 +24862,11 @@ SpeechGradebook Research Team`;
                 let storageUrl = null;
                 try {
                     // Get upload path from backend
-                    const authToken = (await window.supabase.auth.getSession()).data?.session?.access_token;
+                    if (!supabaseClient) {
+                        throw new Error('Supabase client not initialized');
+                    }
+                    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+                    const authToken = sessionData?.session?.access_token;
                     if (!authToken) {
                         throw new Error('Authentication required for direct upload');
                     }
@@ -24895,7 +24899,7 @@ SpeechGradebook Research Team`;
                     updateUploadProgress(20, 'Uploading to storage...');
                     
                     // Upload directly to Supabase Storage using JS client
-                    const { data: uploadData, error: uploadError } = await window.supabase.storage
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
                         .from(bucket)
                         .upload(filePath, file, {
                             cacheControl: '3600',
