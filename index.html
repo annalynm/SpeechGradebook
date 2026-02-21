@@ -24855,137 +24855,28 @@ SpeechGradebook Research Team`;
             }
             try {
                 updateProcessingStage('upload');
-                updateProcessingMessage('Uploading video to storage...');
-                showUploadProgress(file.size);
-                
-                // Step 1: Upload directly to Supabase Storage (bypasses Render memory constraints)
-                let storageUrl = null;
-                try {
-                    // Get upload path from backend
-                    if (!supabaseClient) {
-                        throw new Error('Supabase client not initialized');
-                    }
-                    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-                    const authToken = sessionData?.session?.access_token;
-                    if (!authToken) {
-                        throw new Error('Authentication required for direct upload');
-                    }
-                    
-                    updateUploadProgress(10, 'Preparing upload...');
-                    
-                    // Get file path for upload
-                    const uploadPathResponse = await fetch('/api/generate-upload-url', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            filename: file.name || 'video.mp4',
-                            content_type: file.type || 'video/mp4',
-                            file_size: file.size
-                        })
-                    });
-                    
-                    if (!uploadPathResponse.ok) {
-                        const errorText = await uploadPathResponse.text();
-                        throw new Error(`Failed to get upload path: ${errorText}`);
-                    }
-                    
-                    const uploadPathData = await uploadPathResponse.json();
-                    const filePath = uploadPathData.file_path;
-                    const bucket = uploadPathData.bucket;
-                    
-                    updateUploadProgress(20, 'Uploading to storage...');
-                    
-                    // Upload directly to Supabase Storage using JS client
-                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
-                        .from(bucket)
-                        .upload(filePath, file, {
-                            cacheControl: '3600',
-                            upsert: false
-                        }, (progress) => {
-                            // Update progress: 20% to 90% for upload
-                            const uploadPercent = 20 + (progress.loaded / progress.total) * 70;
-                            updateUploadProgress(uploadPercent, `Uploading: ${Math.round(uploadPercent)}%`);
-                        });
-                    
-                    if (uploadError) {
-                        throw new Error(`Storage upload failed: ${uploadError.message}`);
-                    }
-                    
-                    updateUploadProgress(90, 'Confirming upload...');
-                    
-                    // Confirm upload and get public URL
-                    const confirmResponse = await fetch('/api/confirm-upload', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            file_path: filePath
-                        })
-                    });
-                    
-                    if (!confirmResponse.ok) {
-                        throw new Error('Failed to confirm upload');
-                    }
-                    
-                    const confirmData = await confirmResponse.json();
-                    storageUrl = confirmData.storage_url;
-                    
-                    updateUploadProgress(95, 'Upload complete');
-                    console.log('Video uploaded to Supabase Storage:', storageUrl);
-                    
-                } catch (uploadError) {
-                    console.warn('Direct upload to storage failed, falling back to traditional upload:', uploadError);
-                    // Fall back to traditional upload if direct upload fails
-                    storageUrl = null;
-                }
-                
-                // Step 2: Send to Qwen API for evaluation
                 updateProcessingMessage('SpeechGradebook Text + Video Model (Qwen) is evaluating the video (content and delivery)');
-                let response;
+                showUploadProgress(file.size);
+                updateUploadProgress(10, 'Preparing video for evaluation...');
                 
-                if (storageUrl) {
-                    // Use storage URL (bypasses Render memory, but requires Qwen API to support storage_url parameter)
-                    const formData = new FormData();
-                    formData.append('storage_url', storageUrl);
-                    formData.append('rubric', JSON.stringify(normalizeRubricForApi(rubric)));
-                    
-                    try {
-                        response = await fetchWithProgress(baseUrl + '/evaluate_video', {
-                            method: 'POST',
-                            body: formData
-                        }, (percent) => {
-                            // Progress from 95% to 99% for API call
-                            const apiPercent = 95 + (percent * 0.04);
-                            updateUploadProgress(apiPercent, 'Evaluating video...');
-                        });
-                        updateUploadProgress(99, 'Finalizing');
-                    } finally {
-                        // Don't hide here - let it stay visible during evaluation
-                    }
-                } else {
-                    // Fallback: traditional file upload (if direct upload failed)
+                // Upload file directly to Qwen API for evaluation (traditional method)
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('rubric', JSON.stringify(normalizeRubricForApi(rubric)));
-                    
+                
+                let response;
                 try {
                     response = await fetchWithProgress(baseUrl + '/evaluate_video', {
                         method: 'POST',
                         body: formData
                     }, (percent) => {
-                            // Progress from 95% to 99% for API call
-                            const apiPercent = 95 + (percent * 0.04);
-                            updateUploadProgress(apiPercent, 'Evaluating video...');
+                        // Progress from 10% to 99% for API call (upload + evaluation)
+                        const apiPercent = 10 + (percent * 0.89);
+                        updateUploadProgress(apiPercent, 'Evaluating video...');
                     });
-                        updateUploadProgress(99, 'Finalizing');
+                    updateUploadProgress(99, 'Finalizing');
                 } finally {
                     // Don't hide here - let it stay visible during evaluation
-                    }
                 }
                 if (!response.ok) {
                     const errText = await response.text();
