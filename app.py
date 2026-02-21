@@ -175,13 +175,26 @@ qwen_router = APIRouter(prefix="/qwen-api", tags=["qwen"])
 async def qwen_proxy_health():
     base = _qwen_base()
     if not base:
-        return Response(status_code=503, content="QWEN_API_URL not set")
+        return Response(status_code=503, content=json.dumps({"status": "error", "detail": "QWEN_API_URL not set on Render"}))
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             r = await client.get(f"{base}/health")
             return Response(content=r.content, status_code=r.status_code, media_type="application/json")
+    except httpx.TimeoutException:
+        return Response(
+            status_code=503,
+            content=json.dumps({"status": "error", "detail": "Modal service timeout. The service may be starting up (cold start) or unavailable."})
+        )
+    except httpx.ConnectError as e:
+        return Response(
+            status_code=503,
+            content=json.dumps({"status": "error", "detail": f"Cannot connect to Modal service at {base}. Check if the service is deployed and QWEN_API_URL is correct."})
+        )
     except Exception as e:
-        return Response(status_code=503, content=f"Qwen proxy error: {e!s}")
+        return Response(
+            status_code=503,
+            content=json.dumps({"status": "error", "detail": f"Qwen proxy error: {e!s}"})
+        )
 
 
 @qwen_router.post("/evaluate_video")
@@ -210,8 +223,18 @@ async def qwen_proxy_evaluate_video(file: UploadFile = File(...), rubric: str = 
                 except:
                     pass
             return Response(content=r.content, status_code=r.status_code, media_type="application/json")
+    except httpx.TimeoutException:
+        return Response(
+            status_code=503,
+            content=json.dumps({"detail": "Modal service timeout. The evaluation may be taking longer than expected, or the service may be unavailable."})
+        )
+    except httpx.ConnectError as e:
+        return Response(
+            status_code=503,
+            content=json.dumps({"detail": f"Cannot connect to Modal service at {base}. Check if the service is deployed: run 'modal deploy llm_training/qwen_modal.py' and verify QWEN_API_URL is correct."})
+        )
     except Exception as e:
-        return Response(status_code=503, content=f"Qwen proxy error: {e!s}")
+        return Response(status_code=503, content=json.dumps({"detail": f"Qwen proxy error: {e!s}"}))
 
 
 @qwen_router.post("/analyze_video")
