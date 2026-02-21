@@ -56,13 +56,25 @@ DEVICE = "cuda"
 def _load_model(model_name: str, load_in_8bit: bool = False, load_in_4bit: bool = False):
     global model, processor
     import torch
+    import os
     from transformers import Qwen2_5_VLForConditionalGeneration, Qwen2_5_VLProcessor  # requires transformers>=4.50
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = torch.bfloat16 if device == "cuda" else torch.float32
 
+    # Get HF token from environment (set by Modal secret)
+    hf_token = os.getenv("HF_TOKEN") or os.getenv("HUGGING_FACE_HUB_TOKEN")
+    if hf_token:
+        print(f"[Model Load] Using HF token for authenticated downloads (token length: {len(hf_token)})")
+    else:
+        print("[Model Load] Warning: No HF_TOKEN found - using unauthenticated downloads (may hit rate limits)")
+
     # Use Qwen2_5_VLProcessor directly to avoid AutoProcessor video_processing bug (TypeError: NoneType)
-    processor = Qwen2_5_VLProcessor.from_pretrained(model_name, trust_remote_code=True)
+    processor = Qwen2_5_VLProcessor.from_pretrained(
+        model_name, 
+        trust_remote_code=True,
+        token=hf_token  # Explicitly pass token for authenticated downloads
+    )
 
     if device == "cuda" and (load_in_4bit or load_in_8bit):
         from transformers import BitsAndBytesConfig
@@ -75,6 +87,7 @@ def _load_model(model_name: str, load_in_8bit: bool = False, load_in_4bit: bool 
             quantization_config=qconfig,
             device_map="auto",
             trust_remote_code=True,
+            token=hf_token  # Explicitly pass token for authenticated downloads
         )
     else:
         model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
@@ -82,6 +95,7 @@ def _load_model(model_name: str, load_in_8bit: bool = False, load_in_4bit: bool 
             torch_dtype=dtype,
             device_map="auto" if device == "cuda" else None,
             trust_remote_code=True,
+            token=hf_token  # Explicitly pass token for authenticated downloads
         )
         if device == "cpu":
             model = model.to(device)
