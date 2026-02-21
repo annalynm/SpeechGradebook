@@ -198,7 +198,7 @@ async def qwen_proxy_health():
 
 
 @qwen_router.post("/evaluate_video")
-@limiter.limit("50/hour")
+@limiter.limit("200/hour")  # Increased from 50/hour to support bulk uploads (e.g. 30-50 videos per class)
 async def qwen_proxy_evaluate_video(request: Request, file: UploadFile = File(...), rubric: str = Form(...)):
     base = _qwen_base()
     if not base:
