@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpeechGradebook</title>
-    <link rel="icon" id="faviconLink" href="assets/3d-logo-transparent.png" type="image/png">
+    <link rel="icon" id="faviconLink" href="assets/speechgradebook-logo-light.png" type="image/png">
     
     <!-- Fonts (Bunny Fonts - privacy-friendly, less blocked than Google Fonts) -->
     <link href="https://fonts.bunny.net/css?family=Montserrat:400,500,600,700|Source+Sans+3:400,600,700|Roboto:400,500,700|Open+Sans:400,600,700|Crimson+Pro:400,600,700|Work+Sans:400,600,700&display=swap" rel="stylesheet">
@@ -502,30 +502,14 @@
             padding: 12%; /* Add padding so logo doesn't touch edges */
         }
         
-        /* Transparent logo styling for light mode - display as-is on white/light backgrounds */
-        .logo img[src*="3d-logo-transparent"],
-        .logo img[src*="3d-logo-transparent.png"],
-        #appLogo img[src*="3d-logo-transparent"],
-        #appLogo img[src*="3d-logo-transparent.png"],
-        .auth-logo img[src*="3d-logo-transparent"],
-        .auth-logo img[src*="3d-logo-transparent.png"] {
-            filter: none; /* Logo has dark blue ribbon and white waves - visible on light backgrounds */
-        }
-        
-        /* Transparent logo styling for dark mode - keep original colors (no inversion) */
-        :root[data-theme="dark"] .logo img[src*="3d-logo-transparent"],
-        :root[data-theme="dark"] .logo img[src*="3d-logo-transparent.png"],
-        :root[data-theme="dark"] #appLogo img[src*="3d-logo-transparent"],
-        :root[data-theme="dark"] #appLogo img[src*="3d-logo-transparent.png"],
-        :root[data-theme="dark"] .auth-logo img[src*="3d-logo-transparent"],
-        :root[data-theme="dark"] .auth-logo img[src*="3d-logo-transparent.png"],
-        .theme-option7-dark .logo img[src*="3d-logo-transparent"],
-        .theme-option7-dark .logo img[src*="3d-logo-transparent.png"],
-        .theme-option7-dark #appLogo img[src*="3d-logo-transparent"],
-        .theme-option7-dark #appLogo img[src*="3d-logo-transparent.png"],
-        .theme-option7-dark .auth-logo img[src*="3d-logo-transparent"],
-        .theme-option7-dark .auth-logo img[src*="3d-logo-transparent.png"] {
-            filter: none; /* Keep original logo colors in dark mode */
+        /* SpeechGradebook logo styling - no filters needed, logos are pre-designed for their backgrounds */
+        .logo img[src*="speechgradebook-logo"],
+        .logo img[src*="speechgradebook-logo"],
+        #appLogo img[src*="speechgradebook-logo"],
+        #appLogo img[src*="speechgradebook-logo"],
+        .auth-logo img[src*="speechgradebook-logo"],
+        .auth-logo img[src*="speechgradebook-logo"] {
+            filter: none; /* Logos are designed for their specific backgrounds */
         }
         
         /* Header logo circle: always pure white on account pages (no yellow/theme tint) */
@@ -3459,9 +3443,8 @@
         .auth-card         .auth-logo img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Scale to fit without cropping */
+            object-fit: fill; /* Stretch to fill the entire space */
             object-position: center;
-            padding: 10%; /* Add padding so logo doesn't touch edges */
         }
         .auth-card h2 {
             font-family: var(--heading-font);
@@ -3555,7 +3538,7 @@
         </div>
         <div class="auth-card">
             <div style="text-align: center; margin-bottom: 2rem;">
-                <div class="auth-logo"><img id="authLogoImg" src="assets/3d-logo-transparent.png" alt="SpeechGradebook" /></div>
+                <div class="auth-logo"><img id="authLogoImg" src="assets/speechgradebook-logo-dark.png" alt="SpeechGradebook" /></div>
                 <h2><span class="icon-with-text"><i data-lucide="graduation-cap" style="width:1.25em;height:1.25em;"></i> SpeechGradebook</span></h2>
                 <p class="auth-tagline">Instructor-Informed Speech Assessment</p>
             </div>
@@ -3676,7 +3659,7 @@
                 <!-- Left Section: Logo + Navigation -->
                 <div class="header-left">
                     <div class="logo-section">
-                        <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/3d-logo-transparent.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;"></div>
+                        <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/speechgradebook-logo-light.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;"></div>
                         <div class="app-title">
                             <h1 id="appName">SpeechGradebook</h1>
                             <div class="tagline" id="appTagline">Instructor-Informed Speech Assessment</div>
@@ -3905,7 +3888,7 @@
                         </div>
                         
                         <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; justify-content: flex-end;">
-                            <button type="button" onclick="switchUploadMode('bulk'); document.getElementById('bulkMatchingStep').classList.add('hidden');" class="btn-secondary"><span class="icon-with-text"><i data-lucide="arrow-left"></i> Back</span></button>
+                            <button type="button" onclick="moveToStep(2)" class="btn-secondary"><span class="icon-with-text"><i data-lucide="arrow-left"></i> Back</span></button>
                             <button type="button" id="startBulkProcessingBtn" onclick="startBulkProcessing()" class="btn" disabled><span class="icon-with-text">Start Processing <i data-lucide="play"></i></span></button>
                         </div>
                     </div>
@@ -9941,7 +9924,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             root.style.setProperty('--heading-font', "'Roboto', sans-serif");
             root.style.setProperty('--body-font', "'Roboto', sans-serif");
             const faviconEl = document.getElementById('faviconLink');
-            if (faviconEl) { faviconEl.href = 'assets/3d-logo-transparent.png'; faviconEl.type = 'image/png'; }
+            if (faviconEl) { faviconEl.href = getLogoPath(); faviconEl.type = 'image/png'; }
             const header = document.querySelector('header');
             if (header) {
                 header.style.background = '#142940';
@@ -9952,7 +9935,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             const footer = document.querySelector('footer');
             if (footer) { footer.style.background = ''; footer.style.backgroundImage = ''; }
             const logo = document.getElementById('appLogo');
-            if (logo) { logo.innerHTML = '<img src="assets/3d-logo-transparent.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">'; logo.style.backgroundColor = '#ffffff'; }
+            if (logo) { logo.innerHTML = '<img src="' + getLogoPath() + '" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">'; logo.style.backgroundColor = '#ffffff'; }
             const appTaglineEl = document.getElementById('appTagline');
             if (appTaglineEl) appTaglineEl.textContent = 'Instructor-Informed Speech Assessment';
             currentInstitutionTheme = null;
@@ -10081,7 +10064,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             document.documentElement.style.removeProperty('--smokey');
             document.documentElement.style.removeProperty('--link-blue');
             var fav = document.getElementById('faviconLink');
-            if (fav) { fav.href = 'assets/3d-logo-transparent.png'; fav.type = 'image/png'; }
+            if (fav) { fav.href = getLogoPath(); fav.type = 'image/png'; }
         }
         
         function applyDemoTheme() {
@@ -10139,7 +10122,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
             // Tab favicon always SpeechGradebook
             var fav = document.getElementById('faviconLink');
-            if (fav) { fav.href = 'assets/3d-logo-transparent.png'; fav.type = 'image/png'; }
+            if (fav) { fav.href = getLogoPath(); fav.type = 'image/png'; }
             var header = document.querySelector('header');
             if (header && (theme.primaryDark != null || theme.primary)) {
                 var headerBg = theme.primaryDark != null ? theme.primaryDark : theme.primary;
@@ -10165,7 +10148,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     logo.innerHTML = '<img src="' + theme.logoDataUrl.replace(/"/g, '&quot;') + '" alt="Logo" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;">';
                     logo.style.backgroundColor = '#ffffff';
                 } else {
-                    logo.innerHTML = '<img src="assets/3d-logo-transparent.png" alt="SpeechGradebook" style="width:100%;height:100%;object-fit:contain;object-position:center;border-radius:50%;padding:12%;">';
+                    logo.innerHTML = '<img src="' + getLogoPath() + '" alt="SpeechGradebook" style="width:100%;height:100%;object-fit:contain;object-position:center;border-radius:50%;padding:12%;">';
                     logo.style.backgroundColor = '#ffffff';
                 }
             }
@@ -10219,7 +10202,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 if (logoPlaceholder) logoPlaceholder.style.display = 'none';
                 if (logoClear) logoClear.style.display = '';
             } else {
-                if (logoPreviewImg) { logoPreviewImg.src = 'assets/3d-logo-transparent.png'; logoPreviewImg.style.display = 'none'; }
+                if (logoPreviewImg) { logoPreviewImg.src = getLogoPath(); logoPreviewImg.style.display = 'none'; }
                 if (logoPlaceholder) logoPlaceholder.style.display = '';
                 if (logoClear) logoClear.style.display = 'none';
             }
@@ -10453,7 +10436,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 }
                 // Tab favicon always SpeechGradebook (never institution logo)
                 const faviconEl = document.getElementById('faviconLink');
-                if (faviconEl) { faviconEl.href = 'assets/3d-logo-transparent.png'; faviconEl.type = 'image/png'; }
+                if (faviconEl) { faviconEl.href = getLogoPath(); faviconEl.type = 'image/png'; }
             } else {
                 // Remove Torch theme classes for non-UTK institutions
                 root.classList.remove('theme-torch', 'theme-utk-torch');
@@ -10518,7 +10501,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
             
             // Fallback: SpeechGradebook logo image (no custom institution logo)
-            logo.innerHTML = '<img src="assets/3d-logo-transparent.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">';
+            logo.innerHTML = '<img src="' + getLogoPath() + '" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">';
             logo.style.backgroundColor = '#ffffff';
             console.log('✓ Logo updated with default SpeechGradebook image');
         }
@@ -11892,7 +11875,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 domain: 'utk.edu',
                 headerBg: '#4B4B4B',  /* Smokey Gray */
                 footerBg: '#4B4B4B',  /* Smokey Gray */
-                favicon: 'assets/3d-logo-transparent.png',  /* Tab favicon always SpeechGradebook */
+                favicon: getLogoPath(),  /* Tab favicon always SpeechGradebook */
                 logoUrl: 'assets/utk-logo.png',
                 branding: {
                     appName: 'SpeechGradebook',
@@ -11930,7 +11913,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 domain: 'utk.edu',
                 headerBg: '#4B4B4B',
                 footerBg: '#4B4B4B',
-                favicon: 'assets/3d-logo-transparent.png',  /* Tab favicon always SpeechGradebook */
+                favicon: getLogoPath(),  /* Tab favicon always SpeechGradebook */
                 logoUrl: 'assets/utk-logo.png',
                 branding: {
                     appName: 'SpeechGradebook',
@@ -12226,6 +12209,9 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             // Initialize dark mode (before other theme applications)
             initDarkMode();
             console.log('✓ Dark mode initialized');
+            
+            // Update logos on page load based on current theme (after dark mode is initialized)
+            updateLogos();
             
             // Test Supabase connection
             testSupabaseConnection();
@@ -21339,6 +21325,7 @@ SpeechGradebook Research Team`;
             updateDarkModeToggle(enabled);
             
             if (enabled) {
+                root.setAttribute('data-theme', 'dark');
                 // Apply SpeechGradebook Dark Theme
                 const darkTheme = DEMO_BRANDING_PACKAGES['speechgradebook-dark'] || DEMO_BRANDING_PACKAGES['option7-dark'];
                 root.classList.add('theme-option7-dark');
@@ -21366,7 +21353,10 @@ SpeechGradebook Research Team`;
                     });
                 }
                 console.log('SpeechGradebook Dark Theme enabled');
+                // Update logos after theme is applied
+                setTimeout(updateLogos, 50);
             } else {
+                root.removeAttribute('data-theme');
                 // Apply SpeechGradebook Light Theme (Option 7)
                 const lightTheme = DEMO_BRANDING_PACKAGES['speechgradebook-light'] || DEMO_BRANDING_PACKAGES['option7'];
                 root.classList.remove('theme-option7-dark');
@@ -21394,6 +21384,8 @@ SpeechGradebook Research Team`;
                     });
                 }
                 console.log('SpeechGradebook Light Theme enabled');
+                // Update logos after theme is applied
+                setTimeout(updateLogos, 50);
             }
             
             // Refresh icons after theme change
@@ -21435,6 +21427,40 @@ SpeechGradebook Research Team`;
             });
         }
 
+        // ===== LOGO HELPER FUNCTION =====
+        // Returns the appropriate logo path based on current theme
+        // Light background → light logo (dark microphone on white background)
+        // Dark background → dark logo (white microphone on dark background)
+        function getLogoPath() {
+            const root = document.documentElement;
+            const isDarkMode = root.getAttribute('data-theme') === 'dark' || root.classList.contains('theme-option7-dark');
+            // Light background uses light logo (dark mic on white), dark background uses dark logo (white mic on dark)
+            return isDarkMode 
+                ? 'assets/speechgradebook-logo-dark.png' 
+                : 'assets/speechgradebook-logo-light.png';
+        }
+        
+        // Update all logos based on current theme
+        function updateLogos() {
+            const logoPath = getLogoPath();
+            const faviconEl = document.getElementById('faviconLink');
+            if (faviconEl) {
+                faviconEl.href = logoPath;
+                faviconEl.type = 'image/png';
+            }
+            const authLogoImg = document.getElementById('authLogoImg');
+            // Login screen always uses dark logo (white mic on dark) for light backgrounds
+            if (authLogoImg) authLogoImg.src = 'assets/speechgradebook-logo-dark.png';
+            const appLogo = document.getElementById('appLogo');
+            if (appLogo && !appLogo.querySelector('img[src*="logoDataUrl"]') && !appLogo.querySelector('img[src*="institutionLogoData"]')) {
+                // Only update if it's the default SpeechGradebook logo (not institution logo)
+                const img = appLogo.querySelector('img');
+                if (img && (img.src.includes('speechgradebook-logo') || img.src.includes('3d-logo'))) {
+                    img.src = logoPath;
+                }
+            }
+        }
+
         // ===== TENANT/THEME MANAGEMENT =====
         function switchTenant(tenantId) {
             currentTenant = tenantId;
@@ -21474,12 +21500,13 @@ SpeechGradebook Research Team`;
                 }
                 // Tab favicon always SpeechGradebook (never institution/tenant logo)
                 if (faviconEl) {
-                    faviconEl.href = 'assets/3d-logo-transparent.png';
+                    faviconEl.href = getLogoPath();
                     faviconEl.type = 'image/png';
                 }
                 // Login screen always shows SpeechGradebook logo (never institution/tenant logo)
+                // Login screen uses dark logo (white mic on dark) for light backgrounds
                 const authLogoImg = document.getElementById('authLogoImg');
-                if (authLogoImg) authLogoImg.src = 'assets/3d-logo-transparent.png';
+                if (authLogoImg) authLogoImg.src = 'assets/speechgradebook-logo-dark.png';
                 // UTK Torch Theme: full Torch design tokens from utk-theme-preview.html (both UTK and UTK Torch use this)
                 root.classList.add('theme-utk-torch');
                 root.style.setProperty('--smokey', '#4B4B4B');
@@ -21523,11 +21550,12 @@ SpeechGradebook Research Team`;
                     footer.style.backgroundImage = '';
                 }
                 if (faviconEl) {
-                    faviconEl.href = 'assets/3d-logo-transparent.png';
+                    faviconEl.href = getLogoPath();
                     faviconEl.type = 'image/png';
                 }
+                // Login screen uses dark logo (white mic on dark) for light backgrounds
                 const authLogoImg = document.getElementById('authLogoImg');
-                if (authLogoImg) authLogoImg.src = 'assets/3d-logo-transparent.png';
+                if (authLogoImg) authLogoImg.src = 'assets/speechgradebook-logo-dark.png';
             }
             
             // Apply fonts
@@ -21544,7 +21572,7 @@ SpeechGradebook Research Team`;
             const appLogoEl = document.getElementById('appLogo');
             if (appLogoEl) {
                 if (tenantId === 'default') {
-                    appLogoEl.innerHTML = '<img src="assets/3d-logo-transparent.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">';
+                    appLogoEl.innerHTML = '<img src="' + getLogoPath() + '" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">';
                     appLogoEl.style.backgroundColor = '#ffffff';
                 } else if (config.logoUrl) {
                     appLogoEl.innerHTML = '<img src="' + config.logoUrl + '" alt="' + (config.name || 'Logo') + '" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;">';
@@ -21611,6 +21639,9 @@ SpeechGradebook Research Team`;
                 
                 // Initialize bulk upload
                 initializeBulkUpload();
+                
+                // Move to step 2 for bulk upload (where they'll select course, rubric, and files)
+                moveToStep(2);
             } else {
                 singleMode.classList.remove('hidden');
                 bulkMode.classList.add('hidden');
@@ -21623,6 +21654,9 @@ SpeechGradebook Research Team`;
                 
                 // Clear bulk data
                 clearBulkFiles();
+                
+                // Reset to step 1 for single upload
+                moveToStep(1);
             }
         }
 
@@ -22102,8 +22136,10 @@ SpeechGradebook Research Team`;
                 return;
             }
             
-            // Show matching step
-            if (matchingStep) matchingStep.classList.remove('hidden');
+            // Show matching step (within step 2 for bulk upload)
+            if (matchingStep && bulkUploadMode === 'bulk' && currentStep === 2) {
+                matchingStep.classList.remove('hidden');
+            }
             
             // Clear table
             tableBody.innerHTML = '';
@@ -22273,24 +22309,24 @@ SpeechGradebook Research Team`;
 
         // ===== LOGO FALLBACK =====
         function setupLogoFallback() {
-            // Check if transparent logo exists, fallback to existing logos if not
+            // Check if logo exists, fallback to existing logos if not
             // This runs immediately to catch images that are already in the DOM
-            const logoImages = document.querySelectorAll('img[src*="3d-logo-transparent.png"]');
+            const logoImages = document.querySelectorAll('img[src*="speechgradebook-logo"]');
             logoImages.forEach(img => {
                 // Set up error handler
                 img.onerror = function() {
-                    console.warn('3d-logo-transparent.png not found, using fallback');
+                    console.warn('speechgradebook-logo not found, using fallback');
                     const currentSrc = img.src || img.getAttribute('src') || '';
                     // Determine which fallback to use based on context
                     if (img.id === 'authLogoImg' || currentSrc.includes('auth')) {
-                        // Auth/login page - use light background logo
-                        img.src = currentSrc.replace('3d-logo-transparent.png', 'logo-light-bg.png').replace('assets/3d-', 'assets/');
+                        // Auth/login page - use dark logo (white mic on dark) for light backgrounds
+                        img.src = currentSrc.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-dark.png');
                     } else if (img.closest('#appLogo') || currentSrc.includes('appLogo')) {
                         // Header logo - use dark background logo (for dark header)
-                        img.src = currentSrc.replace('3d-logo-transparent.png', 'logo-dark-bg.png').replace('assets/3d-', 'assets/');
+                        img.src = currentSrc.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-dark.png');
                     } else {
                         // Default to light background
-                        img.src = currentSrc.replace('3d-logo-transparent.png', 'logo-light-bg.png').replace('assets/3d-', 'assets/');
+                        img.src = currentSrc.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-light.png');
                     }
                     img.onerror = null; // Prevent infinite loop
                 };
@@ -22309,8 +22345,8 @@ SpeechGradebook Research Team`;
             if (favicon) {
                 const testImg = new Image();
                 testImg.onerror = function() {
-                    console.warn('Favicon 3d-logo-transparent.png not found, using fallback');
-                    favicon.href = favicon.href.replace('3d-logo-transparent.png', 'logo-light-bg.png').replace('assets/3d-', 'assets/');
+                    console.warn('Favicon speechgradebook-logo not found, using fallback');
+                    favicon.href = favicon.href.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-light.png');
                 };
                 testImg.src = favicon.href;
             }
@@ -22322,16 +22358,17 @@ SpeechGradebook Research Team`;
                     mutations.forEach(function(mutation) {
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === 1) { // Element node
-                                const imgs = node.querySelectorAll ? node.querySelectorAll('img[src*="3d-logo-transparent.png"]') : [];
+                                const imgs = node.querySelectorAll ? node.querySelectorAll('img[src*="speechgradebook-logo"]') : [];
                                 imgs.forEach(function(img) {
                                     img.onerror = function() {
                                         const currentSrc = img.src || img.getAttribute('src') || '';
                                         if (img.id === 'authLogoImg' || currentSrc.includes('auth')) {
-                                            img.src = currentSrc.replace('3d-logo-transparent.png', 'logo-light-bg.png').replace('assets/3d-', 'assets/');
+                                            // Auth/login page - use dark logo (white mic on dark) for light backgrounds
+                                            img.src = currentSrc.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-dark.png');
                                         } else if (img.closest('#appLogo') || currentSrc.includes('appLogo')) {
-                                            img.src = currentSrc.replace('3d-logo-transparent.png', 'logo-dark-bg.png').replace('assets/3d-', 'assets/');
+                                            img.src = currentSrc.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-dark.png');
                                         } else {
-                                            img.src = currentSrc.replace('3d-logo-transparent.png', 'logo-light-bg.png').replace('assets/3d-', 'assets/');
+                                            img.src = currentSrc.replace(/speechgradebook-logo-[^.]*\.(svg|png)/, 'speechgradebook-logo-light.png');
                                         }
                                         img.onerror = null;
                                     };
@@ -23002,13 +23039,19 @@ SpeechGradebook Research Team`;
         // ===== STEP NAVIGATION =====
         function moveToStep(step) {
             currentStep = step;
-            console.log('=== moveToStep(' + step + ') called ===');
+            console.log('=== moveToStep(' + step + ') called, bulkUploadMode:', bulkUploadMode, ' ===');
             
             // Hide all steps
             document.getElementById('uploadStep').classList.add('hidden');
             document.getElementById('detailsStep').classList.add('hidden');
             document.getElementById('processingStep').classList.add('hidden');
             document.getElementById('resultsStep').classList.add('hidden');
+            
+            // Hide bulk-specific steps
+            const bulkMatchingStep = document.getElementById('bulkMatchingStep');
+            const bulkProcessingStep = document.getElementById('bulkProcessingStep');
+            if (bulkMatchingStep) bulkMatchingStep.classList.add('hidden');
+            if (bulkProcessingStep) bulkProcessingStep.classList.add('hidden');
             
             // Hide evaluation saved indicator when leaving results step
             if (step !== 4) {
@@ -23026,20 +23069,61 @@ SpeechGradebook Research Team`;
                 }
             }
             
-            // Load classes when showing step 2
-            if (step === 2) {
-                loadEvalClasses();
-                
-                // Initialize form validation
-                setTimeout(() => {
-                    initEvalFormValidation();
-                }, 100);
-                
-                // If we have pending class/student values from addEvaluationForStudent, populate them
-                if (pendingClassIdForEval && pendingStudentIdForEval) {
+            // Handle bulk upload mode
+            if (bulkUploadMode === 'bulk') {
+                if (step === 1) {
+                    // Step 1: Show bulk upload mode selection
+                    document.getElementById('uploadStep').classList.remove('hidden');
+                } else if (step === 2) {
+                    // Step 2: Show bulk upload form (course, rubric, file selection)
+                    document.getElementById('uploadStep').classList.remove('hidden');
+                    // Ensure bulk upload mode is visible
+                    const bulkMode = document.getElementById('bulkUploadMode');
+                    if (bulkMode) bulkMode.classList.remove('hidden');
+                    const singleMode = document.getElementById('singleUploadMode');
+                    if (singleMode) singleMode.classList.add('hidden');
+                    
+                    // Load classes for bulk course selector
+                    populateBulkCourseSelector();
+                    populateBulkRubricSelector().catch(err => console.error('Error populating bulk rubric selector:', err));
+                    
+                    // Show matching interface if files are already selected
+                    if (bulkFiles.length > 0) {
+                        updateBulkMatchingInterface();
+                    }
+                } else if (step === 3) {
+                    // Step 3: Show bulk processing
+                    if (bulkProcessingStep) {
+                        bulkProcessingStep.classList.remove('hidden');
+                    }
+                    // Update processing UI if queue is already initialized
+                    if (bulkProcessingQueue && bulkProcessingQueue.length > 0) {
+                        updateBulkProcessingUI();
+                    }
+                }
+            } else {
+                // Single upload mode - normal flow
+                if (step === 1) {
+                    document.getElementById('uploadStep').classList.remove('hidden');
+                } else if (step === 2) {
+                    document.getElementById('detailsStep').classList.remove('hidden');
+                    loadEvalClasses();
+                    
+                    // Initialize form validation
                     setTimeout(() => {
-                        populateEvalFieldsFromPending();
-                    }, 150);
+                        initEvalFormValidation();
+                    }, 100);
+                    
+                    // If we have pending class/student values from addEvaluationForStudent, populate them
+                    if (pendingClassIdForEval && pendingStudentIdForEval) {
+                        setTimeout(() => {
+                            populateEvalFieldsFromPending();
+                        }, 150);
+                    }
+                } else if (step === 3) {
+                    document.getElementById('processingStep').classList.remove('hidden');
+                } else if (step === 4) {
+                    document.getElementById('resultsStep').classList.remove('hidden');
                 }
             }
             
@@ -23087,33 +23171,30 @@ SpeechGradebook Research Team`;
                 }
             }
             
-            // Show current step
-            if (step === 1) {
-                document.getElementById('uploadStep').classList.remove('hidden');
-                // Ensure continue button is only shown if a file is actually uploaded
-                const continueBtn = document.getElementById('continueButtonContainer');
-                if (continueBtn) {
-                    // Only show button if uploadedFile exists and is valid
-                    if (uploadedFile && uploadedFile instanceof File && uploadedFile.size > 0) {
-                        continueBtn.style.display = 'block';
-                    } else {
-                        continueBtn.style.display = 'none';
+            // Additional step-specific logic for single upload mode
+            if (bulkUploadMode !== 'bulk') {
+                if (step === 1) {
+                    // Ensure continue button is only shown if a file is actually uploaded
+                    const continueBtn = document.getElementById('continueButtonContainer');
+                    if (continueBtn) {
+                        // Only show button if uploadedFile exists and is valid
+                        if (uploadedFile && uploadedFile instanceof File && uploadedFile.size > 0) {
+                            continueBtn.style.display = 'block';
+                        } else {
+                            continueBtn.style.display = 'none';
+                        }
                     }
+                } else if (step === 2) {
+                    // Populate rubric selector for single upload
+                    populateRubricSelector();
+                    if (typeof updateEvalProviderHint === 'function') updateEvalProviderHint();
+                    // Initialize validation after rubric selector is populated
+                    setTimeout(() => {
+                        validateEvalForm();
+                    }, 200);
+                } else if (step === 4) {
+                    console.log('Showing results step');
                 }
-            } else             if (step === 2) {
-                document.getElementById('detailsStep').classList.remove('hidden');
-                // Populate rubric selector
-                populateRubricSelector();
-                if (typeof updateEvalProviderHint === 'function') updateEvalProviderHint();
-                // Initialize validation after rubric selector is populated
-                setTimeout(() => {
-                    validateEvalForm();
-                }, 200);
-            } else if (step === 3) {
-                document.getElementById('processingStep').classList.remove('hidden');
-            } else if (step === 4) {
-                console.log('Showing results step');
-                document.getElementById('resultsStep').classList.remove('hidden');
             }
         }
 
@@ -24163,11 +24244,8 @@ SpeechGradebook Research Team`;
                 return;
             }
             
-            // Hide matching step, show processing step
-            const matchingStep = document.getElementById('bulkMatchingStep');
-            const processingStep = document.getElementById('bulkProcessingStep');
-            if (matchingStep) matchingStep.classList.add('hidden');
-            if (processingStep) processingStep.classList.remove('hidden');
+            // Move to step 3 for bulk processing
+            moveToStep(3);
             
             // Initialize processing queue
             // Use detected assignment type if available, otherwise use dropdown value

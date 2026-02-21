@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- White circular background with light gray border -->
+  <circle cx="100" cy="100" r="98" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+  
+  <!-- Bright blue sound waves on the left -->
+  <path d="M 20 100
+           L 35 100
+           L 40 70
+           L 45 130
+           L 50 60
+           L 55 140
+           L 60 80
+           L 65 100
+           L 70 100" 
+        stroke="#4a90e2" 
+        stroke-width="3.5" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Dark blue microphone -->
+  <!-- Top grille section (rectangular with grid pattern) -->
+  <rect x="85" y="50" width="30" height="22" rx="2" fill="#1e3a5f" stroke="#0f1f3a" stroke-width="1"/>
+  <!-- Grid lines on grille -->
+  <line x1="90" y1="55" x2="110" y2="55" stroke="#0f1f3a" stroke-width="0.5"/>
+  <line x1="90" y1="61" x2="110" y2="61" stroke="#0f1f3a" stroke-width="0.5"/>
+  <line x1="90" y1="67" x2="110" y2="67" stroke="#0f1f3a" stroke-width="0.5"/>
+  <line x1="90" y1="73" x2="110" y2="73" stroke="#0f1f3a" stroke-width="0.5"/>
+  <line x1="95" y1="50" x2="95" y2="72" stroke="#0f1f3a" stroke-width="0.5"/>
+  <line x1="105" y1="50" x2="105" y2="72" stroke="#0f1f3a" stroke-width="0.5"/>
+  
+  <!-- Lighter blue cylindrical body section -->
+  <ellipse cx="100" cy="90" rx="20" ry="18" fill="#4a90e2" stroke="#1e3a5f" stroke-width="1.5"/>
+  <rect x="80" y="90" width="40" height="35" fill="#4a90e2" stroke="none"/>
+  
+  <!-- Dark blue microphone stand -->
+  <rect x="95" y="125" width="10" height="25" fill="#1e3a5f" stroke="#0f1f3a" stroke-width="1"/>
+  
+  <!-- Dark blue microphone base (rectangular) -->
+  <rect x="85" y="150" width="30" height="8" rx="1" fill="#1e3a5f" stroke="#0f1f3a" stroke-width="1"/>
+</svg>
