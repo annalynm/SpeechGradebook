@@ -24995,25 +24995,69 @@ SpeechGradebook Research Team`;
                 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 const apiEndpoint = isLocalhost ? (baseUrl + '/evaluate_video') : '/qwen-api/evaluate_video';
                 
-                // Upload file directly to Qwen API for evaluation (traditional method)
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('rubric', JSON.stringify(normalizeRubricForApi(rubric)));
-                
+                // Retry logic for 503 errors (cold starts)
                 let response;
-                try {
-                    response = await fetchWithProgress(apiEndpoint, {
-                        method: 'POST',
-                        body: formData
-                    }, (percent) => {
-                        // Progress from 10% to 99% for API call (upload + evaluation)
-                        const apiPercent = 10 + (percent * 0.89);
-                        updateUploadProgress(apiPercent, 'Evaluating video...');
-                    });
-                    updateUploadProgress(99, 'Finalizing');
-                } finally {
-                    // Don't hide here - let it stay visible during evaluation
+                let lastError;
+                const maxRetries = 5;
+                const baseDelay = 10000; // 10 seconds base delay
+                
+                for (let retry = 0; retry <= maxRetries; retry++) {
+                    try {
+                        // Recreate formData on each retry to ensure file is included
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('rubric', JSON.stringify(normalizeRubricForApi(rubric)));
+                        
+                        response = await fetchWithProgress(apiEndpoint, {
+                            method: 'POST',
+                            body: formData
+                        }, (percent) => {
+                            // Progress from 10% to 99% for API call (upload + evaluation)
+                            const apiPercent = 10 + (percent * 0.89);
+                            updateUploadProgress(apiPercent, retry > 0 ? `Retrying evaluation... (attempt ${retry + 1}/${maxRetries + 1})` : 'Evaluating video...');
+                        });
+                        updateUploadProgress(99, 'Finalizing');
+                        
+                        // Check if response is 503 (cold start) and retry
+                        if (!response.ok && response.status === 503 && retry < maxRetries) {
+                            // Exponential backoff: 10s, 20s, 40s, 80s, 160s
+                            const delay = baseDelay * Math.pow(2, retry);
+                            updateProcessingMessage(`Service starting (cold start)... Waiting ${delay/1000}s before retry (attempt ${retry + 2}/${maxRetries + 1})`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue; // Retry
+                        }
+                        
+                        // If response is ok, break (success)
+                        if (response.ok) {
+                            break; // Success, exit retry loop
+                        }
+                        // If response is not ok and not a retryable 503, break and handle error below
+                        break;
+                    } catch (error) {
+                        lastError = error;
+                        // Check if it's a 503 error that we should retry
+                        const is503Error = error.message && (
+                            error.message.includes('503') || 
+                            error.message.includes('Service Unavailable') ||
+                            error.message.includes('service is temporarily unavailable') ||
+                            error.message.includes('cold start')
+                        );
+                        
+                        if (is503Error && retry < maxRetries) {
+                            // Exponential backoff: 10s, 20s, 40s, 80s, 160s
+                            const delay = baseDelay * Math.pow(2, retry);
+                            updateProcessingMessage(`Service starting (cold start)... Waiting ${delay/1000}s before retry (attempt ${retry + 2}/${maxRetries + 1})`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue; // Retry
+                        }
+                        throw error; // Not a 503 or out of retries, throw immediately
+                    }
                 }
+                
+                if (!response) {
+                    throw lastError || new Error('Evaluation failed after retries');
+                }
+                
                 if (!response.ok) {
                     const errText = await response.text();
                     let errorMsg = '';
