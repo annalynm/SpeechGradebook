@@ -24195,67 +24195,79 @@ SpeechGradebook Research Team`;
             // Update processing UI
             updateBulkProcessingUI();
             
-            // Check Qwen service health before starting (for bulk uploads, this prevents all failures)
-            // Use the Render proxy endpoint /qwen-api/health instead of direct Modal URL
+            // Warm up the Modal service before bulk uploads to prevent cold starts
+            // This sends a health check and waits for the service to be fully ready
             const currentVideoMessage = document.getElementById('bulkCurrentVideoMessage');
             try {
-                if (currentVideoMessage) currentVideoMessage.textContent = 'Checking service status...';
+                if (currentVideoMessage) currentVideoMessage.textContent = 'Warming up service (this may take 30-90 seconds on cold start)...';
                 
-                const healthController = new AbortController();
-                const healthTimeout = setTimeout(() => healthController.abort(), 30000); // Increased to 30s
-                const healthResponse = await fetch('/qwen-api/health', { 
-                    method: 'GET', 
-                    signal: healthController.signal 
-                });
-                clearTimeout(healthTimeout);
+                // Wait for service to be ready with exponential backoff
+                let serviceReady = false;
+                let waitTime = 5000; // Start with 5 seconds
+                const maxWaitTime = 90000; // Max 90 seconds total
+                let totalWaited = 0;
                 
-                if (!healthResponse.ok) {
-                    // If 503, the service might be cold starting - proceed with retry logic
-                    if (healthResponse.status === 503) {
-                        console.warn('Health check returned 503 - service may be cold starting. Proceeding with retry logic.');
-                        if (currentVideoMessage) {
-                            currentVideoMessage.textContent = 'Service may be starting (cold start). Will retry with delays...';
-                        }
-                        // Don't return - let the retry logic handle it
-                    } else {
-                        throw new Error(`Health check returned ${healthResponse.status}`);
-                    }
-                } else {
-                    const healthData = await healthResponse.json();
-                    
-                    if (healthData.status === 'model_not_loaded') {
-                        if (currentVideoMessage) currentVideoMessage.textContent = 'Service is starting (cold start)... Waiting 60 seconds...';
-                        // Wait 60 seconds for model to load (cold starts can take this long)
-                        await new Promise(resolve => setTimeout(resolve, 60000));
-                        // Check again
-                        const retryController = new AbortController();
-                        const retryTimeout = setTimeout(() => retryController.abort(), 30000);
-                        const retryResponse = await fetch('/qwen-api/health', { 
+                while (!serviceReady && totalWaited < maxWaitTime) {
+                    try {
+                        const healthController = new AbortController();
+                        const healthTimeout = setTimeout(() => healthController.abort(), 10000);
+                        const healthResponse = await fetch('/qwen-api/health', { 
                             method: 'GET', 
-                            signal: retryController.signal 
+                            signal: healthController.signal 
                         });
-                        clearTimeout(retryTimeout);
+                        clearTimeout(healthTimeout);
                         
-                        if (!retryResponse.ok) {
-                            console.warn('Retry health check returned ' + retryResponse.status + ' - proceeding with retry logic');
-                            // Don't return - let retry logic handle it
-                        } else {
-                            const retryData = await retryResponse.json();
-                            if (retryData.status !== 'ok') {
-                                console.warn('Service still not ready - proceeding with retry logic');
-                                // Don't return - let retry logic handle it
+                        if (healthResponse.ok) {
+                            const healthData = await healthResponse.json();
+                            if (healthData.status === 'ok') {
+                                serviceReady = true;
+                                if (currentVideoMessage) {
+                                    currentVideoMessage.textContent = 'Service is ready. Starting evaluations...';
+                                }
+                                break;
+                            } else if (healthData.status === 'model_not_loaded') {
+                                // Model is still loading - wait longer
+                                if (currentVideoMessage) {
+                                    currentVideoMessage.textContent = `Service is starting (cold start)... Waiting ${Math.min(waitTime/1000, 30)}s... (${Math.round(totalWaited/1000)}s total)`;
+                                }
+                                await new Promise(resolve => setTimeout(resolve, waitTime));
+                                totalWaited += waitTime;
+                                waitTime = Math.min(waitTime * 1.5, 30000); // Increase wait time, max 30s per check
                             }
+                        } else if (healthResponse.status === 503) {
+                            // Service unavailable - wait and retry
+                            if (currentVideoMessage) {
+                                currentVideoMessage.textContent = `Service unavailable (cold start)... Waiting ${Math.min(waitTime/1000, 30)}s... (${Math.round(totalWaited/1000)}s total)`;
+                            }
+                            await new Promise(resolve => setTimeout(resolve, waitTime));
+                            totalWaited += waitTime;
+                            waitTime = Math.min(waitTime * 1.5, 30000);
+                        } else {
+                            // Other error - break and let retry logic handle it
+                            console.warn(`Health check returned ${healthResponse.status} - proceeding with retry logic`);
+                            break;
                         }
-                    } else if (healthData.status !== 'ok') {
-                        console.warn('Service status is not ok - proceeding with retry logic');
-                        // Don't return - let retry logic handle it
+                    } catch (error) {
+                        // Network error - wait and retry
+                        if (currentVideoMessage) {
+                            currentVideoMessage.textContent = `Connection error... Waiting ${Math.min(waitTime/1000, 30)}s... (${Math.round(totalWaited/1000)}s total)`;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                        totalWaited += waitTime;
+                        waitTime = Math.min(waitTime * 1.5, 30000);
+                    }
+                }
+                
+                if (!serviceReady) {
+                    console.warn('Service warm-up timed out after 90s - proceeding with retry logic');
+                    if (currentVideoMessage) {
+                        currentVideoMessage.textContent = 'Service warm-up incomplete. Will retry with delays if needed...';
                     }
                 }
             } catch (error) {
-                console.warn('Health check failed, proceeding anyway:', error);
-                // Continue anyway - the retry logic will handle it, but warn the user
+                console.warn('Service warm-up failed, proceeding anyway:', error);
                 if (currentVideoMessage) {
-                    currentVideoMessage.textContent = 'Health check failed, but proceeding with retry logic...';
+                    currentVideoMessage.textContent = 'Service warm-up failed, but proceeding with retry logic...';
                 }
             }
             
@@ -24999,7 +25011,10 @@ SpeechGradebook Research Team`;
                 let response;
                 let lastError;
                 const maxRetries = 5;
-                const baseDelay = 10000; // 10 seconds base delay
+                // For first retry on cold start, wait longer (90s) since model loading can take time
+                // Subsequent retries use exponential backoff: 20s, 40s, 80s, 160s
+                const baseDelay = 20000; // 20 seconds base delay (increased from 10s)
+                const firstRetryDelay = 90000; // 90 seconds for first retry (cold starts can take this long)
                 
                 for (let retry = 0; retry <= maxRetries; retry++) {
                     try {
@@ -25020,8 +25035,9 @@ SpeechGradebook Research Team`;
                         
                         // Check if response is 503 (cold start) and retry
                         if (!response.ok && response.status === 503 && retry < maxRetries) {
-                            // Exponential backoff: 10s, 20s, 40s, 80s, 160s
-                            const delay = baseDelay * Math.pow(2, retry);
+                            // For first retry, wait longer for cold starts (90s)
+                            // Subsequent retries use exponential backoff: 20s, 40s, 80s, 160s
+                            const delay = retry === 0 ? firstRetryDelay : baseDelay * Math.pow(2, retry - 1);
                             updateProcessingMessage(`Service starting (cold start)... Waiting ${delay/1000}s before retry (attempt ${retry + 2}/${maxRetries + 1})`);
                             await new Promise(resolve => setTimeout(resolve, delay));
                             continue; // Retry
@@ -25046,8 +25062,9 @@ SpeechGradebook Research Team`;
                         console.log(`[Retry ${retry + 1}/${maxRetries + 1}] Error caught:`, errorMessage, 'is503Error:', is503Error);
                         
                         if (is503Error && retry < maxRetries) {
-                            // Exponential backoff: 10s, 20s, 40s, 80s, 160s
-                            const delay = baseDelay * Math.pow(2, retry);
+                            // For first retry, wait longer for cold starts (90s)
+                            // Subsequent retries use exponential backoff: 20s, 40s, 80s, 160s
+                            const delay = retry === 0 ? firstRetryDelay : baseDelay * Math.pow(2, retry - 1);
                             console.log(`[Retry ${retry + 1}/${maxRetries + 1}] 503 error detected, waiting ${delay/1000}s before retry...`);
                             updateProcessingMessage(`Service starting (cold start)... Waiting ${delay/1000}s before retry (attempt ${retry + 2}/${maxRetries + 1})`);
                             await new Promise(resolve => setTimeout(resolve, delay));
