@@ -211,17 +211,38 @@ async def qwen_proxy_evaluate_video(file: UploadFile = File(...), rubric: str = 
             r = await client.post(f"{base}/evaluate_video", files=files, data=data)
             # Handle 503 responses with better error messages
             if r.status_code == 503:
+                error_detail = "Service Unavailable"
                 try:
                     error_json = r.json()
                     error_detail = error_json.get("detail", "Service Unavailable") if isinstance(error_json, dict) else str(error_json)
-                    if "model not loaded" in error_detail.lower():
-                        return Response(
-                            status_code=503,
-                            content=json.dumps({"detail": "Qwen model is still loading (cold start). Please wait 30-90 seconds and try again."}),
-                            media_type="application/json"
-                        )
                 except:
-                    pass
+                    # If JSON parsing fails, try to get text
+                    try:
+                        error_text = r.text[:500]  # First 500 chars
+                        if error_text:
+                            error_detail = error_text
+                    except:
+                        pass
+                
+                # Log the actual error from Modal for debugging
+                print(f"[ERROR] Modal returned 503: {error_detail}")
+                print(f"[ERROR] Response headers: {dict(r.headers)}")
+                print(f"[ERROR] This may indicate: cold start, service unavailable, or Modal infrastructure issue.")
+                print(f"[ERROR] Check Modal logs at https://modal.com/apps for detailed error information.")
+                
+                if "model not loaded" in error_detail.lower():
+                    return Response(
+                        status_code=503,
+                        content=json.dumps({"detail": "Qwen model is still loading (cold start). Please wait 30-90 seconds and try again."}),
+                        media_type="application/json"
+                    )
+                else:
+                    # Return the actual error detail from Modal
+                    return Response(
+                        status_code=503,
+                        content=json.dumps({"detail": f"Modal service unavailable: {error_detail}"}),
+                        media_type="application/json"
+                    )
             return Response(content=r.content, status_code=r.status_code, media_type="application/json")
     except httpx.TimeoutException:
         return Response(
