@@ -25036,20 +25036,29 @@ SpeechGradebook Research Team`;
                     } catch (error) {
                         lastError = error;
                         // Check if it's a 503 error that we should retry
-                        const is503Error = error.message && (
-                            error.message.includes('503') || 
-                            error.message.includes('Service Unavailable') ||
-                            error.message.includes('service is temporarily unavailable') ||
-                            error.message.includes('cold start')
-                        );
+                        const errorMessage = error?.message || String(error) || '';
+                        const is503Error = errorMessage.includes('503') || 
+                            errorMessage.includes('Service Unavailable') ||
+                            errorMessage.includes('service is temporarily unavailable') ||
+                            errorMessage.includes('cold start') ||
+                            errorMessage.toLowerCase().includes('unavailable');
+                        
+                        console.log(`[Retry ${retry + 1}/${maxRetries + 1}] Error caught:`, errorMessage, 'is503Error:', is503Error);
                         
                         if (is503Error && retry < maxRetries) {
                             // Exponential backoff: 10s, 20s, 40s, 80s, 160s
                             const delay = baseDelay * Math.pow(2, retry);
+                            console.log(`[Retry ${retry + 1}/${maxRetries + 1}] 503 error detected, waiting ${delay/1000}s before retry...`);
                             updateProcessingMessage(`Service starting (cold start)... Waiting ${delay/1000}s before retry (attempt ${retry + 2}/${maxRetries + 1})`);
                             await new Promise(resolve => setTimeout(resolve, delay));
                             continue; // Retry
                         }
+                        
+                        // If we've exhausted retries on a 503, throw with a helpful message
+                        if (is503Error && retry >= maxRetries) {
+                            throw new Error(`Service unavailable after ${maxRetries + 1} attempts. The Qwen service may be cold starting. Please wait 1-2 minutes and try again.`);
+                        }
+                        
                         throw error; // Not a 503 or out of retries, throw immediately
                     }
                 }
