@@ -198,7 +198,8 @@ async def qwen_proxy_health():
 
 
 @qwen_router.post("/evaluate_video")
-async def qwen_proxy_evaluate_video(file: UploadFile = File(...), rubric: str = Form(...)):
+@limiter.limit("50/hour")
+async def qwen_proxy_evaluate_video(request: Request, file: UploadFile = File(...), rubric: str = Form(...)):
     base = _qwen_base()
     if not base:
         return Response(status_code=503, content="QWEN_API_URL not set")
@@ -311,28 +312,8 @@ async def log_llm_export_requests(request, call_next):
                     # Set Sentry user context
                     _set_sentry_user_context(request)
                     
-                    # Rate limiting: 50 evaluations per hour per user/IP
-                    rate_limit_key = get_rate_limit_key(request)
-                    # Use limiter's hit method which raises RateLimitExceeded if limit exceeded
-                    try:
-                        limiter.hit("50/hour", rate_limit_key)
-                    except RateLimitExceeded:
-                        # Log rate limit violation to Sentry
-                        try:
-                            import sentry_sdk
-                            sentry_sdk.capture_message(
-                                "Rate limit exceeded",
-                                level="warning",
-                                contexts={"rate_limit": {"key": rate_limit_key, "limit": "50/hour"}}
-                            )
-                        except Exception:
-                            pass
-                        return JSONResponse(
-                            status_code=429,
-                            content={
-                                "detail": "Rate limit exceeded. Maximum 50 evaluations per hour. Please try again later."
-                            }
-                        )
+                    # Rate limiting is now handled by the @limiter.limit() decorator on the endpoint
+                    # No need to check here in middleware
                     
                     import time
                     start_time = time.time()
