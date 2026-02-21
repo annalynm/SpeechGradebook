@@ -193,8 +193,22 @@ async def qwen_proxy_evaluate_video(file: UploadFile = File(...), rubric: str = 
         body = await file.read()
         files = {"file": (file.filename or "video", body, file.content_type or "application/octet-stream")}
         data = {"rubric": rubric}
-        async with httpx.AsyncClient(timeout=300.0) as client:
+        # Match Modal timeout (600s) to avoid premature timeouts
+        async with httpx.AsyncClient(timeout=600.0) as client:
             r = await client.post(f"{base}/evaluate_video", files=files, data=data)
+            # Handle 503 responses with better error messages
+            if r.status_code == 503:
+                try:
+                    error_json = r.json()
+                    error_detail = error_json.get("detail", "Service Unavailable") if isinstance(error_json, dict) else str(error_json)
+                    if "model not loaded" in error_detail.lower():
+                        return Response(
+                            status_code=503,
+                            content=json.dumps({"detail": "Qwen model is still loading (cold start). Please wait 30-90 seconds and try again."}),
+                            media_type="application/json"
+                        )
+                except:
+                    pass
             return Response(content=r.content, status_code=r.status_code, media_type="application/json")
     except Exception as e:
         return Response(status_code=503, content=f"Qwen proxy error: {e!s}")
@@ -314,7 +328,8 @@ async def log_llm_export_requests(request, call_next):
                     else:
                         print(f"[COST_TRACKING] Evaluation started - Using storage URL: {storage_url}, Timestamp: {time.time()}")
                     
-                    async with httpx.AsyncClient(timeout=300.0, follow_redirects=True) as client:
+                    # Match Modal timeout (600s) to avoid premature timeouts
+                    async with httpx.AsyncClient(timeout=600.0, follow_redirects=True) as client:
                         try:
                             if files:
                                 # Traditional file upload
@@ -361,6 +376,37 @@ async def log_llm_export_requests(request, call_next):
                     
                     if 300 <= r.status_code < 400:
                         return JSONResponse(status_code=502, content={"detail": "Qwen service returned redirect (3xx). Check QWEN_API_URL—use https, no trailing slash. Ensure the Qwen tunnel/URL is correct."})
+                    
+                    # If 503 error, check if it's a model loading issue
+                    if r.status_code == 503:
+                        error_detail = "Service Unavailable"
+                        try:
+                            error_json = r.json()
+                            if isinstance(error_json, dict) and "detail" in error_json:
+                                error_detail = error_json["detail"]
+                            elif isinstance(error_json, dict) and "error" in error_json:
+                                error_detail = error_json["error"]
+                        except:
+                            try:
+                                error_text = r.text[:500]
+                                if error_text:
+                                    error_detail = error_text
+                            except:
+                                pass
+                        
+                        # Check if it's a model loading issue
+                        if "model not loaded" in error_detail.lower() or "model_not_loaded" in error_detail.lower():
+                            print(f"[ERROR] Qwen model not loaded. Service may be cold starting. Wait 30-90 seconds and retry.")
+                            return JSONResponse(
+                                status_code=503, 
+                                content={"detail": "Qwen model is still loading (cold start). Please wait 30-90 seconds and try again. The service is starting up."}
+                            )
+                        
+                        print(f"[ERROR] Qwen service returned 503: {error_detail}")
+                        return JSONResponse(
+                            status_code=503, 
+                            content={"detail": f"Qwen service temporarily unavailable: {error_detail}. The service may be starting up or experiencing issues. Please try again in a few moments."}
+                        )
                     
                     # If 500 error, try to extract more details from response
                     if r.status_code == 500:

@@ -3983,6 +3983,7 @@
                         </div>
 
                         <div style="margin-bottom: 1rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="removeFailedBulkEvaluations()" class="btn-secondary" style="font-size: 0.875rem;"><span class="icon-with-text"><i data-lucide="x-circle"></i> Remove Failed</span></button>
                             <button type="button" onclick="selectAllBulkEvaluations()" class="btn-secondary" style="font-size: 0.875rem;"><span class="icon-with-text"><i data-lucide="check-square"></i> Select All</span></button>
                             <button type="button" id="bulkMoveSelectedBtn" onclick="openBulkMoveModal()" class="btn" disabled><span class="icon-with-text"><i data-lucide="move"></i> Move Selected</span></button>
                         </div>
@@ -24194,6 +24195,53 @@ SpeechGradebook Research Team`;
             // Update processing UI
             updateBulkProcessingUI();
             
+            // Check Qwen service health before starting (for bulk uploads, this prevents all failures)
+            const apiProvider = 'qwen';
+            const apiKey = await getEvaluationApiKey(apiProvider);
+            if (apiKey) {
+                const healthUrl = (typeof getQwenApiUrl === 'function' ? getQwenApiUrl() : apiKey).trim().replace(/\/$/, '');
+                if (healthUrl) {
+                    try {
+                        const currentVideoMessage = document.getElementById('bulkCurrentVideoMessage');
+                        if (currentVideoMessage) currentVideoMessage.textContent = 'Checking service status...';
+                        
+                        const healthController = new AbortController();
+                        const healthTimeout = setTimeout(() => healthController.abort(), 10000);
+                        const healthResponse = await fetch(healthUrl + '/health', { 
+                            method: 'GET', 
+                            signal: healthController.signal 
+                        });
+                        clearTimeout(healthTimeout);
+                        const healthData = await healthResponse.json();
+                        
+                        if (healthData.status === 'model_not_loaded') {
+                            if (currentVideoMessage) currentVideoMessage.textContent = 'Service is starting (cold start)... Waiting 30 seconds...';
+                            // Wait 30 seconds for model to load
+                            await new Promise(resolve => setTimeout(resolve, 30000));
+                            // Check again
+                            const retryController = new AbortController();
+                            const retryTimeout = setTimeout(() => retryController.abort(), 10000);
+                            const retryResponse = await fetch(healthUrl + '/health', { 
+                                method: 'GET', 
+                                signal: retryController.signal 
+                            });
+                            clearTimeout(retryTimeout);
+                            const retryData = await retryResponse.json();
+                            if (retryData.status !== 'ok') {
+                                alert('Qwen service is still loading. Please wait 1-2 minutes and try again. The first request after idle takes time to load the model.');
+                                return;
+                            }
+                        } else if (healthData.status !== 'ok') {
+                            alert('Qwen service is not ready. Please check the service status and try again.');
+                            return;
+                        }
+                    } catch (error) {
+                        console.warn('Health check failed, proceeding anyway:', error);
+                        // Continue anyway - the retry logic will handle it
+                    }
+                }
+            }
+            
             // Start processing
             bulkProcessingActive = true;
             bulkProcessingCancelled = false;
@@ -24248,8 +24296,40 @@ SpeechGradebook Research Team`;
                     // Update message
                     if (currentVideoMessage) currentVideoMessage.textContent = 'Uploading video...';
                     
-                    // Process evaluation
-                    const result = await evaluateSpeech(apiKey, item.file, item.assignmentType, selectedRubric, apiProvider);
+                    // Process evaluation with retry logic for 503 errors (cold start)
+                    let result;
+                    let lastError;
+                    const maxRetries = 3;
+                    const baseDelay = 2000; // 2 seconds base delay
+                    
+                    for (let retry = 0; retry <= maxRetries; retry++) {
+                        try {
+                            result = await evaluateSpeech(apiKey, item.file, item.assignmentType, selectedRubric, apiProvider);
+                            break; // Success, exit retry loop
+                        } catch (error) {
+                            lastError = error;
+                            const is503Error = error.message && (
+                                error.message.includes('503') || 
+                                error.message.includes('Service Unavailable') ||
+                                error.message.includes('service is temporarily unavailable')
+                            );
+                            
+                            if (is503Error && retry < maxRetries) {
+                                // Exponential backoff: 2s, 4s, 8s
+                                const delay = baseDelay * Math.pow(2, retry);
+                                if (currentVideoMessage) {
+                                    currentVideoMessage.textContent = `Service starting (cold start)... Retrying in ${delay/1000}s (attempt ${retry + 2}/${maxRetries + 1})`;
+                                }
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                continue; // Retry
+                            }
+                            throw error; // Not a 503 or out of retries, throw immediately
+                        }
+                    }
+                    
+                    if (!result) {
+                        throw lastError || new Error('Evaluation failed after retries');
+                    }
                     
                     if (currentVideoMessage) currentVideoMessage.textContent = 'Saving evaluation...';
                     
@@ -24313,6 +24393,12 @@ SpeechGradebook Research Team`;
                 
                 // Update progress
                 updateBulkProcessingUI();
+                
+                // Small delay between requests to avoid overwhelming the service
+                // This is especially important for Modal which has max_inputs=1
+                if (i < bulkProcessingQueue.length - 1 && !bulkProcessingCancelled) {
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+                }
                 
                 // Hide current video status after a delay
                 setTimeout(() => {
@@ -24517,6 +24603,34 @@ SpeechGradebook Research Team`;
                     moveBtn.disabled = true;
                     moveBtn.style.opacity = '0.6';
                     moveBtn.style.cursor = 'not-allowed';
+                }
+            }
+        }
+
+        function removeFailedBulkEvaluations() {
+            if (!confirm('Remove all failed evaluations from the list? This will not delete any successfully saved evaluations.')) {
+                return;
+            }
+            
+            // Filter out failed evaluations from the queue
+            const originalLength = bulkProcessingQueue.length;
+            bulkProcessingQueue = bulkProcessingQueue.filter(item => item.status === 'complete');
+            const removedCount = originalLength - bulkProcessingQueue.length;
+            
+            // Recalculate counts
+            const completed = bulkProcessingQueue.filter(item => item.status === 'complete').length;
+            const failed = 0; // All failed are removed
+            const total = bulkProcessingQueue.length;
+            
+            // Update the display
+            showBulkCompletionSummary(completed, failed, total);
+            
+            // Show notification
+            if (removedCount > 0) {
+                if (typeof showNotification === 'function') {
+                    showNotification(`Removed ${removedCount} failed evaluation(s) from the list.`, 'success');
+                } else {
+                    alert(`Removed ${removedCount} failed evaluation(s) from the list.`);
                 }
             }
         }
