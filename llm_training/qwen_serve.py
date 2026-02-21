@@ -738,6 +738,24 @@ async def evaluate_video(
     """
     if model is None or processor is None:
         raise HTTPException(status_code=503, detail="Qwen model not loaded")
+    
+    # Verify model is actually ready (not just that the object exists)
+    # During loading, model object exists but parameters might still be loading
+    try:
+        import torch
+        if hasattr(model, 'parameters'):
+            # Try to access parameters to ensure they're loaded
+            param = next(model.parameters(), None)
+            if param is None:
+                raise HTTPException(status_code=503, detail="Qwen model parameters not loaded yet")
+            # Check if model is in eval mode (set after loading completes)
+            if hasattr(model, 'training') and model.training:
+                raise HTTPException(status_code=503, detail="Qwen model still loading (not in eval mode)")
+    except HTTPException:
+        raise
+    except Exception as e:
+        # If we can't verify, assume not ready to be safe
+        raise HTTPException(status_code=503, detail=f"Qwen model not ready: {str(e)}")
 
     # Support both file upload and storage URL
     tmp_path = None
