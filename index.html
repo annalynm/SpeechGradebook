@@ -24991,6 +24991,10 @@ SpeechGradebook Research Team`;
                 showUploadProgress(file.size);
                 updateUploadProgress(10, 'Preparing video for evaluation...');
                 
+                // Use Render proxy endpoint on production, direct Modal URL on localhost
+                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const apiEndpoint = isLocalhost ? (baseUrl + '/evaluate_video') : '/qwen-api/evaluate_video';
+                
                 // Upload file directly to Qwen API for evaluation (traditional method)
                 const formData = new FormData();
                 formData.append('file', file);
@@ -24998,7 +25002,7 @@ SpeechGradebook Research Team`;
                 
                 let response;
                 try {
-                    response = await fetchWithProgress(baseUrl + '/evaluate_video', {
+                    response = await fetchWithProgress(apiEndpoint, {
                         method: 'POST',
                         body: formData
                     }, (percent) => {
