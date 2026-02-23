@@ -1,0 +1,31 @@
+# Render Blueprint for SpeechGradebook Development Environment
+# This configuration deploys the development version from the 'develop' branch
+# See: https://render.com/docs/blueprint-spec
+#
+# To set up the development service:
+# 1. In Render Dashboard, create a new Blueprint or Web Service
+# 2. Connect it to this repository
+# 3. Set the branch to 'develop'
+# 4. Use this render-dev.yaml file (or manually configure as below)
+#
+# Required: In Render Dashboard → your dev service → Environment, add:
+#   SUPABASE_URL     = your DEVELOPMENT Supabase project URL (e.g. https://xxxx-dev.supabase.co)
+#   SUPABASE_ANON_KEY = your DEVELOPMENT Supabase anon/public key (Settings → API in Supabase)
+# Without these, login will fail with "Invalid API key". See RENDER_DEPLOY.md for details.
+#
+# IMPORTANT: Use a SEPARATE Supabase project for development to avoid affecting production data!
+#
+# For "Submit to ISAAC" (Platform Analytics → LLM Export): add ISAAC_USER, ISAAC_HOST,
+# ISAAC_REMOTE_DIR, ISAAC_SSH_PRIVATE_KEY, RENDER_LLM_EXPORT_SECRET. See RENDER_DEPLOY.md.
+#
+# Optional: Set SENTRY_ENVIRONMENT=development to separate dev errors from production
+
+services:
+  - type: web
+    name: speechgradebook-dev
+    runtime: docker
+    # Dockerfile installs ffmpeg for /api/compress_video. Omit buildCommand/startCommand; Dockerfile CMD runs uvicorn.
+    healthCheckPath: /api/health
+    # Note: In Render Dashboard, manually set:
+    #   - Branch: develop
+    #   - Environment variables: See DEVELOPMENT_SETUP.md for required variables

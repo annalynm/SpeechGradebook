@@ -1,8 +1,13 @@
 # Local run with Docker Compose.
 # Prerequisites: .env with SUPABASE_URL and SUPABASE_ANON_KEY (copy from .env.example).
 #
+# Production/Default:
 #   docker compose up --build
 #   Open http://localhost:8000
+#
+# Development (uses .env.development if .env doesn't exist):
+#   docker compose --env-file .env.development up --build
+#   Or: docker compose -f docker-compose.yml --env-file .env.development up --build
 #
 # Optional: mount a trained model for /api/evaluate
 #   Uncomment the volumes section for llm_training below and set the host path.
@@ -13,6 +18,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
+      # Use .env if it exists, otherwise fall back to .env.development
       - .env
     environment:
       - PORT=8000
