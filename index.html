@@ -979,6 +979,173 @@
             overflow-x: auto;
             overflow-y: visible;
         }
+
+        /* ── Editing mode: card allows overflow so sticky works ── */
+        .card.editing-mode {
+            overflow: visible !important;
+        }
+        .card.editing-mode #resultsContent {
+            overflow: visible !important;
+        }
+
+        /* Sticky video+timeline block — in-flow position */
+        .sticky-eval-top {
+            position: relative;
+            z-index: 100;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s;
+        }
+        /* When floating: fixed to top-center of viewport */
+        .sticky-eval-top.is-floating {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(680px, calc(100vw - 32px));
+            z-index: 1000;
+            border-radius: 14px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+        }
+        /* Placeholder keeps layout space while wrapper is floating */
+        #sticky-eval-placeholder {
+            display: none;
+        }
+        #sticky-eval-placeholder.active {
+            display: block;
+        }
+
+        /* ── Timeline scrubber ── */
+        .timeline-scrubber {
+            position: relative;
+            height: 36px;
+            background: #f0f0f5;
+            border-radius: 18px;
+            margin: 12px 0 0;
+            cursor: pointer;
+        }
+        .timeline-scrubber-track {
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            right: 12px;
+            height: 4px;
+            background: #d2d2d7;
+            border-radius: 2px;
+            transform: translateY(-50%);
+        }
+        .timeline-scrubber-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: #007AFF;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        .timeline-pin {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.20);
+            transition: transform 0.15s, box-shadow 0.15s;
+            z-index: 2;
+        }
+        .timeline-pin:hover, .timeline-pin.active {
+            transform: translate(-50%, -60%) scale(1.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        .timeline-pin-stem {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: inherit;
+            border-radius: 0 0 1px 1px;
+        }
+        .timeline-pin-detail {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 260px;
+            max-width: 340px;
+            background: #fff;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 200;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+        }
+        .timeline-pin-detail.open {
+            display: block;
+        }
+        .timeline-add-btn {
+            background: transparent;
+            color: #007AFF;
+            border: 1px solid #007AFF;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.15s;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            white-space: nowrap;
+        }
+        .timeline-add-btn:hover {
+            background: rgba(0,122,255,0.08);
+        }
+
+        /* Grade circle radio buttons — works with or without .grade-radio-group wrapper */
+        .grade-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            border: 2px solid #d2d2d7;
+            background: #f5f5f7;
+            color: #6e6e73;
+            transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.1s;
+            user-select: none;
+            cursor: pointer;
+        }
+        .grade-circle:hover {
+            border-color: #007AFF;
+            color: #007AFF;
+            transform: scale(1.08);
+        }
+        /* Active state — applied via JS since CSS :checked + sibling can't span table cells */
+        .grade-circle.selected-A { background: #34C759; border-color: #34C759; color: white; }
+        .grade-circle.selected-B { background: #a3d977; border-color: #a3d977; color: white; }
+        .grade-circle.selected-C { background: #FF9500; border-color: #FF9500; color: white; }
+        .grade-circle.selected-D { background: #FF6430; border-color: #FF6430; color: white; }
+        .grade-circle.selected-F { background: #FF3B30; border-color: #FF3B30; color: white; }
         
         .card::before {
             content: '';
@@ -7225,6 +7392,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             // Store callback and timestamp
             window._markerBehaviorCallback = callback;
             window._markerBehaviorTimestamp = timestamp;
+            
+            // Pause video while modal is open
+            const vp = document.getElementById('evaluationVideoPlayer');
+            if (vp && !vp.paused) {
+                vp.pause();
+                window._markerModalPausedVideo = true;
+            } else {
+                window._markerModalPausedVideo = false;
+            }
         }
         
         function selectMarkerBehavior(behavior) {
@@ -7243,6 +7419,12 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             if (modal) modal.remove();
             window._markerBehaviorCallback = null;
             window._markerBehaviorTimestamp = null;
+            // Resume video if we paused it
+            if (window._markerModalPausedVideo) {
+                const vp = document.getElementById('evaluationVideoPlayer');
+                if (vp) vp.play().catch(() => {});
+                window._markerModalPausedVideo = false;
+            }
         }
         
         // Add a new timeline marker
@@ -7292,176 +7474,83 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 console.log('Total markers now:', evaluationResults.timeline_markers.length);
                 console.log('All markers:', evaluationResults.timeline_markers);
                 
-                // Re-render the evaluation to show the new marker
-                if (typeof displayResults === 'function') {
-                    console.log('=== RE-RENDERING AFTER ADDING MARKER ===');
-                    console.log('evaluationResults.timeline_markers:', evaluationResults.timeline_markers);
-                    console.log('evaluationResults.timeline_markers.length:', evaluationResults.timeline_markers ? evaluationResults.timeline_markers.length : 0);
-                    console.log('editingEvaluationId:', editingEvaluationId);
+                // ── Surgical DOM insertion: add pin + detail without re-rendering ──
+                const bar = document.getElementById('timeline-scrubber-bar');
+                const detailsContainer = document.getElementById('timeline-details-container');
+                
+                if (bar && detailsContainer) {
+                    const markerIdx = (evaluationResults.timeline_markers.length - 1);
+                    const secs = parseTimestampToSeconds(newMarker.timestamp);
+                    const severityColors = { 'positive': '#10b981', 'minor': '#f59e0b', 'moderate': '#f97316', 'major': '#ef4444' };
+                    const severityLabels = { 'positive': '+', 'minor': '!', 'moderate': '!!', 'major': '✕' };
+                    const color = severityColors[newMarker.severity] || '#f59e0b';
+                    const label = severityLabels[newMarker.severity] || '!';
                     
-                    // Verify markers are actually in the object
-                    if (!evaluationResults.timeline_markers || !Array.isArray(evaluationResults.timeline_markers)) {
-                        console.error('ERROR: timeline_markers is missing or not an array!');
-                        evaluationResults.timeline_markers = [];
+                    // Compute pin position
+                    const video = document.getElementById('evaluationVideoPlayer');
+                    const duration = (video && video.duration && !isNaN(video.duration)) ? video.duration : null;
+                    const pct = duration ? Math.max(2, Math.min(97, (secs / duration) * 100)) : 10;
+                    
+                    // Create pin
+                    const pinEl = document.createElement('div');
+                    pinEl.className = 'timeline-pin';
+                    pinEl.id = `tpin-${markerIdx}`;
+                    pinEl.dataset.secs = secs;
+                    pinEl.dataset.markerIdx = markerIdx;
+                    pinEl.dataset.markerId = newMarker.id;
+                    pinEl.style.cssText = `background:${color}; left:${pct}%;`;
+                    pinEl.title = `${newMarker.timestamp} — ${newMarker.issue || ''}`;
+                    pinEl.innerHTML = `<span>${label}</span><div class="timeline-pin-stem" style="background:${color};"></div>`;
+                    pinEl.onclick = function() { window.toggleTimelineDetail(markerIdx); };
+                    bar.appendChild(pinEl);
+                    
+                    // Create detail panel
+                    const detailEl = document.createElement('div');
+                    detailEl.className = 'timeline-pin-detail';
+                    detailEl.id = `tdetail-${markerIdx}`;
+                    detailEl.dataset.markerId = newMarker.id;
+                    detailEl.innerHTML = `
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;">
+                            <span style="font-size:13px;font-weight:700;color:${color};background:${color}22;padding:3px 8px;border-radius:20px;">${newMarker.timestamp}</span>
+                            <span style="font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;flex:1;text-align:right;">${newMarker.category || ''}</span>
+                            <button onclick="window.deleteTimelineMarker('${newMarker.id}');event.stopPropagation();"
+                                style="background:transparent;border:none;color:#ff3b30;cursor:pointer;padding:2px 4px;border-radius:4px;font-size:14px;line-height:1;flex-shrink:0;" title="Delete marker">✕</button>
+                        </div>
+                        <div style="font-size:13px;font-weight:600;color:#1d1d1f;margin-bottom:6px;">
+                            ${newMarker.issue || ''}
+                            ${newMarker.behavior ? `<span style="display:inline-block;background:rgba(0,122,255,0.1);color:#007AFF;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500;margin-left:4px;">${newMarker.behavior}</span>` : ''}
+                        </div>
+                        <textarea id="marker-note-tl-${markerIdx}" placeholder="Add a comment…"
+                            style="width:100%;min-height:56px;padding:7px 9px;border:1px solid #e5e5e7;border-radius:7px;font-size:12px;font-family:-apple-system,sans-serif;resize:vertical;background:#fafafa;color:#1d1d1f;line-height:1.4;box-sizing:border-box;"
+                            onfocus="this.style.borderColor='#007AFF';this.style.outline='none';this.style.background='#fff';"
+                            onblur="this.style.borderColor='#e5e5e7';this.style.background='#fafafa';"></textarea>
+                        ${video ? `<button onclick="jumpToTimestamp(${secs});event.stopPropagation();"
+                            style="margin-top:8px;background:transparent;color:#007AFF;border:1px solid #007AFF;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                            ▶ Jump to ${newMarker.timestamp}</button>` : ''}
+                    `;
+                    detailsContainer.appendChild(detailEl);
+                    
+                    // Update marker count in header
+                    const countEl = bar.closest('#eval-timeline-section')?.querySelector('span[style*="uppercase"]');
+                    if (countEl) {
+                        const currentCount = evaluationResults.timeline_markers.length;
+                        countEl.textContent = `Timeline Markers (${currentCount})`;
                     }
                     
-                    // Check if we're in dropdown view - find the dropdown containing this evaluation
-                    // Strategy: Find the video player first, then traverse up to find the dropdown
-                    let dropdownContent = null;
-                    let evalDropdown = null;
-                    if (editingEvaluationId) {
-                        // First, try to find the video player - if it exists, we're in dropdown view
-                        const videoPlayer = document.getElementById('evaluationVideoPlayer');
-                        if (videoPlayer) {
-                            // Traverse up the DOM to find the eval-* container
-                            let current = videoPlayer.parentElement;
-                            while (current && current !== document.body) {
-                                if (current.id && current.id.startsWith('eval-')) {
-                                    evalDropdown = current;
-                                    console.log('Found dropdown via video player:', current.id);
-                                    break;
-                                }
-                                current = current.parentElement;
-                            }
-                            
-                            // If we found the dropdown, get the content div
-                            if (evalDropdown) {
-                                const dropdownContentDiv = document.getElementById(evalDropdown.id);
-                                dropdownContent = dropdownContentDiv ? dropdownContentDiv.querySelector('div[style*="padding-top: 1rem"]') : null;
-                                console.log('Found dropdown content:', !!dropdownContent);
-                                // Make sure it's expanded
-                                if (dropdownContentDiv && dropdownContentDiv.classList.contains('hidden')) {
-                                    dropdownContentDiv.classList.remove('hidden');
-                                    const arrow = document.getElementById(evalDropdown.id + '-arrow');
-                                    if (arrow) arrow.textContent = '▲';
-                                }
-                            }
-                        }
-                        
-                        // Fallback: Try the original method if video player method didn't work
-                        if (!evalDropdown) {
-                            const allEvalDropdowns = document.querySelectorAll('[id^="eval-"]');
-                            console.log('Fallback: Searching for dropdown, found', allEvalDropdowns.length, 'dropdowns');
-                            for (let i = 0; i < allEvalDropdowns.length; i++) {
-                                const dropdown = allEvalDropdowns[i];
-                                // Check if this dropdown contains a button that references this evaluationId
-                                const editButton = dropdown.querySelector(`button[onclick*="editSavedEvaluation('${editingEvaluationId}'"]`);
-                                if (editButton) {
-                                    evalDropdown = dropdown;
-                                    console.log('Found matching dropdown via button:', dropdown.id);
-                                    const dropdownContentDiv = document.getElementById(dropdown.id);
-                                    dropdownContent = dropdownContentDiv ? dropdownContentDiv.querySelector('div[style*="padding-top: 1rem"]') : null;
-                                    console.log('Found dropdown for evaluation:', editingEvaluationId, 'container:', dropdown.id, 'dropdownContent:', !!dropdownContent);
-                                    if (dropdownContentDiv && dropdownContentDiv.classList.contains('hidden')) {
-                                        dropdownContentDiv.classList.remove('hidden');
-                                        const arrow = document.getElementById(dropdown.id + '-arrow');
-                                        if (arrow) arrow.textContent = '▲';
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if (!evalDropdown) {
-                            console.log('No dropdown found for evaluation:', editingEvaluationId, '- will render to main view');
-                        }
-                    }
+                    // Remove empty state hint if present
+                    const hint = document.querySelector('#eval-timeline-section p[style*="italic"]');
+                    if (hint) hint.remove();
                     
-                    if (dropdownContent) {
-                        // We're in dropdown view - render to temp container then inject
-                        console.log('Re-rendering in dropdown view with', evaluationResults.timeline_markers.length, 'markers');
-                        const tempContainer = document.createElement('div');
-                        tempContainer.id = 'resultsContent';
-                        tempContainer.style.display = 'none';
-                        document.body.appendChild(tempContainer);
-                        
-                        const originalResultsContent = document.getElementById('resultsContent');
-                        let originalParent = null;
-                        if (originalResultsContent && originalResultsContent !== tempContainer) {
-                            originalParent = originalResultsContent.parentElement;
-                            if (originalParent) {
-                                originalParent.replaceChild(tempContainer, originalResultsContent);
-                            }
-                        }
-                        
-                        // Render to temp container - pass evaluationResults directly
-                        console.log('Calling displayResults with', evaluationResults.timeline_markers.length, 'markers');
-                        displayResults(evaluationResults);
-                        
-                        // Extract and inject into dropdown
-                        const renderedHTML = tempContainer.innerHTML;
-                        console.log('Rendered HTML length:', renderedHTML.length);
-                        console.log('Rendered HTML contains "Timeline Markers":', renderedHTML.includes('Timeline Markers'));
-                        console.log('Rendered HTML contains "data-marker-id":', renderedHTML.includes('data-marker-id'));
-                        console.log('Rendered HTML contains marker timestamp:', renderedHTML.includes(timestamp));
-                        
-                        if (!renderedHTML.includes('Timeline Markers')) {
-                            console.error('ERROR: Timeline Markers section not found in rendered HTML!');
-                            console.log('HTML sample (first 2000 chars):', renderedHTML.substring(0, 2000));
-                        }
-                        
-                        dropdownContent.innerHTML = renderedHTML;
-                        console.log('Injected HTML into dropdown');
-                        
-                        // Restore original resultsContent
-                        if (originalResultsContent && originalResultsContent !== tempContainer && originalParent) {
-                            originalParent.replaceChild(originalResultsContent, tempContainer);
-                        } else {
-                            tempContainer.remove();
-                        }
-                        
-                        // Re-initialize icons in dropdown
-                        if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                            lucide.createIcons({ root: dropdownContent });
-                        }
-                        
-                        // Set up video marker listener again
-                        if (typeof setupVideoMarkerListener === 'function') {
-                            setTimeout(() => {
-                                setupVideoMarkerListener();
-                            }, 100);
-                        }
-                    } else {
-                        // Main view - render normally
-                        console.log('Re-rendering in main view with', evaluationResults.timeline_markers.length, 'markers');
-                        displayResults(evaluationResults);
-                    }
+                    // Auto-open the new marker's detail panel
+                    setTimeout(() => window.toggleTimelineDetail(markerIdx), 50);
                     
-                    // Show success notification after rendering
-                    showNotification('Marker added at ' + timestamp, 'success', 2000);
                 } else {
-                    console.error('displayResults function not available');
-                    alert('Cannot re-render: displayResults function not found.');
-                    return;
+                    // Fallback: full re-render if scrubber not found
+                    if (typeof displayResults === 'function') displayResults(evaluationResults);
                 }
                 
-                // Scroll to the new marker after a short delay
-                setTimeout(() => {
-                    const markerElement = document.querySelector(`[data-marker-id="${newMarker.id}"]`);
-                    console.log('Looking for marker element with id:', newMarker.id);
-                    if (markerElement) {
-                        markerElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        // Focus on the issue input if it's "Other"
-                        if (!selectedBehavior || selectedBehavior === BEHAVIOR_OTHER) {
-                            const issueInput = markerElement.querySelector('input[id^="marker-issue-"]');
-                            if (issueInput) {
-                                setTimeout(() => {
-                                    issueInput.focus();
-                                    issueInput.select();
-                                }, 100);
-                            }
-                        }
-                    } else {
-                        console.warn('Marker element not found after render, trying again...');
-                        // Try again after a longer delay
-                        setTimeout(() => {
-                            const markerElement2 = document.querySelector(`[data-marker-id="${newMarker.id}"]`);
-                            if (markerElement2) {
-                                markerElement2.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        }, 500);
-                    }
-                }, 300);
+                showNotification('Marker added at ' + timestamp, 'success', 2000);
+                
             } catch (error) {
                 console.error('Error in addTimelineMarker:', error);
                 alert('Error adding marker: ' + error.message);
@@ -7568,133 +7657,55 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             evaluationResults.timeline_markers.splice(index, 1);
             console.log('Remaining markers:', evaluationResults.timeline_markers.length);
             
-            // Re-render the evaluation - handle dropdown view same as adding markers
-            if (typeof displayResults === 'function') {
-                console.log('=== RE-RENDERING AFTER DELETING MARKER ===');
-                console.log('evaluationResults.timeline_markers.length:', evaluationResults.timeline_markers ? evaluationResults.timeline_markers.length : 0);
-                console.log('editingEvaluationId:', editingEvaluationId);
-                
-                // Check if we're in dropdown view - find the dropdown containing this evaluation
-                // Strategy: Find the video player first, then traverse up to find the dropdown
-                let dropdownContent = null;
-                let evalDropdown = null;
-                if (editingEvaluationId) {
-                    // First, try to find the video player - if it exists, we're in dropdown view
-                    const videoPlayer = document.getElementById('evaluationVideoPlayer');
-                    if (videoPlayer) {
-                        // Traverse up the DOM to find the eval-* container
-                        let current = videoPlayer.parentElement;
-                        while (current && current !== document.body) {
-                            if (current.id && current.id.startsWith('eval-')) {
-                                evalDropdown = current;
-                                console.log('Found dropdown via video player:', current.id);
-                                break;
-                            }
-                            current = current.parentElement;
-                        }
-                        
-                        // If we found the dropdown, get the content div
-                        if (evalDropdown) {
-                            const dropdownContentDiv = document.getElementById(evalDropdown.id);
-                            dropdownContent = dropdownContentDiv ? dropdownContentDiv.querySelector('div[style*="padding-top: 1rem"]') : null;
-                            console.log('Found dropdown content:', !!dropdownContent);
-                            // Make sure it's expanded
-                            if (dropdownContentDiv && dropdownContentDiv.classList.contains('hidden')) {
-                                dropdownContentDiv.classList.remove('hidden');
-                                const arrow = document.getElementById(evalDropdown.id + '-arrow');
-                                if (arrow) arrow.textContent = '▲';
-                            }
-                        }
-                    }
-                    
-                    // Fallback: Try the original method if video player method didn't work
-                    if (!evalDropdown) {
-                        const allEvalDropdowns = document.querySelectorAll('[id^="eval-"]');
-                        console.log('Fallback: Searching for dropdown, found', allEvalDropdowns.length, 'dropdowns');
-                        for (let i = 0; i < allEvalDropdowns.length; i++) {
-                            const dropdown = allEvalDropdowns[i];
-                            // Check if this dropdown contains a button that references this evaluationId
-                            const editButton = dropdown.querySelector(`button[onclick*="editSavedEvaluation('${editingEvaluationId}'"]`);
-                            if (editButton) {
-                                evalDropdown = dropdown;
-                                console.log('Found matching dropdown via button:', dropdown.id);
-                                const dropdownContentDiv = document.getElementById(dropdown.id);
-                                dropdownContent = dropdownContentDiv ? dropdownContentDiv.querySelector('div[style*="padding-top: 1rem"]') : null;
-                                console.log('Found dropdown for evaluation:', editingEvaluationId, 'container:', dropdown.id, 'dropdownContent:', !!dropdownContent);
-                                if (dropdownContentDiv && dropdownContentDiv.classList.contains('hidden')) {
-                                    dropdownContentDiv.classList.remove('hidden');
-                                    const arrow = document.getElementById(dropdown.id + '-arrow');
-                                    if (arrow) arrow.textContent = '▲';
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (!evalDropdown) {
-                        console.log('No dropdown found for evaluation:', editingEvaluationId, '- will render to main view');
-                    }
-                }
-                
-                if (dropdownContent) {
-                    // We're in dropdown view - render to temp container then inject
-                    console.log('Re-rendering in dropdown view with', evaluationResults.timeline_markers.length, 'markers');
-                    const tempContainer = document.createElement('div');
-                    tempContainer.id = 'resultsContent';
-                    tempContainer.style.display = 'none';
-                    document.body.appendChild(tempContainer);
-                    
-                    const originalResultsContent = document.getElementById('resultsContent');
-                    let originalParent = null;
-                    if (originalResultsContent && originalResultsContent !== tempContainer) {
-                        originalParent = originalResultsContent.parentElement;
-                        if (originalParent) {
-                            originalParent.replaceChild(tempContainer, originalResultsContent);
-                        }
-                    }
-                    
-                    // Render to temp container - pass evaluationResults directly
-                    console.log('Calling displayResults with', evaluationResults.timeline_markers.length, 'markers');
-                    displayResults(evaluationResults);
-                    
-                    // Extract and inject into dropdown
-                    const renderedHTML = tempContainer.innerHTML;
-                    console.log('Rendered HTML length:', renderedHTML.length);
-                    console.log('Rendered HTML contains "Timeline Markers":', renderedHTML.includes('Timeline Markers'));
-                    console.log('Rendered HTML contains "data-marker-id":', renderedHTML.includes('data-marker-id'));
-                    
-                    if (!renderedHTML.includes('Timeline Markers')) {
-                        console.error('ERROR: Timeline Markers section not found in rendered HTML!');
-                        console.log('HTML sample (first 2000 chars):', renderedHTML.substring(0, 2000));
-                    }
-                    
-                    dropdownContent.innerHTML = renderedHTML;
-                    console.log('Injected HTML into dropdown');
-                    
-                    // Restore original resultsContent
-                    if (originalResultsContent && originalResultsContent !== tempContainer && originalParent) {
-                        originalParent.replaceChild(originalResultsContent, tempContainer);
-                    } else {
-                        tempContainer.remove();
-                    }
-                    
-                    // Re-initialize icons in dropdown
-                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                        lucide.createIcons({ root: dropdownContent });
-                    }
-                    
-                    // Set up video marker listener again
-                    if (typeof setupVideoMarkerListener === 'function') {
-                        setTimeout(() => {
-                            setupVideoMarkerListener();
-                        }, 100);
-                    }
-                } else {
-                    // Main view - render normally
-                    console.log('Re-rendering in main view with', evaluationResults.timeline_markers.length, 'markers');
-                    displayResults(evaluationResults);
-                }
+            // ── Surgical DOM removal: remove pin + detail without re-rendering ──
+            const pinEl = document.querySelector(`.timeline-pin[data-marker-id="${markerId}"]`);
+            const detailEl = document.querySelector(`.timeline-pin-detail[data-marker-id="${markerId}"]`);
+            if (pinEl) {
+                pinEl.style.transition = 'opacity 0.2s, transform 0.2s';
+                pinEl.style.opacity = '0';
+                pinEl.style.transform = 'translate(-50%, -80%) scale(0.5)';
+                setTimeout(() => pinEl.remove(), 200);
             }
+            if (detailEl) {
+                detailEl.style.transition = 'opacity 0.15s';
+                detailEl.style.opacity = '0';
+                setTimeout(() => detailEl.remove(), 150);
+            }
+            // If no pin found by marker-id, try by data-marker-idx (for newly added pins)
+            if (!pinEl) {
+                // Close any open detail panels containing this markerId in their delete button
+                document.querySelectorAll('.timeline-pin-detail').forEach(d => {
+                    if (d.innerHTML.includes(markerId)) {
+                        d.style.opacity = '0';
+                        setTimeout(() => d.remove(), 150);
+                    }
+                });
+                document.querySelectorAll('.timeline-pin').forEach(p => {
+                    if (p.dataset.markerId === markerId) {
+                        p.style.opacity = '0';
+                        setTimeout(() => p.remove(), 200);
+                    }
+                });
+            }
+            // Update marker count display
+            setTimeout(() => {
+                const bar = document.getElementById('timeline-scrubber-bar');
+                const countEl = bar?.closest('#eval-timeline-section')?.querySelector('span[style*="uppercase"]');
+                if (countEl) {
+                    const remaining = evaluationResults.timeline_markers.length;
+                    countEl.textContent = remaining > 0 ? `Timeline Markers (${remaining})` : 'Timeline Markers';
+                }
+                // Show empty state hint if no markers remain
+                if (evaluationResults.timeline_markers.length === 0) {
+                    const timelineSection = document.getElementById('eval-timeline-section');
+                    if (timelineSection && !timelineSection.querySelector('p[style*="italic"]')) {
+                        const hint = document.createElement('p');
+                        hint.style.cssText = 'font-size:12px;color:#6e6e73;margin:6px 0 0;font-style:italic;';
+                        hint.textContent = 'Double-click the video or use Add Marker to mark moments.';
+                        timelineSection.appendChild(hint);
+                    }
+                }
+            }, 220);
             
             showNotification('Timeline marker deleted', 'success', 2000);
         }
@@ -7713,6 +7724,95 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         } catch (e) {
             console.error('Error making timeline marker functions globally available:', e);
         }
+
+        // ── Grade circle click handler ───────────────────────────────────────
+        window.selectGrade = function(el) {
+            const radioName = el.dataset.radioName;
+            const grade = el.dataset.grade;
+            const subIdx = parseInt(el.dataset.subIdx);
+            
+            // Decode section name — stored URI-encoded to avoid HTML entity issues
+            let section = el.dataset.sectionKey ? decodeURIComponent(el.dataset.sectionKey) : el.dataset.section;
+            
+            // If section not found directly, try to find it in evaluationResults by fuzzy match
+            if (section && evaluationResults && evaluationResults.sections && !evaluationResults.sections[section]) {
+                const keys = Object.keys(evaluationResults.sections);
+                const decoded = decodeURIComponent(section);
+                const match = keys.find(k => k === decoded || k.toLowerCase() === decoded.toLowerCase());
+                if (match) section = match;
+            }
+            
+            // Clear all circles in this group
+            document.querySelectorAll(`.grade-circle[data-radio-name="${radioName}"]`).forEach(c => {
+                c.className = 'grade-circle';
+            });
+            // Mark this one selected
+            el.classList.add('selected-' + grade);
+            // Update data and points
+            updateSubcategoryFromGradeValue(section, subIdx, grade);
+        };
+        window.toggleTimelineDetail = function(idx) {
+            const detail = document.getElementById('tdetail-' + idx);
+            const pin = document.getElementById('tpin-' + idx);
+            if (!detail) return;
+            const isOpen = detail.classList.contains('open');
+            // Close all other details
+            document.querySelectorAll('.timeline-pin-detail.open').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.timeline-pin.active').forEach(p => p.classList.remove('active'));
+            if (!isOpen) {
+                detail.classList.add('open');
+                if (pin) pin.classList.add('active');
+                // Keep detail in viewport — flip to left if too close to right edge
+                const bar = document.getElementById('timeline-scrubber-bar');
+                if (bar && detail) {
+                    const barRect = bar.getBoundingClientRect();
+                    const pinLeft = pin ? parseFloat(pin.style.left) / 100 : 0.5;
+                    if (pinLeft > 0.7) {
+                        detail.style.left = 'auto';
+                        detail.style.right = '0';
+                        detail.style.transform = 'none';
+                    } else {
+                        detail.style.left = '50%';
+                        detail.style.right = 'auto';
+                        detail.style.transform = 'translateX(-50%)';
+                    }
+                }
+            }
+        };
+
+        // Position pins on the scrubber bar based on video duration
+        window.positionTimelinePins = function() {
+            const bar = document.getElementById('timeline-scrubber-bar');
+            if (!bar) return;
+            const video = document.getElementById('evaluationVideoPlayer');
+            const duration = (video && video.duration && !isNaN(video.duration) && video.duration > 0)
+                ? video.duration : null;
+
+            if (!duration && video) {
+                // Video not ready yet — wait for metadata then retry
+                video.addEventListener('loadedmetadata', window.positionTimelinePins, { once: true });
+                return;
+            }
+
+            bar.querySelectorAll('.timeline-pin').forEach(pin => {
+                const secs = parseFloat(pin.dataset.secs) || 0;
+                const pct = duration ? Math.max(2, Math.min(97, (secs / duration) * 100)) : 10;
+                pin.style.left = pct + '%';
+            });
+
+            // Update scrubber fill as video plays (attach only once)
+            if (video && duration && !video._fillListenerAdded) {
+                video._fillListenerAdded = true;
+                video.addEventListener('timeupdate', function() {
+                    const fill = document.getElementById('timeline-scrubber-fill');
+                    if (fill && video.duration) fill.style.width = ((video.currentTime / video.duration) * 100) + '%';
+                });
+            }
+        };
+
+        // Auto-position pins when video metadata loads or on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', window.positionTimelinePins);
+        document.addEventListener('displayResultsComplete', window.positionTimelinePins);
         
         // Jump video player to specific timestamp
         function jumpToTimestamp(seconds) {
@@ -12207,6 +12307,10 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         
         // Keyboard navigation handler for menus
         function handleMenuKeyboard(event, menu, items, closeMenuFn) {
+            // Never intercept keyboard events originating from text inputs or textareas
+            const tag = event.target && event.target.tagName;
+            if (tag === 'TEXTAREA' || tag === 'INPUT' || (event.target && event.target.isContentEditable)) return;
+            
             const currentIndex = parseInt(menu.getAttribute('data-active-index') || '0');
             
             switch(event.key) {
@@ -29355,14 +29459,9 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Add editing mode banner following Apple HIG guidelines
             if (isEditing) {
                 html += `
-                <div id="editingModeBanner" style="background: rgba(0, 122, 255, 0.1); border: 1px solid rgba(0, 122, 255, 0.3); border-radius: 12px; padding: 12px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;">
-                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
-                        <i data-lucide="edit-2" style="width: 18px; height: 18px; color: #007AFF; flex-shrink: 0;"></i>
-                        <span style="font-size: 15px; font-weight: 500; color: #1d1d1f; line-height: 1.4;">You are editing this evaluation. Make your changes and save when finished.</span>
-                    </div>
-                    <button onclick="document.getElementById('editingModeBanner')?.remove()" style="background: transparent; border: none; padding: 0; width: 44px; height: 44px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; transition: background-color 0.2s; flex-shrink: 0;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='transparent'" aria-label="Dismiss banner" title="Dismiss">
-                        <i data-lucide="x" style="width: 18px; height: 18px; color: #1d1d1f;"></i>
-                    </button>
+                <div id="editingModeBanner" style="background: rgba(0, 122, 255, 0.08); border: 1px solid rgba(0, 122, 255, 0.25); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+                    <i data-lucide="edit-2" style="width: 15px; height: 15px; color: #007AFF; flex-shrink: 0;"></i>
+                    <span style="font-size: 13px; font-weight: 500; color: #007AFF; line-height: 1.4;">Editing mode — save when finished</span>
                 </div>
                 `;
             }
@@ -29535,17 +29634,17 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Add video/audio player if media URL exists
             if (mediaUrl) {
                 const videoSectionContent = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
-                            <h3 style="margin: 0; font-size: 17px; font-weight: 600; color: #1d1d1f; display: flex; align-items: center; gap: 8px;"><i data-lucide="${videoUrl ? 'video' : 'headphones'}" style="width: 20px; height: 20px; color: #007AFF;"></i> ${videoUrl ? 'Video Recording' : 'Audio Recording'}</h3>
+                        ${!isEditing ? `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px;">
+                            <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #1d1d1f; display: flex; align-items: center; gap: 8px;"><i data-lucide="${videoUrl ? 'video' : 'headphones'}" style="width: 18px; height: 18px; color: #007AFF;"></i> ${videoUrl ? 'Video Recording' : 'Audio Recording'}</h3>
                             <div style="display: flex; gap: 8px; align-items: center;">
-                                ${videoUrl ? '<button id="popOutVideoBtn" onclick="toggleFloatingVideo()" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Text\', sans-serif;" onmouseover="this.style.backgroundColor=\'rgba(0, 122, 255, 0.1)\'" onmouseout="this.style.backgroundColor=\'transparent\'"><i data-lucide="maximize-2" style="width:16px;height:16px;"></i> Pop Out</button>' : ''}
-                                ${editingEvaluationId ? '' : '<button onclick="reEvaluateFromUrl(\'' + escapeHtml(mediaUrl) + '\', ' + (videoUrl ? 'true' : 'false') + ')" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Text\', sans-serif;" onmouseover="this.style.backgroundColor=\'rgba(0, 122, 255, 0.1)\'" onmouseout="this.style.backgroundColor=\'transparent\'"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Re-evaluate</button>'}
+                                ${videoUrl ? `<button id="popOutVideoBtn" onclick="toggleFloatingVideo()" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0,122,255,0.08)'" onmouseout="this.style.backgroundColor='transparent'"><i data-lucide="maximize-2" style="width:14px;height:14px;"></i> Pop Out</button>` : ''}
+                                <button onclick="reEvaluateFromUrl('${escapeHtml(mediaUrl)}', ${videoUrl ? 'true' : 'false'})" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0,122,255,0.08)'" onmouseout="this.style.backgroundColor='transparent'"><i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Re-evaluate</button>
                             </div>
-                        </div>
+                        </div>` : ''}
                         <div style="position: relative;">
                             ${videoUrl ? `
-                        <div style="position: relative; width: 100%; ${useSplitScreen ? '' : 'max-width: 800px;'} border-radius: 10px; overflow: hidden; background: #000;">
-                                <video id="evaluationVideoPlayer" controls style="width: 100%; border-radius: 10px; background: #000; ${isEditing ? 'cursor: crosshair;' : ''}">
+                        <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #000;">
+                                <video id="evaluationVideoPlayer" controls style="width: 100%; max-height: 240px; object-fit: contain; border-radius: 10px; background: #000; ${isEditing ? 'cursor: crosshair;' : ''}">
                                 <source src="${escapeHtml(videoUrl)}" type="video/mp4">
                                 <source src="${escapeHtml(videoUrl)}" type="video/webm">
                                 <source src="${escapeHtml(videoUrl)}" type="video/quicktime">
@@ -29574,18 +29673,18 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             </audio>
                             `}
                         </div>
-                        <p style="font-size: 13px; color: #6e6e73; margin-top: 12px; line-height: 1.38; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
-                            ${videoUrl ? (isEditing ? 'Double-click anywhere on the video to add a marker at that time, or use "Add at Current Time" to mark the current playback position.' : 'Click timeline markers to jump to specific moments.') : 'Listen to the recorded speech audio.'}
-                        </p>
+                        ${!isEditing ? `<p style="font-size: 13px; color: #6e6e73; margin-top: 12px; line-height: 1.38; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+                            ${videoUrl ? 'Click timeline markers to jump to specific moments.' : 'Listen to the recorded speech audio.'}
+                        </p>` : ''}
                 `;
                 
-                // Build video section - always use vertical layout for better editing experience
-                // Video can be popped out to float
+                // Render video inline — always visible at top, page scrolls below it
                 videoSectionHtml = `
-                    <div id="eval-media-section" style="background: #ffffff; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e5e5e7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; scroll-margin-top: 80px; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+                    <div id="eval-media-section" style="background: #ffffff; padding: 16px; ${isEditing ? 'border-radius: 12px 12px 0 0; margin-bottom: 0; border: 1px solid #e5e5e7; border-bottom: none;' : 'border-radius: 12px; margin-bottom: 16px; border: 1px solid #e5e5e7;'} font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; scroll-margin-top: 80px; width: 100%; max-width: 100%; box-sizing: border-box;">
                         ${videoSectionContent}
                     </div>
                 `;
+                window._editingVideoSectionContent = null;
             }
             
             // Add timeline markers section right after video (at the top)
@@ -29635,135 +29734,90 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 }
                 
                 if (shouldShowMarkersSection) {
-                    let timelineMarkersHTML = '';
+                    // ── TIMELINE SCRUBBER UI ───────────────────────────────────────
+                    const severityColors = { 'positive': '#10b981', 'minor': '#f59e0b', 'moderate': '#f97316', 'major': '#ef4444' };
+                    const severityLabels = { 'positive': '+', 'minor': '!', 'moderate': '!!', 'major': '✕' };
+
+                    // Build pin HTML for each marker
+                    let pinsHtml = '';
+                    let detailsHtml = '';
                     
-                    if (markersToRender.length > 0) {
-                        console.log('Rendering', markersToRender.length, 'markers in timeline section');
-                        console.log('Rendering timeline markers section with', markersToRender.length, 'markers');
-                        const markersByCategory = {};
-                        markersToRender.forEach(marker => {
-                        if (!markersByCategory[marker.category]) markersByCategory[marker.category] = [];
-                        markersByCategory[marker.category].push(marker);
+                    (markersToRender || []).forEach((marker, idx) => {
+                        const color = severityColors[marker.severity] || '#f59e0b';
+                        const label = severityLabels[marker.severity] || '!';
+                        const secs = parseTimestampToSeconds(marker.timestamp || '0:00');
+                        const uniqueMarkerId = marker.id || ('m' + idx);
+                        // Position: we'll use a data-secs attr and JS will compute % after video loads
+                        pinsHtml += `
+                        <div class="timeline-pin" id="tpin-${idx}"
+                            data-secs="${secs}" data-marker-idx="${idx}" data-marker-id="${uniqueMarkerId}"
+                            style="background:${color}; left:0%;"
+                            onclick="window.toggleTimelineDetail(${idx})"
+                            title="${escapeHtml(marker.timestamp||'0:00')} — ${escapeHtml(marker.issue||'')}">
+                            <span>${label}</span>
+                            <div class="timeline-pin-stem" style="background:${color};"></div>
+                        </div>`;
+
+                        detailsHtml += `
+                        <div class="timeline-pin-detail" id="tdetail-${idx}" data-marker-id="${uniqueMarkerId}">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;">
+                                <span style="font-size:13px;font-weight:700;color:${color};background:${color}22;padding:3px 8px;border-radius:20px;">
+                                    ${escapeHtml(marker.timestamp||'0:00')}
+                                </span>
+                                <span style="font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;flex:1;text-align:right;">
+                                    ${escapeHtml(marker.category||'')}
+                                </span>
+                                ${isEditing ? `<button onclick="window.deleteTimelineMarker('${uniqueMarkerId}');event.stopPropagation();"
+                                    style="background:transparent;border:none;color:#ff3b30;cursor:pointer;padding:2px 4px;border-radius:4px;font-size:14px;line-height:1;flex-shrink:0;"
+                                    title="Delete marker">✕</button>` : ''}
+                            </div>
+                            <div style="font-size:13px;font-weight:600;color:#1d1d1f;margin-bottom:6px;">
+                                ${escapeHtml(marker.issue||'')}
+                                ${marker.behavior ? `<span style="display:inline-block;background:rgba(0,122,255,0.1);color:#007AFF;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500;margin-left:4px;">${escapeHtml(marker.behavior)}</span>` : ''}
+                            </div>
+                            ${isEditing ? `
+                            <textarea id="marker-note-tl-${idx}" placeholder="Add a comment…"
+                                style="width:100%;min-height:56px;padding:7px 9px;border:1px solid #e5e5e7;border-radius:7px;font-size:12px;font-family:-apple-system,sans-serif;resize:vertical;background:#fafafa;color:#1d1d1f;line-height:1.4;box-sizing:border-box;"
+                                onfocus="this.style.borderColor='#007AFF';this.style.outline='none';this.style.background='#fff';"
+                                onblur="this.style.borderColor='#e5e5e7';this.style.background='#fafafa';">${escapeHtml(marker.note||'')}</textarea>
+                            ` : (marker.note ? `<p style="margin:0;font-size:12px;color:#6e6e73;line-height:1.4;">${escapeHtml(marker.note)}</p>` : '')}
+                            ${videoUrl ? `<button onclick="jumpToTimestamp(${secs});event.stopPropagation();"
+                                style="margin-top:8px;background:transparent;color:#007AFF;border:1px solid #007AFF;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                                ▶ Jump to ${escapeHtml(marker.timestamp||'0:00')}</button>` : ''}
+                        </div>`;
                     });
-                    
-                    const severityColors = { 'positive': '#10b981', 'minor': '#f59e0b', 'moderate': '#f59e0b', 'major': '#ef4444' };
-                    const severityIcons = { 'positive': '✓', 'minor': '⚠', 'moderate': '⚠', 'major': '✕' };
-                
-                    timelineMarkersHTML = '<div id="timeline-markers-content" style="max-height: 400px; overflow-y: auto;">';
-                    
-                    Object.keys(markersByCategory).forEach(category => {
-                        const categoryMarkers = markersByCategory[category];
-                        const byRecurrence = {};
-                        categoryMarkers.forEach(m => {
-                            var key = markerRecurrenceKey(m);
-                            if (!byRecurrence[key]) byRecurrence[key] = [];
-                            byRecurrence[key].push(m);
-                        });
-                        
-                        timelineMarkersHTML += `<div style="margin-bottom: 20px;"><h4 style="margin: 0 0 12px 0; color: #1d1d1f; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">${escapeHtml(category)}</h4><div style="display: grid; gap: 12px;">`;
-                        
-                        Object.keys(byRecurrence).forEach(recurrenceKey => {
-                            const group = byRecurrence[recurrenceKey];
-                            const first = group[0];
-                            const countLabel = group.length > 1 ? ' <span style="color: var(--text-light); font-weight: normal; font-size: 0.9rem;">(' + group.length + ' times)</span>' : '';
-                            
-                            group.forEach((marker, idx) => {
-                                const color = severityColors[marker.severity] || '#f59e0b';
-                                const icon = severityIcons[marker.severity] || '⚠';
-                                const showCount = idx === 0 && group.length > 1;
-                                // Parse timestamp to seconds for jump functionality
-                                const timestampSeconds = parseTimestampToSeconds(marker.timestamp || '0:00');
-                            const videoUrl = mediaUrl && (mediaUrl.includes('.mp4') || mediaUrl.includes('.webm') || mediaUrl.includes('.mov') || mediaUrl.includes('video'));
-                                const onClickAttr = videoUrl ? `onclick="jumpToTimestamp(${timestampSeconds})"` : '';
-                            const markerId = `marker-${marker.id || idx}-${recurrenceKey}`;
-                            // Use the marker's actual ID - this is critical for deletion to work
-                            const uniqueMarkerId = marker.id || `temp-${Date.now()}-${idx}-${Math.random().toString(36).substr(2, 9)}`;
-                            console.log('Rendering marker with ID:', marker.id, 'uniqueMarkerId:', uniqueMarkerId);
-                                timelineMarkersHTML += `
-                            <div style="background: #ffffff; border: 1px solid #e5e5e7; border-radius: 12px; padding: 16px; display: flex; gap: 12px; align-items: start; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;" data-marker-id="${uniqueMarkerId}" data-marker-index="${idx}" data-marker-category="${escapeHtml(category)}" onmouseover="this.style.borderColor='#007AFF'; this.style.boxShadow='0 2px 8px rgba(0, 122, 255, 0.1)'" onmouseout="this.style.borderColor='#e5e5e7'; this.style.boxShadow='none'">
-                                ${isEditing ? `
-                                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;">
-                                    <input type="text" id="marker-timestamp-${markerId}" value="${escapeHtml(marker.timestamp || '')}" style="background: ${color}; color: white; width: 64px; height: 64px; border-radius: 10px; border: none; text-align: center; padding: 0; font-size: 15px; font-weight: 600; cursor: text; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; letter-spacing: -0.24px;" placeholder="0:00">
-                                    ${videoUrl ? `
-                                    <button onclick="jumpToTimestamp(${timestampSeconds})" style="background: transparent; color: #6e6e73; border: none; padding: 8px; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='#f5f5f7'; this.style.color='#007AFF'" onmouseout="this.style.background='transparent'; this.style.color='#6e6e73'" title="Jump to time" aria-label="Jump to time">
-                                        <i data-lucide="play" style="width:18px;height:18px;"></i>
-                                    </button>
-                                    ` : ''}
-                                </div>
-                                ` : `
-                                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;">
-                                    <div style="background: ${color}; color: white; width: 64px; height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; letter-spacing: -0.24px;">${escapeHtml(marker.timestamp || '')}</div>
-                                    ${videoUrl ? `
-                                    <button onclick="jumpToTimestamp(${timestampSeconds})" style="background: transparent; color: #6e6e73; border: none; padding: 8px; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='#f5f5f7'; this.style.color='#007AFF'" onmouseout="this.style.background='transparent'; this.style.color='#6e6e73'" title="Jump to time" aria-label="Jump to time">
-                                        <i data-lucide="play" style="width:18px;height:18px;"></i>
-                                    </button>
-                                    ` : ''}
-                                </div>
-                                `}
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
-                                        <span style="font-size: 20px; flex-shrink: 0; margin-top: 2px;">${icon}</span>
-                                        <div style="flex: 1; min-width: 0;">
-                                            ${isEditing ? `
-                                            <input type="text" id="marker-issue-${markerId}" value="${escapeHtml(marker.issue || '')}" style="width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 17px; font-weight: 500; color: #1d1d1f; background: #ffffff; transition: all 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; letter-spacing: -0.34px; box-sizing: border-box; min-height: 44px;" placeholder="Issue description" onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'">
-                                            ` : `
-                                            <strong style="color: #1d1d1f; font-size: 17px; font-weight: 600; display: block; line-height: 1.47; letter-spacing: -0.34px;">${escapeHtml(marker.issue || '')}</strong>${showCount ? countLabel : ''}
-                                            `}
-                                            ${marker.behavior ? '<span style="display: inline-block; background: rgba(0, 122, 255, 0.1); color: #007AFF; font-size: 13px; padding: 4px 12px; border-radius: 12px; font-weight: 500; margin-top: 8px; letter-spacing: -0.08px;">' + escapeHtml(marker.behavior) + '</span>' : ''}
-                                        </div>
-                                        ${isEditing ? `
-                                        <button onclick="if(typeof window.deleteTimelineMarker === 'function') { window.deleteTimelineMarker('${uniqueMarkerId}'); } else { console.error('deleteTimelineMarker not available'); alert('Delete marker function not available. Please refresh the page.'); }" style="background: transparent; color: #6e6e73; border: none; padding: 10px; border-radius: 8px; cursor: pointer; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0;" onmouseover="this.style.background='rgba(255, 59, 48, 0.1)'; this.style.color='#FF3B30'" onmouseout="this.style.background='transparent'; this.style.color='#6e6e73'" title="Delete marker" aria-label="Delete marker">
-                                            <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
-                                        </button>
-                                        ` : ''}
-                                    </div>
-                                    ${isEditing ? `
-                                    <textarea id="marker-note-${markerId}" style="width: 100%; min-height: 88px; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 17px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; resize: vertical; background: #ffffff; transition: all 0.2s; line-height: 1.47; color: #1d1d1f; box-sizing: border-box; letter-spacing: -0.34px;" placeholder="Add a note..." onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'">${escapeHtml(marker.note || '')}</textarea>
-                                    ` : `
-                                    <p style="margin: 0; color: #6e6e73; font-size: 15px; line-height: 1.47;">${escapeHtml(marker.note || '')}</p>
-                                    `}
-                                </div>
-                            </div>`;
-                            });
-                        });
-                        
-                        timelineMarkersHTML += `</div></div>`;
-                    });
-                    
-                    timelineMarkersHTML += '</div>';
-                    } else {
-                        // No markers yet, but show empty section in editing mode
-                        timelineMarkersHTML = '<div id="timeline-markers-content" style="max-height: 400px; overflow-y: auto;"><div class="empty-state" style="text-align: center; padding: 32px; color: #6e6e73; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Text\', sans-serif;"><p style="font-size: 15px; line-height: 1.47; margin: 0;">No timeline markers yet. Add markers to note specific moments in the video.</p></div></div>';
-                    }
-                
-                html += `
-                    <div id="eval-timeline-section" style="margin-bottom: 24px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; scroll-margin-top: 80px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
-                            <h3 style="margin: 0; font-size: 17px; font-weight: 600; color: #1d1d1f; display: flex; align-items: center; gap: 8px;">
-                                <i data-lucide="clock" style="width: 20px; height: 20px; color: #007AFF;"></i> Timeline Markers
-                                ${markersToRender && markersToRender.length > 0 ? `<span style="font-weight: 400; color: #6e6e73; font-size: 15px; margin-left: 4px;">(${markersToRender.length})</span>` : ''}
-                            </h3>
-                            ${isEditing && videoUrl ? `
-                            <button onclick="if(typeof window.addTimelineMarkerFromVideo === 'function') { window.addTimelineMarkerFromVideo(); } else { console.error('addTimelineMarkerFromVideo not available'); alert('Add marker function not available. Please refresh the page.'); }" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-                                <i data-lucide="plus" style="width:16px;height:16px;"></i> Add at Current Time
-                            </button>
-                            ` : ''}
+
+                    const addBtn = (isEditing && videoUrl) ? `
+                        <button class="timeline-add-btn" onclick="window.addTimelineMarkerFromVideo();" title="Add marker at current video time">
+                            <i data-lucide="plus" style="width:12px;height:12px;"></i> Add Marker
+                        </button>` : '';
+
+                    html += `
+                    <div id="eval-timeline-section" style="margin-bottom:${isEditing ? '0' : '16px'};padding:${isEditing ? '10px 16px 14px' : '0 0 4px'};${isEditing ? 'background:#fff;border:1px solid #e5e5e7;border-top:none;border-radius:0 0 12px 12px;' : ''}">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                            <span style="font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.5px;">Timeline Markers ${markersToRender.length > 0 ? '(' + markersToRender.length + ')' : ''}</span>
+                            ${addBtn}
                         </div>
-                        <div style="display: grid; gap: 12px;">
-                            ${timelineMarkersHTML}
+                        <div style="position:relative;">
+                            <div class="timeline-scrubber" id="timeline-scrubber-bar">
+                                <div class="timeline-scrubber-track">
+                                    <div class="timeline-scrubber-fill" id="timeline-scrubber-fill"></div>
+                                </div>
+                                ${pinsHtml}
+                            </div>
                         </div>
-                        ${isEditing ? `
-                        <button onclick="if(typeof window.addTimelineMarkerWithSelector === 'function') { window.addTimelineMarkerWithSelector(); } else if(typeof window.addTimelineMarker === 'function') { window.addTimelineMarker(); } else { console.error('addTimelineMarker not available'); alert('Add marker function not available. Please refresh the page.'); }" style="background: transparent; color: #1d1d1f; border: 1px dashed #d2d2d7; padding: 12px 16px; border-radius: 10px; cursor: pointer; font-weight: 500; font-size: 15px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; margin-top: 12px; width: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;" onmouseover="this.style.borderColor='#007AFF'; this.style.color='#007AFF'; this.style.backgroundColor='rgba(0, 122, 255, 0.05)'" onmouseout="this.style.borderColor='#d2d2d7'; this.style.color='#1d1d1f'; this.style.backgroundColor='transparent'">
-                            <i data-lucide="plus" style="width:16px;height:16px;"></i> Add Marker
-                        </button>
-                        ` : ''}
-                    </div>
-                `;
-                console.log('✓ Timeline markers section HTML added. Total HTML length so far:', html.length);
-                console.log('Markers section contains', markersToRender.length, 'markers');
-            } else {
-                console.warn('⚠️ NOT adding timeline markers section - shouldShowMarkersSection =', shouldShowMarkersSection);
-            }
+                        <div id="timeline-details-container" style="position:relative;margin-top:4px;">
+                            ${detailsHtml}
+                        </div>
+                        ${markersToRender.length === 0 && isEditing ? `
+                        <p style="font-size:12px;color:#6e6e73;margin:6px 0 0;font-style:italic;">
+                            Double-click the video or use Add Marker to mark moments.
+                        </p>` : ''}
+                    </div>`;
+                    console.log('✓ Timeline scrubber rendered with', markersToRender.length, 'markers');
+                } else {
+                    console.warn('⚠️ NOT adding timeline markers section - shouldShowMarkersSection =', shouldShowMarkersSection);
+                }
             
             // Only show big blue final score section when NOT editing (score is already in summary card)
             if (!isEditing) {
@@ -29777,26 +29831,102 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
             
             html += `
-                <div id="eval-categories-section" style="scroll-margin-top: 80px;">
-                    <h3 style="margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; letter-spacing: -0.4px;">Detailed Scores by Category</h3>
-                    <div style="display: grid; gap: 16px; margin-bottom: 24px;">
+                <div id="eval-categories-section" style="scroll-margin-top: ${isEditing ? '300px' : '80px'}; ${isEditing ? 'padding-top: 16px;' : ''}">
+                    ${isEditing ? '' : '<h3 style="margin-bottom: 16px; font-size: 20px; font-weight: 600; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, \'SF Pro Display\', sans-serif; letter-spacing: -0.4px;">Detailed Scores by Category</h3>'}
+                    <div style="display: grid; gap: 12px; margin-bottom: 24px;">
             `;
             
             for (const [section, data] of Object.entries(results.sections)) {
                 const sectionId = section.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-                console.log('Rendering section:', section, 'isEditing:', isEditing, 'editingEvaluationId:', editingEvaluationId);
-                
-                // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/2d493fae-3749-4b25-960d-04d6e5f42b38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:21233',message:'Rendering section in template',data:{section,isEditing,editingEvaluationId,willIncludeButton:isEditing},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-                // #endregion
-                
-                // No individual edit buttons - sections are automatically editable when isEditing is true
-                // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/2d493fae-3749-4b25-960d-04d6e5f42b38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:21245',message:'Rendering section',data:{section,isEditing},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-                // #endregion
-                
+
+                if (isEditing) {
+                    // ── SCORECARD TABLE (editing mode) ─────────────────────────────
+                    const sectionEscT = section.replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+                    html += `
+                    <div style="background:#fff;border:1px solid #e5e5e7;border-radius:12px;overflow:hidden;margin-bottom:12px;" data-editable-section="${escapeHtml(section)}">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:#f5f5f7;border-bottom:1px solid #e5e5e7;">
+                            <strong style="font-size:14px;font-weight:600;color:#1d1d1f;">${escapeHtml(section)}</strong>
+                            <span id="sectionScore-${sectionId}" style="font-size:13px;font-weight:600;color:#007AFF;white-space:nowrap;">${data.score} / ${data.maxScore} pts</span>
+                        </div>`;
+
+                    if (data.subcategories && data.subcategories.length > 0) {
+                        html += `
+                        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+                            <colgroup>
+                                <col style="width:auto;">
+                                <col style="width:40px;"><col style="width:40px;"><col style="width:40px;"><col style="width:40px;"><col style="width:40px;">
+                                <col style="width:80px;">
+                            </colgroup>
+                            <thead>
+                                <tr style="background:#fafafa;border-bottom:1px solid #e5e5e7;">
+                                    <th style="padding:6px 14px;font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">Criterion</th>
+                                    ${['A','B','C','D','F'].map(g => `<th style="padding:6px 2px;font-size:12px;font-weight:700;color:#6e6e73;text-align:center;">${g}</th>`).join('')}
+                                    <th style="padding:6px 8px;font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;text-align:center;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                        data.subcategories.forEach((sub, subIdx) => {
+                            const subId = sectionId + '_sub_' + subIdx;
+                            const currentGrade = sub.grade || 'F';
+                            const radioName = `grade-${subId}`;
+                            html += `
+                                <tr style="border-bottom:0.5px solid #f0f0f0;" data-editable-subcategory="${escapeHtml(section)}" data-subcategory-index="${subIdx}">
+                                    <td style="padding:8px 14px;vertical-align:middle;">
+                                        <div style="font-size:13px;color:#1d1d1f;line-height:1.4;">${escapeHtml(sub.name)}</div>
+                                    </td>
+                                    ${['A','B','C','D','F'].map(g => `
+                                    <td style="padding:6px 4px;text-align:center;vertical-align:middle;">
+                                        <span id="gc-${subId}-${g}"
+                                            class="grade-circle${currentGrade === g ? ' selected-' + g : ''}"
+                                            data-radio-name="${radioName}"
+                                            data-grade="${g}"
+                                            data-sub-id="${subId}"
+                                            data-section-key="${encodeURIComponent(section)}"
+                                            data-sub-idx="${subIdx}"
+                                            onclick="window.selectGrade(this)"
+                                            title="Grade ${g}">${g}</span>
+                                    </td>`).join('')}
+                                    <td style="padding:6px 8px;text-align:center;vertical-align:middle;">
+                                        <input type="number" id="subcategory-${sectionId}-${subIdx}-points"
+                                            value="${sub.points}" min="0" max="${sub.maxPoints}" step="0.5"
+                                            onchange="updateSubcategoryGrade('${sectionEscT.replace(/'/g,"\'")}',${subIdx})"
+                                            style="width:46px;padding:4px 2px;border:1px solid #d2d2d7;border-radius:5px;font-size:12px;text-align:center;box-sizing:border-box;display:block;margin:0 auto;"
+                                            onfocus="this.style.borderColor='#007AFF';this.style.outline='none';"
+                                            onblur="this.style.borderColor='#d2d2d7';">
+                                        <div style="font-size:10px;color:#6e6e73;white-space:nowrap;text-align:center;">/${sub.maxPoints}</div>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #f0f0f0;">
+                                    <td colspan="7" style="padding:0 14px 8px;">
+                                        <textarea id="subfeedback-${subId}" placeholder="Feedback for ${escapeHtml(sub.name)}…"
+                                            style="width:100%;min-height:38px;padding:5px 8px;border:1px solid #e5e5e7;border-radius:6px;font-size:11px;font-family:-apple-system,sans-serif;resize:vertical;background:#fafafa;color:#1d1d1f;line-height:1.4;box-sizing:border-box;"
+                                            onfocus="this.style.borderColor='#007AFF';this.style.outline='none';this.style.background='#fff';"
+                                            onblur="this.style.borderColor='#e5e5e7';this.style.background='#fafafa';"
+                                            onkeydown="event.stopPropagation();">${escapeHtml(sub.feedback || '')}</textarea>
+                                    </td>
+                                </tr>`;
+                        });
+
+                        html += `</tbody></table>`;
+                    }
+
+                    // Section-level notes
+                    html += `
+                        <div style="padding:8px 14px 10px;background:#fafafa;border-top:1px solid #e5e5e7;">
+                            <div style="font-size:10px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">Section notes</div>
+                            <textarea id="feedback-${sectionId}" placeholder="Overall notes for ${escapeHtml(section)}…"
+                                style="width:100%;min-height:44px;padding:6px 8px;border:1px solid #e5e5e7;border-radius:6px;font-size:12px;font-family:-apple-system,sans-serif;resize:vertical;background:#fff;color:#1d1d1f;line-height:1.4;box-sizing:border-box;"
+                                onfocus="this.style.borderColor='#007AFF';this.style.outline='none';"
+                                onblur="this.style.borderColor='#e5e5e7';"
+                                onkeydown="event.stopPropagation();">${escapeHtml(data.feedback || '')}</textarea>
+                        </div>
+                    </div>`;
+
+                } else {
+                    // ── VIEW MODE (unchanged) ────────────────────────────────────────
                 html += `
-                    <div style="background: #ffffff; padding: 16px; border-radius: 12px; border-left: 3px solid #007AFF; border: 1px solid #e5e5e7; margin-bottom: 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;" ${isEditing ? 'data-editable-section="' + escapeHtml(section) + '"' : ''}>
+                    <div style="background: #ffffff; padding: 16px; border-radius: 12px; border-left: 3px solid #007AFF; border: 1px solid #e5e5e7; margin-bottom: 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px;">
                             <strong style="text-transform: capitalize; flex: 1; min-width: 0; font-size: 17px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.34px;">${section}</strong>
                             <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
@@ -29805,7 +29935,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         </div>
                         <div style="background: #f5f5f7; padding: 12px; border-radius: 10px; margin-bottom: 12px;">
                             <div style="font-size: 13px; font-weight: 600; color: #007AFF; margin-bottom: 8px; letter-spacing: -0.08px;">AI explanation</div>
-                            ${isEditing ? `<textarea id="feedback-${sectionId}" style="width: 100%; min-height: 88px; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 17px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; resize: vertical; background: #ffffff; color: #1d1d1f; line-height: 1.47; transition: all 0.2s ease; box-sizing: border-box;" placeholder="Enter feedback..." onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'">${escapeHtml(data.feedback || 'No feedback provided.')}</textarea>` : `<p style="color: #6e6e73; font-size: 15px; margin: 0; line-height: 1.47;" id="feedback-${sectionId}">${data.feedback || 'No feedback provided.'}</p>`}
+                            <p style="color: #6e6e73; font-size: 15px; margin: 0; line-height: 1.47;" id="feedback-${sectionId}">${data.feedback || 'No feedback provided.'}</p>
                         </div>
                 `;
                 
@@ -29823,29 +29953,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         const subId = sectionId + '_sub_' + subIdx;
                         
                         html += `
-                            <div style="padding: 12px 0; border-bottom: 0.5px solid #d2d2d7;" ${isEditing ? 'data-editable-subcategory="' + escapeHtml(section) + '" data-subcategory-index="' + subIdx + '"' : ''}>
+                            <div style="padding: 12px 0; border-bottom: 0.5px solid #d2d2d7;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
                                     <span style="font-size: 15px; color: #1d1d1f; flex: 1; min-width: 0; line-height: 1.47;">${sub.name}</span>
                                     <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                                        ${isEditing ? `
-                                        <select id="subcategory-${sectionId}-${subIdx}-grade" onchange="updateSubcategoryFromGrade('${section.replace(/'/g, "\\'")}', ${subIdx})" style="background: ${gradeColor}; color: white; border: none; padding: 4px 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 32px; width: 48px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; appearance: none; -webkit-appearance: none; -moz-appearance: none; text-align: center;">
-                                            <option value="A" ${sub.grade === 'A' ? 'selected' : ''}>A</option>
-                                            <option value="B" ${sub.grade === 'B' ? 'selected' : ''}>B</option>
-                                            <option value="C" ${sub.grade === 'C' ? 'selected' : ''}>C</option>
-                                            <option value="D" ${sub.grade === 'D' ? 'selected' : ''}>D</option>
-                                            <option value="F" ${sub.grade === 'F' ? 'selected' : ''}>F</option>
-                                        </select>
-                                        <input type="number" id="subcategory-${sectionId}-${subIdx}-points" value="${sub.points}" min="0" max="${sub.maxPoints}" step="0.1" onchange="updateSubcategoryGrade('${section.replace(/'/g, "\\'")}', ${subIdx})" style="width: 96px; padding: 10px 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 17px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; min-height: 44px; box-sizing: border-box; transition: all 0.2s ease;" onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'">
-                                        <span style="font-size: 15px; color: #6e6e73; line-height: 1.47;">/ ${sub.maxPoints} pts</span>
-                                        ` : `
                                         <span style="background: ${gradeColor}; color: white; padding: 4px 8px; border-radius: 8px; font-size: 13px; font-weight: 600; min-height: 32px; width: 32px; display: inline-flex; align-items: center; justify-content: center;">${sub.grade || ''}</span>
                                         <span style="font-size: 15px; color: #6e6e73; line-height: 1.47;">${sub.points} / ${sub.maxPoints} pts</span>
-                                        `}
                                     </div>
                                 </div>
-                                ${isEditing ? `
-                                <textarea id="subfeedback-${subId}" style="width: 100%; min-height: 88px; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 17px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; resize: vertical; margin-top: 12px; background: #ffffff; color: #1d1d1f; line-height: 1.47; box-sizing: border-box; transition: all 0.2s ease;" placeholder="Enter feedback..." onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'">${escapeHtml(sub.feedback || '')}</textarea>
-                                ` : (sub.feedback ? `<p style="font-size: 15px; color: #6e6e73; margin: 8px 0 0 0; line-height: 1.47;">${escapeHtml(sub.feedback)}</p>` : '')}
+                                ${sub.feedback ? `<p style="font-size: 15px; color: #6e6e73; margin: 8px 0 0 0; line-height: 1.47;">${escapeHtml(sub.feedback)}</p>` : ''}
                             </div>
                         `;
                     });
@@ -29854,26 +29970,22 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 }
                 
                 html += `</div>`;
-            }
-            
+                } // end view mode
+            } // end section loop
+
             html += `
                 </div>
                 </div>
                 
                 <div id="eval-comments-section" style="background: #ffffff; border: 1px solid #e5e5e7; padding: 16px; border-radius: 12px; margin-bottom: 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; scroll-margin-top: 80px;">
                     <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="margin-bottom: 12px;">
                             <h3 style="color: #1d1d1f; margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.4px;">Overall Comments</h3>
-                            ${isEditing && videoUrl ? `
-                            <button onclick="insertTimestampIntoComments()" style="background: transparent; color: #007AFF; border: 1px solid #007AFF; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 14px; min-width: 44px; min-height: 32px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;" onmouseover="this.style.backgroundColor='rgba(0, 122, 255, 0.1)'" onmouseout="this.style.backgroundColor='transparent'" title="Insert current video timestamp">
-                                <i data-lucide="clock" style="width:14px;height:14px;"></i> Insert Timestamp
-                            </button>
-                            ` : ''}
                         </div>
                         ${isEditing ? `
-                        <textarea id="overall-comments-text" style="width: 100%; min-height: 132px; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 17px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; resize: vertical; background: #ffffff; color: #1d1d1f; line-height: 1.47; box-sizing: border-box; transition: all 0.2s ease;" placeholder="Enter overall comments..." onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'">${escapeHtml(results.overallComments || '')}</textarea>
+                        <textarea id="overall-comments-text" style="width: 100%; min-height: 132px; padding: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; resize: vertical; background: #ffffff; color: #1d1d1f; line-height: 1.5; box-sizing: border-box; transition: all 0.2s ease;" placeholder="Enter overall comments..." onfocus="this.style.borderColor='#007AFF'; this.style.outline='none'; this.style.boxShadow='0 0 0 4px rgba(0, 122, 255, 0.1)'" onblur="this.style.borderColor='#d2d2d7'; this.style.boxShadow='none'" onkeydown="event.stopPropagation();">${escapeHtml(results.overallComments || '')}</textarea>
                         ` : `
-                        <p id="overall-comments-text" style="margin: 0; color: #1d1d1f; line-height: 1.47; font-size: 15px;">${escapeHtml(results.overallComments || 'No comments')}</p>
+                        <p id="overall-comments-text" style="margin: 0; color: #1d1d1f; line-height: 1.47; font-size: 15px; white-space: pre-wrap;">${escapeHtml(results.overallComments || 'No comments')}</p>
                         `}
                     </div>
                 </div>
@@ -29915,7 +30027,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 .replace(/<div id="editingModeBanner"[^>]*>[\s\S]*?<\/div>/, '')
                 .replace(/<nav id="evalNavigationMenu"[^>]*>[\s\S]*?<\/nav>/, '');
             
-            // Always use vertical layout - video can be popped out to float
+            // Simple vertical layout — banner, then sticky video+timeline, then scorecard
             finalHtml = bannerHtml + navHtml + metadataHtml + (videoSectionHtml || '') + contentHtml;
             
             // Create floating video container and append directly to body (not inside resultsContent)
@@ -29991,7 +30103,65 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 // #endregion
                 
                 resultsContentEl.innerHTML = finalHtml;
-                
+
+                // Toggle card overflow so position:sticky works on the video section
+                const evalCard = document.querySelector('#evaluateSection .card');
+                if (evalCard) {
+                    if (isEditing) { evalCard.classList.add('editing-mode'); }
+                    else { evalCard.classList.remove('editing-mode'); }
+                }
+                // When editing: wrap video + timeline in a floating wrapper that pins to top on scroll
+                if (isEditing) {
+                    const mediaSection = document.getElementById('eval-media-section');
+                    const timelineSection = document.getElementById('eval-timeline-section');
+                    if (mediaSection) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'sticky-eval-top';
+                        wrapper.id = 'sticky-eval-wrapper';
+                        mediaSection.parentNode.insertBefore(wrapper, mediaSection);
+                        wrapper.appendChild(mediaSection);
+                        if (timelineSection && timelineSection.parentNode) {
+                            wrapper.appendChild(timelineSection);
+                        }
+
+                        // Insert a placeholder div that takes the wrapper's space when floating
+                        const placeholder = document.createElement('div');
+                        placeholder.id = 'sticky-eval-placeholder';
+                        wrapper.parentNode.insertBefore(placeholder, wrapper.nextSibling);
+
+                        // Scroll listener: float when wrapper scrolls out of view
+                        const scrollHandler = () => {
+                            const wrapperRect = placeholder.getBoundingClientRect();
+                            const isFloating = wrapperRect.top < -10;
+                            if (isFloating && !wrapper.classList.contains('is-floating')) {
+                                // Capture height before floating so placeholder can hold space
+                                placeholder.style.height = wrapper.offsetHeight + 'px';
+                                placeholder.classList.add('active');
+                                wrapper.classList.add('is-floating');
+                                // Re-init lucide icons in floating wrapper
+                                if (typeof lucide !== 'undefined') lucide.createIcons({ root: wrapper });
+                            } else if (!isFloating && wrapper.classList.contains('is-floating')) {
+                                wrapper.classList.remove('is-floating');
+                                placeholder.classList.remove('active');
+                                placeholder.style.height = '';
+                            }
+                        };
+
+                        // Remove any previous listener to avoid duplicates
+                        if (window._evalScrollHandler) {
+                            window.removeEventListener('scroll', window._evalScrollHandler, true);
+                        }
+                        window._evalScrollHandler = scrollHandler;
+                        window.addEventListener('scroll', scrollHandler, { passive: true, capture: true });
+                    }
+                } else {
+                    // Remove scroll handler when not editing
+                    if (window._evalScrollHandler) {
+                        window.removeEventListener('scroll', window._evalScrollHandler, true);
+                        window._evalScrollHandler = null;
+                    }
+                }
+
                 // #region agent log
                 fetch('http://127.0.0.1:7242/ingest/2d493fae-3749-4b25-960d-04d6e5f42b38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:21318',message:'After innerHTML assignment',data:{innerHTMLLength:resultsContentEl.innerHTML.length},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
                 // #endregion
@@ -30095,6 +30265,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Re-initialize Lucide icons for new content
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
                 lucide.createIcons({ root: document.getElementById('resultsContent') });
+            }
+
+            // Position timeline pins now and when video metadata loads
+            if (typeof window.positionTimelinePins === 'function') {
+                window.positionTimelinePins();
+                const vpForPins = document.getElementById('evaluationVideoPlayer');
+                if (vpForPins) {
+                    vpForPins.addEventListener('loadedmetadata', window.positionTimelinePins);
+                }
             }
             
             // Initialize floating video functionality
@@ -30328,80 +30507,47 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
         }
         
         // Update subcategory grade when points change
+        // Sync the checked state of radio buttons for a subcategory (CSS handles visual styling)
+        function syncRadioButtons(sectionId, subIdx, grade) {
+            const radios = document.querySelectorAll(`input[name="grade-${sectionId}_sub_${subIdx}"]`);
+            radios.forEach(function(r) {
+                r.checked = (r.value === grade);
+            });
+            // Also sync the hidden select
+            const sel = document.getElementById(`subcategory-${sectionId}-${subIdx}-grade`);
+            if (sel) sel.value = grade;
+        }
+        window.syncRadioButtons = syncRadioButtons;
+
         function updateSubcategoryGrade(sectionName, index) {
             try {
-                console.log('updateSubcategoryGrade called:', sectionName, index);
                 const sectionId = sectionName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
                 const pointsInput = document.getElementById(`subcategory-${sectionId}-${index}-points`);
-                const gradeSelect = document.getElementById(`subcategory-${sectionId}-${index}-grade`);
-                
-                if (!pointsInput || !gradeSelect) {
-                    console.error('Input elements not found:', `subcategory-${sectionId}-${index}-points`, `subcategory-${sectionId}-${index}-grade`);
-                    return;
-                }
-                
-                if (!evaluationResults || !evaluationResults.sections || !evaluationResults.sections[sectionName]) {
-                    console.error('evaluationResults or section not found:', sectionName);
-                    return;
-                }
-                
-                const section = evaluationResults.sections[sectionName];
-                if (!section.subcategories || !section.subcategories[index]) {
-                    console.error('Subcategory not found:', index);
-                    return;
-                }
-                
-                const sub = section.subcategories[index];
-                const maxPoints = sub.maxPoints || 0;
-                
-                // Get points value (handle both string and number)
-                const points = parseFloat(pointsInput.value) || 0;
-                
-                // Clamp points to valid range
-                const clampedPoints = Math.max(0, Math.min(points, maxPoints));
-                if (points !== clampedPoints) {
-                    pointsInput.value = clampedPoints;
-                }
-                
-                // Calculate percentage and letter grade
-                const percentage = maxPoints > 0 ? (clampedPoints / maxPoints) * 100 : 0;
+                if (!pointsInput) return;
+                if (!evaluationResults?.sections?.[sectionName]?.subcategories?.[index]) return;
+
+                const sub = evaluationResults.sections[sectionName].subcategories[index];
+                const maxPoints = parseFloat(sub.maxPoints) || 0;
+                const points = Math.max(0, Math.min(parseFloat(pointsInput.value) || 0, maxPoints));
+                pointsInput.value = Math.round(points * 10) / 10;
+
+                const percentage = maxPoints > 0 ? (points / maxPoints) * 100 : 0;
                 let grade = 'F';
                 if (percentage >= 90) grade = 'A';
                 else if (percentage >= 80) grade = 'B';
                 else if (percentage >= 70) grade = 'C';
                 else if (percentage >= 60) grade = 'D';
-                
-                // Update grade select dropdown
-                const gradeColors = {
-                    'A': '#28a745',
-                    'B': '#5cb85c',
-                    'C': '#f0ad4e',
-                    'D': '#d9534f',
-                    'F': '#c9302c'
-                };
-                
-                gradeSelect.value = grade;
-                gradeSelect.style.background = gradeColors[grade] || '#c9302c';
-                
-                // Update the displayed grade badge color
-                const parentDiv = pointsInput.closest('div[style*="border-left"]');
-                const gradeBadge = parentDiv ? parentDiv.querySelector('span[style*="background"]') : null;
-                
-                if (gradeBadge) {
-                    const color = gradeColors[grade] || '#c9302c';
-                    gradeBadge.style.background = color;
-                    gradeBadge.textContent = grade;
-                    if (parentDiv) parentDiv.style.borderLeftColor = color;
-                }
-                
-                // Update subcategory data
-                sub.points = clampedPoints;
+
+                sub.points = points;
                 sub.grade = grade;
-                
-                // Recalculate total section score
-                if (typeof recalculateSectionScore === 'function') {
-                    recalculateSectionScore(sectionName);
-                }
+
+                // Sync grade circle visuals
+                const radioName = `grade-${sectionId}_sub_${index}`;
+                document.querySelectorAll(`.grade-circle[data-radio-name="${radioName}"]`).forEach(c => {
+                    c.className = 'grade-circle' + (c.dataset.grade === grade ? ' selected-' + grade : '');
+                });
+
+                if (typeof recalculateSectionScore === 'function') recalculateSectionScore(sectionName);
             } catch (error) {
                 console.error('Error in updateSubcategoryGrade:', error);
             }
@@ -30420,67 +30566,70 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     return;
                 }
                 
-                if (!evaluationResults || !evaluationResults.sections || !evaluationResults.sections[sectionName]) {
-                    console.error('evaluationResults or section not found:', sectionName);
+                const grade = gradeSelect.value;
+                updateSubcategoryFromGradeValue(sectionName, index, grade);
+            } catch (error) {
+                console.error('Error in updateSubcategoryFromGrade:', error);
+            }
+        }
+
+        // Called directly by grade circle clicks — accepts grade value
+        function updateSubcategoryFromGradeValue(sectionName, index, grade) {
+            try {
+                const sectionId = sectionName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+                const pointsInput = document.getElementById(`subcategory-${sectionId}-${index}-points`);
+
+                if (!pointsInput) {
+                    console.error('updateSubcategoryFromGradeValue: points input not found for', sectionId, index);
                     return;
                 }
-                
+                if (!evaluationResults || !evaluationResults.sections || !evaluationResults.sections[sectionName]) {
+                    console.error('updateSubcategoryFromGradeValue: section not found:', sectionName, 
+                        'Available:', Object.keys(evaluationResults?.sections || {}));
+                    return;
+                }
                 const section = evaluationResults.sections[sectionName];
                 if (!section.subcategories || !section.subcategories[index]) {
-                    console.error('Subcategory not found:', index);
+                    console.error('updateSubcategoryFromGradeValue: subcategory not found', index);
                     return;
                 }
-                
                 const sub = section.subcategories[index];
-                const maxPoints = sub.maxPoints || 0;
-                
-                const grade = gradeSelect.value;
-                let percentage = 0;
-                if (grade === 'A') percentage = 95; // Midpoint of A range
-                else if (grade === 'B') percentage = 85;
-                else if (grade === 'C') percentage = 75;
-                else if (grade === 'D') percentage = 65;
-                else percentage = 30; // F range
-                
-                const points = Math.round((percentage / 100) * maxPoints);
-                pointsInput.value = points;
-                
-                // Update grade select background color
-                const gradeColors = {
-                    'A': '#28a745',
-                    'B': '#5cb85c',
-                    'C': '#f0ad4e',
-                    'D': '#d9534f',
-                    'F': '#c9302c'
-                };
-                gradeSelect.style.background = gradeColors[grade] || '#c9302c';
-                
-                // Update visual badge
-                const parentDiv = pointsInput.closest('div[style*="border-left"]');
-                const gradeBadge = parentDiv ? parentDiv.querySelector('span[style*="background"]') : null;
-                if (gradeBadge) {
-                    const color = gradeColors[grade] || '#c9302c';
-                    gradeBadge.style.background = color;
-                    gradeBadge.textContent = grade;
-                    if (parentDiv) parentDiv.style.borderLeftColor = color;
+                const maxPoints = parseFloat(sub.maxPoints) || 0;
+
+                // Compute points from grade — A = full marks
+                let points;
+                switch(grade) {
+                    case 'A': points = maxPoints; break;
+                    case 'B': points = Math.round((0.85 * maxPoints) * 10) / 10; break;
+                    case 'C': points = Math.round((0.75 * maxPoints) * 10) / 10; break;
+                    case 'D': points = Math.round((0.65 * maxPoints) * 10) / 10; break;
+                    default:  points = Math.round((0.30 * maxPoints) * 10) / 10; break; // F
                 }
-                
-                // Update subcategory data
+                pointsInput.value = points;
+
+                // Update data model
                 sub.points = points;
                 sub.grade = grade;
-                
-                // Recalculate total section score
+
+                // Sync grade circle visuals (in case called from elsewhere)
+                const radioName = `grade-${sectionId}_sub_${index}`;
+                document.querySelectorAll(`.grade-circle[data-radio-name="${radioName}"]`).forEach(c => {
+                    c.className = 'grade-circle' + (c.dataset.grade === grade ? ' selected-' + grade : '');
+                });
+
+                // Recalculate section and total scores
                 if (typeof recalculateSectionScore === 'function') {
                     recalculateSectionScore(sectionName);
                 }
             } catch (error) {
-                console.error('Error in updateSubcategoryFromGrade:', error);
+                console.error('Error in updateSubcategoryFromGradeValue:', error);
             }
         }
         
         // Make subcategory update functions globally available
         window.updateSubcategoryGrade = updateSubcategoryGrade;
         window.updateSubcategoryFromGrade = updateSubcategoryFromGrade;
+        window.updateSubcategoryFromGradeValue = updateSubcategoryFromGradeValue;
         
         // Recalculate section score from subcategories
         function recalculateSectionScore(sectionName) {
@@ -30493,11 +30642,11 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             section.subcategories.forEach((sub, i) => {
                 const input = document.getElementById(`subcategory-${sectionId}-${i}-points`);
                 if (input) {
-                    const points = parseInt(input.value) || 0;
+                    const points = parseFloat(input.value) || 0;
                     totalPoints += points;
                     sub.points = points; // Update data
                 } else {
-                    totalPoints += sub.points || 0; // Use existing if input not found
+                    totalPoints += parseFloat(sub.points) || 0; // Use existing if input not found
                 }
             });
             
@@ -30508,6 +30657,12 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             const scoreInput = document.getElementById('editSectionScore');
             if (scoreInput) {
                 scoreInput.value = totalPoints;
+            }
+
+            // Update the new scorecard section header display
+            const sectionScoreEl = document.getElementById('sectionScore-' + sectionId);
+            if (sectionScoreEl) {
+                sectionScoreEl.textContent = totalPoints + ' / ' + (section.maxScore || 0) + ' pts';
             }
             
             // Recalculate overall total score
@@ -37459,8 +37614,8 @@ Return ONLY the JSON object, nothing else.`;
                 editingEvaluationVideoUrl = null;
                 correctionLog = [];
                 uploadedFile = null;
-                // Remove beforeunload handler
                 window.removeEventListener('beforeunload', handleBeforeUnload);
+                document.querySelector('#evaluateSection .card')?.classList.remove('editing-mode');
                 viewClass(currentClassId);
             }, null, 'Discard');
         }
@@ -38484,6 +38639,7 @@ Return ONLY the JSON object, nothing else.`;
             uploadedFile = null;
             // Remove beforeunload handler since we're done editing
             window.removeEventListener('beforeunload', handleBeforeUnload);
+            document.querySelector('#evaluateSection .card')?.classList.remove('editing-mode');
             var editInput = document.getElementById('editVideoInput');
             if (editInput) editInput.value = '';
             var editFileName = document.getElementById('editVideoFileName');
