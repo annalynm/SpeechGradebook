@@ -3708,12 +3708,7 @@
                 <button type="button" onclick="logout(); return false;" class="btn" style="width: 100%; min-height: 2.75rem; padding: var(--space-sm) var(--space-lg); font-size: var(--text-body-size); font-weight: 500; font-family: var(--body-font); transition: all var(--motion-normal) var(--motion-ease);">
                     <span class="icon-with-text"><i data-lucide="log-out"></i> Logout</span>
                 </button>
-                <a href="mailto:support@speechgradebook.com" 
-                   style="text-align: center; color: var(--link); text-decoration: none; font-size: var(--text-body-size); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); min-height: 2.75rem; display: flex; align-items: center; justify-content: center; transition: all var(--motion-normal) var(--motion-ease); font-family: var(--body-font);" 
-                   onmouseover="this.style.backgroundColor='var(--bg-hover)'; this.style.textDecoration='underline'" 
-                   onmouseout="this.style.backgroundColor='transparent'; this.style.textDecoration='none'"
-                   onfocus="this.style.outline='2px solid var(--focus-ring)'; this.style.outlineOffset='var(--focus-ring-offset)'"
-                   onblur="this.style.outline='none'">
+                <a href="/cdn-cgi/l/email-protection#c4b7b1b4b4abb6b084b7b4a1a1a7aca3b6a5a0a1a6ababafeaa7aba9" style="text-align: center; color: var(--link); text-decoration: none; font-size: var(--text-body-size); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); min-height: 2.75rem; display: flex; align-items: center; justify-content: center; transition: all var(--motion-normal) var(--motion-ease); font-family: var(--body-font);" onmouseover="this.style.backgroundColor='var(--bg-hover)'; this.style.textDecoration='underline'" onmouseout="this.style.backgroundColor='transparent'; this.style.textDecoration='none'" onfocus="this.style.outline='2px solid var(--focus-ring)'; this.style.outlineOffset='var(--focus-ring-offset)'" onblur="this.style.outline='none'">
                     <span class="icon-with-text"><i data-lucide="mail"></i> Contact administrator</span>
                 </a>
             </div>
@@ -4265,6 +4260,31 @@
         </div>
 
         <!-- Move Evaluation Modal -->
+        <div id="uploadRosterModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;" role="dialog" aria-modal="true" aria-labelledby="uploadRosterTitle" onclick="if(event.target===this)closeUploadRosterModal();">
+            <div style="background:var(--card); border-radius:var(--radius-lg); padding:var(--space-xl); max-width:480px; width:90%; box-shadow:var(--elevation-4);">
+                <h3 id="uploadRosterTitle" style="margin:0 0 0.5rem 0; font-size:1.125rem; font-weight:600;">Upload Roster</h3>
+                <p style="color:var(--text-light); font-size:0.875rem; margin:0 0 1.25rem 0;">Upload a CSV or Excel file. Required columns: <strong>First Name</strong> and <strong>Last Name</strong> (or a single <strong>Name</strong> column). Optional: <strong>Email</strong>, <strong>Student ID</strong>.</p>
+                <div style="margin-bottom:1rem;">
+                    <button type="button" onclick="downloadRosterTemplate()" style="font-size:0.8125rem; color:var(--primary); background:none; border:none; cursor:pointer; padding:0; text-decoration:underline;">Download template CSV</button>
+                </div>
+                <div id="uploadRosterDropzone" style="border:2px dashed var(--border); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:border-color 0.15s; margin-bottom:1rem;" onclick="document.getElementById('uploadRosterFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleRosterDrop(event)">
+                    <i data-lucide="upload-cloud" style="width:2rem;height:2rem;color:var(--text-light);margin-bottom:0.5rem;"></i>
+                    <p style="margin:0;color:var(--text-light);font-size:0.875rem;">Drop file here or <span style="color:var(--primary);text-decoration:underline;">browse</span></p>
+                    <p style="margin:0.25rem 0 0 0;color:var(--text-disabled);font-size:0.75rem;">CSV or Excel (.xlsx, .xls) — max 5MB</p>
+                </div>
+                <input type="file" id="uploadRosterFileInput" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleRosterFileSelect(event)">
+                <div id="uploadRosterPreview" style="display:none; margin-bottom:1rem;">
+                    <div id="uploadRosterPreviewInfo" style="font-size:0.875rem; color:var(--text); margin-bottom:0.5rem;"></div>
+                    <div id="uploadRosterPreviewTable" style="max-height:200px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.8125rem;"></div>
+                </div>
+                <div id="uploadRosterError" style="display:none; color:var(--error-text); background:var(--error-bg); border:1px solid var(--error-border); border-radius:var(--radius-sm); padding:0.5rem 0.75rem; font-size:0.875rem; margin-bottom:1rem;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                    <button type="button" class="btn-secondary" onclick="closeUploadRosterModal()">Cancel</button>
+                    <button type="button" id="uploadRosterConfirmBtn" onclick="confirmUploadRoster()" disabled style="opacity:0.5; cursor:not-allowed;">Add Students</button>
+                </div>
+            </div>
+        </div>
+
         <div id="moveEvalModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
             <div style="background:white;padding:2rem;border-radius:1rem;max-width:500px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
                 <h3 style="margin-top:0;color:var(--primary);"><span class="icon-with-text"><i data-lucide="move"></i> Move</span></h3>
@@ -4573,10 +4593,21 @@
             <!-- Rubrics - at top for instructors; hidden for admin/super admin -->
             <div id="dashboardRubricsWrap" style="display: none; margin-top: 1.5rem;" data-instructor-panel="rubrics">
                 <div class="card">
-                    <div class="card-header"><span class="icon-with-text"><i data-lucide="list-checks"></i> Rubrics</span></div>
-                    <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-                        <button onclick="showCreateRubric()"><span class="icon-with-text"><i data-lucide="plus"></i> Create Custom Rubric</span></button>
-                        <button onclick="showUploadRubric()" style="background: var(--secondary);"><span class="icon-with-text"><i data-lucide="file-up"></i> Import Rubric from File</span></button>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <span class="icon-with-text"><i data-lucide="list-checks"></i> Rubrics</span>
+                        <div style="position: relative;">
+                            <button type="button" onclick="toggleAddRubricMenu()" aria-label="Add Rubric" title="Add Rubric" class="icon-button-add" style="padding: 0.5rem; background: transparent; color: var(--text); border: none; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; min-width: 2.75rem; min-height: 2.75rem;" onmouseover="this.style.background='var(--bg-alt)'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text)'" ontouchstart="this.style.background='var(--bg-alt)'; this.style.color='var(--primary)'" ontouchend="setTimeout(() => { this.style.background='transparent'; this.style.color='var(--text)'; }, 150)">
+                                <i data-lucide="plus" style="width:1.25rem;height:1.25rem;stroke-width:2;"></i>
+                            </button>
+                            <div id="addRubricMenuDropdown" class="add-menu-dropdown hidden" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px; overflow: hidden;">
+                                <button type="button" onclick="showCreateRubric(); closeAddRubricMenu();" style="width: 100%; text-align: left; padding: 0.75rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.9375rem; color: var(--text); display: flex; align-items: center; gap: 0.75rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'">
+                                    <i data-lucide="plus" style="width: 1.125rem; height: 1.125rem;"></i> Create Custom Rubric
+                                </button>
+                                <button type="button" onclick="showUploadRubric(); closeAddRubricMenu();" style="width: 100%; text-align: left; padding: 0.75rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.9375rem; color: var(--text); display: flex; align-items: center; gap: 0.75rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'">
+                                    <i data-lucide="file-up" style="width: 1.125rem; height: 1.125rem;"></i> Import Rubric from File
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div id="rubricsList" class="rubrics-list"></div>
                 </div>
@@ -4732,7 +4763,6 @@
                         </div>
                         <div class="filter-actions" style="margin-left: auto;">
                             <button type="button" id="analyticsGlobalReset" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; min-width: 80px; height: 2.25rem; box-sizing: border-box;" aria-label="Reset filters">Reset</button>
-                            <button type="button" id="analyticsGlobalApply" class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background: var(--primary); color: white; min-width: 80px; height: 2.25rem; box-sizing: border-box;" aria-label="Apply filters">Apply</button>
                             <span id="analyticsLastUpdated" class="last-updated" style="align-self: center;"></span>
                         </div>
                         </div>
@@ -4740,9 +4770,9 @@
                         <div class="filter-date-range" style="display: flex; flex-direction: column; gap: 0.25rem;">
                             <span class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Date range</span>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="date" id="analyticsStartDate" aria-label="Start date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;">
+                                <input type="date" id="analyticsStartDate" aria-label="Start date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();">
                                 <span style="color: var(--text-light); font-size: 0.875rem;">to</span>
-                                <input type="date" id="analyticsEndDate" aria-label="End date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;">
+                                <input type="date" id="analyticsEndDate" aria-label="End date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();">
                             </div>
                         </div>
                         </div>
@@ -6488,7 +6518,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
                     <h3 style="margin-bottom: 0.5rem;"><span class="icon-with-text"><i data-lucide="mail"></i> Contact Support</span></h3>
                     <p>
-                        For questions or technical support, contact: <strong id="supportEmail"><a href="mailto:speechgradebook@proton.me">speechgradebook@proton.me</a></strong>
+                        For questions or technical support, contact: <strong id="supportEmail"><a href="/cdn-cgi/l/email-protection#95e6e5f0f0f6fdf2e7f4f1f0f7fafafed5e5e7fae1fafbbbf8f0"><span class="__cf_email__" data-cfemail="ccbfbca9a9afa4abbeada8a9aea3a3a78cbcbea3b8a3a2e2a1a9">[email&#160;protected]</span></a></strong>
                     </p>
                 </div>
             </div>
@@ -6509,7 +6539,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         </div>
     </footer>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Validate script is loading correctly
         if (typeof console !== 'undefined') console.log('SpeechGradebook script loading...');
         
@@ -9207,6 +9237,8 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                                     <button type="button" id="rubricMenuItem_view_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();viewRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View</button>
                                     <button type="button" id="rubricMenuItem_edit_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();editRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="edit" style="width:1rem;height:1rem;"></i> Edit</button>
                                     <button type="button" id="rubricMenuItem_duplicate_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();duplicateRubricUI('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="copy" style="width:1rem;height:1rem;"></i> Duplicate</button>
+                                    <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
+                                    <button type="button" id="rubricMenuItem_delete_${rubric.id}" role="menuitem" data-destructive="true" onclick="if(event)event.stopPropagation();closeRubricActionsDropdown('${rubric.id}');deleteRubricUI('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='none'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
                                 </div>
                             </div>
                             <!-- Expand/collapse chevron -->
@@ -11846,6 +11878,183 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
         }
         
+        // Upload Roster functions
+        let _parsedRosterStudents = [];
+
+        function showUploadRoster() {
+            _parsedRosterStudents = [];
+            document.getElementById('uploadRosterPreview').style.display = 'none';
+            document.getElementById('uploadRosterError').style.display = 'none';
+            document.getElementById('uploadRosterFileInput').value = '';
+            document.getElementById('uploadRosterConfirmBtn').disabled = true;
+            document.getElementById('uploadRosterConfirmBtn').style.opacity = '0.5';
+            document.getElementById('uploadRosterConfirmBtn').style.cursor = 'not-allowed';
+            const modal = document.getElementById('uploadRosterModal');
+            modal.style.display = 'flex';
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: modal });
+        }
+
+        function closeUploadRosterModal() {
+            document.getElementById('uploadRosterModal').style.display = 'none';
+            _parsedRosterStudents = [];
+        }
+
+        function downloadRosterTemplate() {
+            const csv = 'First Name,Last Name,Email,Student ID\nJane,Smith,jsmith@university.edu,12345\nJohn,Doe,jdoe@university.edu,12346';
+            const a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            a.download = 'roster_template.csv';
+            a.click();
+        }
+
+        function handleRosterDrop(event) {
+            event.preventDefault();
+            document.getElementById('uploadRosterDropzone').style.borderColor = 'var(--border)';
+            const file = event.dataTransfer.files[0];
+            if (file) parseRosterFile(file);
+        }
+
+        function handleRosterFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) parseRosterFile(file);
+        }
+
+        function parseRosterFile(file) {
+            const errorEl = document.getElementById('uploadRosterError');
+            errorEl.style.display = 'none';
+            if (file.size > 5 * 1024 * 1024) {
+                errorEl.textContent = 'File exceeds 5MB limit.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext === 'csv') {
+                const reader = new FileReader();
+                reader.onload = (e) => parseRosterCSV(e.target.result);
+                reader.readAsText(file);
+            } else if (ext === 'xlsx' || ext === 'xls') {
+                const loadAndParse = () => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const wb = XLSX.read(e.target.result, { type: 'array' });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        parseRosterCSV(XLSX.utils.sheet_to_csv(ws));
+                    };
+                    reader.readAsArrayBuffer(file);
+                };
+                if (typeof XLSX === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+                    script.onload = loadAndParse;
+                    document.head.appendChild(script);
+                } else {
+                    loadAndParse();
+                }
+            } else {
+                errorEl.textContent = 'Unsupported file type. Please upload a CSV or Excel file.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function parseRosterCSV(csvText) {
+            const errorEl = document.getElementById('uploadRosterError');
+            errorEl.style.display = 'none';
+            const lines = csvText.split(/\r?\n/).filter(l => l.trim());
+            if (lines.length < 2) {
+                errorEl.textContent = 'File appears empty or has no data rows.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+            const firstNameIdx = headers.findIndex(h => h.includes('first'));
+            const lastNameIdx = headers.findIndex(h => h.includes('last'));
+            const nameIdx = headers.findIndex(h => h === 'name' || h === 'full name' || h === 'student name');
+            const emailIdx = headers.findIndex(h => h.includes('email'));
+            const idIdx = headers.findIndex(h => h.includes('id'));
+            if (firstNameIdx === -1 && lastNameIdx === -1 && nameIdx === -1) {
+                errorEl.textContent = 'Could not find name columns. Ensure your file has "First Name" and "Last Name" columns, or a single "Name" column.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            const students = [];
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(',');
+                const clean = cols.map(c => (c || '').trim().replace(/^"|"$/g, ''));
+                let firstName = '', lastName = '';
+                if (firstNameIdx !== -1 && lastNameIdx !== -1) {
+                    firstName = clean[firstNameIdx] || '';
+                    lastName = clean[lastNameIdx] || '';
+                } else if (nameIdx !== -1) {
+                    const parts = (clean[nameIdx] || '').trim().split(/\s+/);
+                    firstName = parts[0] || '';
+                    lastName = parts.slice(1).join(' ') || '';
+                }
+                if (!firstName && !lastName) continue;
+                students.push({
+                    id: Date.now().toString() + '_' + i,
+                    firstName,
+                    lastName,
+                    email: emailIdx !== -1 ? (clean[emailIdx] || '') : '',
+                    studentId: idIdx !== -1 ? (clean[idIdx] || '') : '',
+                    addedAt: new Date().toISOString()
+                });
+            }
+            if (students.length === 0) {
+                errorEl.textContent = 'No valid student rows found in the file.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            _parsedRosterStudents = students;
+            showRosterPreview(students);
+        }
+
+        function showRosterPreview(students) {
+            const previewEl = document.getElementById('uploadRosterPreview');
+            const infoEl = document.getElementById('uploadRosterPreviewInfo');
+            const tableEl = document.getElementById('uploadRosterPreviewTable');
+            const confirmBtn = document.getElementById('uploadRosterConfirmBtn');
+            infoEl.textContent = `${students.length} student${students.length !== 1 ? 's' : ''} found — review before adding`;
+            let tableHtml = '<table style="width:100%;border-collapse:collapse;">';
+            tableHtml += '<thead><tr style="background:var(--bg-alt);position:sticky;top:0;"><th style="text-align:left;padding:0.4rem 0.6rem;font-weight:600;border-bottom:1px solid var(--border);">First Name</th><th style="text-align:left;padding:0.4rem 0.6rem;font-weight:600;border-bottom:1px solid var(--border);">Last Name</th><th style="text-align:left;padding:0.4rem 0.6rem;font-weight:600;border-bottom:1px solid var(--border);">Email</th><th style="text-align:left;padding:0.4rem 0.6rem;font-weight:600;border-bottom:1px solid var(--border);">Student ID</th></tr></thead><tbody>';
+            students.forEach(s => {
+                tableHtml += `<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.35rem 0.6rem;">${s.firstName}</td><td style="padding:0.35rem 0.6rem;">${s.lastName}</td><td style="padding:0.35rem 0.6rem;color:var(--text-light);">${s.email || '—'}</td><td style="padding:0.35rem 0.6rem;color:var(--text-light);">${s.studentId || '—'}</td></tr>`;
+            });
+            tableHtml += '</tbody></table>';
+            tableEl.innerHTML = tableHtml;
+            previewEl.style.display = 'block';
+            confirmBtn.disabled = false;
+            confirmBtn.style.opacity = '1';
+            confirmBtn.style.cursor = 'pointer';
+        }
+
+        async function confirmUploadRoster() {
+            if (!_parsedRosterStudents.length) return;
+            const confirmBtn = document.getElementById('uploadRosterConfirmBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Adding...';
+            try {
+                const classes = JSON.parse(getUserItem('classes') || '[]');
+                const classIndex = classes.findIndex(c => c.id === currentClassId);
+                if (classIndex === -1) throw new Error('Course not found.');
+                if (!classes[classIndex].roster) classes[classIndex].roster = [];
+                classes[classIndex].roster.push(..._parsedRosterStudents);
+                setUserItem('classes', JSON.stringify(classes));
+                const course = classes[classIndex];
+                if (supabaseClient && course.supabaseId) {
+                    await saveStudentsToSupabase(course.supabaseId, _parsedRosterStudents);
+                }
+                closeUploadRosterModal();
+                if (typeof showAnalyticsToast === 'function') showAnalyticsToast(`${_parsedRosterStudents.length} student${_parsedRosterStudents.length !== 1 ? 's' : ''} added successfully.`, 4000);
+                await viewClass(currentClassId);
+            } catch (err) {
+                const errorEl = document.getElementById('uploadRosterError');
+                errorEl.textContent = 'Error adding students: ' + (err.message || err);
+                errorEl.style.display = 'block';
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Add Students';
+            }
+        }
+
         // Close student actions menus when clicking outside
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.student-actions-menu') && !e.target.closest('button[onclick*="toggleStudentActions"]')) {
@@ -13176,20 +13385,6 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                 });
             }
-            var analyticsGlobalApply = document.getElementById('analyticsGlobalApply');
-            if (analyticsGlobalApply) analyticsGlobalApply.addEventListener('click', async function() {
-                if (typeof loadEnhancedAnalytics !== 'function') return;
-                var btn = analyticsGlobalApply;
-                var origText = btn.textContent || 'Apply';
-                btn.disabled = true;
-                btn.textContent = 'Applying…';
-                try {
-                    await loadEnhancedAnalytics(true); // Show toast on Apply button click
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = origText;
-                }
-            });
             var analyticsGlobalReset = document.getElementById('analyticsGlobalReset');
             if (analyticsGlobalReset) analyticsGlobalReset.addEventListener('click', function() {
                 // Reset date range
@@ -13203,15 +13398,9 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 var globalInstructor = document.getElementById('analyticsGlobalInstructor');
                 var globalInstitution = document.getElementById('analyticsGlobalInstitution');
                 
-                if (globalCourse) {
-                    Array.from(globalCourse.options).forEach(opt => opt.selected = false);
-                }
-                if (globalInstructor) {
-                    Array.from(globalInstructor.options).forEach(opt => opt.selected = false);
-                }
-                if (globalInstitution) {
-                    Array.from(globalInstitution.options).forEach(opt => opt.selected = false);
-                }
+                if (globalCourse) Array.from(globalCourse.options).forEach(opt => opt.selected = false);
+                if (globalInstructor) Array.from(globalInstructor.options).forEach(opt => opt.selected = false);
+                if (globalInstitution) Array.from(globalInstitution.options).forEach(opt => opt.selected = false);
                 
                 // Reset single-select filters
                 var courseFilter = document.getElementById('analyticsCourseFilter');
@@ -13223,6 +13412,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 if (instFilter) instFilter.value = 'all';
                 if (searchEl) searchEl.value = '';
                 if (scoreBandEl) scoreBandEl.value = 'all';
+
+                // Reset column filters on evaluations table
+                if (typeof evaluationsColumnFilters !== 'undefined') {
+                    Object.keys(evaluationsColumnFilters).forEach(function(k) { evaluationsColumnFilters[k] = []; });
+                }
                 
                 // Update active filters display and dropdown trigger labels
                 if (typeof updateActiveFiltersDisplay === 'function') updateActiveFiltersDisplay();
@@ -13230,18 +13424,8 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     FILTER_DROPDOWN_KEYS.forEach(function(m) { updateFilterDropdownTrigger(m.key); });
                 }
                 
-                // Reload data (show loading via Apply button if present)
-                var applyBtn = document.getElementById('analyticsGlobalApply');
-                if (applyBtn && typeof loadEnhancedAnalytics === 'function') {
-                    applyBtn.disabled = true;
-                    applyBtn.textContent = 'Applying…';
-                    loadEnhancedAnalytics(true).finally(function() { // Show toast on Apply button click
-                        applyBtn.disabled = false;
-                        applyBtn.textContent = 'Apply';
-                    });
-                } else if (typeof loadEnhancedAnalytics === 'function') {
-                    loadEnhancedAnalytics(true); // Show toast on filter change
-                }
+                // Apply immediately
+                if (typeof applyGlobalFilters === 'function') applyGlobalFilters();
             });
             if (typeof renderDashboardTabs === 'function') renderDashboardTabs();
             if (typeof initFilterDropdownBehavior === 'function') initFilterDropdownBehavior();
@@ -17762,6 +17946,17 @@ Earlier:
         
         // Clear one global filter by type and value (used by active-filter badge buttons; no closure serialization)
         function clearGlobalFilter(type, value) {
+            // Handle column filter badges (type = "column:date", "column:student", etc.)
+            if (type && type.startsWith('column:')) {
+                var col = type.slice(7);
+                if (typeof evaluationsColumnFilters !== 'undefined' && evaluationsColumnFilters[col]) {
+                    var idx = evaluationsColumnFilters[col].indexOf(value);
+                    if (idx !== -1) evaluationsColumnFilters[col].splice(idx, 1);
+                }
+                updateActiveFiltersDisplay();
+                if (typeof renderEvaluationsTab === 'function') renderEvaluationsTab();
+                return;
+            }
             const selectIds = {
                 course: 'analyticsGlobalCourse',
                 instructor: 'analyticsGlobalInstructor',
@@ -17836,6 +18031,17 @@ Earlier:
                 const dateLabel = startDate && endDate ? `Date: ${startDate} to ${endDate}` : startDate ? `Date: from ${startDate}` : `Date: until ${endDate}`;
                 filters.push({ type: 'date', value: '', label: dateLabel });
             }
+
+            // Include active column filters from the evaluations table
+            if (typeof evaluationsColumnFilters !== 'undefined') {
+                const colLabels = { date: 'Date', student: 'Student', course: 'Course', instructor: 'Instructor', rubric: 'Rubric', score: 'Score' };
+                Object.keys(evaluationsColumnFilters).forEach(function(col) {
+                    var vals = evaluationsColumnFilters[col] || [];
+                    vals.forEach(function(val) {
+                        filters.push({ type: 'column:' + col, value: val, label: (colLabels[col] || col) + ': ' + val });
+                    });
+                });
+            }
             
             if (filters.length === 0) {
                 display.style.display = 'none';
@@ -17849,7 +18055,7 @@ Earlier:
                     const valueAttr = escapeHtml(f.value || '');
                     return `<span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.5rem; background: var(--primary); color: white; border-radius: 9999px; font-size: 0.75rem;" data-filter-type="${typeAttr}" data-filter-value="${valueAttr}">
                         ${escapeHtml(f.label)}
-                        <button type="button" onclick="clearGlobalFilterFromNode(this)" style="background: none; border: none; color: white; cursor: pointer; padding: 0; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold;" title="Remove filter">×</button>
+                        <button type="button" onclick="clearGlobalFilterFromNode(this)" style="background: none; border: none; color: white; cursor: pointer; padding: 0; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold;" title="Remove filter">\u00d7</button>
                     </span>`;
                 }).join('');
         }
@@ -18003,7 +18209,7 @@ Earlier:
                 const isFiltered = analyticsData.evaluations && analyticsData.evaluations.length > 0;
                 container.innerHTML = isFiltered
                     ? '<div class="empty-state"><i data-lucide="search" class="empty-state-icon"></i><p class="empty-state-title">No evaluations match your filters</p><p class="empty-state-desc">Try broadening the date range or clearing filters above.</p></div>'
-                    : '<div class="empty-state"><i data-lucide="bar-chart-2" class="empty-state-icon"></i><p class="empty-state-title">No evaluation data yet</p><p class="empty-state-desc">Set a date range in the filter bar above and click Apply to load analytics.</p><div class="empty-state-action"><button type="button" onclick="document.getElementById(\'analyticsGlobalApply\') && document.getElementById(\'analyticsGlobalApply\').click()" class="btn" style="background: var(--primary); color: white;">Apply</button></div></div>';
+                    : '<div class="empty-state"><i data-lucide="bar-chart-2" class="empty-state-icon"></i><p class="empty-state-title">No evaluation data yet</p><p class="empty-state-desc">Set a date range in the filter bar above to load analytics.</p></div>';
                 if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: container });
                 return;
             }
@@ -18861,10 +19067,10 @@ Earlier:
             });
         })();
         
-        var evaluationsColumnFilters = { date: [], student: [], course: [], instructor: [], score: [] };
+        var evaluationsColumnFilters = { date: [], student: [], course: [], instructor: [], rubric: [], score: [] };
         var evaluationsSortColumn = 'date';
         var evaluationsSortDir = 'desc';
-        var EVALUATIONS_HEADER_LABELS = { date: 'Date', student: 'Student', course: 'Course', instructor: 'Instructor', score: 'Score %' };
+        var EVALUATIONS_HEADER_LABELS = { date: 'Date', student: 'Student', course: 'Course', instructor: 'Instructor', rubric: 'Rubric', score: 'Score %' };
         var evaluationsHeaderFilterPanelOpen = null;
         
         function getEvaluationsDisplayValue(e, column) {
@@ -18873,6 +19079,7 @@ Earlier:
                 case 'student': return e.course_students ? (e.course_students.first_name || '') + ' ' + (e.course_students.last_name || '') : '\u2014';
                 case 'course': return e.courses && e.courses.name ? e.courses.name : '\u2014';
                 case 'instructor': return e.instructorName || '\u2014';
+                case 'rubric': return e.rubric?.name || e.evaluation_data?.rubricUsed || '\u2014';
                 case 'score': return e.overallScore === 'N/A' ? 'N/A' : (e.overallScore + '%');
                 default: return '\u2014';
             }
@@ -18923,8 +19130,8 @@ Earlier:
                     return item;
                 })());
             });
-            panel.querySelector('.export-filter-toolbar [data-action="selectall"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = unique.slice(); renderEvaluationsTab(); updateEvaluationsFilterPanelCheckboxes(panel, column); });
-            panel.querySelector('.export-filter-toolbar [data-action="clear"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = []; renderEvaluationsTab(); updateEvaluationsFilterPanelCheckboxes(panel, column); });
+            panel.querySelector('.export-filter-toolbar [data-action="selectall"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = unique.slice(); renderEvaluationsTab(); updateEvaluationsFilterPanelCheckboxes(panel, column); updateActiveFiltersDisplay(); });
+            panel.querySelector('.export-filter-toolbar [data-action="clear"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = []; renderEvaluationsTab(); updateEvaluationsFilterPanelCheckboxes(panel, column); updateActiveFiltersDisplay(); });
             list.addEventListener('change', function(e) {
                 if (e.target.type !== 'checkbox') return;
                 var value = e.target.getAttribute('data-value');
@@ -18933,6 +19140,7 @@ Earlier:
                 if (e.target.checked) { if (idx === -1) arr.push(value); } else { if (idx !== -1) arr.splice(idx, 1); }
                 evaluationsColumnFilters[column] = arr;
                 renderEvaluationsTab();
+                updateActiveFiltersDisplay();
             });
             document.body.appendChild(panel);
             evaluationsHeaderFilterPanelOpen = panel;
@@ -19084,7 +19292,7 @@ Earlier:
             }
             
             // Apply column filters (Evaluations tab dropdown filters)
-            var cols = ['date', 'student', 'course', 'instructor', 'score'];
+            var cols = ['date', 'student', 'course', 'instructor', 'rubric', 'score'];
             cols.forEach(function(col) {
                 var sel = evaluationsColumnFilters[col];
                 if (sel && sel.length > 0) {
@@ -19117,7 +19325,7 @@ Earlier:
             var sortCol = evaluationsSortColumn;
             var sortDir = evaluationsSortDir;
             var colFilters = evaluationsColumnFilters;
-            var theadRow = ['date', 'student', 'course', 'instructor', 'score'].map(function(col) {
+            var theadRow = ['date', 'student', 'course', 'instructor', 'rubric', 'score'].map(function(col) {
                 var label = headerLabels[col] || col;
                 var arrow = col === sortCol ? (sortDir === 'asc' ? ' \u2191' : ' \u2193') : '';
                 var hasFilter = colFilters[col] && colFilters[col].length > 0;
@@ -19180,6 +19388,7 @@ Earlier:
                         <td><strong>${escapeHtml(studentName)}</strong></td>
                         <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(courseName)}</td>
                         <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(eval.instructorName)}</td>
+                        <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(eval.rubric?.name || eval.evaluation_data?.rubricUsed || '—')}</td>
                         <td style="text-align: center; font-weight: 600; color: ${scoreColor};">${eval.overallScore === 'N/A' ? 'N/A' : `${eval.overallScore}%`}</td>
                         <td style="text-align: center;">
                             <div class="eval-actions-dropdown" style="position: relative; display: inline-block;">
@@ -19473,7 +19682,7 @@ Earlier:
         var evaluationsSortColumn = 'date';
         var evaluationsSortDir = 'desc';
         var evaluationsHeaderFilterPanelOpen = null;
-        var EVAL_HEADER_LABELS = { date: 'Date', student: 'Student', course: 'Course', instructor: 'Instructor', score: 'Score %' };
+        var EVAL_HEADER_LABELS = { date: 'Date', student: 'Student', course: 'Course', instructor: 'Instructor', rubric: 'Rubric', score: 'Score %' };
         
         function getEvaluationsDisplayValue(eval, column) {
             switch (column) {
@@ -19523,8 +19732,8 @@ Earlier:
                 item.innerHTML = '<input type="checkbox" ' + (checked ? 'checked' : '') + ' data-value="' + escapeHtml(value) + '"><span>' + escapeHtml(value) + '</span>';
                 list.appendChild(item);
             });
-            panel.querySelector('.export-filter-toolbar [data-action="selectall"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = unique.slice(); renderEvaluationsTab(); });
-            panel.querySelector('.export-filter-toolbar [data-action="clear"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = []; renderEvaluationsTab(); });
+            panel.querySelector('.export-filter-toolbar [data-action="selectall"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = unique.slice(); renderEvaluationsTab(); updateActiveFiltersDisplay(); });
+            panel.querySelector('.export-filter-toolbar [data-action="clear"]').addEventListener('click', function(e) { e.preventDefault(); evaluationsColumnFilters[column] = []; renderEvaluationsTab(); updateActiveFiltersDisplay(); });
             list.addEventListener('change', function(e) {
                 if (e.target.type !== 'checkbox') return;
                 var value = e.target.getAttribute('data-value');
@@ -19533,6 +19742,7 @@ Earlier:
                 if (e.target.checked) { if (idx === -1) arr.push(value); } else { if (idx !== -1) arr.splice(idx, 1); }
                 evaluationsColumnFilters[column] = arr;
                 renderEvaluationsTab();
+                updateActiveFiltersDisplay();
             });
             document.body.appendChild(panel);
             evaluationsHeaderFilterPanelOpen = panel;
@@ -19657,6 +19867,7 @@ Earlier:
                         <td><strong>${escapeHtml(studentName)}</strong>${deletedTag}</td>
                         <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(courseName)}</td>
                         <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(eval.instructorName)}</td>
+                        <td style="color: var(--text-light); font-size: 0.9rem;">${escapeHtml(eval.rubric?.name || eval.evaluation_data?.rubricUsed || '—')}</td>
                         <td style="text-align: center; font-weight: 600; color: ${scoreColor};">${eval.overallScore === 'N/A' ? 'N/A' : `${eval.overallScore}%`}</td>
                         <td style="text-align: center;">
                             <div class="eval-actions-dropdown" style="position: relative; display: inline-block;">
@@ -28375,15 +28586,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     return null;
                 }
                 
-                // Log access for FERPA compliance
+                // Log access for FERPA compliance (fire-and-forget — don't block rendering)
                 if (data && data.length > 0) {
                     const uniqueStudentIds = [...new Set(data.map(e => e.student_id))];
-                    for (const sid of uniqueStudentIds) {
-                        await logAccess('view', 'evaluations', null, sid, {
+                    Promise.all(uniqueStudentIds.map(sid =>
+                        logAccess('view', 'evaluations', null, sid, {
                             course_id: courseId,
                             evaluation_count: data.filter(e => e.student_id === sid).length
-                        });
-                    }
+                        })
+                    )).catch(e => console.warn('logAccess batch error:', e));
                 }
                 
                 console.log(`✓ Loaded ${data.length} evaluations from Supabase`);
@@ -29052,6 +29263,8 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                                     <button type="button" id="rubricMenuItem_edit_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();editRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="edit" style="width:1rem;height:1rem;"></i> Edit</button>
                                     <button type="button" id="rubricMenuItem_duplicate_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();duplicateRubricUI('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="copy" style="width:1rem;height:1rem;"></i> Duplicate</button>
                                 </div>
+                                    <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
+                                    <button type="button" id="rubricMenuItem_delete_${rubric.id}" role="menuitem" data-destructive="true" onclick="if(event)event.stopPropagation();closeRubricActionsDropdown('${rubric.id}');deleteRubricUI('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='none'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
                             </div>
                             <!-- Expand/collapse chevron -->
                             <span id="rubricChevron_${rubric.id}" style="font-size: 1.2rem; color: var(--text-light); transition: transform 0.2s;">▼</span>
@@ -32116,6 +32329,22 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             const menu = document.getElementById('addMenuDropdown');
             if (menu) menu.classList.add('hidden');
         }
+
+        function toggleAddRubricMenu() {
+            const dropdown = document.getElementById('addRubricMenuDropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        }
+
+        function closeAddRubricMenu() {
+            const dropdown = document.getElementById('addRubricMenuDropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#addRubricMenuDropdown') && !e.target.closest('button[onclick*="toggleAddRubricMenu"]')) {
+                closeAddRubricMenu();
+            }
+        });
         
         function showCreateClass() {
             window._createClassPreviousFocus = document.activeElement && document.activeElement.nodeName ? document.activeElement : null;
@@ -32160,9 +32389,20 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
         
         async function viewClassInternal(classId, skipReload) {
             currentClassId = classId; // Store for later use
-            
+
+            // Show immediate loading state so the user sees instant feedback
+            setActiveSection('classDetailSection', 'navDashboard');
+            const classDetailElEarly = document.getElementById('classDetailContent');
+            if (classDetailElEarly) classDetailElEarly.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-light);"><span class="spinner" style="display:inline-block;width:1.5rem;height:1.5rem;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></span><p style="margin-top:0.75rem;">Loading course\u2026</p></div>';
+
+            // Only reload from Supabase if not recently loaded (60s cache)
             if (!skipReload) {
-                await loadClasses();
+                const lastLoaded = parseInt(sessionStorage.getItem('classesLoadedAt') || '0');
+                const isFresh = Date.now() - lastLoaded < 60000;
+                if (!isFresh) {
+                    await loadClasses();
+                    sessionStorage.setItem('classesLoadedAt', Date.now().toString());
+                }
             }
             const classes = JSON.parse(getUserItem('classes') || '[]');
             const selectedClass = classes.find(c => c.id === classId);
@@ -32195,33 +32435,34 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Gather all evaluations - from both Supabase and localStorage
             const evals = [];
             
-            // Load from Supabase if available
-            if (supabaseClient && selectedClass.supabaseId) {
-                console.log('Loading evaluations from Supabase for course:', selectedClass.supabaseId);
-                const supabaseEvals = await loadEvaluationsFromSupabase(selectedClass.supabaseId);
-                console.log('Supabase evaluations result:', supabaseEvals);
-                
-                if (supabaseEvals && supabaseEvals.length > 0) {
-                    const visibleEvals = supabaseEvals.filter(ev => !isDeletedId('deleted_evaluation_ids', ev.id));
-                    console.log('Processing', visibleEvals.length, 'Supabase evaluations (after excluding locally deleted)');
-                    visibleEvals.forEach(ev => {
-                        console.log('Evaluation data:', ev);
-                        evals.push({
-                            studentName: ev.student ? `${ev.student.first_name} ${ev.student.last_name}` : 'Unknown',
-                            studentId: ev.student_id,
-                            date: new Date(ev.created_at).toLocaleDateString(),
-                            type: ev.evaluation_data?.assignmentType || 'Unknown',
-                            totalScore: ev.total_score || 0,
-                            maxScore: ev.evaluation_data?.maxScore || 100,
-                            results: ev.evaluation_data
-                        });
+            // Load evaluations and consent status in parallel
+            const [supabaseEvals, consentResult] = await Promise.all([
+                (supabaseClient && selectedClass.supabaseId)
+                    ? loadEvaluationsFromSupabase(selectedClass.supabaseId)
+                    : Promise.resolve(null),
+                (supabaseClient && selectedClass.supabaseId)
+                    ? supabaseClient.from('consent_forms').select('student_id, consent_given').eq('course_id', selectedClass.supabaseId).eq('consent_type', 'data_collection')
+                    : Promise.resolve({ data: [], error: null })
+            ]);
+
+            // Process evaluations
+            if (supabaseEvals && supabaseEvals.length > 0) {
+                const visibleEvals = supabaseEvals.filter(ev => !isDeletedId('deleted_evaluation_ids', ev.id));
+                console.log('Processing', visibleEvals.length, 'Supabase evaluations (after excluding locally deleted)');
+                visibleEvals.forEach(ev => {
+                    evals.push({
+                        studentName: ev.student ? `${ev.student.first_name} ${ev.student.last_name}` : 'Unknown',
+                        studentId: ev.student_id,
+                        date: new Date(ev.created_at).toLocaleDateString(),
+                        type: ev.evaluation_data?.assignmentType || 'Unknown',
+                        totalScore: ev.total_score || 0,
+                        maxScore: ev.evaluation_data?.maxScore || 100,
+                        results: ev.evaluation_data
                     });
-                    console.log('✓ Added', evals.length, 'evaluations from Supabase');
-                } else {
-                    console.log('No evaluations found in Supabase for this course');
-                }
+                });
+                console.log('✓ Added', evals.length, 'evaluations from Supabase');
             } else {
-                console.log('Supabase not available or course has no supabaseId');
+                console.log('No evaluations found in Supabase for this course');
             }
             
             // Also gather from localStorage (exclude locally deleted) (for backwards compatibility)
@@ -32250,23 +32491,18 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 }
             });
             
-            // Load consent status per student for this course (instructor view)
+            // Process consent results (already fetched in parallel above)
             let consentByStudent = {};
-            if (supabaseClient && selectedClass.supabaseId) {
-                try {
-                    const { data: consentRows, error: consentErr } = await supabaseClient
-                        .from('consent_forms')
-                        .select('student_id, consent_given')
-                        .eq('course_id', selectedClass.supabaseId)
-                        .eq('consent_type', 'data_collection');
-                    if (!consentErr && consentRows && consentRows.length > 0) {
-                        consentRows.forEach(function(r) {
-                            consentByStudent[r.student_id] = r.consent_given;
-                        });
-                    }
-                } catch (e) {
-                    console.warn('Could not load consent status:', e);
+            try {
+                const consentRows = consentResult?.data || [];
+                const consentErr = consentResult?.error || null;
+                if (!consentErr && consentRows.length > 0) {
+                    consentRows.forEach(function(r) {
+                        consentByStudent[r.student_id] = r.consent_given;
+                    });
                 }
+            } catch (e) {
+                console.warn('Could not process consent status:', e);
             }
             
             // Update title
@@ -32296,10 +32532,11 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         <span style="color: var(--text-light); font-size: 0.875rem; white-space: nowrap;">${roster.length} student${roster.length !== 1 ? 's' : ''}</span>
                     </div>
                     <div style="position: relative;">
-                        <button type="button" onclick="toggleStudentMenu()" class="btn" style="display: inline-flex; align-items: center; gap: 0.35em; padding: 0.5rem 0.75rem; font-size: 0.875rem;" aria-haspopup="true" aria-expanded="false"><span class="icon-with-text"><i data-lucide="user-plus" style="width:1em;height:1em;"></i> Add Student</span> <i data-lucide="chevron-down" style="width:0.75em;height:0.75em;margin-left:0.25em;"></i></button>
-                        <div id="studentMenu" class="student-menu hidden" style="position: absolute; top: 100%; left: 0; margin-top: 0.25rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px; padding: 0.25rem 0;">
+                        <button type="button" onclick="toggleStudentMenu()" class="icon-button-add" style="padding: 0.5rem; background: transparent; color: var(--text); border: none; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem;" aria-haspopup="true" aria-expanded="false" aria-label="Manage students" title="Manage students" onmouseover="this.style.background='var(--bg-alt)'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text)'"><i data-lucide="plus" style="width:1.25rem;height:1.25rem;stroke-width:2;"></i></button>
+                        <div id="studentMenu" class="student-menu hidden" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px; overflow: hidden;">
                             <button type="button" onclick="showAddStudent();toggleStudentMenu();" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="user-plus" style="width:1rem;height:1rem;"></i> Add Student</button>
                             <button type="button" onclick="showMoveStudentsFromCourse();toggleStudentMenu();" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="users" style="width:1rem;height:1rem;"></i> Move Students</button>
+                            <button type="button" onclick="showUploadRoster();toggleStudentMenu();" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="upload" style="width:1rem;height:1rem;"></i> Upload Roster</button>
                         </div>
                     </div>
                 </div>
@@ -32313,15 +32550,16 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         <p class="empty-state-desc">Add students to this course to record evaluations and track progress.</p>
                         <div class="empty-state-action">
                             <div style="position: relative; display: inline-block;">
-                                <button type="button" onclick="toggleStudentMenu()" class="btn" style="background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 0.35em;" aria-haspopup="true" aria-expanded="false">
-                                    <span class="icon-with-text"><i data-lucide="user-plus"></i> Add Student</span> <i data-lucide="chevron-down" style="width:0.75em;height:0.75em;margin-left:0.25em;"></i>
-                                </button>
-                                <div id="studentMenuEmpty" class="student-menu hidden" style="position: absolute; top: 100%; left: 0; margin-top: 0.25rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px; padding: 0.25rem 0;">
+                                <button type="button" onclick="toggleStudentMenu()" class="icon-button-add" style="padding: 0.5rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem;" aria-haspopup="true" aria-expanded="false" aria-label="Manage students" title="Manage students" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"><i data-lucide="plus" style="width:1.25rem;height:1.25rem;stroke-width:2;"></i></button>
+                                <div id="studentMenuEmpty" class="student-menu hidden" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px; overflow: hidden;">
                                     <button type="button" onclick="showAddStudent();toggleStudentMenu();" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'">
                                         <i data-lucide="user-plus" style="width:1rem;height:1rem;"></i> Add Student
                                     </button>
                                     <button type="button" onclick="showMoveStudentsFromCourse();toggleStudentMenu();" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'">
                                         <i data-lucide="users" style="width:1rem;height:1rem;"></i> Move Students
+                                    </button>
+                                    <button type="button" onclick="showUploadRoster();toggleStudentMenu();" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'">
+                                        <i data-lucide="upload" style="width:1rem;height:1rem;"></i> Upload Roster
                                     </button>
                                 </div>
                             </div>
@@ -32394,6 +32632,8 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                                         <button type="button" id="studentMenuItem_add_${studentId}" role="menuitem" onclick="addEvaluationForStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="plus-circle" style="width:1rem;height:1rem;"></i> Add Evaluation</button>
                                         ${evalCount > 0 ? `<button type="button" id="studentMenuItem_view_${studentId}" role="menuitem" onclick="viewStudentEvals('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluations</button>` : ''}
                                         <button type="button" id="studentMenuItem_edit_${studentId}" role="menuitem" onclick="editStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit Student</button>
+                                        <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
+                                        <button type="button" id="studentMenuItem_delete_${studentId}" role="menuitem" data-destructive="true" onclick="toggleStudentActions('${studentId}'); deleteStudent('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='none'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete Student</button>
                                     </div>
                                 </div>
                             </td>
@@ -35585,8 +35825,7 @@ Return ONLY the JSON object, nothing else.`;
                                 <div id="reorderCoursesList" style="display: flex; flex-direction: column; gap: 0.5rem;">
                                 </div>
                             </div>
-                            <div style="padding: 1rem 1.5rem; border-top: 0.5px solid rgba(0, 0, 0, 0.1); display: flex; gap: 0.75rem; justify-content: flex-end;">
-                                <button type="button" onclick="closeReorderCoursesModal()" class="btn-secondary" style="padding: 0.625rem 1.25rem; font-size: 0.9375rem; font-weight: 500; border-radius: 0.5rem;">Cancel</button>
+                            <div style="padl()" class="btn-secondary" style="padding: 0.625rem 1.25rem; font-size: 0.9375rem; font-weight: 500; border-radius: 0.5rem;">Cancel</button>
                                 <button type="button" onclick="saveCourseOrder()" style="padding: 0.625rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                                     <span class="icon-with-text"><i data-lucide="check" style="width:1em;height:1em;"></i> Save Order</span>
                                 </button>
