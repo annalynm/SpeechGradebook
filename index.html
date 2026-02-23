@@ -719,6 +719,124 @@
             outline-offset: -2px;
         }
         
+        /* Rubric actions dropdown */
+        .rubric-actions-dropdown {
+            position: relative;
+        }
+        
+        /* Apple HIG compliant menu styles */
+        .rubric-actions-menu,
+        .evaluation-actions-menu,
+        .student-actions-menu {
+            position: fixed;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px; /* Apple's standard 8px radius */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08); /* Apple-style shadow */
+            z-index: 99999;
+            min-width: 180px;
+            padding: 8px 0; /* Apple's 8pt grid spacing */
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .rubric-actions-menu.hidden,
+        .evaluation-actions-menu.hidden,
+        .student-actions-menu.hidden {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        .rubric-actions-menu button,
+        .evaluation-actions-menu button,
+        .student-actions-menu button {
+            width: 100%;
+            text-align: left;
+            padding: 8px 16px; /* Apple's 8pt grid: 8px vertical, 16px horizontal */
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px; /* Apple's standard menu font size */
+            font-weight: 400;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 12px; /* 12px gap between icon and text */
+            transition: background-color 0.15s ease;
+            min-height: 44px; /* Apple's minimum touch target */
+            box-sizing: border-box;
+        }
+        
+        .rubric-actions-menu button:not(:first-child),
+        .evaluation-actions-menu button:not(:first-child),
+        .student-actions-menu button:not(:first-child) {
+            border-top: 0.5px solid rgba(0, 0, 0, 0.1); /* Subtle separator */
+        }
+        
+        .rubric-actions-menu button:hover,
+        .evaluation-actions-menu button:hover,
+        .student-actions-menu button:hover {
+            background: var(--bg-alt) !important;
+        }
+        
+        .rubric-actions-menu button.menu-item-active,
+        .evaluation-actions-menu button.menu-item-active,
+        .student-actions-menu button.menu-item-active {
+            background: var(--bg-alt) !important;
+        }
+        
+        .rubric-actions-menu button:focus,
+        .evaluation-actions-menu button:focus,
+        .student-actions-menu button:focus {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: -2px;
+        }
+        
+        .rubric-actions-menu button[aria-disabled="true"],
+        .evaluation-actions-menu button[aria-disabled="true"],
+        .student-actions-menu button[aria-disabled="true"] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .rubric-actions-menu button[aria-disabled="true"]:hover,
+        .evaluation-actions-menu button[aria-disabled="true"]:hover,
+        .student-actions-menu button[aria-disabled="true"]:hover {
+            background: transparent !important;
+        }
+        
+        /* Menu item icons */
+        .rubric-actions-menu button i,
+        .evaluation-actions-menu button i,
+        .student-actions-menu button i {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        
+        /* Menu separators for grouping */
+        .rubric-actions-menu .menu-separator,
+        .evaluation-actions-menu .menu-separator,
+        .student-actions-menu .menu-separator {
+            height: 0.5px;
+            background: rgba(0, 0, 0, 0.1);
+            margin: 4px 0;
+            border: none;
+            padding: 0;
+        }
+        
+        /* Enhanced separator for destructive action groups */
+        .rubric-actions-menu button[data-destructive="true"],
+        .evaluation-actions-menu button[data-destructive="true"],
+        .student-actions-menu button[data-destructive="true"] {
+            color: var(--error);
+        }
+        
+        .rubric-actions-menu button[data-destructive="true"]:hover,
+        .evaluation-actions-menu button[data-destructive="true"]:hover,
+        .student-actions-menu button[data-destructive="true"]:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+        
         #userDisplay {
             max-width: 120px;
             overflow: hidden;
@@ -876,8 +994,8 @@
         
         .card:hover {
             box-shadow: var(--elevation-3);
-            transform: translateY(-2px);
             border-color: rgba(30, 58, 95, 0.15);
+            /* Removed transform to prevent position: fixed containing block issues */
         }
         
         .card:hover::before {
@@ -1629,20 +1747,7 @@
         }
         
         /* Persistent Evaluation Saved Indicator */
-        .student-actions-menu {
-            position: fixed !important;
-            background: white !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 0.5rem !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-            z-index: 99999 !important;
-            min-width: 180px !important;
-            padding: 0.25rem 0 !important;
-        }
-        
-        .student-actions-menu.hidden {
-            display: none;
-        }
+        /* Student menu inherits from shared menu styles above */
         
         .evaluation-saved-indicator {
             display: flex;
@@ -2473,48 +2578,7 @@
             visibility: visible !important;
         }
         
-        .evaluation-actions-menu {
-            display: none;
-            position: fixed; /* Changed to fixed to escape overflow containers */
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000; /* High z-index to ensure it's above everything */
-            min-width: 200px;
-            padding: 0.25rem 0;
-        }
-        /* Visual indicator arrow pointing to the button (on the right side since menu is to the left) */
-        .evaluation-actions-menu::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -6px;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 6px solid transparent;
-            border-bottom: 6px solid transparent;
-            border-left: 6px solid white;
-            z-index: 1001;
-        }
-        .evaluation-actions-menu::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -7px;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 6px solid transparent;
-            border-bottom: 6px solid transparent;
-            border-left: 6px solid var(--border);
-            z-index: 1000;
-        }
-        .evaluation-actions-menu.hidden {
-            display: none !important;
-            visibility: hidden !important;
-        }
+        /* Evaluation menu specific styles (inherits from shared menu styles above) */
         .evaluation-actions-menu:not(.hidden) {
             display: block !important;
             visibility: visible !important;
@@ -2577,23 +2641,12 @@
         }
         
         .rubric-item {
-            background: var(--bg-alt);
-            padding: var(--space-md);
-            border-radius: var(--radius-md);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color var(--motion-normal) var(--motion-ease),
-                        box-shadow var(--motion-normal) var(--motion-ease),
-                        transform var(--motion-fast) var(--motion-ease);
-            cursor: pointer;
-            min-height: 2.75rem;  /* Touch target minimum */
+            /* Card format matching evaluation items - inline styles override these */
+            transition: box-shadow var(--motion-normal) var(--motion-ease);
         }
         
         .rubric-item:hover {
-            background: var(--bg-hover);
-            box-shadow: var(--elevation-1);
-            transform: translateX(2px);
+            box-shadow: var(--elevation-2);
         }
         
         .rubric-item:focus-visible {
@@ -2610,6 +2663,34 @@
             font-weight: 400;
             color: var(--text-light);
             line-height: 1.5;
+        }
+        
+        /* Rubric collapsible sections */
+        .rubric-description-toggle,
+        .rubric-courses-toggle {
+            transition: color var(--motion-fast) var(--motion-ease);
+        }
+        
+        .rubric-description-toggle:hover,
+        .rubric-courses-toggle:hover {
+            color: var(--text) !important;
+        }
+        
+        .rubric-description-toggle:focus-visible,
+        .rubric-courses-toggle:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .rubric-description-content,
+        .rubric-courses-content {
+            transition: opacity var(--motion-fast) var(--motion-ease);
+        }
+        
+        .rubric-description-content.hidden,
+        .rubric-courses-content.hidden {
+            display: none;
         }
         
         .rubric-actions {
@@ -4340,45 +4421,99 @@
                     <i data-lucide="search" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); width: 1.125rem; height: 1.125rem; color: var(--text-light); pointer-events: none;"></i>
                             </div>
                 
-                <!-- Compact Filter Toolbar (Always visible, below search) -->
-                <div id="instructorFiltersToolbar" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; border: 1px solid var(--border);">
-                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                        <div class="filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <label for="instructorFilterCourse" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap;">Course:</label>
-                            <select id="instructorFilterCourse" onchange="onInstructorCourseFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 180px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
-                                <option value="">All Courses</option>
-                                <!-- Populated dynamically -->
-                            </select>
-                            </div>
-                        
-                        <div class="filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <label for="instructorFilterSemester" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap;">Term:</label>
-                            <select id="instructorFilterSemester" onchange="onInstructorSemesterFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 120px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
-                                <option value="">All Terms</option>
-                                <option value="Spring">Spring</option>
-                                <option value="Summer">Summer</option>
-                                <option value="Fall">Fall</option>
-                                <option value="Winter">Winter</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <label for="instructorFilterYear" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap;">Year:</label>
-                            <select id="instructorFilterYear" onchange="onInstructorYearFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 100px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
-                                <option value="">All Years</option>
-                                <option value="2026">2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                            </select>
-                            </div>
-                        
-                        <div class="filter-group" style="margin-left: auto;">
-                            <button onclick="clearInstructorFilters()" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.375rem;" onmouseover="this.style.backgroundColor='var(--bg-alt)'" onmouseout="this.style.backgroundColor='white'">
-                                <i data-lucide="x" style="width:0.875rem;height:0.875rem;"></i> Clear Filters
+                <!-- Compact Filter Toolbar for Courses (Always visible, below search) -->
+                <div id="instructorFiltersToolbar" style="display: none; margin-top: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; border: 1px solid var(--border); overflow: hidden;">
+                    <!-- Collapsible Header -->
+                    <button type="button" onclick="toggleInstructorFilters()" id="instructorFiltersToggle" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: transparent; border: none; cursor: pointer; text-align: left; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--text);">Filters</span>
+                        <i data-lucide="chevron-down" id="instructorFiltersChevron" style="width: 1rem; height: 1rem; color: var(--text-light); transition: transform 0.3s ease;"></i>
                     </button>
+                    
+                    <!-- Collapsible Filter Content -->
+                    <div id="instructorFiltersContent" style="max-height: 0px; padding: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
+                            <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                <label for="instructorFilterCourse" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Course:</label>
+                                <select id="instructorFilterCourse" onchange="onInstructorCourseFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 180px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    <option value="">All Courses</option>
+                                    <!-- Populated dynamically -->
+                                </select>
                             </div>
+                        
+                            <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                <label for="instructorFilterSemester" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Term:</label>
+                                <select id="instructorFilterSemester" onchange="onInstructorSemesterFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 120px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    <option value="">All Terms</option>
+                                    <option value="Spring">Spring</option>
+                                    <option value="Summer">Summer</option>
+                                    <option value="Fall">Fall</option>
+                                    <option value="Winter">Winter</option>
+                                </select>
+                            </div>
+                        
+                            <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                <label for="instructorFilterYear" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Year:</label>
+                                <select id="instructorFilterYear" onchange="onInstructorYearFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 100px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    <option value="">All Years</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                        
+                            <div class="filter-group" style="margin-left: auto; align-self: flex-end;">
+                                <button onclick="clearInstructorFilters()" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.375rem;" onmouseover="this.style.backgroundColor='var(--bg-alt)'" onmouseout="this.style.backgroundColor='white'">
+                                    <i data-lucide="x" style="width:0.875rem;height:0.875rem;"></i> Clear Filters
+                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Compact Filter Toolbar for Rubrics (Always visible, below search) -->
+                <div id="rubricsFiltersToolbar" style="display: none; margin-top: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; border: 1px solid var(--border); overflow: hidden;">
+                    <!-- Collapsible Header -->
+                    <button type="button" onclick="toggleRubricsFilters()" id="rubricsFiltersToggle" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: transparent; border: none; cursor: pointer; text-align: left; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--text);">Filters</span>
+                        <i data-lucide="chevron-down" id="rubricsFiltersChevron" style="width: 1rem; height: 1rem; color: var(--text-light); transition: transform 0.3s ease;"></i>
+                    </button>
+                    
+                    <!-- Collapsible Filter Content -->
+                    <div id="rubricsFiltersContent" style="max-height: 0px; padding: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
+                            <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                <label for="rubricFilterCourse" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Course:</label>
+                                <select id="rubricFilterCourse" onchange="onRubricCourseFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 180px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    <option value="">All Courses</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                <label for="rubricFilterSemester" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Term:</label>
+                                <select id="rubricFilterSemester" onchange="onRubricTermFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 120px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    <option value="">All Terms</option>
+                                    <option value="Spring">Spring</option>
+                                    <option value="Summer">Summer</option>
+                                    <option value="Fall">Fall</option>
+                                    <option value="Winter">Winter</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                <label for="rubricFilterYear" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Year:</label>
+                                <select id="rubricFilterYear" onchange="onRubricYearFilterChange()" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 100px; cursor: pointer; transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    <option value="">All Years</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group" style="margin-left: auto; align-self: flex-end;">
+                                <button onclick="clearRubricFilters()" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.375rem;" onmouseover="this.style.backgroundColor='var(--bg-alt)'" onmouseout="this.style.backgroundColor='white'">
+                                    <i data-lucide="x" style="width:0.875rem;height:0.875rem;"></i> Clear Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Courses card - at top for instructors; hidden for admin/super admin -->
@@ -4439,12 +4574,6 @@
             <div id="dashboardRubricsWrap" style="display: none; margin-top: 1.5rem;" data-instructor-panel="rubrics">
                 <div class="card">
                     <div class="card-header"><span class="icon-with-text"><i data-lucide="list-checks"></i> Rubrics</span></div>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="courseFilter" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Filter by Course:</label>
-                        <select id="courseFilter" onchange="filterRubricsByCourse()" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
-                            <option value="">All Courses</option>
-                        </select>
-                    </div>
                     <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
                         <button onclick="showCreateRubric()"><span class="icon-with-text"><i data-lucide="plus"></i> Create Custom Rubric</span></button>
                         <button onclick="showUploadRubric()" style="background: var(--secondary);"><span class="icon-with-text"><i data-lucide="file-up"></i> Import Rubric from File</span></button>
@@ -4565,6 +4694,10 @@
                             <button type="button" id="suggestFromTextbookBtn" onclick="suggestDescriptionsFromTextbook()" class="btn-secondary" style="margin-top: 1.5rem;"><span class="icon-with-text"><i data-lucide="sparkles"></i> Suggest descriptions from textbook</span></button>
                         </div>
                         <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid var(--border);">
+                            <button type="button" id="rubricDeleteBtn" onclick="deleteRubricUI(document.getElementById('editingRubricId').value)" 
+                                    class="btn-danger" style="margin-right: auto; display: none; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="trash-2"></i> Delete Rubric
+                            </button>
                             <button type="button" onclick="cancelCreateRubric()" class="btn-secondary">Cancel</button>
                             <button type="submit" id="rubricSubmitBtn">Create Rubric</button>
                         </div>
@@ -5015,14 +5148,57 @@
                             <input type="number" id="editCourseYear" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 1rem; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
                         </div>
                         <div class="form-group" style="margin-bottom: 1.5rem;">
-                            <label for="editCourseNotes" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9375rem;">Notes</label>
-                            <textarea id="editCourseNotes" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 1rem; resize: vertical; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+                            <label for="editCourseNotes" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9375rem;">Description</label>
+                            <textarea id="editCourseNotes" rows="3" placeholder="Optional description for this course" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 1rem; resize: vertical; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                         </div>
                     </form>
                     <div style="padding: 1rem 1.5rem; border-top: 0.5px solid rgba(0, 0, 0, 0.1); display: flex; gap: 0.75rem; justify-content: flex-end;">
                         <button type="button" onclick="closeEditCourseModal()" class="btn-secondary" style="padding: 0.625rem 1.25rem; font-size: 0.9375rem; font-weight: 500; border-radius: 0.5rem;">Cancel</button>
                         <button type="button" onclick="saveEditedCourse()" style="padding: 0.625rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                             <span class="icon-with-text"><i data-lucide="check" style="width:1em;height:1em;"></i> Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customize Course Color Modal -->
+            <div id="customizeCourseColorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);" role="dialog" aria-labelledby="customizeCourseColorModalTitle" aria-modal="true" onclick="if(event.target===this)closeCustomizeCourseColorModal();">
+                <div style="background: white; border-radius: 1rem; max-width: 480px; width: 90%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);" onclick="event.stopPropagation();">
+                    <div style="padding: 1.5rem 1.5rem 1rem 1.5rem; border-bottom: 0.5px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
+                        <h2 id="customizeCourseColorModalTitle" style="margin: 0; font-size: 1.25rem; font-weight: 600; color: var(--text);">Course Color</h2>
+                        <button type="button" onclick="closeCustomizeCourseColorModal()" aria-label="Close" style="background: none; border: none; padding: 0.5rem; cursor: pointer; color: var(--text-light); border-radius: 0.5rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <i data-lucide="x" style="width: 1.25rem; height: 1.25rem;"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                        <input type="hidden" id="customizeCourseColorId" value="">
+                        
+                        <!-- Preview Card -->
+                        <div id="customizeCourseColorPreview" style="margin-bottom: 2rem; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-height: 180px; background: var(--card); border: 1px solid var(--border); padding: 1.5rem; position: relative;">
+                            <!-- Preview will be rendered here -->
+                        </div>
+                        
+                        <!-- Color Presets Grid -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; font-weight: 500; margin-bottom: 0.75rem; color: var(--text); font-size: 0.9375rem;">Choose a Color</label>
+                            <div id="courseColorPresets" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem;">
+                                <!-- Preset swatches will be rendered here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Default Option -->
+                        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                            <button type="button" id="resetCourseColorBtn" onclick="resetCourseColor()" style="width: 100%; padding: 0.75rem; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.9375rem; color: var(--text); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onmouseover="this.style.backgroundColor='var(--bg-hover)'" onmouseout="this.style.backgroundColor='var(--bg-alt)'">
+                                <i data-lucide="x-circle" style="width:1em;height:1em;"></i> Use Default Color
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 1rem 1.5rem; border-top: 0.5px solid rgba(0,0,0,0.1); display: flex; gap: 0.75rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeCustomizeCourseColorModal()" class="btn-secondary" style="padding: 0.625rem 1.25rem; font-size: 0.9375rem; font-weight: 500; border-radius: 0.5rem;">Cancel</button>
+                        <button type="button" onclick="saveCourseColor()" style="padding: 0.625rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                            <span class="icon-with-text"><i data-lucide="check" style="width:1em;height:1em;"></i> Save</span>
                         </button>
                     </div>
                 </div>
@@ -8515,6 +8691,23 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             current: { html: null, dataHash: null },
             previous: { html: null, dataHash: null }
         };
+        
+        /** Apple HIG aligned color presets for course customization */
+        const COURSE_COLOR_PRESETS = [
+            { id: 'blue', name: 'Blue', primary: '#007AFF', light: '#E3F2FD', dark: '#0051D5' },
+            { id: 'green', name: 'Green', primary: '#34C759', light: '#E8F5E9', dark: '#28A745' },
+            { id: 'indigo', name: 'Indigo', primary: '#5856D6', light: '#E8EAF6', dark: '#3F3FB8' },
+            { id: 'orange', name: 'Orange', primary: '#FF9500', light: '#FFF3E0', dark: '#E68900' },
+            { id: 'pink', name: 'Pink', primary: '#FF2D55', light: '#FCE4EC', dark: '#E91E63' },
+            { id: 'purple', name: 'Purple', primary: '#AF52DE', light: '#F3E5F5', dark: '#9C27B0' },
+            { id: 'teal', name: 'Teal', primary: '#5AC8FA', light: '#E0F7FA', dark: '#00BCD4' },
+            { id: 'red', name: 'Red', primary: '#FF3B30', light: '#FFEBEE', dark: '#D32F2F' },
+            { id: 'yellow', name: 'Yellow', primary: '#FFCC00', light: '#FFFDE7', dark: '#F9A825' },
+            { id: 'gray', name: 'Gray', primary: '#8E8E93', light: '#F5F5F5', dark: '#6D6D70' },
+            { id: 'brand', name: 'Brand', primary: '#1e3a5f', light: '#E8ECF0', dark: '#142940' }
+        ];
+        
+        let selectedCourseColor = null;
         /** Generate a simple hash of course data for cache invalidation */
         function hashCoursesData(courses) {
             if (!courses || courses.length === 0) return 'empty';
@@ -8955,6 +9148,9 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     courseIdsToDisplay = [rubric.courseId];
                 }
                 
+                // Format courses for expandable section (one per line)
+                let coursesDisplayHtml = '';
+                const courseCount = courseIdsToDisplay.length;
                 if (courseIdsToDisplay.length > 0) {
                     const courses = courseIdsToDisplay
                         .map(id => classes.find(c => c.id === id))
@@ -8977,49 +9173,69 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                             return `${courseName} (${firstCourse.semester} ${firstCourse.year}) - ${sectionText}`;
                         });
                         
-                        courseInfo = ` • <span style="color: var(--primary); font-weight: 500;">${courseDisplays.join(' • ')}</span>`;
-                    } else if (courseIdsToDisplay.length > 0) {
-                        courseInfo = ' • <span style="color: #999;">Course(s) not found</span>';
+                        coursesDisplayHtml = courseDisplays.map(c => `<div style="margin-bottom: 0.25rem;"><span style="color: var(--primary); font-weight: 500;">${c}</span></div>`).join('');
+                    } else {
+                        coursesDisplayHtml = '<div style="color: #999;">Course(s) not found</div>';
                     }
                 }
                 
                 return `
-                <div class="rubric-item">
-                    <div class="rubric-info">
-                        <h4>${rubric.name}</h4>
-                        <p>${rubric.description || 'No description'} • ${rubric.totalPoints} points${rubric.speechType ? ' • ' + rubric.speechType : ''}${courseInfo}</p>
+                <div class="rubric-item" style="background: var(--bg-alt); border-radius: 0.5rem; margin-bottom: 0.75rem; border-left: 4px solid var(--primary); overflow: hidden;">
+                    <!-- Header (clickable to expand) -->
+                    <div onclick="toggleRubricCard('${rubric.id}')" style="padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                                <strong style="font-size: 1.1rem;">${rubric.name}</strong>
+                                ${rubric.speechType ? `<span style="background: var(--primary); color: white; padding: 0.15rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600;">${rubric.speechType}</span>` : ''}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; color: var(--text-light); font-size: 0.9rem;">
+                                <span>${rubric.totalPoints} points</span>
+                                ${courseCount > 0 ? `<span>${courseCount} ${courseCount === 1 ? 'course' : 'courses'}</span>` : '<span style="color: var(--text-light);">No courses</span>'}
+                            </div>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 1rem;">
+                            <!-- Actions menu button -->
+                            <div class="rubric-actions-dropdown" style="position: relative;" onclick="event.stopPropagation();">
+                                <button type="button" onclick="toggleRubricActionsDropdown('${rubric.id}', event); return false;" 
+                                        style="background: none; border: none; padding: 0.5rem; cursor: pointer; border-radius: 0.25rem; color: var(--text-light); transition: background 0.15s; position: relative; z-index: 1;" 
+                                        aria-label="Rubric actions" aria-expanded="false" aria-haspopup="true" title="Rubric actions"
+                                        onmouseover="this.style.background='var(--bg-alt)'" 
+                                        onmouseout="this.style.background='none'">
+                                    <i data-lucide="more-vertical" style="width: 1.25rem; height: 1.25rem;"></i>
+                                </button>
+                                <div class="rubric-actions-menu hidden" id="rubricActionsMenu_${rubric.id}" role="menu" aria-label="Rubric actions" style="background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 180px; padding: 0.25rem 0;">
+                                    <button type="button" id="rubricMenuItem_view_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();viewRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View</button>
+                                    <button type="button" id="rubricMenuItem_edit_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();editRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="edit" style="width:1rem;height:1rem;"></i> Edit</button>
+                                    <button type="button" id="rubricMenuItem_duplicate_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();duplicateRubricUI('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="copy" style="width:1rem;height:1rem;"></i> Duplicate</button>
+                                </div>
+                            </div>
+                            <!-- Expand/collapse chevron -->
+                            <span id="rubricChevron_${rubric.id}" style="font-size: 1.2rem; color: var(--text-light); transition: transform 0.2s;">▼</span>
+                        </div>
                     </div>
-                    <div class="rubric-actions">
-                        <button class="btn-small btn-view" data-rubric-id="${rubric.id}">View</button>
-                        <button class="btn-small btn-edit" data-rubric-id="${rubric.id}">Edit</button>
-                        <button class="btn-small btn-duplicate" data-rubric-id="${rubric.id}">Duplicate</button>
-                        ${rubric.id !== 'default' ? `
-                            <button type="button" class="btn-small btn-danger btn-delete" data-rubric-id="${rubric.id}" aria-label="Delete rubric" title="Delete rubric"><i data-lucide="trash-2" style="width:1.1em;height:1.1em;"></i></button>
-                        ` : ''}
+                    
+                    <!-- Expandable Content (hidden by default) -->
+                    <div id="rubricCardContent_${rubric.id}" class="hidden" style="padding: 0 1rem 1rem 1rem; border-top: 1px solid var(--border);">
+                        <div style="padding-top: 1rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="display: block; margin-bottom: 0.5rem; color: var(--text);">Description:</strong>
+                                <p style="color: var(--text-light); margin: 0; line-height: 1.6;">${rubric.description || 'No description'}</p>
+                            </div>
+                            ${courseCount > 0 ? `
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.5rem; color: var(--text);">Courses:</strong>
+                                <div style="color: var(--text-light);">
+                                    ${coursesDisplayHtml}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
             `;
             }).join('');
             
-            // Re-attach event listeners
-            document.querySelectorAll('.btn-view').forEach(btn => {
-                btn.addEventListener('click', () => viewRubric(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', () => editRubric(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-duplicate').forEach(btn => {
-                btn.addEventListener('click', () => duplicateRubricUI(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    deleteRubricUI(btn.dataset.rubricId);
-                });
-            });
-            
+            // Initialize Lucide icons for the menu buttons and chevrons
             if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: list });
         }
         function onInstructorCourseFilterChange() {
@@ -9034,6 +9250,187 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             log.debug('🔍 Instructor year filter changed');
             applyInstructorFilters();
         }
+        
+        // Toggle instructor filters collapse/expand
+        function toggleInstructorFilters() {
+            const content = document.getElementById('instructorFiltersContent');
+            const chevron = document.getElementById('instructorFiltersChevron');
+            const toolbar = document.getElementById('instructorFiltersToolbar');
+            
+            if (!content || !chevron || !toolbar) return;
+            
+            // Check current state from data attribute or style
+            const isCollapsed = toolbar.getAttribute('data-collapsed') === 'true' || 
+                               content.style.maxHeight === '0px' ||
+                               (content.style.maxHeight === '' && content.offsetHeight === 0);
+            
+            if (isCollapsed) {
+                // Expand
+                // First set padding to get accurate height measurement
+                content.style.padding = '0 0.75rem 0.75rem 0.75rem';
+                // Force reflow to ensure padding is applied
+                content.offsetHeight;
+                const targetHeight = content.scrollHeight;
+                content.style.maxHeight = targetHeight + 'px';
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('instructorFiltersCollapsed', 'false');
+                }
+            } else {
+                // Collapse
+                const currentHeight = content.scrollHeight;
+                content.style.maxHeight = currentHeight + 'px';
+                // Force reflow
+                content.offsetHeight;
+                // Remove padding immediately (no transition) to prevent content from showing
+                content.style.padding = '0';
+                content.style.maxHeight = '0px';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('instructorFiltersCollapsed', 'true');
+                }
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        // Initialize instructor filters collapsed state from localStorage
+        function initInstructorFiltersState() {
+            const toolbar = document.getElementById('instructorFiltersToolbar');
+            const content = document.getElementById('instructorFiltersContent');
+            const chevron = document.getElementById('instructorFiltersChevron');
+            
+            if (!toolbar || !content || !chevron) return;
+            
+            // Check localStorage for saved state (default to collapsed)
+            const savedState = typeof localStorage !== 'undefined' ? localStorage.getItem('instructorFiltersCollapsed') : null;
+            const shouldCollapse = savedState !== 'false'; // Default to collapsed if no saved state
+            
+            if (shouldCollapse) {
+                // Set initial collapsed state
+                content.style.maxHeight = '0px';
+                content.style.padding = '0';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+            } else {
+                // Set initial expanded state
+                // Use setTimeout to ensure content is rendered and visible before measuring
+                setTimeout(() => {
+                    if (toolbar.style.display !== 'none') {
+                        content.style.padding = '0 0.75rem 0.75rem 0.75rem';
+                        // Force reflow
+                        content.offsetHeight;
+                        const targetHeight = content.scrollHeight;
+                        content.style.maxHeight = targetHeight + 'px';
+                    }
+                }, 50);
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        // Toggle rubrics filters collapse/expand
+        function toggleRubricsFilters() {
+            const content = document.getElementById('rubricsFiltersContent');
+            const chevron = document.getElementById('rubricsFiltersChevron');
+            const toolbar = document.getElementById('rubricsFiltersToolbar');
+            
+            if (!content || !chevron || !toolbar) return;
+            
+            // Check current state from data attribute or style
+            const isCollapsed = toolbar.getAttribute('data-collapsed') === 'true' || 
+                               content.style.maxHeight === '0px' ||
+                               (content.style.maxHeight === '' && content.offsetHeight === 0);
+            
+            if (isCollapsed) {
+                // Expand
+                // First set padding to get accurate height measurement
+                content.style.padding = '0 0.75rem 0.75rem 0.75rem';
+                // Force reflow to ensure padding is applied
+                content.offsetHeight;
+                const targetHeight = content.scrollHeight;
+                content.style.maxHeight = targetHeight + 'px';
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('rubricsFiltersCollapsed', 'false');
+                }
+            } else {
+                // Collapse
+                const currentHeight = content.scrollHeight;
+                content.style.maxHeight = currentHeight + 'px';
+                // Force reflow
+                content.offsetHeight;
+                // Remove padding immediately (no transition) to prevent content from showing
+                content.style.padding = '0';
+                content.style.maxHeight = '0px';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('rubricsFiltersCollapsed', 'true');
+                }
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        // Initialize rubrics filters collapsed state from localStorage
+        function initRubricsFiltersState() {
+            const toolbar = document.getElementById('rubricsFiltersToolbar');
+            const content = document.getElementById('rubricsFiltersContent');
+            const chevron = document.getElementById('rubricsFiltersChevron');
+            
+            if (!toolbar || !content || !chevron) return;
+            
+            // Check localStorage for saved state (default to collapsed)
+            const savedState = typeof localStorage !== 'undefined' ? localStorage.getItem('rubricsFiltersCollapsed') : null;
+            const shouldCollapse = savedState !== 'false'; // Default to collapsed if no saved state
+            
+            if (shouldCollapse) {
+                // Set initial collapsed state
+                content.style.maxHeight = '0px';
+                content.style.padding = '0';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+            } else {
+                // Set initial expanded state
+                // Use setTimeout to ensure content is rendered and visible before measuring
+                setTimeout(() => {
+                    if (toolbar.style.display !== 'none') {
+                        content.style.padding = '0 0.75rem 0.75rem 0.75rem';
+                        // Force reflow
+                        content.offsetHeight;
+                        const targetHeight = content.scrollHeight;
+                        content.style.maxHeight = targetHeight + 'px';
+                    }
+                }, 50);
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
         function clearInstructorFilters() {
             log.debug('🧹 Clearing instructor filters');
             const ic = document.getElementById('instructorFilterCourse');
@@ -11334,7 +11731,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
         }
         
-        // Student actions dropdown function (Apple HIG style)
+        // Student actions dropdown function (Apple HIG compliant)
         window.toggleStudentActions = function(studentId, evt) {
             try {
                 const event = evt || window.event;
@@ -11342,89 +11739,110 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     event.stopPropagation();
                     event.preventDefault();
                 }
-            const menu = document.getElementById('studentActionsMenu_' + studentId);
-            if (!menu) {
-                console.warn('Menu not found for student:', studentId);
-                return false;
-            }
-            
-            // Find the button - try multiple methods for reliability
-            let btn = null;
-            if (event && event.target) {
-                // First try: use the event target if it's a button
-                btn = event.target.closest('button');
-            }
-            if (!btn) {
-                // Second try: find by aria-haspopup in the same parent container
-                btn = menu.parentElement?.querySelector('button[aria-haspopup="true"]');
-            }
-            if (!btn) {
-                // Third try: find by onclick attribute containing the function name
-                btn = menu.parentElement?.querySelector(`button[onclick*="toggleStudentActions"]`);
-            }
-            if (!btn) {
-                // Fourth try: find any button in the parent container
-                btn = menu.parentElement?.querySelector('button');
-            }
-            
-            if (!btn) {
-                console.warn('Button not found for student:', studentId, 'Menu parent:', menu.parentElement);
-                return false;
-            }
-            
-            // Close all other student action menus first
-            document.querySelectorAll('.student-actions-menu:not(.hidden)').forEach(m => {
-                if (m.id !== menu.id) {
-                    m.classList.add('hidden');
-                    const b = m.parentElement?.querySelector('button[aria-haspopup="true"]');
-                    if (b) b.setAttribute('aria-expanded', 'false');
+                const menu = document.getElementById('studentActionsMenu_' + studentId);
+                if (!menu) {
+                    console.warn('Menu not found for student:', studentId);
+                    return false;
                 }
-            });
-            
-            const isExpanded = !menu.classList.contains('hidden');
-            if (isExpanded) {
-                menu.classList.add('hidden');
-                btn.setAttribute('aria-expanded', 'false');
-            } else {
-                // Remove hidden class first so we can measure the menu
-                menu.classList.remove('hidden');
-                btn.setAttribute('aria-expanded', 'true');
                 
-                // Position menu using fixed positioning to avoid clipping by table cells
+                // Find the button - try multiple methods for reliability
+                let btn = null;
+                if (event && event.target) {
+                    btn = event.target.closest('button');
+                }
+                if (!btn) {
+                    btn = menu.parentElement?.querySelector('button[aria-haspopup="true"]');
+                }
+                if (!btn) {
+                    btn = menu.parentElement?.querySelector(`button[onclick*="toggleStudentActions"]`);
+                }
+                if (!btn) {
+                    btn = menu.parentElement?.querySelector('button');
+                }
+                
+                if (!btn) {
+                    console.warn('Button not found for student:', studentId, 'Menu parent:', menu.parentElement);
+                    return false;
+                }
+                
+                // Validate button position
                 const btnRect = btn.getBoundingClientRect();
-                menu.style.position = 'fixed';
-                menu.style.right = Math.max(10, window.innerWidth - btnRect.right) + 'px';
-                // Position below button, or above if not enough space
-                const spaceBelow = window.innerHeight - btnRect.bottom;
-                const spaceAbove = btnRect.top;
-                const estimatedMenuHeight = 200; // Approximate menu height
+                if (btnRect.width === 0 || btnRect.height === 0) {
+                    console.warn('Button has zero dimensions for student:', studentId);
+                    return false;
+                }
                 
-                if (spaceBelow >= estimatedMenuHeight || spaceBelow > spaceAbove) {
-                    // Position below button
-                    menu.style.top = (btnRect.bottom + 5) + 'px';
-                    menu.style.bottom = 'auto';
+                // Close all other student action menus first
+                document.querySelectorAll('.student-actions-menu:not(.hidden)').forEach(m => {
+                    if (m.id !== menu.id) {
+                        closeStudentMenu(m);
+                    }
+                });
+                
+                const isExpanded = !menu.classList.contains('hidden');
+                if (isExpanded) {
+                    // Closing menu
+                    closeStudentMenu(menu);
+                    btn.setAttribute('aria-expanded', 'false');
+                    btn.focus();
                 } else {
-                    // Position above button
-                    menu.style.top = 'auto';
-                    menu.style.bottom = Math.max(10, window.innerHeight - btnRect.top + 5) + 'px';
+                    // Opening menu - use unified positioning
+                    positionActionMenu(menu, btn);
+                    btn.setAttribute('aria-expanded', 'true');
+                    
+                    // Get menu items for keyboard navigation
+                    const menuItems = Array.from(menu.querySelectorAll('button[role="menuitem"], button'));
+                    
+                    // Set up keyboard navigation
+                    const keyboardHandler = (e) => {
+                        handleMenuKeyboard(e, menu, menuItems, () => {
+                            closeStudentMenu(menu);
+                            btn.setAttribute('aria-expanded', 'false');
+                            btn.focus();
+                        });
+                    };
+                    
+                    menu._keyboardHandler = keyboardHandler;
+                    menu.setAttribute('data-keyboard-handler', 'true');
+                    document.addEventListener('keydown', keyboardHandler, true);
+                    
+                    // Initialize icons in the menu
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: menu });
+                    }
+                    
+                    // Focus first menu item
+                    if (menuItems.length > 0) {
+                        setActiveMenuItem(menu, menuItems, 0);
+                    }
                 }
-                
-                menu.style.left = 'auto';
-                menu.style.zIndex = '99999';
-                menu.style.maxHeight = (window.innerHeight - 20) + 'px';
-                menu.style.overflowY = 'auto';
-                menu.style.display = 'block';
-                menu.style.visibility = 'visible';
-                
-                // Initialize icons in the menu
-                if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                    lucide.createIcons({ root: menu });
-                }
-            }
                 return false;
             } catch (error) {
                 console.error('Error in toggleStudentActions:', error);
                 return false;
+            }
+        }
+        
+        function closeStudentMenu(menu) {
+            // Restore menu to original parent before closing
+            if (menu._originalParent && menu.parentElement !== menu._originalParent) {
+                menu._originalParent.appendChild(menu);
+                menu._originalParent = null;
+            }
+            menu.classList.add('hidden');
+            menu.style.visibility = 'hidden';
+            
+            // Remove keyboard handler
+            const handler = menu._keyboardHandler;
+            if (handler) {
+                document.removeEventListener('keydown', handler, true);
+                menu._keyboardHandler = null;
+                menu.removeAttribute('data-keyboard-handler');
+            }
+            
+            const btn = menu.parentElement?.querySelector('button[aria-haspopup="true"]');
+            if (btn) {
+                btn.setAttribute('aria-expanded', 'false');
             }
         }
         
@@ -11434,6 +11852,17 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 document.querySelectorAll('.student-actions-menu:not(.hidden)').forEach(m => {
                     m.classList.add('hidden');
                     const btn = m.parentElement?.querySelector('button[aria-haspopup="true"]');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+        
+        // Close rubric actions menus when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.rubric-actions-menu') && !e.target.closest('button[onclick*="toggleRubricActionsDropdown"]')) {
+                document.querySelectorAll('.rubric-actions-menu:not(.hidden)').forEach(m => {
+                    closeRubricMenu(m);
+                    const btn = m.closest('.rubric-actions-dropdown')?.querySelector('button[aria-haspopup="true"]');
                     if (btn) btn.setAttribute('aria-expanded', 'false');
                 });
             }
@@ -11452,6 +11881,377 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 closeEvalActionsDropdown(evalId);
                 document.removeEventListener('click', (e) => closeEvalActionsDropdownOnOutsideClick(e, evalId), true);
             }
+        }
+        
+        // Unified menu positioning function (Apple HIG compliant)
+        // Positions menu below button, right-aligned by default, with smart fallbacks
+        // Uses requestAnimationFrame for layout stability and re-validates button position
+        function positionActionMenu(menu, button) {
+            // Store original parent for restoration on close
+            if (!menu._originalParent) {
+                menu._originalParent = menu.parentElement;
+            }
+            // Teleport to body to escape overflow:hidden and transform containing blocks
+            if (menu.parentElement !== document.body) {
+                document.body.appendChild(menu);
+            }
+            // Apply all positioning properties atomically to prevent reflow
+            // This prevents the browser from rendering the menu in normal document flow,
+            // which causes layout shifts that affect button position measurements
+            menu.style.cssText = 'position: fixed !important; visibility: hidden !important; display: block !important; left: -9999px !important; top: -9999px !important; margin: 0 !important;';
+            menu.classList.remove('hidden');
+            
+            // Force initial layout calculation
+            void menu.offsetWidth;
+            void menu.offsetHeight;
+            
+            // Use requestAnimationFrame to ensure layout is stable before positioning
+            requestAnimationFrame(() => {
+                // CRITICAL: Since menu is now in document.body, we can't find button from menu's parent
+                // Use the button parameter that was passed in, but verify it's still valid
+                let currentButton = button;
+                
+                // Verify the button is still valid and in the DOM
+                if (!currentButton || !currentButton.isConnected) {
+                    // Try to find button using menu's original parent as fallback
+                    if (menu._originalParent) {
+                        const dropdown = menu._originalParent.closest('.rubric-actions-dropdown, .student-actions-menu, [class*="actions-dropdown"]') || menu._originalParent;
+                        const foundBtn = dropdown.querySelector('button[aria-haspopup="true"]') || 
+                                       dropdown.querySelector('button[onclick*="toggle"]') ||
+                                       dropdown.querySelector('button');
+                        if (foundBtn && foundBtn.isConnected) {
+                            currentButton = foundBtn;
+                        }
+                    }
+                    
+                    if (!currentButton || !currentButton.isConnected) {
+                        console.warn('Button is not connected to DOM');
+                        menu.classList.add('hidden');
+                        return;
+                    }
+                }
+                
+                // Get button position right before final positioning (single call)
+                const btnRect = currentButton.getBoundingClientRect();
+                
+                // Validate button position
+                if (btnRect.width === 0 || btnRect.height === 0) {
+                    console.warn('Button has invalid dimensions for positioning');
+                    menu.classList.add('hidden');
+                    return;
+                }
+                
+                // Get accurate menu dimensions (re-measure after layout)
+                const menuWidth = Math.max(menu.offsetWidth || 180, 180);
+                const menuHeight = menu.offsetHeight || 150;
+                
+                // Default: below button, right-aligned with button's right edge
+                let left = btnRect.right - menuWidth;
+                let top = btnRect.bottom + 4; // 4px gap below button
+                
+                // Adjust if menu would go off left edge
+                if (left < 10) {
+                    // Try aligning to button's left edge instead
+                    left = btnRect.left;
+                    // If still off screen, use minimum margin
+                    if (left + menuWidth > window.innerWidth - 10) {
+                        left = window.innerWidth - menuWidth - 10;
+                    }
+                }
+                
+                // Adjust if menu would go off right edge
+                if (left + menuWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - menuWidth - 10;
+                    // If still too wide, align to left edge of viewport
+                    if (left < 10) {
+                        left = 10;
+                    }
+                }
+                
+                // Adjust if menu would go off bottom edge
+                if (top + menuHeight > window.innerHeight - 10) {
+                    // Position above button instead
+                    top = btnRect.top - menuHeight - 4; // 4px gap above button
+                    // If still off screen at top, use top of viewport with max height
+                    if (top < 10) {
+                        top = 10;
+                        menu.style.maxHeight = (window.innerHeight - 20) + 'px';
+                        menu.style.overflowY = 'auto';
+                    } else {
+                        menu.style.maxHeight = '';
+                        menu.style.overflowY = '';
+                    }
+                } else {
+                    menu.style.maxHeight = '';
+                    menu.style.overflowY = '';
+                }
+                
+                // Apply final position
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                menu.style.right = 'auto';
+                menu.style.bottom = 'auto';
+                menu.style.zIndex = '99999';
+                menu.style.visibility = 'visible';
+            });
+        }
+        
+        // Keyboard navigation handler for menus
+        function handleMenuKeyboard(event, menu, items, closeMenuFn) {
+            const currentIndex = parseInt(menu.getAttribute('data-active-index') || '0');
+            
+            switch(event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    const nextIndex = (currentIndex + 1) % items.length;
+                    setActiveMenuItem(menu, items, nextIndex, true); // true = allow focus for keyboard nav
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    const prevIndex = (currentIndex - 1 + items.length) % items.length;
+                    setActiveMenuItem(menu, items, prevIndex, true); // true = allow focus for keyboard nav
+                    break;
+                case 'Enter':
+                case ' ':
+                    event.preventDefault();
+                    if (items[currentIndex] && !items[currentIndex].hasAttribute('aria-disabled')) {
+                        items[currentIndex].click();
+                    }
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    if (closeMenuFn) closeMenuFn();
+                    break;
+                case 'Home':
+                    event.preventDefault();
+                    setActiveMenuItem(menu, items, 0, true); // true = allow focus for keyboard nav
+                    break;
+                case 'End':
+                    event.preventDefault();
+                    setActiveMenuItem(menu, items, items.length - 1, true); // true = allow focus for keyboard nav
+                    break;
+            }
+        }
+        
+        // Set active menu item for keyboard navigation
+        // allowFocus: if true, will focus the item (for keyboard navigation). If false, uses aria-activedescendant only (for initial state)
+        function setActiveMenuItem(menu, items, index, allowFocus = false) {
+            // Remove active state from all items
+            items.forEach((item, i) => {
+                item.classList.remove('menu-item-active');
+                item.setAttribute('aria-selected', 'false');
+            });
+            
+            // Set active item
+            if (items[index]) {
+                items[index].classList.add('menu-item-active');
+                items[index].setAttribute('aria-selected', 'true');
+                menu.setAttribute('data-active-index', index.toString());
+                
+                if (items[index].id) {
+                    menu.setAttribute('aria-activedescendant', items[index].id);
+                }
+                
+                // Only focus if explicitly allowed (for keyboard navigation)
+                // This prevents the blue outline from showing on initial menu open
+                if (allowFocus) {
+                    items[index].focus();
+                }
+            }
+        }
+        
+        // Rubric actions dropdown functions (Apple HIG compliant)
+        function toggleRubricActionsDropdown(rubricId, event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            
+            const menu = document.getElementById('rubricActionsMenu_' + rubricId);
+            if (!menu) {
+                console.warn('Menu not found for rubricId:', rubricId);
+                return false;
+            }
+            
+            // Store original parent if not already stored (needed if menu was moved to body)
+            if (!menu._originalParent && menu.parentElement && menu.parentElement !== document.body) {
+                menu._originalParent = menu.parentElement;
+            }
+            
+            // If menu is in body, restore it to original parent first so we can find dropdown
+            if (menu.parentElement === document.body && menu._originalParent) {
+                menu._originalParent.appendChild(menu);
+            }
+            
+            // Find button - try to find dropdown container
+            let dropdown = menu.closest('.rubric-actions-dropdown');
+            if (!dropdown) {
+                // Fallback: use stored original parent (which should be the dropdown div)
+                if (menu._originalParent) {
+                    dropdown = menu._originalParent;
+                } else {
+                    // Last resort: search for dropdown containing this menu
+                    const menuId = menu.id;
+                    if (menuId && menuId.startsWith('rubricActionsMenu_')) {
+                        const allDropdowns = document.querySelectorAll('.rubric-actions-dropdown');
+                        for (const dd of allDropdowns) {
+                            if (dd.querySelector('#' + menuId)) {
+                                dropdown = dd;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!dropdown) {
+                console.warn('Dropdown container not found for rubricId:', rubricId);
+                return false;
+            }
+            
+            // Find button in the dropdown - try multiple selectors
+            let btn = dropdown.querySelector('button[aria-haspopup="true"]');
+            if (!btn) {
+                btn = dropdown.querySelector('button[onclick*="toggleRubricActionsDropdown"]');
+            }
+            if (!btn) {
+                btn = dropdown.querySelector('button');
+            }
+            
+            if (!btn) {
+                console.warn('Button not found for rubricId:', rubricId);
+                return false;
+            }
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.rubric-actions-menu:not(.hidden)').forEach(m => {
+                if (m.id !== 'rubricActionsMenu_' + rubricId) {
+                    closeRubricMenu(m);
+                }
+            });
+            
+            const isExpanded = !menu.classList.contains('hidden');
+            
+            if (!isExpanded) {
+                // Validate button dimensions before positioning
+                const btnRect = btn.getBoundingClientRect();
+                if (btnRect.width === 0 || btnRect.height === 0) {
+                    console.warn('Button has invalid dimensions before positioning:', rubricId, 'width:', btnRect.width, 'height:', btnRect.height);
+                    return false;
+                }
+                
+                // Opening menu - use shared positioning function
+                positionActionMenu(menu, btn);
+                
+                // Update button state
+                btn.setAttribute('aria-expanded', 'true');
+                
+                // Get menu items for keyboard navigation
+                const menuItems = Array.from(menu.querySelectorAll('button[role="menuitem"], button'));
+                
+                    // Set up keyboard navigation
+                    const keyboardHandler = (e) => {
+                        handleMenuKeyboard(e, menu, menuItems, () => {
+                            closeRubricMenu(menu);
+                            btn.setAttribute('aria-expanded', 'false');
+                            btn.focus();
+                        });
+                    };
+                    
+                    menu._keyboardHandler = keyboardHandler;
+                    menu.setAttribute('data-keyboard-handler', 'true');
+                    document.addEventListener('keydown', keyboardHandler, true);
+                
+                // Initialize icons
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons({ root: menu });
+                }
+                
+                // Focus first menu item
+                if (menuItems.length > 0) {
+                    setActiveMenuItem(menu, menuItems, 0);
+                }
+            } else {
+                // Closing menu
+                closeRubricMenu(menu);
+                btn.setAttribute('aria-expanded', 'false');
+                btn.focus();
+            }
+            
+            return false;
+        }
+        
+        function closeRubricMenu(menu) {
+            // Restore menu to original parent before closing
+            if (menu._originalParent && menu.parentElement !== menu._originalParent) {
+                menu._originalParent.appendChild(menu);
+                menu._originalParent = null;
+            }
+            menu.classList.add('hidden');
+            menu.style.visibility = 'hidden';
+            
+            // Remove keyboard handler
+            const handler = menu._keyboardHandler;
+            if (handler) {
+                document.removeEventListener('keydown', handler, true);
+                menu._keyboardHandler = null;
+                menu.removeAttribute('data-keyboard-handler');
+            }
+            
+            const btn = menu.closest('.rubric-actions-dropdown')?.querySelector('button[aria-haspopup="true"]');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+        
+        function closeRubricActionsDropdown(rubricId) {
+            const menu = document.getElementById('rubricActionsMenu_' + rubricId);
+            if (menu) {
+                closeRubricMenu(menu);
+                const btn = menu.closest('.rubric-actions-dropdown')?.querySelector('button[aria-haspopup="true"]');
+                if (btn) {
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+        
+        // Rubric description and courses toggle functions
+        function toggleRubricDescription(rubricId) {
+            const content = document.getElementById('rubricDesc_' + rubricId);
+            const chevron = document.getElementById('descChevron_' + rubricId);
+            if (!content || !chevron) return;
+            
+            const isExpanded = !content.classList.contains('hidden');
+            content.classList.toggle('hidden', isExpanded);
+            chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(90deg)';
+            
+            // Update icon if needed
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: chevron });
+            }
+        }
+        
+        function toggleRubricCourses(rubricId) {
+            const content = document.getElementById('rubricCourses_' + rubricId);
+            const chevron = document.getElementById('coursesChevron_' + rubricId);
+            if (!content || !chevron) return;
+            
+            const isExpanded = !content.classList.contains('hidden');
+            content.classList.toggle('hidden', isExpanded);
+            chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(90deg)';
+            
+            // Update icon if needed
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: chevron });
+            }
+        }
+        
+        // Toggle rubric card expansion (for new card format)
+        function toggleRubricCard(rubricId) {
+            const content = document.getElementById('rubricCardContent_' + rubricId);
+            const chevron = document.getElementById('rubricChevron_' + rubricId);
+            if (!content || !chevron) return;
+            
+            const isExpanded = !content.classList.contains('hidden');
+            content.classList.toggle('hidden', isExpanded);
+            chevron.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
         }
         
         // Expandable Search Functions
@@ -12596,13 +13396,31 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 unifiedSearchBar.style.display = 'block';
             }
             
-            // Show/hide filter toolbar (only for courses tab)
+            // Show/hide filter toolbar (for courses tab)
             const filterToolbar = document.getElementById('instructorFiltersToolbar');
             if (filterToolbar) {
                 filterToolbar.style.display = tabId === 'courses' ? 'block' : 'none';
-                // Initialize Lucide icons in filter toolbar
-                if (tabId === 'courses' && typeof lucide !== 'undefined' && lucide.createIcons) {
-                    lucide.createIcons({ root: filterToolbar });
+                // Initialize Lucide icons in filter toolbar and collapsed state
+                if (tabId === 'courses') {
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: filterToolbar });
+                    }
+                    // Initialize collapsed state from localStorage
+                    initInstructorFiltersState();
+                }
+            }
+            
+            // Show/hide rubrics filter toolbar (only for rubrics tab)
+            const rubricsFilterToolbar = document.getElementById('rubricsFiltersToolbar');
+            if (rubricsFilterToolbar) {
+                rubricsFilterToolbar.style.display = tabId === 'rubrics' ? 'block' : 'none';
+                // Initialize Lucide icons in filter toolbar and collapsed state
+                if (tabId === 'rubrics') {
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: rubricsFilterToolbar });
+                    }
+                    // Initialize collapsed state from localStorage
+                    initRubricsFiltersState();
                 }
             }
             
@@ -26941,7 +27759,8 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     name: course.name,
                     code: course.section || null,
                     semester: course.semester || null,
-                    year: parseInt(course.year) || null
+                    year: parseInt(course.year) || null,
+                    notes: course.notes || null
                 };
                 
                 // If course has Supabase ID, update it
@@ -26953,6 +27772,29 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         .select();
                     
                     if (error) {
+                        // If notes column is missing, try without it
+                        if (error.message && error.message.includes("Could not find the 'notes' column")) {
+                            console.warn('Notes column not found. Saving without notes field.');
+                            const courseDataWithoutNotes = {
+                                instructor_id: creatorId,
+                                name: course.name,
+                                code: course.section || null,
+                                semester: course.semester || null,
+                                year: parseInt(course.year) || null
+                            };
+                            const { data: retryData, error: retryError } = await supabaseClient
+                                .from('courses')
+                                .update(courseDataWithoutNotes)
+                                .eq('id', course.supabaseId)
+                                .select();
+                            
+                            if (retryError) {
+                                console.error('Failed to update course:', retryError);
+                                return null;
+                            }
+                            console.log('✓ Course updated in Supabase (without notes column)');
+                            return retryData[0];
+                        }
                         console.error('Failed to update course:', error);
                         return null;
                     }
@@ -26965,6 +27807,28 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         .select();
                     
                     if (error) {
+                        // If notes column is missing, try without it
+                        if (error.message && error.message.includes("Could not find the 'notes' column")) {
+                            console.warn('Notes column not found. Saving without notes field.');
+                            const courseDataWithoutNotes = {
+                                instructor_id: creatorId,
+                                name: course.name,
+                                code: course.section || null,
+                                semester: course.semester || null,
+                                year: parseInt(course.year) || null
+                            };
+                            const { data: retryData, error: retryError } = await supabaseClient
+                                .from('courses')
+                                .insert([courseDataWithoutNotes])
+                                .select();
+                            
+                            if (retryError) {
+                                console.error('Failed to save course:', retryError);
+                                return null;
+                            }
+                            console.log('✓ Course saved to Supabase (without notes column)');
+                            return retryData[0];
+                        }
                         console.error('Failed to save course:', error);
                         return null;
                     }
@@ -27868,12 +28732,28 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             }
         }
 
-        // Populate course filter dropdown in Rubrics section
-        function populateCourseFilter() {
+        // Populate course filter dropdown in Rubrics section (respects Term/Year filters)
+        function populateRubricCourseFilter() {
             const classes = JSON.parse(getUserItem('classes') || '[]');
-            const filter = document.getElementById('courseFilter');
+            const filter = document.getElementById('rubricFilterCourse');
             
             if (!filter) return;
+            
+            // Get current Term and Year filter values
+            const termFilter = document.getElementById('rubricFilterSemester')?.value || '';
+            const yearFilter = document.getElementById('rubricFilterYear')?.value || '';
+            
+            // Filter classes by Term and Year if filters are set
+            let filteredClasses = classes;
+            if (termFilter) {
+                filteredClasses = filteredClasses.filter(c => c.semester === termFilter);
+            }
+            if (yearFilter) {
+                filteredClasses = filteredClasses.filter(c => c.year?.toString() === yearFilter);
+            }
+            
+            // Store current selection
+            const currentValue = filter.value;
             
             // Clear existing options except "All Courses"
             filter.innerHTML = '<option value="">All Courses</option>';
@@ -27883,7 +28763,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             
             // Group classes by course name + semester + year
             const courseGroups = {};
-            classes.forEach(cls => {
+            filteredClasses.forEach(cls => {
                 const courseKey = `${cls.name}|${cls.semester}|${cls.year}`;
                 if (!courseGroups[courseKey]) {
                     courseGroups[courseKey] = {
@@ -27904,11 +28784,115 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 option.textContent = `${group.name} - ${group.semester} ${group.year}`;
                 filter.appendChild(option);
             });
+            
+            // Restore selection if it still exists
+            if (currentValue && Array.from(filter.options).some(opt => opt.value === currentValue)) {
+                filter.value = currentValue;
+            } else {
+                filter.value = '';
+            }
+        }
+        
+        // Populate Term filter dropdown from available courses
+        function populateRubricTermFilter() {
+            const classes = JSON.parse(getUserItem('classes') || '[]');
+            const filter = document.getElementById('rubricFilterSemester');
+            
+            if (!filter) return;
+            
+            // Get unique terms from courses
+            const terms = [...new Set(classes.map(c => c.semester).filter(Boolean))].sort();
+            const currentValue = filter.value;
+            
+            // Clear and populate
+            filter.innerHTML = '<option value="">All Terms</option>';
+            ['Spring', 'Summer', 'Fall', 'Winter'].forEach(term => {
+                if (terms.includes(term)) {
+                    const option = document.createElement('option');
+                    option.value = term;
+                    option.textContent = term;
+                    filter.appendChild(option);
+                }
+            });
+            
+            // Restore selection if it still exists
+            if (currentValue && Array.from(filter.options).some(opt => opt.value === currentValue)) {
+                filter.value = currentValue;
+            }
+        }
+        
+        // Populate Year filter dropdown from available courses
+        function populateRubricYearFilter() {
+            const classes = JSON.parse(getUserItem('classes') || '[]');
+            const filter = document.getElementById('rubricFilterYear');
+            
+            if (!filter) return;
+            
+            // Get unique years from courses
+            const years = [...new Set(classes.map(c => c.year?.toString()).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+            const currentValue = filter.value;
+            
+            // Clear and populate
+            filter.innerHTML = '<option value="">All Years</option>';
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                filter.appendChild(option);
+            });
+            
+            // Restore selection if it still exists
+            if (currentValue && Array.from(filter.options).some(opt => opt.value === currentValue)) {
+                filter.value = currentValue;
+            }
+        }
+        
+        // Initialize all rubric filters
+        function initializeRubricFilters() {
+            populateRubricTermFilter();
+            populateRubricYearFilter();
+            populateRubricCourseFilter();
         }
 
-        // Filter rubrics display based on selected course
-        async function filterRubricsByCourse() {
-            const filterValue = document.getElementById('courseFilter').value;
+        // Filter change handlers for rubrics
+        function onRubricCourseFilterChange() {
+            filterRubrics();
+        }
+        
+        function onRubricTermFilterChange() {
+            // Update course dropdown to show only courses matching the term
+            populateRubricCourseFilter();
+            // Apply filters
+            filterRubrics();
+        }
+        
+        function onRubricYearFilterChange() {
+            // Update course dropdown to show only courses matching the year
+            populateRubricCourseFilter();
+            // Apply filters
+            filterRubrics();
+        }
+        
+        function clearRubricFilters() {
+            const courseFilter = document.getElementById('rubricFilterCourse');
+            const termFilter = document.getElementById('rubricFilterSemester');
+            const yearFilter = document.getElementById('rubricFilterYear');
+            
+            if (courseFilter) courseFilter.value = '';
+            if (termFilter) termFilter.value = '';
+            if (yearFilter) yearFilter.value = '';
+            
+            // Repopulate course filter with all courses
+            populateRubricCourseFilter();
+            // Apply filters (will show all rubrics)
+            filterRubrics();
+        }
+        
+        // Filter rubrics display based on selected filters (Course, Term, Year) with AND logic
+        async function filterRubrics() {
+            const courseFilterValue = document.getElementById('rubricFilterCourse')?.value || '';
+            const termFilterValue = document.getElementById('rubricFilterSemester')?.value || '';
+            const yearFilterValue = document.getElementById('rubricFilterYear')?.value || '';
             
             // Initialize rubrics storage if needed
             initializeRubrics();
@@ -27918,21 +28902,41 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             if (!Array.isArray(allRubrics)) allRubrics = [];
             const classes = JSON.parse(getUserItem('classes') || '[]');
             
-            // Filter rubrics based on selection
+            // First, determine which course IDs match the Term/Year filters
+            let matchingCourseIds = new Set();
+            
+            if (termFilterValue || yearFilterValue) {
+                // Filter courses by Term and/or Year
+                classes.forEach(cls => {
+                    let matches = true;
+                    if (termFilterValue && cls.semester !== termFilterValue) {
+                        matches = false;
+                    }
+                    if (yearFilterValue && cls.year?.toString() !== yearFilterValue) {
+                        matches = false;
+                    }
+                    if (matches) {
+                        matchingCourseIds.add(cls.id);
+                    }
+                });
+            }
+            
+            // Filter rubrics based on all selected filters (AND logic)
             let filteredRubrics = allRubrics;
             
-            if (filterValue === 'unassigned') {
+            // Filter by Course (if selected)
+            if (courseFilterValue === 'unassigned') {
                 // Show only rubrics with no courses assigned
-                filteredRubrics = allRubrics.filter(r => {
+                filteredRubrics = filteredRubrics.filter(r => {
                     const hasOldCourseId = r.courseId && r.courseId !== '';
                     const hasNewCourseIds = r.courseIds && Array.isArray(r.courseIds) && r.courseIds.length > 0;
                     return !hasOldCourseId && !hasNewCourseIds;
                 });
-            } else if (filterValue !== '') {
-                // Filter by course - filterValue contains comma-separated IDs for all sections of a course
-                const courseIdsToMatch = filterValue.split(',');
+            } else if (courseFilterValue !== '') {
+                // Filter by specific course - courseFilterValue contains comma-separated IDs
+                const courseIdsToMatch = courseFilterValue.split(',');
                 
-                filteredRubrics = allRubrics.filter(rubric => {
+                filteredRubrics = filteredRubrics.filter(rubric => {
                     // Get rubric's course IDs (handle both old and new format)
                     let rubricCourseIds = [];
                     if (rubric.courseIds && Array.isArray(rubric.courseIds)) {
@@ -27943,6 +28947,28 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     
                     // Check if rubric is assigned to any of the course sections
                     return rubricCourseIds.some(id => courseIdsToMatch.includes(id));
+                });
+            }
+            
+            // Filter by Term/Year (if selected, but no specific course selected)
+            // If a course is selected, it already respects Term/Year via the dropdown filtering
+            if ((termFilterValue || yearFilterValue) && courseFilterValue === '') {
+                filteredRubrics = filteredRubrics.filter(rubric => {
+                    // Get rubric's course IDs
+                    let rubricCourseIds = [];
+                    if (rubric.courseIds && Array.isArray(rubric.courseIds)) {
+                        rubricCourseIds = rubric.courseIds;
+                    } else if (rubric.courseId) {
+                        rubricCourseIds = [rubric.courseId];
+                    }
+                    
+                    // If rubric has no courses assigned, exclude it when filtering by Term/Year
+                    if (rubricCourseIds.length === 0) {
+                        return false;
+                    }
+                    
+                    // Check if any of the rubric's courses match the Term/Year filters
+                    return rubricCourseIds.some(id => matchingCourseIds.has(id));
                 });
             }
             
@@ -27966,13 +28992,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     courseIdsToDisplay = [rubric.courseId];
                 }
                 
+                // Format courses for expandable section (one per line)
+                let coursesDisplayHtml = '';
+                const courseCount = courseIdsToDisplay.length;
                 if (courseIdsToDisplay.length > 0) {
                     const courses = courseIdsToDisplay
                         .map(id => classes.find(c => c.id === id))
                         .filter(c => c);
                     
                     if (courses.length > 0) {
-                        // Group by course name
                         const courseGroups = {};
                         courses.forEach(course => {
                             if (!courseGroups[course.name]) {
@@ -27981,7 +29009,6 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             courseGroups[course.name].push(course);
                         });
                         
-                        // Format display
                         const courseDisplays = Object.keys(courseGroups).map(courseName => {
                             const sections = courseGroups[courseName];
                             const firstCourse = sections[0];
@@ -27990,46 +29017,69 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             return `${courseName} (${firstCourse.semester} ${firstCourse.year}) - ${sectionText}`;
                         });
                         
-                        courseInfo = ` • <span style="color: var(--primary); font-weight: 500;">${courseDisplays.join(' • ')}</span>`;
-                    } else if (courseIdsToDisplay.length > 0) {
-                        courseInfo = ' • <span style="color: #999;">Course(s) not found</span>';
+                        coursesDisplayHtml = courseDisplays.map(c => `<div style="margin-bottom: 0.25rem;"><span style="color: var(--primary); font-weight: 500;">${c}</span></div>`).join('');
+                    } else {
+                        coursesDisplayHtml = '<div style="color: #999;">Course(s) not found</div>';
                     }
                 }
                 
                 return `
-                <div class="rubric-item">
-                    <div class="rubric-info">
-                        <h4>${rubric.name}</h4>
-                        <p>${rubric.description || 'No description'} • ${rubric.totalPoints} points${rubric.speechType ? ' • ' + rubric.speechType : ''}${courseInfo}</p>
+                <div class="rubric-item" style="background: var(--bg-alt); border-radius: 0.5rem; margin-bottom: 0.75rem; border-left: 4px solid var(--primary); overflow: hidden;">
+                    <!-- Header (clickable to expand) -->
+                    <div onclick="toggleRubricCard('${rubric.id}')" style="padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                                <strong style="font-size: 1.1rem;">${rubric.name}</strong>
+                                ${rubric.speechType ? `<span style="background: var(--primary); color: white; padding: 0.15rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600;">${rubric.speechType}</span>` : ''}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; color: var(--text-light); font-size: 0.9rem;">
+                                <span>${rubric.totalPoints} points</span>
+                                ${courseCount > 0 ? `<span>${courseCount} ${courseCount === 1 ? 'course' : 'courses'}</span>` : '<span style="color: var(--text-light);">No courses</span>'}
+                            </div>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 1rem;">
+                            <!-- Actions menu button -->
+                            <div class="rubric-actions-dropdown" style="position: relative;" onclick="event.stopPropagation();">
+                                <button type="button" onclick="toggleRubricActionsDropdown('${rubric.id}', event); return false;" 
+                                        style="background: none; border: none; padding: 0.5rem; cursor: pointer; border-radius: 0.25rem; color: var(--text-light); transition: background 0.15s; position: relative; z-index: 1;" 
+                                        aria-label="Rubric actions" aria-expanded="false" aria-haspopup="true" title="Rubric actions"
+                                        onmouseover="this.style.background='var(--bg-alt)'" 
+                                        onmouseout="this.style.background='none'">
+                                    <i data-lucide="more-vertical" style="width: 1.25rem; height: 1.25rem;"></i>
+                                </button>
+                                <div class="rubric-actions-menu hidden" id="rubricActionsMenu_${rubric.id}" role="menu" aria-label="Rubric actions" style="background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 180px; padding: 0.25rem 0;">
+                                    <button type="button" id="rubricMenuItem_view_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();viewRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View</button>
+                                    <button type="button" id="rubricMenuItem_edit_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();editRubric('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="edit" style="width:1rem;height:1rem;"></i> Edit</button>
+                                    <button type="button" id="rubricMenuItem_duplicate_${rubric.id}" role="menuitem" onclick="if(event)event.stopPropagation();duplicateRubricUI('${rubric.id}');closeRubricActionsDropdown('${rubric.id}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="copy" style="width:1rem;height:1rem;"></i> Duplicate</button>
+                                </div>
+                            </div>
+                            <!-- Expand/collapse chevron -->
+                            <span id="rubricChevron_${rubric.id}" style="font-size: 1.2rem; color: var(--text-light); transition: transform 0.2s;">▼</span>
+                        </div>
                     </div>
-                    <div class="rubric-actions">
-                        <button class="btn-small btn-view" data-rubric-id="${rubric.id}">View</button>
-                        <button class="btn-small btn-edit" data-rubric-id="${rubric.id}">Edit</button>
-                        <button class="btn-small btn-duplicate" data-rubric-id="${rubric.id}">Duplicate</button>
-                        ${rubric.id !== 'default' ? `
-                            <button type="button" class="btn-small btn-danger btn-delete" data-rubric-id="${rubric.id}" aria-label="Delete rubric" title="Delete rubric"><i data-lucide="trash-2" style="width:1.1em;height:1.1em;"></i></button>
-                        ` : ''}
+                    
+                    <!-- Expandable Content (hidden by default) -->
+                    <div id="rubricCardContent_${rubric.id}" class="hidden" style="padding: 0 1rem 1rem 1rem; border-top: 1px solid var(--border);">
+                        <div style="padding-top: 1rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="display: block; margin-bottom: 0.5rem; color: var(--text);">Description:</strong>
+                                <p style="color: var(--text-light); margin: 0; line-height: 1.6;">${rubric.description || 'No description'}</p>
+                            </div>
+                            ${courseCount > 0 ? `
+                            <div>
+                                <strong style="display: block; margin-bottom: 0.5rem; color: var(--text);">Courses:</strong>
+                                <div style="color: var(--text-light);">
+                                    ${coursesDisplayHtml}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
             `;
             }).join('');
             
-            // Re-attach event listeners to all buttons
-            document.querySelectorAll('.btn-view').forEach(btn => {
-                btn.addEventListener('click', () => viewRubric(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', () => editRubric(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-duplicate').forEach(btn => {
-                btn.addEventListener('click', () => duplicateRubricUI(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', () => deleteRubricUI(btn.dataset.rubricId));
-            });
+            // Initialize Lucide icons for the menu buttons and chevrons
             if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: list });
         }
 
@@ -30727,33 +31777,59 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
 
         // ===== CLASSES MANAGEMENT =====
         /** Build HTML for one course card (shared by flat and grouped render). */
-        async function buildOneCourseCard(cls) {
+        async function buildOneCourseCard(cls, evalCountMap = null) {
             let evalCount = 0;
-            if (supabaseClient && cls.supabaseId) {
+            // Use pre-loaded evaluation count if available (from batch load)
+            if (evalCountMap && cls.supabaseId && evalCountMap.has(cls.supabaseId)) {
+                evalCount = evalCountMap.get(cls.supabaseId);
+            } else if (supabaseClient && cls.supabaseId) {
+                // Fallback: load individually if not pre-loaded (shouldn't happen in optimized path)
                 const supabaseEvals = await loadEvaluationsFromSupabase(cls.supabaseId);
                 if (supabaseEvals) {
                     const visible = supabaseEvals.filter(ev => !isDeletedId('deleted_evaluation_ids', ev.id));
                     evalCount = visible.length;
                 }
             }
+            // Add evaluations from roster (localStorage data)
             if (cls.roster) {
                 cls.roster.forEach(student => {
                     if (student.evaluations) evalCount += student.evaluations.length;
                 });
             }
             const courseIdForMenu = String(cls.id || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            
+            // Apply color customization (Apple HIG: subtle accent)
+            const customization = cls.customization || {};
+            const preset = customization.colorId 
+                ? COURSE_COLOR_PRESETS.find(p => p.id === customization.colorId)
+                : null;
+            
+            // Build card style with Apple HIG subtle accent
+            let cardStyle = "position: relative;";
+            let headerStyle = "";
+            
+            if (preset) {
+                // Apple HIG: Subtle left border accent + light background tint
+                cardStyle += ` border-left: 6px solid ${preset.primary};`;
+                cardStyle += ` background: linear-gradient(to right, ${preset.light} 0%, var(--card) 20%);`;
+                headerStyle = `color: ${preset.primary};`;
+            } else {
+                headerStyle = `color: var(--primary);`;
+            }
+            
             return `
-            <div class="class-card" data-class-id="${cls.id}" style="position: relative;">
+            <div class="class-card" data-class-id="${cls.id}" style="${cardStyle}">
                 <button type="button" onclick="var e=event||window.event;if(e){e.stopPropagation();e.preventDefault();}window.toggleCourseActionsMenu('${courseIdForMenu}',e);return false;" class="course-actions-menu-trigger" style="position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; padding: 0.5rem; cursor: pointer; border-radius: 0.25rem; color: var(--text-light); transition: background 0.15s; z-index: 10;" aria-label="Course actions" title="Course actions" aria-haspopup="true" aria-expanded="false" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='none'">
                     <i data-lucide="more-vertical" style="width: 1.25rem; height: 1.25rem;"></i>
                 </button>
                 <div id="courseActionsMenu_${courseIdForMenu}" class="course-actions-menu hidden" style="position: absolute; right: 0.75rem; top: 2.5rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 180px; padding: 0.25rem 0;">
                     <button type="button" onclick="if(event)event.stopPropagation();window.editCourse('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit</button>
+                    <button type="button" onclick="if(event)event.stopPropagation();window.customizeCourseColor('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="palette" style="width:1rem;height:1rem;"></i> Customize Color</button>
                     <button type="button" onclick="if(event)event.stopPropagation();window.moveCourse('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="move" style="width:1rem;height:1rem;"></i> Move</button>
                     <div style="border-top: 1px solid var(--border); margin: 0.25rem 0;"></div>
                     <button type="button" onclick="if(event)event.stopPropagation();window.deleteCourse('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error, #dc2626); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
                 </div>
-                <div class="class-header">${escapeHtml(cls.name)}</div>
+                <div class="class-header" style="${headerStyle}">${escapeHtml(cls.name)}</div>
                 <div class="class-meta">
                     ${escapeHtml(cls.semester || '')} ${escapeHtml((cls.year || '').toString())} • Section ${escapeHtml(cls.section || '')}
                 </div>
@@ -30762,25 +31838,98 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 </p>
                 <div class="class-stats">
                     <div class="stat">
-                        <div class="stat-value">${(cls.roster || []).length}</div>
+                        <div class="stat-value" style="color: ${preset ? preset.primary : 'var(--primary)'};">${(cls.roster || []).length}</div>
                         <div class="stat-label">Students</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value">${evalCount}</div>
+                        <div class="stat-value" style="color: ${preset ? preset.primary : 'var(--primary)'};">${evalCount}</div>
                         <div class="stat-label">Evaluations</div>
                     </div>
                 </div>
             </div>
             `;
         }
+        /** Batch load evaluation counts for all courses to avoid N queries */
+        async function batchLoadEvaluationCounts(courses) {
+            if (!supabaseClient || !currentUser || !courses || courses.length === 0) {
+                return new Map();
+            }
+            
+            // Extract all course Supabase IDs
+            const courseIds = courses
+                .map(c => c.supabaseId)
+                .filter(id => id != null);
+            
+            if (courseIds.length === 0) {
+                return new Map();
+            }
+            
+            try {
+                // Single query to get all evaluations for all courses
+                let query = supabaseClient
+                    .from('evaluations')
+                    .select('course_id, id')
+                    .eq('instructor_id', currentUser.id)
+                    .is('deleted_locally_at', null)
+                    .in('course_id', courseIds);
+                
+                const { data, error } = await query;
+                
+                if (error) {
+                    console.warn('Failed to batch load evaluation counts:', error);
+                    return new Map();
+                }
+                
+                // Get locally deleted evaluation IDs
+                const deletedEvalIds = new Set(JSON.parse(getUserItem('deleted_evaluation_ids') || '[]'));
+                
+                // Count evaluations per course, excluding locally deleted ones
+                const countMap = new Map();
+                
+                // Initialize all courses with 0
+                courseIds.forEach(id => {
+                    countMap.set(id, 0);
+                });
+                
+                // Count only non-deleted evaluations
+                if (data) {
+                    data.forEach(eval => {
+                        if (!deletedEvalIds.has(eval.id)) {
+                            const count = countMap.get(eval.course_id) || 0;
+                            countMap.set(eval.course_id, count + 1);
+                        }
+                    });
+                }
+                
+                return countMap;
+            } catch (error) {
+                console.warn('Error batch loading evaluation counts:', error);
+                return new Map();
+            }
+        }
+        
         /** Render course cards into classesGrid. For instructor Current/Previous: classesToRender is flat array (current) or array of { label, courses } (previous). */
-        function renderInstructorCoursesGrid(classesToRender) {
+        async function renderInstructorCoursesGrid(classesToRender) {
             const grid = document.getElementById('classesGrid');
             if (!grid) return;
             const isGrouped = Array.isArray(classesToRender) && classesToRender.length > 0 && classesToRender[0] && typeof classesToRender[0].label === 'string' && Array.isArray(classesToRender[0].courses);
             // Cache the rendered HTML after rendering
             const cacheKey = _coursesViewTab;
             const dataHash = hashCoursesData(classesToRender);
+            
+            // Collect all courses for batch loading
+            let allCourses = [];
+            if (isGrouped) {
+                classesToRender.forEach(group => {
+                    allCourses = allCourses.concat(group.courses || []);
+                });
+            } else {
+                allCourses = classesToRender || [];
+            }
+            
+            // Batch load evaluation counts for all courses (single query instead of N queries)
+            const evalCountMap = await batchLoadEvaluationCounts(allCourses);
+            
             if (isGrouped) {
                 const groupPromises = classesToRender.map(async group => {
                     // Apply saved order to courses in this group
@@ -30795,7 +31944,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             console.warn('Failed to parse course order:', e);
                         }
                     }
-                    const cards = await Promise.all(courses.map(cls => buildOneCourseCard(cls)));
+                    const cards = await Promise.all(courses.map(cls => buildOneCourseCard(cls, evalCountMap)));
                     return '<div class="courses-group" style="margin-bottom: 1.5rem;"><h3 style="font-size: 1rem; margin: 0 0 0.75rem 0; color: var(--text-light); border-bottom: 1px solid var(--border); padding-bottom: 0.35rem;">' + escapeHtml(group.label) + '</h3><div class="classes-grid" style="display: grid; gap: 1rem;">' + cards.join('') + '</div></div>';
                 });
                 Promise.all(groupPromises).then(htmlParts => {
@@ -30819,7 +31968,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                     console.warn('Failed to parse course order:', e);
                 }
             }
-            Promise.all(classes.map(cls => buildOneCourseCard(cls))).then(cards => {
+            Promise.all(classes.map(cls => buildOneCourseCard(cls, evalCountMap))).then(cards => {
                 const html = cards.join('');
                 grid.innerHTML = html;
                 attachCourseCardListeners(grid);
@@ -30838,29 +31987,57 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Try Supabase first
             const supabaseCourses = await loadCoursesFromSupabase();
             
+            // Load existing localStorage courses to preserve notes and customization that might not be in Supabase
+            const existingClasses = JSON.parse(getUserItem('classes') || '[]');
+            const notesMap = new Map();
+            const customizationMap = new Map();
+            existingClasses.forEach(c => {
+                if (c.supabaseId) {
+                    if (c.notes) {
+                        notesMap.set(c.supabaseId, c.notes);
+                    }
+                    if (c.customization) {
+                        customizationMap.set(c.supabaseId, c.customization);
+                    }
+                }
+            });
+            
             let classes = [];
             
             if (supabaseCourses && supabaseCourses.length > 0) {
                 // Convert Supabase format to app format
-                classes = supabaseCourses.map(course => ({
-                    id: course.id,
-                    supabaseId: course.id,
-                    name: course.name,
-                    semester: course.semester || 'Fall',
-                    section: course.code || '001',
-                    year: course.year?.toString() || '2024',
-                    notes: '',
-                    roster: (course.course_students || []).filter(s => !s.deleted_locally_at && !isDeletedId('deleted_student_ids', course.id + ':' + s.id)).map(student => ({
-                        supabaseId: student.id,
-                        firstName: student.first_name,
-                        lastName: student.last_name,
-                        name: `${student.first_name} ${student.last_name}`,
-                        email: student.email || '',
-                        studentId: student.student_id || '',
+                classes = supabaseCourses.map(course => {
+                    // Use Supabase notes if available, otherwise fall back to localStorage notes
+                    const supabaseNotes = course.notes || '';
+                    const localNotes = notesMap.get(course.id) || '';
+                    const finalNotes = supabaseNotes || localNotes;
+                    
+                    // Use Supabase customization if available, otherwise fall back to localStorage customization
+                    const supabaseCustomization = course.customization || null;
+                    const localCustomization = customizationMap.get(course.id) || null;
+                    const finalCustomization = supabaseCustomization || localCustomization;
+                    
+                    return {
+                        id: course.id,
+                        supabaseId: course.id,
+                        name: course.name,
+                        semester: course.semester || 'Fall',
+                        section: course.code || '001',
+                        year: course.year?.toString() || '2024',
+                        notes: finalNotes,
+                        customization: finalCustomization || undefined,
+                        roster: (course.course_students || []).filter(s => !s.deleted_locally_at && !isDeletedId('deleted_student_ids', course.id + ':' + s.id)).map(student => ({
+                            supabaseId: student.id,
+                            firstName: student.first_name,
+                            lastName: student.last_name,
+                            name: `${student.first_name} ${student.last_name}`,
+                            email: student.email || '',
+                            studentId: student.student_id || '',
+                            evaluations: []
+                        })),
                         evaluations: []
-                    })),
-                    evaluations: []
-                }));
+                    };
+                });
                 classes = classes.filter(c => !isDeletedId('deleted_course_ids', c.id));
                 
                 // Store in user-scoped localStorage so viewClass can find them
@@ -31213,10 +32390,10 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                                     <button type="button" onclick="toggleStudentActions('${studentId}', event); return false;" class="btn-icon-only" style="padding: 0.375rem; background: transparent; color: var(--text-light); border: 1px solid var(--border); border-radius: 0.25rem; cursor: pointer; transition: all 0.15s; position: relative; z-index: 1;" aria-label="Student actions" aria-expanded="false" aria-haspopup="true" title="Actions" onmouseover="this.style.background='var(--bg-alt)'; this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)'; this.style.color='var(--text-light)'">
                                         <i data-lucide="more-horizontal" style="width:1.125rem;height:1.125rem;"></i>
                                     </button>
-                                    <div id="studentActionsMenu_${studentId}" class="student-actions-menu hidden">
-                                        <button type="button" onclick="addEvaluationForStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="plus-circle" style="width:1rem;height:1rem;"></i> Add Evaluation</button>
-                                        ${evalCount > 0 ? `<button type="button" onclick="viewStudentEvals('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluations</button>` : ''}
-                                        <button type="button" onclick="editStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit Student</button>
+                                    <div id="studentActionsMenu_${studentId}" class="student-actions-menu hidden" role="menu" aria-label="Student actions">
+                                        <button type="button" id="studentMenuItem_add_${studentId}" role="menuitem" onclick="addEvaluationForStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="plus-circle" style="width:1rem;height:1rem;"></i> Add Evaluation</button>
+                                        ${evalCount > 0 ? `<button type="button" id="studentMenuItem_view_${studentId}" role="menuitem" onclick="viewStudentEvals('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluations</button>` : ''}
+                                        <button type="button" id="studentMenuItem_edit_${studentId}" role="menuitem" onclick="editStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit Student</button>
                                     </div>
                                 </div>
                             </td>
@@ -31399,100 +32576,13 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             // Initialize rubrics storage if needed
             initializeRubrics();
             
-            // Populate course filter dropdown
-            populateCourseFilter();
+            // Populate all filter dropdowns
+            initializeRubricFilters();
             
-            // Get all rubrics from storage (now async)
-            let allRubrics = await getAllRubrics();
-            if (!Array.isArray(allRubrics)) allRubrics = [];
-            
-            // Get all classes for course name lookup
-            const classes = JSON.parse(getUserItem('classes') || '[]');
-            
-            const list = document.getElementById('rubricsList');
-            if (!list) return; // Exit if element doesn't exist yet
-            
-            list.innerHTML = allRubrics.map(rubric => {
-                // Get course info - handle both new courseIds array and old single courseId
-                let courseInfo = '';
-                let courseIdsToDisplay = [];
-                
-                if (rubric.courseIds && Array.isArray(rubric.courseIds) && rubric.courseIds.length > 0) {
-                    courseIdsToDisplay = rubric.courseIds;
-                } else if (rubric.courseId) {
-                    // Backward compatibility with single courseId
-                    courseIdsToDisplay = [rubric.courseId];
-                }
-                
-                if (courseIdsToDisplay.length > 0) {
-                    const courses = courseIdsToDisplay
-                        .map(id => classes.find(c => c.id === id))
-                        .filter(c => c); // Remove undefined (deleted courses)
-                    
-                    if (courses.length > 0) {
-                        // Group by course name
-                        const courseGroups = {};
-                        courses.forEach(course => {
-                            if (!courseGroups[course.name]) {
-                                courseGroups[course.name] = [];
-                            }
-                            courseGroups[course.name].push(course);
-                        });
-                        
-                        // Format display: "CMST 210 (Fall 2024) - Sections 001, 002"
-                        const courseDisplays = Object.keys(courseGroups).map(courseName => {
-                            const sections = courseGroups[courseName];
-                            const firstCourse = sections[0];
-                            const sectionNums = sections.map(s => s.section).join(', ');
-                            const sectionText = sections.length > 1 ? `Sections ${sectionNums}` : `Section ${sectionNums}`;
-                            return `${courseName} (${firstCourse.semester} ${firstCourse.year}) - ${sectionText}`;
-                        });
-                        
-                        courseInfo = ` • <span style="color: var(--primary); font-weight: 500;">${courseDisplays.join(' • ')}</span>`;
-                    } else if (courseIdsToDisplay.length > 0) {
-                        courseInfo = ' • <span style="color: #999;">Course(s) not found</span>';
-                    }
-                }
-                
-                return `
-                <div class="rubric-item">
-                    <div class="rubric-info">
-                        <h4>${rubric.name}</h4>
-                        <p>${rubric.description || 'No description'} • ${rubric.totalPoints} points${rubric.speechType ? ' • ' + rubric.speechType : ''}${courseInfo}</p>
-                    </div>
-                    <div class="rubric-actions">
-                        <button class="btn-small btn-view" data-rubric-id="${rubric.id}">View</button>
-                        <button class="btn-small btn-edit" data-rubric-id="${rubric.id}">Edit</button>
-                        <button class="btn-small btn-duplicate" data-rubric-id="${rubric.id}">Duplicate</button>
-                        ${rubric.id !== 'default' ? `
-                            <button type="button" class="btn-small btn-danger btn-delete" data-rubric-id="${rubric.id}" aria-label="Delete rubric" title="Delete rubric"><i data-lucide="trash-2" style="width:1.1em;height:1.1em;"></i></button>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            }).join('');
-            
-            // Add event listeners to all buttons
-            document.querySelectorAll('.btn-view').forEach(btn => {
-                btn.addEventListener('click', () => viewRubric(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', () => editRubric(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-duplicate').forEach(btn => {
-                btn.addEventListener('click', () => duplicateRubricUI(btn.dataset.rubricId));
-            });
-            
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    console.log('Delete button clicked via event listener!');
-                    deleteRubricUI(btn.dataset.rubricId);
-                });
-            });
-            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: list });
+            // Apply filters (will show all rubrics if no filters are set)
+            await filterRubrics();
         }
+        
 
         async function viewRubric(rubricId) {
             const rubric = await getRubricById(rubricId);
@@ -31754,6 +32844,10 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             if (supabaseIdEl) supabaseIdEl.value = '';
             document.getElementById('createRubricForm').reset();
             
+            // Hide delete button when creating new rubric
+            const deleteBtn = document.getElementById('rubricDeleteBtn');
+            if (deleteBtn) deleteBtn.style.display = 'none';
+            
             // Populate course selector
             populateCourseSelector();
             // Populate textbook selector
@@ -31781,6 +32875,11 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             document.getElementById('categoriesContainer').innerHTML = '';
             const exContainer = document.getElementById('exampleVideosContainer');
             if (exContainer) exContainer.innerHTML = '';
+            
+            // Hide delete button when canceling
+            const deleteBtn = document.getElementById('rubricDeleteBtn');
+            if (deleteBtn) deleteBtn.style.display = 'none';
+            
             if (window._createRubricPreviousFocus && typeof window._createRubricPreviousFocus.focus === 'function' && window._createRubricPreviousFocus.isConnected) window._createRubricPreviousFocus.focus();
         }
 
@@ -32934,6 +34033,21 @@ Return ONLY the JSON object, nothing else.`;
             const supabaseIdEl = document.getElementById('editingRubricSupabaseId');
             if (supabaseIdEl) supabaseIdEl.value = rubric.supabaseId || rubric.id || '';
             
+            // Show/hide delete button based on whether it's the default rubric
+            const deleteBtn = document.getElementById('rubricDeleteBtn');
+            if (deleteBtn) {
+                if (rubric.id && rubric.id !== 'default') {
+                    deleteBtn.style.display = 'flex';
+                    deleteBtn.setAttribute('onclick', `deleteRubricUI('${rubric.id}')`);
+                    // Initialize Lucide icon if needed
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: deleteBtn });
+                    }
+                } else {
+                    deleteBtn.style.display = 'none';
+                }
+            }
+            
             // Normalize from Supabase snake_case if needed
             const gradeScale = rubric.gradeScale || rubric.grade_scale || {};
             const totalPoints = rubric.totalPoints ?? rubric.total_points ?? 100;
@@ -33507,12 +34621,13 @@ Return ONLY the JSON object, nothing else.`;
                                     <button type="button" onclick="toggleEvaluationMenu('${menuId}', event); return false;" style="padding: 0.4rem; background: transparent; color: var(--text-light); border: 1px solid var(--border); border-radius: 0.25rem; cursor: pointer; transition: all 0.15s; position: relative; z-index: 1;" aria-label="Evaluation actions" aria-expanded="false" aria-haspopup="true" title="Evaluation actions" onmouseover="this.style.background='var(--bg-alt)'; this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)'; this.style.color='var(--text-light)'">
                                         <i data-lucide="more-horizontal" style="width:1.1em;height:1.1em;"></i>
                                     </button>
-                                    <div id="${menuId}" class="evaluation-actions-menu hidden">
-                                        <button type="button" onclick="event.stopPropagation(); toggleEvaluation('${uniqueId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluation</button>
-                                        <button type="button" onclick="handleEditEvaluation('${evalId}', '${studentId}', '${uniqueId}', '${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit</button>
-                                        <button type="button" onclick="event.stopPropagation(); openMoveEvalModal('${evalId}', '${currentClassId || ''}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="move" style="width:1rem;height:1rem;"></i> Move to Different Student</button>
-                                        <button type="button" onclick="event.stopPropagation(); downloadSavedEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="file-down" style="width:1rem;height:1rem;"></i> Download</button>
-                                        <button type="button" onclick="event.stopPropagation(); deleteEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
+                                    <div id="${menuId}" class="evaluation-actions-menu hidden" role="menu" aria-label="Evaluation actions">
+                                        <button type="button" id="evalMenuItem_view_${evalId}" role="menuitem" onclick="event.stopPropagation(); toggleEvaluation('${uniqueId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluation</button>
+                                        <button type="button" id="evalMenuItem_edit_${evalId}" role="menuitem" onclick="handleEditEvaluation('${evalId}', '${studentId}', '${uniqueId}', '${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit</button>
+                                        <button type="button" id="evalMenuItem_move_${evalId}" role="menuitem" onclick="event.stopPropagation(); openMoveEvalModal('${evalId}', '${currentClassId || ''}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="move" style="width:1rem;height:1rem;"></i> Move to Different Student</button>
+                                        <button type="button" id="evalMenuItem_download_${evalId}" role="menuitem" onclick="event.stopPropagation(); downloadSavedEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="file-down" style="width:1rem;height:1rem;"></i> Download</button>
+                                        <div class="menu-separator"></div>
+                                        <button type="button" id="evalMenuItem_delete_${evalId}" role="menuitem" data-destructive="true" onclick="event.stopPropagation(); deleteEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
                                     </div>
                                 </div>
                                 <span id="${uniqueId}-arrow" style="font-size: 1.2rem; color: var(--text-light);">▼</span>
@@ -33815,9 +34930,7 @@ Return ONLY the JSON object, nothing else.`;
         // Make function globally available
         window.handleEditEvaluation = handleEditEvaluation;
         
-        // Toggle evaluation actions menu (three dots)
-        // Follows Apple Human Interface Guidelines: menu opens below and aligns to left edge of button
-        // Includes visual indicator arrow to show which button the menu belongs to
+        // Toggle evaluation actions menu (three dots) - Apple HIG compliant
         function toggleEvaluationMenu(menuId, evt) {
             try {
                 const event = evt || window.event;
@@ -33832,14 +34945,11 @@ Return ONLY the JSON object, nothing else.`;
                 }
                 
                 // Find the button that triggered this menu
-                // First try: use event target directly (most reliable)
                 let btn = null;
                 if (event && event.target) {
-                    // Check if event target is the button itself
                     if (event.target.tagName === 'BUTTON' && event.target.hasAttribute('aria-haspopup')) {
                         btn = event.target;
                     } else {
-                        // Otherwise, find the closest button
                         btn = event.target.closest('button[aria-haspopup="true"]');
                     }
                 }
@@ -33863,157 +34973,109 @@ Return ONLY the JSON object, nothing else.`;
                     return false;
                 }
                 
+                // Validate button position
+                const btnRect = btn.getBoundingClientRect();
+                if (btnRect.width === 0 && btnRect.height === 0) {
+                    console.warn('Button has zero dimensions, may be hidden:', menuId);
+                }
+                
                 // Close all other evaluation menus first
                 document.querySelectorAll('.evaluation-actions-menu').forEach(m => {
                     if (m.id !== menuId) {
-                        m.classList.add('hidden');
-                        // Reset any inline styles that might interfere
-                        m.style.position = '';
-                        m.style.left = '';
-                        m.style.right = '';
-                        m.style.top = '';
-                        m.style.bottom = '';
-                        m.style.marginTop = '';
-                        m.style.transform = '';
-                        const otherBtn = m.parentElement?.querySelector('button[aria-haspopup="true"]');
-                        if (otherBtn) {
-                            otherBtn.setAttribute('aria-expanded', 'false');
-                            otherBtn.style.borderColor = '';
-                            otherBtn.style.boxShadow = '';
-                        }
+                        closeEvaluationMenu(m);
                     }
                 });
                 
                 // Toggle this menu
                 const isHidden = menu.classList.contains('hidden');
                 if (isHidden) {
-                    // Use fixed positioning to escape any overflow containers that clip the menu
-                    // Get button's viewport position (works regardless of scroll or parent containers)
-                    // Force a reflow to ensure button position is current
-                    void btn.offsetWidth;
-                    const btnRect = btn.getBoundingClientRect();
-                    
-                    // Validate button position
-                    if (btnRect.width === 0 && btnRect.height === 0) {
-                        console.warn('Button has zero dimensions, may be hidden:', menuId);
-                    }
-                    
-                    // Ensure menu is in the DOM and get its dimensions before positioning
-                    // First, make it visible but off-screen to measure
-                    menu.style.position = 'fixed';
-                    menu.style.visibility = 'hidden';
-                    menu.style.display = 'block';
-                    menu.style.left = '-9999px';
-                    menu.style.top = '-9999px';
-                    menu.classList.remove('hidden');
-                    
-                    // Force browser to calculate layout
-                    void menu.offsetWidth; // Force reflow
-                    
-                    // Now get actual dimensions
-                    const menuWidth = Math.max(menu.offsetWidth, 200);
-                    const menuHeight = menu.offsetHeight || 150;
-                    
-                    // Position menu to the left of the button, vertically centered
-                    // Align right edge of menu with left edge of button
-                    let leftPos = btnRect.left - menuWidth - 8; // 8px gap between menu and button
-                    let topPos = btnRect.top + (btnRect.height / 2) - (menuHeight / 2); // Vertically center
-                    
-                    // Adjust if menu would go off left edge of screen
-                    if (leftPos < 10) {
-                        // If not enough space on left, position to the right of button instead
-                        leftPos = btnRect.right + 8;
-                        // But if that also goes off screen, just align to left edge of viewport
-                        if (leftPos + menuWidth > window.innerWidth - 10) {
-                            leftPos = 10;
-                        }
-                    }
-                    
-                    // Adjust vertical position if menu would go off top of screen
-                    if (topPos < 10) {
-                        topPos = 10;
-                        menu.style.maxHeight = (window.innerHeight - 20) + 'px';
-                        menu.style.overflowY = 'auto';
-                    } 
-                    // Adjust if menu would go off bottom of screen
-                    else if (topPos + menuHeight > window.innerHeight - 10) {
-                        topPos = window.innerHeight - menuHeight - 10;
-                        // If still too tall, position at top with max height
-                        if (topPos < 10) {
-                            topPos = 10;
-                            menu.style.maxHeight = (window.innerHeight - 20) + 'px';
-                            menu.style.overflowY = 'auto';
-                        } else {
-                            menu.style.maxHeight = '';
-                            menu.style.overflowY = '';
-                        }
-                    } else {
-                        // Menu fits vertically, but ensure it doesn't exceed viewport if content changes
-                        const maxHeight = window.innerHeight - topPos - 20;
-                        if (maxHeight < menuHeight) {
-                            menu.style.maxHeight = maxHeight + 'px';
-                            menu.style.overflowY = 'auto';
-                        } else {
-                            menu.style.maxHeight = '';
-                            menu.style.overflowY = '';
-                        }
-                    }
-                    
-                    // Set final position using fixed positioning (escapes overflow containers)
-                    menu.style.position = 'fixed';
-                    menu.style.left = leftPos + 'px';
-                    menu.style.top = topPos + 'px';
-                    menu.style.right = 'auto';
-                    menu.style.bottom = 'auto';
-                    menu.style.marginTop = '0';
-                    menu.style.marginLeft = '0';
-                    menu.style.marginRight = '0';
-                    menu.style.marginBottom = '0';
-                    menu.style.zIndex = '10000'; // High z-index to ensure it's above everything
-                    menu.style.visibility = 'visible';
-                    menu.style.display = 'block';
-                    menu.style.transform = 'none';
-                    menu.style.width = menuWidth + 'px';
-                    menu.style.minWidth = '200px';
-                    
-                    // Ensure menu is visible (already removed hidden class above)
-                    // Double-check the menu is actually in the DOM
-                    if (!menu.isConnected) {
-                        console.error('Menu is not in DOM:', menuId);
-                        return false;
-                    }
-                    
-                    // Force another reflow to ensure positioning is applied
-                    void menu.offsetHeight;
+                    // Opening menu - use unified positioning
+                    positionActionMenu(menu, btn);
                     
                     // Highlight the button to show which one the menu belongs to
                     btn.setAttribute('aria-expanded', 'true');
                     const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#007AFF';
                     btn.style.borderColor = primaryColor;
-                    btn.style.boxShadow = `0 0 0 2px ${primaryColor}33`; // 33 = 20% opacity in hex
+                    btn.style.boxShadow = `0 0 0 2px ${primaryColor}33`;
                     btn.style.backgroundColor = 'var(--bg-alt)';
+                    
+                    // Get menu items for keyboard navigation
+                    const menuItems = Array.from(menu.querySelectorAll('button[role="menuitem"], button'));
+                    
+                    // Set up keyboard navigation
+                    const keyboardHandler = (e) => {
+                        handleMenuKeyboard(e, menu, menuItems, () => {
+                            closeEvaluationMenu(menu);
+                            btn.setAttribute('aria-expanded', 'false');
+                            btn.style.borderColor = '';
+                            btn.style.boxShadow = '';
+                            btn.style.backgroundColor = '';
+                            btn.focus();
+                        });
+                    };
+                    
+                    menu._keyboardHandler = keyboardHandler;
+                    menu.setAttribute('data-keyboard-handler', 'true');
+                    document.addEventListener('keydown', keyboardHandler, true);
+                    
+                    // Initialize icons
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: menu });
+                    }
+                    
+                    // Focus first menu item
+                    if (menuItems.length > 0) {
+                        setActiveMenuItem(menu, menuItems, 0);
+                    }
                 } else {
-                    menu.classList.add('hidden');
-                    // Reset positioning styles when closing to prevent conflicts
-                    menu.style.position = '';
-                    menu.style.left = '';
-                    menu.style.right = '';
-                    menu.style.top = '';
-                    menu.style.bottom = '';
-                    menu.style.marginTop = '';
-                    menu.style.transform = '';
-                    menu.style.maxHeight = '';
-                    menu.style.overflowY = '';
-                    menu.style.width = '';
+                    // Closing menu
+                    closeEvaluationMenu(menu);
                     btn.setAttribute('aria-expanded', 'false');
                     btn.style.borderColor = '';
                     btn.style.boxShadow = '';
                     btn.style.backgroundColor = '';
+                    btn.focus();
                 }
                 return false;
             } catch (error) {
                 console.error('Error in toggleEvaluationMenu:', error);
                 return false;
+            }
+        }
+        
+        function closeEvaluationMenu(menu) {
+            // Restore menu to original parent before closing
+            if (menu._originalParent && menu.parentElement !== menu._originalParent) {
+                menu._originalParent.appendChild(menu);
+                menu._originalParent = null;
+            }
+            menu.classList.add('hidden');
+            menu.style.visibility = 'hidden';
+            menu.style.position = '';
+            menu.style.left = '';
+            menu.style.right = '';
+            menu.style.top = '';
+            menu.style.bottom = '';
+            menu.style.marginTop = '';
+            menu.style.transform = '';
+            menu.style.maxHeight = '';
+            menu.style.overflowY = '';
+            menu.style.width = '';
+            
+            // Remove keyboard handler
+            const handler = menu._keyboardHandler;
+            if (handler) {
+                document.removeEventListener('keydown', handler, true);
+                menu._keyboardHandler = null;
+                menu.removeAttribute('data-keyboard-handler');
+            }
+            
+            const btn = menu.parentElement?.querySelector('button[aria-haspopup="true"]');
+            if (btn) {
+                btn.setAttribute('aria-expanded', 'false');
+                btn.style.borderColor = '';
+                btn.style.boxShadow = '';
+                btn.style.backgroundColor = '';
             }
         }
         
@@ -34153,6 +35215,211 @@ Return ONLY the JSON object, nothing else.`;
             document.getElementById('editCourseForm').reset();
         }
         
+        // ===== COURSE COLOR CUSTOMIZATION =====
+        window.customizeCourseColor = function(courseId) {
+            const classes = JSON.parse(getUserItem('classes') || '[]');
+            const course = classes.find(c => c.id === courseId);
+            if (!course) {
+                if (typeof showAnalyticsToast === 'function') showAnalyticsToast('Course not found.', 4000);
+                else alert('Course not found');
+                return;
+            }
+            
+            document.getElementById('customizeCourseColorId').value = courseId;
+            selectedCourseColor = course.customization?.colorId || null;
+            
+            // Render color presets
+            renderColorPresets();
+            
+            // Update preview
+            updateCourseColorPreview(course);
+            
+            // Show modal
+            const modal = document.getElementById('customizeCourseColorModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons({ root: modal });
+            }
+        };
+        
+        function renderColorPresets() {
+            const container = document.getElementById('courseColorPresets');
+            if (!container) return;
+            
+            container.innerHTML = COURSE_COLOR_PRESETS.map(preset => {
+                const isSelected = selectedCourseColor === preset.id;
+                return `
+                    <button 
+                        type="button"
+                        onclick="selectCourseColor('${preset.id}')"
+                        aria-label="Select ${preset.name} color"
+                        style="
+                            width: 100%; 
+                            aspect-ratio: 1; 
+                            border-radius: 0.75rem; 
+                            border: ${isSelected ? '3px solid var(--primary)' : '2px solid var(--border)'}; 
+                            background: ${preset.primary}; 
+                            cursor: pointer; 
+                            transition: all 0.2s;
+                            position: relative;
+                            min-height: 60px;
+                        "
+                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'"
+                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
+                    >
+                        ${isSelected ? '<i data-lucide="check" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1.5rem; height: 1.5rem; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"></i>' : ''}
+                    </button>
+                `;
+            }).join('');
+            
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: container });
+            }
+        }
+        
+        function selectCourseColor(colorId) {
+            selectedCourseColor = colorId;
+            renderColorPresets();
+            
+            // Update preview
+            const courseId = document.getElementById('customizeCourseColorId').value;
+            const classes = JSON.parse(getUserItem('classes') || '[]');
+            const course = classes.find(c => c.id === courseId);
+            if (course) {
+                const preset = COURSE_COLOR_PRESETS.find(p => p.id === colorId);
+                if (preset) {
+                    updateCourseColorPreview({ ...course, customization: { colorId: colorId, ...preset } });
+                }
+            }
+        }
+        
+        function updateCourseColorPreview(course) {
+            const preview = document.getElementById('customizeCourseColorPreview');
+            if (!preview) return;
+            
+            const customization = course.customization || {};
+            const preset = customization.colorId 
+                ? COURSE_COLOR_PRESETS.find(p => p.id === customization.colorId)
+                : null;
+            
+            // Apply subtle styling (Apple HIG: accent, not overwhelming)
+            let previewStyle = "background: var(--card); border: 1px solid var(--border);";
+            
+            if (preset) {
+                // Left border accent + light background tint
+                previewStyle += ` border-left: 6px solid ${preset.primary};`;
+                previewStyle += ` background: linear-gradient(to right, ${preset.light} 0%, var(--card) 15%);`;
+            }
+            
+            preview.style.cssText = previewStyle;
+            
+            // Update preview content
+            preview.innerHTML = `
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: ${preset ? preset.primary : 'var(--primary)'};">
+                        ${escapeHtml(course.name || 'Course Name')}
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 1rem;">
+                        ${escapeHtml(course.semester || '')} ${escapeHtml((course.year || '').toString())} • Section ${escapeHtml(course.section || '')}
+                    </div>
+                    <div style="display: flex; gap: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: ${preset ? preset.primary : 'var(--primary)'};">${(course.roster || []).length}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light);">Students</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: ${preset ? preset.primary : 'var(--primary)'};">0</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light);">Evaluations</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function resetCourseColor() {
+            selectedCourseColor = null;
+            renderColorPresets();
+            
+            const courseId = document.getElementById('customizeCourseColorId').value;
+            const classes = JSON.parse(getUserItem('classes') || '[]');
+            const course = classes.find(c => c.id === courseId);
+            if (course) {
+                updateCourseColorPreview(course);
+            }
+        }
+        
+        async function saveCourseColor() {
+            const courseId = document.getElementById('customizeCourseColorId').value;
+            if (!courseId) return;
+            
+            const classes = JSON.parse(getUserItem('classes') || '[]');
+            const course = classes.find(c => c.id === courseId);
+            if (!course) return;
+            
+            // Update customization
+            if (!course.customization) {
+                course.customization = {};
+            }
+            
+            if (selectedCourseColor) {
+                const preset = COURSE_COLOR_PRESETS.find(p => p.id === selectedCourseColor);
+                if (preset) {
+                    course.customization.colorId = selectedCourseColor;
+                    course.customization.primary = preset.primary;
+                    course.customization.light = preset.light;
+                    course.customization.dark = preset.dark;
+                }
+            } else {
+                // Reset to default
+                delete course.customization.colorId;
+                delete course.customization.primary;
+                delete course.customization.light;
+                delete course.customization.dark;
+            }
+            
+            // Save to localStorage
+            const classIndex = classes.findIndex(c => c.id === courseId);
+            if (classIndex !== -1) {
+                classes[classIndex] = course;
+                setUserItem('classes', JSON.stringify(classes));
+            }
+            
+            // Save to Supabase
+            if (supabaseClient && course.supabaseId) {
+                try {
+                    await supabaseClient
+                        .from('courses')
+                        .update({ customization: course.customization })
+                        .eq('id', course.supabaseId);
+                } catch (error) {
+                    console.warn('Failed to save customization to Supabase:', error);
+                    // Continue even if Supabase save fails - it's saved locally
+                }
+            }
+            
+            // Invalidate cache and refresh
+            if (typeof _coursesGridCache !== 'undefined') {
+                _coursesGridCache = {
+                    current: { html: null, dataHash: null },
+                    previous: { html: null, dataHash: null }
+                };
+                const customTabs = getCustomTabs();
+                customTabs.forEach(tab => {
+                    _coursesGridCache[tab.id] = { html: null, dataHash: null };
+                });
+            }
+            
+            closeCustomizeCourseColorModal();
+            if (typeof showAnalyticsToast === 'function') showAnalyticsToast('Course color updated.', 3000);
+            await loadClasses();
+        }
+        
+        function closeCustomizeCourseColorModal() {
+            const modal = document.getElementById('customizeCourseColorModal');
+            if (modal) modal.style.display = 'none';
+            selectedCourseColor = null;
+        }
+        
         async function saveEditedCourse() {
             const courseId = document.getElementById('editCourseId').value;
             if (!courseId) {
@@ -34179,12 +35446,16 @@ Return ONLY the JSON object, nothing else.`;
             const year = document.getElementById('editCourseYear').value;
             const notes = document.getElementById('editCourseNotes').value.trim();
             
-            // Update course object
+            // Update course object (preserve customization)
             course.name = name;
             course.semester = semester;
             course.section = section;
             course.year = year;
             course.notes = notes;
+            // Preserve customization if it exists
+            if (!course.customization) {
+                course.customization = {};
+            }
             
             // Update localStorage
             const classIndex = classes.findIndex(c => c.id === courseId);
@@ -34200,7 +35471,8 @@ Return ONLY the JSON object, nothing else.`;
                         name: course.name,
                         code: course.section || null,
                         semester: course.semester || null,
-                        year: parseInt(course.year) || null
+                        year: parseInt(course.year) || null,
+                        notes: course.notes || null
                     };
                     
                     const { error } = await supabaseClient
@@ -34210,14 +35482,53 @@ Return ONLY the JSON object, nothing else.`;
                     
                     if (error) {
                         console.error('Failed to update course in Supabase:', error);
-                        alert('Course updated locally, but failed to update in database: ' + (error.message || error));
+                        // If notes column is missing, try again without it
+                        if (error.message && error.message.includes("Could not find the 'notes' column")) {
+                            console.warn('Notes column not found in Supabase. Updating without notes field. Description saved locally only.');
+                            // Retry without notes
+                            const { error: retryError } = await supabaseClient
+                                .from('courses')
+                                .update({
+                                    name: course.name,
+                                    code: course.section || null,
+                                    semester: course.semester || null,
+                                    year: parseInt(course.year) || null
+                                })
+                                .eq('id', course.supabaseId);
+                            
+                            if (retryError) {
+                                alert('Course updated locally, but failed to update in database: ' + (retryError.message || retryError));
+                            } else {
+                                console.log('✓ Course updated in Supabase (without notes column)');
+                                console.warn('⚠️ To enable description saving, add a "notes" text column to the courses table in Supabase.');
+                            }
+                        } else {
+                            alert('Course updated locally, but failed to update in database: ' + (error.message || error));
+                        }
                     } else {
                         console.log('✓ Course updated in Supabase');
                     }
                 } catch (error) {
                     console.error('Error updating course:', error);
-                    alert('Course updated locally, but failed to update in database: ' + (error.message || error));
+                    if (error.message && error.message.includes("Could not find the 'notes' column")) {
+                        console.warn('Notes column missing. Course updated locally only.');
+                    } else {
+                        alert('Course updated locally, but failed to update in database: ' + (error.message || error));
+                    }
                 }
+            }
+            
+            // Invalidate cache so the updated course (with notes) is displayed
+            if (typeof _coursesGridCache !== 'undefined') {
+                _coursesGridCache = {
+                    current: { html: null, dataHash: null },
+                    previous: { html: null, dataHash: null }
+                };
+                // Invalidate cache for custom tabs
+                const customTabs = getCustomTabs();
+                customTabs.forEach(tab => {
+                    _coursesGridCache[tab.id] = { html: null, dataHash: null };
+                });
             }
             
             closeEditCourseModal();

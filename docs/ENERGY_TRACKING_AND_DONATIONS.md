@@ -15,6 +15,8 @@ This document describes the energy tracking and carbon offset donation features 
 
 **For Now:** Users can submit donation intent, which is recorded in the database. The platform owner can manually collect payments and make donations, using the records for tax write-off purposes.
 
+**Note:** A complete Stripe payment integration implementation is ready and saved in `docs/STRIPE_PAYMENT_INTEGRATION_READY.md` for when you're ready to enable it.
+
 ## Overview
 
 The system now tracks energy consumption and carbon emissions for each evaluation, allowing users to:
