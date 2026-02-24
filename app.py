@@ -26,6 +26,7 @@ Local development: Create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY, t
 import json
 import os
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 
 # Load .env for local development (optional)
@@ -312,6 +313,24 @@ async def log_llm_export_requests(request, call_next):
                     # Set Sentry user context
                     _set_sentry_user_context(request)
                     
+                    # Check user quota before proceeding
+                    user_id, institution_id = _get_user_info_from_token(request)
+                    if user_id:
+                        quota_check = await _check_user_quota(user_id)
+                        if not quota_check.get("bypass", False) and not quota_check.get("has_quota", False):
+                            # No quota available
+                            remaining = quota_check.get("remaining_quota", 0)
+                            buffer_remaining = quota_check.get("buffer_remaining", 0)
+                            error_msg = f"Quota exhausted. You have {remaining} evaluations remaining in your monthly quota"
+                            if buffer_remaining > 0:
+                                error_msg += f" and {buffer_remaining} in the shared buffer pool."
+                            else:
+                                error_msg += ". Please upgrade your plan or purchase additional evaluations."
+                            return JSONResponse(
+                                status_code=402,
+                                content={"detail": error_msg, "quota_info": quota_check}
+                            )
+                    
                     # Rate limiting is now handled by the @limiter.limit() decorator on the endpoint
                     # No need to check here in middleware
                     
@@ -377,12 +396,20 @@ async def log_llm_export_requests(request, call_next):
                     
                     # Calculate and log cost metrics
                     elapsed_time = time.time() - start_time
-                    # A100 GPU cost: ~$0.0011-0.0014/second (using average of $0.00125)
-                    estimated_cost = elapsed_time * 0.00125
+                    # RunPod A100 GPU cost: ~$0.00011-0.00022/second (using average of $0.000165)
+                    # Modal A100 GPU cost: ~$0.0011-0.0014/second (using average of $0.00125)
+                    # Check provider from QWEN_API_URL to determine cost
+                    base = _qwen_base()
+                    if base and "modal" in base.lower():
+                        estimated_cost = elapsed_time * 0.00125  # Modal pricing
+                        provider = "modal"
+                    else:
+                        estimated_cost = elapsed_time * 0.000165  # RunPod pricing
+                        provider = "runpod"
                     
-                    print(f"[COST_TRACKING] Evaluation completed - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Status: {r.status_code}")
+                    print(f"[COST_TRACKING] Evaluation completed - Duration: {elapsed_time:.2f}s, Estimated cost: ${estimated_cost:.4f}, Provider: {provider}, Status: {r.status_code}")
                     
-                    # Log cost to database if evaluation was successful
+                    # Log cost to database and increment usage if evaluation was successful
                     if r.status_code == 200:
                         user_id, institution_id = _get_user_info_from_token(request)
                         # Note: evaluation_id will be None here since it's created in frontend after save
@@ -393,11 +420,14 @@ async def log_llm_export_requests(request, call_next):
                             evaluation_id=None,  # Will be set when evaluation is saved in frontend
                             gpu_seconds=elapsed_time,
                             estimated_cost=estimated_cost,
-                            provider="modal",
+                            provider=provider,
                             model_name="qwen",
                             file_size_mb=file_size_mb,
                             processing_time_seconds=elapsed_time
                         )
+                        # Increment usage quota
+                        if user_id:
+                            await _increment_usage(user_id, None, estimated_cost, provider)
                     
                     if 300 <= r.status_code < 400:
                         return JSONResponse(status_code=502, content={"detail": "Qwen service returned redirect (3xx). Check QWEN_API_URL—use https, no trailing slash. Ensure the Qwen tunnel/URL is correct."})
@@ -624,6 +654,82 @@ def _get_user_info_from_token(request: Request):
             pass
     
     return user_id, institution_id
+
+
+# Helper to check user quota before evaluation
+async def _check_user_quota(user_id: str) -> dict:
+    """Check if user has available quota. Returns dict with has_quota, quota_type, remaining_quota, etc."""
+    if not user_id:
+        return {"has_quota": False, "error": "User not authenticated"}
+    
+    try:
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            print("[QUOTA_CHECK] Cannot check quota: SUPABASE_SERVICE_ROLE_KEY not set")
+            return {"has_quota": True, "bypass": True}  # Bypass if not configured
+        
+        from supabase import create_client
+        supabase_client = create_client(supabase_url, supabase_service_key)
+        
+        # Call the check_user_quota function
+        result = supabase_client.rpc("check_user_quota", {"p_user_id": user_id}).execute()
+        
+        if result.data and len(result.data) > 0:
+            quota_info = result.data[0]
+            return {
+                "has_quota": quota_info.get("has_quota", False),
+                "quota_type": quota_info.get("quota_type", "none"),
+                "remaining_quota": quota_info.get("remaining_quota", 0),
+                "can_use_buffer": quota_info.get("can_use_buffer", False),
+                "buffer_remaining": quota_info.get("buffer_remaining", 0)
+            }
+        else:
+            return {"has_quota": False, "error": "No quota found"}
+            
+    except ImportError:
+        print("[QUOTA_CHECK] Cannot check quota: supabase package not installed")
+        return {"has_quota": True, "bypass": True}  # Bypass if package not available
+    except Exception as e:
+        print(f"[QUOTA_CHECK] Failed to check quota: {e}")
+        return {"has_quota": True, "bypass": True}  # Bypass on error to avoid blocking
+
+
+# Helper to increment usage after evaluation
+async def _increment_usage(user_id: str, evaluation_id: str = None, cost: float = 0, provider: str = "runpod"):
+    """Increment usage counter after successful evaluation."""
+    if not user_id:
+        return
+    
+    try:
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            print("[USAGE_TRACKING] Cannot increment usage: SUPABASE_SERVICE_ROLE_KEY not set")
+            return
+        
+        from supabase import create_client
+        supabase_client = create_client(supabase_url, supabase_service_key)
+        
+        # Call the increment_usage function
+        result = supabase_client.rpc("increment_usage", {
+            "p_user_id": user_id,
+            "p_evaluation_id": evaluation_id,
+            "p_cost": cost,
+            "p_provider": provider
+        }).execute()
+        
+        if result.data:
+            print(f"[USAGE_TRACKING] Usage incremented for user {user_id}")
+        else:
+            print(f"[USAGE_TRACKING] Failed to increment usage (no quota available)")
+            
+    except ImportError:
+        print("[USAGE_TRACKING] Cannot increment usage: supabase package not installed")
+    except Exception as e:
+        print(f"[USAGE_TRACKING] Failed to increment usage: {e}")
 
 
 # Helper to log cost to database
@@ -923,6 +1029,280 @@ async def generate_upload_url(request: Request):
         )
 
 
+# Subscription Management API Endpoints
+@app.post("/api/subscriptions/create")
+async def create_subscription(request: Request):
+    """
+    Create a new subscription for a user.
+    Requires: tier (student_free, student_paid, individual_basic, individual_standard, individual_professional, department)
+    """
+    try:
+        user_id, institution_id = _get_user_info_from_token(request)
+        if not user_id:
+            return JSONResponse(status_code=401, content={"detail": "Authentication required"})
+        
+        body = await request.json()
+        tier = body.get("tier")
+        contract_type = body.get("contract_type", "individual")  # 'individual' or 'department'
+        pilot_status = body.get("pilot_status", False)
+        
+        if not tier or tier not in ['student_free', 'student_paid', 'individual_basic', 'individual_standard', 'individual_professional', 'department']:
+            return JSONResponse(status_code=400, content={"detail": "Invalid tier"})
+        
+        # Pricing and quota from plan
+        tier_config = {
+            'student_free': {'quota': 3, 'price': 0},
+            'student_paid': {'quota': 10, 'price': 5},
+            'individual_basic': {'quota': 25, 'price': 15},
+            'individual_standard': {'quota': 50, 'price': 25},
+            'individual_professional': {'quota': 100, 'price': 40},
+            'department': {'quota': 1500, 'buffer_quota': 500, 'price': 600}
+        }
+        
+        config = tier_config.get(tier, {})
+        
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            return JSONResponse(status_code=503, content={"detail": "Supabase configuration missing"})
+        
+        from supabase import create_client
+        supabase_client = create_client(supabase_url, supabase_service_key)
+        
+        # Create subscription
+        subscription_data = {
+            "user_id": user_id,
+            "institution_id": institution_id if contract_type == 'department' else None,
+            "tier": tier,
+            "status": "active",
+            "contract_type": contract_type,
+            "pilot_status": pilot_status,
+            "amount_per_period": config.get('price', 0),
+            "billing_period": "monthly"
+        }
+        
+        subscription_result = supabase_client.table("subscriptions").insert(subscription_data).execute()
+        
+        if not subscription_result.data:
+            return JSONResponse(status_code=500, content={"detail": "Failed to create subscription"})
+        
+        subscription_id = subscription_result.data[0]['id']
+        
+        # Create or update usage quota
+        quota_data = {
+            "user_id": user_id if contract_type == 'individual' else None,
+            "institution_id": institution_id if contract_type == 'department' else None,
+            "account_type": tier,
+            "monthly_quota": config.get('quota', 0),
+            "buffer_quota": config.get('buffer_quota', 0),
+            "pilot_discount": pilot_status,
+            "is_active": True,
+            "renewal_date": (datetime.utcnow() + timedelta(days=30)).date() if tier != 'student_free' else None
+        }
+        
+        # Check if quota already exists
+        existing_quota = supabase_client.table("usage_quotas").select("*")
+        if contract_type == 'department' and institution_id:
+            existing_quota = existing_quota.eq("institution_id", institution_id).eq("account_type", tier)
+        else:
+            existing_quota = existing_quota.eq("user_id", user_id)
+        existing_quota = existing_quota.execute()
+        
+        if existing_quota.data and len(existing_quota.data) > 0:
+            # Update existing quota
+            quota_result = supabase_client.table("usage_quotas").update(quota_data).eq("id", existing_quota.data[0]['id']).execute()
+        else:
+            # Create new quota
+            quota_result = supabase_client.table("usage_quotas").insert(quota_data).execute()
+        
+        return JSONResponse(status_code=200, content={
+            "subscription": subscription_result.data[0],
+            "quota": quota_result.data[0] if quota_result.data else None
+        })
+        
+    except Exception as e:
+        print(f"[SUBSCRIPTION] Error creating subscription: {e}")
+        return JSONResponse(status_code=500, content={"detail": f"Error creating subscription: {str(e)}"})
+
+
+@app.post("/api/subscriptions/upgrade")
+async def upgrade_subscription(request: Request):
+    """
+    Upgrade an existing subscription to a higher tier.
+    """
+    try:
+        user_id, institution_id = _get_user_info_from_token(request)
+        if not user_id:
+            return JSONResponse(status_code=401, content={"detail": "Authentication required"})
+        
+        body = await request.json()
+        new_tier = body.get("tier")
+        
+        if not new_tier:
+            return JSONResponse(status_code=400, content={"detail": "Missing tier"})
+        
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            return JSONResponse(status_code=503, content={"detail": "Supabase configuration missing"})
+        
+        from supabase import create_client
+        supabase_client = create_client(supabase_url, supabase_service_key)
+        
+        # Get current subscription
+        current_sub = supabase_client.table("subscriptions").select("*").eq("user_id", user_id).eq("status", "active").limit(1).execute()
+        
+        if not current_sub.data or len(current_sub.data) == 0:
+            return JSONResponse(status_code=404, content={"detail": "No active subscription found"})
+        
+        # Update subscription and quota (similar to create_subscription)
+        # For now, return a message that payment integration is needed
+        return JSONResponse(status_code=200, content={
+            "message": "Upgrade functionality requires payment integration. Please contact support.",
+            "current_tier": current_sub.data[0]['tier'],
+            "requested_tier": new_tier
+        })
+        
+    except Exception as e:
+        print(f"[SUBSCRIPTION] Error upgrading subscription: {e}")
+        return JSONResponse(status_code=500, content={"detail": f"Error upgrading subscription: {str(e)}"})
+
+
+@app.get("/api/subscriptions/current")
+async def get_current_subscription(request: Request):
+    """
+    Get the current subscription and quota for the authenticated user.
+    """
+    try:
+        user_id, institution_id = _get_user_info_from_token(request)
+        if not user_id:
+            return JSONResponse(status_code=401, content={"detail": "Authentication required"})
+        
+        supabase_url = _get_env("SUPABASE_URL")
+        supabase_service_key = _get_env("SUPABASE_SERVICE_ROLE_KEY")
+        
+        if not supabase_url or not supabase_service_key:
+            return JSONResponse(status_code=503, content={"detail": "Supabase configuration missing"})
+        
+        from supabase import create_client
+        supabase_client = create_client(supabase_url, supabase_service_key)
+        
+        # Get subscription
+        subscription = supabase_client.table("subscriptions").select("*").eq("user_id", user_id).eq("status", "active").limit(1).execute()
+        
+        # Get quota
+        quota = supabase_client.table("usage_quotas").select("*").eq("user_id", user_id).eq("is_active", True).limit(1).execute()
+        
+        return JSONResponse(status_code=200, content={
+            "subscription": subscription.data[0] if subscription.data and len(subscription.data) > 0 else None,
+            "quota": quota.data[0] if quota.data and len(quota.data) > 0 else None
+        })
+        
+    except Exception as e:
+        print(f"[SUBSCRIPTION] Error getting subscription: {e}")
+        return JSONResponse(status_code=500, content={"detail": f"Error getting subscription: {str(e)}"})
+
+
+# Stripe Webhook Endpoints (for payment processing)
+@app.post("/api/stripe/webhook")
+async def stripe_webhook(request: Request):
+    """
+    Handle Stripe webhook events for subscription management.
+    Requires: STRIPE_WEBHOOK_SECRET environment variable
+    """
+    try:
+        stripe_webhook_secret = _get_env("STRIPE_WEBHOOK_SECRET", "")
+        if not stripe_webhook_secret:
+            return JSONResponse(status_code=503, content={"detail": "Stripe webhook secret not configured"})
+        
+        # Get the raw body for signature verification
+        body = await request.body()
+        sig_header = request.headers.get("stripe-signature")
+        
+        # TODO: Verify webhook signature using Stripe SDK
+        # import stripe
+        # stripe.api_key = _get_env("STRIPE_SECRET_KEY", "")
+        # event = stripe.Webhook.construct_event(body, sig_header, stripe_webhook_secret)
+        
+        # For now, return a placeholder response
+        return JSONResponse(status_code=200, content={"received": True, "message": "Stripe webhook endpoint ready (integration pending)"})
+        
+    except Exception as e:
+        print(f"[STRIPE] Webhook error: {e}")
+        return JSONResponse(status_code=400, content={"detail": f"Webhook error: {str(e)}"})
+
+
+@app.post("/api/stripe/create-checkout-session")
+async def create_stripe_checkout_session(request: Request):
+    """
+    Create a Stripe Checkout session for subscription purchase.
+    Requires: STRIPE_SECRET_KEY environment variable
+    """
+    try:
+        user_id, institution_id = _get_user_info_from_token(request)
+        if not user_id:
+            return JSONResponse(status_code=401, content={"detail": "Authentication required"})
+        
+        body = await request.json()
+        tier = body.get("tier")
+        contract_type = body.get("contract_type", "individual")
+        
+        if not tier:
+            return JSONResponse(status_code=400, content={"detail": "Missing tier"})
+        
+        stripe_secret_key = _get_env("STRIPE_SECRET_KEY", "")
+        if not stripe_secret_key:
+            return JSONResponse(status_code=503, content={"detail": "Stripe not configured. Please contact support to set up payment."})
+        
+        # Pricing from plan
+        tier_pricing = {
+            'student_paid': 5,
+            'individual_basic': 15,
+            'individual_standard': 25,
+            'individual_professional': 40,
+            'department': 600
+        }
+        
+        price = tier_pricing.get(tier)
+        if price is None:
+            return JSONResponse(status_code=400, content={"detail": "Invalid tier"})
+        
+        # TODO: Create Stripe Checkout Session
+        # import stripe
+        # stripe.api_key = stripe_secret_key
+        # session = stripe.checkout.Session.create(
+        #     customer_email=user_email,  # Get from user profile
+        #     payment_method_types=['card'],
+        #     line_items=[{
+        #         'price_data': {
+        #             'currency': 'usd',
+        #             'product_data': {'name': f'SpeechGradebook {tier}'},
+        #             'unit_amount': price * 100,  # Stripe uses cents
+        #             'recurring': {'interval': 'month'}
+        #         },
+        #         'quantity': 1,
+        #     }],
+        #     mode='subscription',
+        #     success_url=f'{request.base_url}/settings?success=true',
+        #     cancel_url=f'{request.base_url}/settings?canceled=true',
+        #     metadata={'user_id': user_id, 'tier': tier, 'contract_type': contract_type}
+        # )
+        # return JSONResponse(status_code=200, content={"checkout_url": session.url})
+        
+        # Placeholder response
+        return JSONResponse(status_code=200, content={
+            "message": "Stripe checkout integration pending. Please contact support to set up payment.",
+            "tier": tier,
+            "price": price
+        })
+        
+    except Exception as e:
+        print(f"[STRIPE] Checkout error: {e}")
+        return JSONResponse(status_code=500, content={"detail": f"Error creating checkout session: {str(e)}"})
+
+
 @app.post("/api/confirm-upload")
 async def confirm_upload(request: Request):
     """
@@ -999,9 +1379,42 @@ async def confirm_upload(request: Request):
 
 
 @app.get("/")
+def serve_root():
+    """Serve landing.html for new users finding SpeechGradebook via search."""
+    path = _this_dir / "landing.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+@app.get("/login")
+def serve_login():
+    """Serve index.html (login page) for returning users."""
+    path = _this_dir / "index.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+@app.get("/app")
 @app.get("/index.html")
 def serve_index():
-    """Serve index.html with no-cache so browser always gets latest (fixes stale UI after edits)."""
+    """Serve index.html (app) for authenticated users."""
     path = _this_dir / "index.html"
     if not path.exists():
         return Response(status_code=404)
@@ -1053,6 +1466,198 @@ def serve_spa_page():
     )
 
 
+@app.get("/landing")
+@app.get("/learn-more")
+@app.get("/landing.html")
+def serve_landing():
+    """Serve landing.html for new users to learn about the product."""
+    path = _this_dir / "landing.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+@app.get("/contact")
+@app.get("/contact.html")
+def serve_contact():
+    """Serve contact.html for contact form."""
+    path = _this_dir / "contact.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+@app.get("/accessibility")
+@app.get("/accessibility.html")
+def serve_accessibility():
+    """Serve accessibility.html for accessibility statement."""
+    path = _this_dir / "accessibility.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+@app.get("/help")
+@app.get("/help.html")
+def serve_help():
+    """Serve help.html for help center documentation."""
+    path = _this_dir / "help.html"
+    if not path.exists():
+        return Response(status_code=404)
+    return FileResponse(
+        path,
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
+@app.post("/api/contact")
+@limiter.limit("10/hour")  # Rate limit contact form submissions
+async def handle_contact(request: Request):
+    """Handle contact form submissions and send email to speechgradebook@proton.me"""
+    try:
+        body = await request.json()
+        name = (body.get("name") or "").strip()
+        email = (body.get("email") or "").strip()
+        subject_type = (body.get("subject") or "").strip()
+        message = (body.get("message") or "").strip()
+
+        # Validate required fields
+        if not name or not email or not subject_type or not message:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "All fields are required"}
+            )
+
+        # Validate email format
+        if "@" not in email or "." not in email.split("@")[1]:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "Invalid email address"}
+            )
+
+        # Subject mapping
+        subject_map = {
+            "sales": "Sales Inquiry",
+            "support": "Support Request",
+            "general": "General Question",
+            "enterprise": "Enterprise Inquiry",
+            "other": "Other"
+        }
+        subject_label = subject_map.get(subject_type, "Contact Form Submission")
+
+        # Format email content
+        email_subject = f"SpeechGradebook Contact: {subject_label}"
+        email_body = f"""New contact form submission from SpeechGradebook website:
+
+Name: {name}
+Email: {email}
+Subject: {subject_label}
+Message:
+{message}
+
+---
+This message was sent from the SpeechGradebook contact form.
+"""
+
+        # Try to send email using SMTP if configured
+        email_sent = False
+        smtp_host = _get_env("SMTP_HOST", "")
+        smtp_port = _get_env("SMTP_PORT", "587")
+        smtp_user = _get_env("SMTP_USER", "")
+        smtp_password = _get_env("SMTP_PASSWORD", "")
+        smtp_from = _get_env("SMTP_FROM", smtp_user or "noreply@speechgradebook.com")
+        recipient_email = "speechgradebook@proton.me"
+
+        if smtp_host and smtp_user and smtp_password:
+            try:
+                import smtplib
+                from email.mime.text import MIMEText
+                from email.mime.multipart import MIMEMultipart
+
+                msg = MIMEMultipart()
+                msg["From"] = smtp_from
+                msg["To"] = recipient_email
+                msg["Subject"] = email_subject
+                msg["Reply-To"] = email  # Set reply-to to the sender's email
+
+                msg.attach(MIMEText(email_body, "plain"))
+
+                # Try TLS first, fall back to SSL
+                try:
+                    server = smtplib.SMTP(smtp_host, int(smtp_port))
+                    server.starttls()
+                    server.login(smtp_user, smtp_password)
+                    server.send_message(msg)
+                    server.quit()
+                    email_sent = True
+                except Exception:
+                    # Try SSL if TLS fails
+                    server = smtplib.SMTP_SSL(smtp_host, int(smtp_port))
+                    server.login(smtp_user, smtp_password)
+                    server.send_message(msg)
+                    server.quit()
+                    email_sent = True
+
+            except Exception as e:
+                # Log error but don't fail the request
+                print(f"[ERROR] Failed to send contact email via SMTP: {e}")
+                email_sent = False
+
+        # If SMTP not configured or failed, log the message
+        if not email_sent:
+            print(f"\n{'='*60}")
+            print(f"CONTACT FORM SUBMISSION (Email not configured)")
+            print(f"{'='*60}")
+            print(f"To: {recipient_email}")
+            print(f"Subject: {email_subject}")
+            print(f"\n{email_body}")
+            print(f"{'='*60}\n")
+            # Still return success so the form works, but log a warning
+            print("[WARNING] SMTP not configured. Contact form submission logged above.")
+            print("[INFO] To enable email sending, set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD environment variables.")
+
+        return JSONResponse(
+            status_code=200,
+            content={"message": "Your message has been sent successfully. We'll get back to you soon!"}
+        )
+
+    except Exception as e:
+        print(f"[ERROR] Contact form error: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An error occurred while processing your request. Please try again later."}
+        )
+
+
 # Catch-all route for client-side routing (must be after all API routes)
 # This allows paths like /courses/123 to serve index.html for client-side routing
 # Note: FastAPI will match explicit routes (like @app.get("/")) before this catch-all
@@ -1071,13 +1676,13 @@ def serve_spa_routes(full_path: str):
     # Normalize the path (remove leading slash if present)
     normalized_path = full_path.lstrip("/")
     
-    # Skip empty paths (should be handled by explicit "/" route)
+    # Skip empty paths (should be handled by explicit "/" route which serves landing.html)
     if not normalized_path:
-        index_path = _this_dir / "index.html"
-        if not index_path.exists():
+        landing_path = _this_dir / "landing.html"
+        if not landing_path.exists():
             return Response(status_code=404)
         return FileResponse(
-            index_path,
+            landing_path,
             media_type="text/html",
             headers={
                 "Cache-Control": "no-cache, no-store, must-revalidate",
