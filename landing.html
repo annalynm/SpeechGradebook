@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeechGradebook - AI-Powered Speech Evaluation</title>
+    <meta name="description" content="Save 70% of your grading time with AI-powered speech evaluation. Trusted by communication instructors.">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #142940;
+            --primary-light: #2d4a6f;
+            --secondary: #5a6c7d;
+            --accent: #4a6fa5;
+            
+            --text: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-light: #6b6b6b;
+            
+            --bg: #fafbfc;
+            --bg-alt: #f1f4f7;
+            --card: #ffffff;
+            --border: #d1d5db;
+            
+            --success: #059669;
+            --warning: #d97706;
+            --error: #b91c1c;
+            --info: #0284c7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            line-height: 1.47059;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Apple-style Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(250, 251, 252, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: white !important;
+            padding: 6px 16px;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 400;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+            opacity: 1 !important;
+        }
+
+        /* Hero Section - Apple style */
+        .hero {
+            padding: 88px 22px 60px;
+            text-align: center;
+            background: var(--card);
+        }
+
+        .hero-content {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .hero-subtitle {
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            letter-spacing: 0.007em;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .hero-description {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            color: var(--text-light);
+            margin-bottom: 32px;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            width: 100%;
+            max-width: 980px;
+            height: auto;
+            margin: 0 auto 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            display: block;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .button-secondary {
+            background: transparent;
+            color: var(--accent);
+            padding: 12px 24px;
+            border: 1px solid var(--accent);
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+        }
+
+        .button-secondary:hover {
+            background: var(--bg-alt);
+        }
+
+        /* Demo Section - Apple style */
+        .demo-section {
+            padding: 88px 22px;
+            background: var(--bg-alt);
+        }
+
+        .demo-container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .demo-video-wrapper {
+            margin-bottom: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+
+        .demo-video {
+            position: relative;
+            width: 100%;
+            padding-bottom: 75%; /* Taller aspect ratio for app interface (4:3) */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .demo-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .demo-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card);
+            border-radius: 12px;
+        }
+
+        .demo-placeholder-content {
+            text-align: center;
+        }
+
+        .demo-cta {
+            text-align: center;
+        }
+
+        /* Stats - Apple style minimal */
+        .stats {
+            background: var(--card);
+            padding: 56px 22px;
+        }
+
+        .stats-container {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 56px;
+            line-height: 1;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.005em;
+        }
+
+        .stat-label {
+            font-size: 17px;
+            line-height: 1.47059;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: -0.022em;
+        }
+
+        /* Section Title - Apple style */
+        .section {
+            padding: 88px 22px;
+            background: var(--card);
+        }
+
+        .section-alt {
+            background: var(--bg-alt);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 750px;
+            margin: 0 auto 64px;
+        }
+
+        .section-eyebrow {
+            font-size: 17px;
+            line-height: 1.23536;
+            font-weight: 600;
+            letter-spacing: -0.022em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 48px;
+            line-height: 1.08349;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .section-description {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            color: var(--text-light);
+        }
+
+        /* Features Grid - Apple style */
+        .features-grid {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            padding: 40px 32px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            line-height: 1.16667;
+            font-weight: 600;
+            letter-spacing: 0.009em;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            font-size: 17px;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            color: var(--text-light);
+        }
+
+        /* How It Works - Apple style timeline */
+        .steps-container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 48px;
+            align-items: flex-start;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .step-content h3 {
+            font-size: 24px;
+            line-height: 1.16667;
+            font-weight: 600;
+            letter-spacing: 0.009em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            font-size: 17px;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            color: var(--text-light);
+        }
+
+        /* Pricing - Apple style cards */
+        .pricing-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .pricing-card {
+            background: var(--card);
+            padding: 40px 32px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .pricing-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+        }
+
+        .pricing-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .pricing-title {
+            font-size: 24px;
+            line-height: 1.16667;
+            font-weight: 600;
+            letter-spacing: 0.009em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 48px;
+            line-height: 1;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .pricing-period {
+            font-size: 17px;
+            line-height: 1.47059;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .pricing-contact {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .pricing-contact-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-alt);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pricing-contact-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent);
+        }
+
+        .pricing-contact-text {
+            font-size: 17px;
+            line-height: 1.381;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 32px;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            font-size: 14px;
+            line-height: 1.42859;
+            font-weight: 400;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--success);
+            flex-shrink: 0;
+        }
+
+        .pricing-button {
+            width: 100%;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .pricing-button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        /* CTA Section - Apple style */
+        .cta-section {
+            padding: 88px 22px;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 48px;
+            line-height: 1.08349;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+
+        .cta-section .button-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .cta-section .button-primary:hover {
+            background: var(--bg-alt);
+        }
+
+        /* Footer - Apple style */
+        footer {
+            background: var(--bg-alt);
+            padding: 48px 22px 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 32px;
+        }
+
+        .footer-section h3 {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            opacity: 0.7;
+        }
+
+        .footer-bottom {
+            max-width: 980px;
+            margin: 0 auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-bottom p {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 400;
+            color: var(--text-light);
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-legal a {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 400;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-legal a:hover {
+            opacity: 0.7;
+        }
+
+        /* Mobile Responsive - Apple breakpoints */
+        @media (max-width: 734px) {
+            .hero-image {
+                margin-bottom: 32px;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+                line-height: 1.1;
+            }
+
+            .hero-subtitle {
+                font-size: 21px;
+                line-height: 1.381;
+            }
+
+            .hero-description {
+                font-size: 17px;
+            }
+
+            .section-title {
+                font-size: 32px;
+                line-height: 1.125;
+            }
+
+            .section-description {
+                font-size: 17px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .demo-video-wrapper {
+                margin-bottom: 32px;
+            }
+        }
+
+        @media (min-width: 735px) and (max-width: 1068px) {
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero-subtitle {
+                font-size: 24px;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus states for accessibility - Apple style */
+        a:focus,
+        button:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="assets/speechgradebook-logo-light.png" alt="SpeechGradebook" />
+                <span>SpeechGradebook</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="/app" class="nav-cta">Log In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <img src="/assets/Hero.png" alt="SpeechGradebook Hero" class="hero-image">
+            <h1>Grade speeches<br>in minutes, not hours.</h1>
+            <p class="hero-subtitle">AI-powered evaluation for communication instructors.</p>
+            <p class="hero-description">Save 70% of your grading time while maintaining pedagogical control and providing detailed, consistent feedback to every student.</p>
+            <div class="hero-buttons">
+                <a href="/app" class="button-primary">Get Started</a>
+                <a href="#how-it-works" class="button-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo-section section-alt">
+        <div class="section-header">
+            <div class="section-eyebrow">See It In Action</div>
+            <h2 class="section-title">Watch SpeechGradebook work.</h2>
+            <p class="section-description">See how AI-powered evaluation transforms your grading workflow in minutes.</p>
+        </div>
+        
+        <div class="demo-container">
+            <div class="demo-video-wrapper">
+                <div class="demo-video">
+                    <iframe 
+                        src="/app#demo" 
+                        title="SpeechGradebook Interactive Demo" 
+                        frameborder="0" 
+                        allow="clipboard-write; encrypted-media"
+                        style="width: 100%; height: 100%; border-radius: 12px;">
+                    </iframe>
+                </div>
+            </div>
+            
+            <div class="demo-cta">
+                <a href="/app#demo" class="button-primary" style="font-size: 17px; padding: 14px 28px;" target="_blank">
+                    <span class="icon-with-text"><i data-lucide="external-link"></i> Open Demo in New Tab</span>
+                </a>
+                <p style="margin-top: 12px; font-size: 14px; color: var(--text-light);">No sign-up required</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat">
+                <div class="stat-number">3-5</div>
+                <div class="stat-label">Minutes per Evaluation</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">40+</div>
+                <div class="stat-label">Hours Saved per Semester</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Consistent Feedback</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">FERPA</div>
+                <div class="stat-label">Compliant & Secure</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="section-header">
+            <div class="section-eyebrow">Features</div>
+            <h2 class="section-title">Everything you need to evaluate speeches.</h2>
+            <p class="section-description">Powerful AI combined with your expertise for the best evaluation experience.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+                <h3 class="feature-title">Custom Rubrics</h3>
+                <p class="feature-description">Build evaluation rubrics that match your teaching style. Weight criteria, define levels, customize feedback.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="cpu"></i>
+                </div>
+                <h3 class="feature-title">AI Analysis</h3>
+                <p class="feature-description">Vision-language models evaluate delivery, content, and organization based on your rubric automatically.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="edit-3"></i>
+                </div>
+                <h3 class="feature-title">Review & Refine</h3>
+                <p class="feature-description">Quickly review AI evaluations and adjust. Your corrections train the system to match your style.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="trending-up"></i>
+                </div>
+                <h3 class="feature-title">Progress Tracking</h3>
+                <p class="feature-description">Monitor student improvement across speeches. Identify patterns and provide targeted feedback.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h3 class="feature-title">FERPA Compliant</h3>
+                <p class="feature-description">Enterprise-grade security. Consent management, audit logs, and role-based access built in.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="zap"></i>
+                </div>
+                <h3 class="feature-title">Fast Turnaround</h3>
+                <p class="feature-description">AI generates evaluations in 60–90 seconds. Review in 3–5 minutes instead of 15–20.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section section-alt">
+        <div class="section-header">
+            <div class="section-eyebrow">How It Works</div>
+            <h2 class="section-title">Four steps to faster grading.</h2>
+            <p class="section-description">From video upload to finalized evaluation in minutes.</p>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Students Upload</h3>
+                    <p>Students record and upload speech videos directly. Stored securely in FERPA-compliant cloud storage.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>AI Analyzes</h3>
+                    <p>Vision-language model watches and evaluates against your custom rubric, assessing delivery, content, and organization.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>You Review</h3>
+                    <p>Watch video side-by-side with the rubric. Adjust scores and refine feedback as needed.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>System Learns</h3>
+                    <p>Your corrections automatically train the AI. Over time, accuracy improves and adjustments decrease.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section">
+        <div class="section-header">
+            <div class="section-eyebrow">Pricing</div>
+            <h2 class="section-title">Plans for every teaching load.</h2>
+            <p class="section-description">Simple, transparent pricing with no hidden fees.</p>
+        </div>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="pricing-title">Basic</h3>
+                <div class="pricing-price">$15</div>
+                <div class="pricing-period">per month</div>
+                <ul class="pricing-features">
+                    <li><i data-lucide="check"></i>25 evaluations/month</li>
+                    <li><i data-lucide="check"></i>Custom rubrics</li>
+                    <li><i data-lucide="check"></i>Video storage</li>
+                    <li><i data-lucide="check"></i>Email support</li>
+                </ul>
+                <button class="pricing-button" onclick="window.location.href='/app'">Get Started</button>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="pricing-badge">Popular</div>
+                <h3 class="pricing-title">Standard</h3>
+                <div class="pricing-price">$25</div>
+                <div class="pricing-period">per month</div>
+                <ul class="pricing-features">
+                    <li><i data-lucide="check"></i>50 evaluations/month</li>
+                    <li><i data-lucide="check"></i>Custom rubrics</li>
+                    <li><i data-lucide="check"></i>Video storage</li>
+                    <li><i data-lucide="check"></i>Priority support</li>
+                    <li><i data-lucide="check"></i>Progress tracking</li>
+                </ul>
+                <button class="pricing-button" onclick="window.location.href='/app'">Get Started</button>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="pricing-title">Professional</h3>
+                <div class="pricing-price">$40</div>
+                <div class="pricing-period">per month</div>
+                <ul class="pricing-features">
+                    <li><i data-lucide="check"></i>100 evaluations/month</li>
+                    <li><i data-lucide="check"></i>Custom rubrics</li>
+                    <li><i data-lucide="check"></i>Video storage</li>
+                    <li><i data-lucide="check"></i>Priority support</li>
+                    <li><i data-lucide="check"></i>Progress tracking</li>
+                    <li><i data-lucide="check"></i>Analytics dashboard</li>
+                </ul>
+                <button class="pricing-button" onclick="window.location.href='/app'">Get Started</button>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="pricing-title">Enterprise</h3>
+                <div class="pricing-contact">
+                    <div class="pricing-contact-icon">
+                        <i data-lucide="message-circle"></i>
+                    </div>
+                    <div class="pricing-contact-text">Contact for Pricing</div>
+                </div>
+                <ul class="pricing-features">
+                    <li><i data-lucide="check"></i>Multiple instructors</li>
+                    <li><i data-lucide="check"></i>Shared evaluation pool</li>
+                    <li><i data-lucide="check"></i>Dedicated support</li>
+                    <li><i data-lucide="check"></i>Custom training</li>
+                    <li><i data-lucide="check"></i>Rubric templates</li>
+                    <li><i data-lucide="check"></i>Admin dashboard</li>
+                </ul>
+                <button class="pricing-button" onclick="window.location.href='/contact'">Contact Sales</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to transform your grading?</h2>
+        <p>Start evaluating speeches faster with SpeechGradebook.</p>
+        <a href="/app" class="button-primary">Get Started</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="/app">Log In</a></li>
+                    <li><a href="/help">Documentation</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/contact">Contact Support</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="/privacy">Privacy</a></li>
+                    <li><a href="/terms">Terms</a></li>
+                    <li><a href="/privacy">Security</a></li>
+                    <li><a href="/accessibility">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>Copyright © 2026 SpeechGradebook. All rights reserved.</p>
+            <div class="footer-legal">
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Use</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
