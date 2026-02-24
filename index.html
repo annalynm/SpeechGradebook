@@ -1118,19 +1118,19 @@
             background: rgba(0,122,255,0.08);
         }
 
-        /* Grade circle radio buttons — works with or without .grade-radio-group wrapper */
+        /* Grade circle radio buttons — Apple HIG compliant */
         .grade-circle {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
-            border: 2px solid #d2d2d7;
-            background: #f5f5f7;
-            color: #6e6e73;
+            border: 1.5px solid #c7c7cc;
+            background: #fff;
+            color: #3a3a3c;
             transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.1s;
             user-select: none;
             cursor: pointer;
@@ -1138,6 +1138,7 @@
         .grade-circle:hover {
             border-color: #007AFF;
             color: #007AFF;
+            background: #f0f7ff;
             transform: scale(1.08);
         }
         /* Active state — applied via JS since CSS :checked + sibling can't span table cells */
@@ -6563,126 +6564,165 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 <div class="card-header"><span class="icon-with-text"><i data-lucide="help-circle"></i> Support</span></div>
                 <div class="card-body" style="padding: 1.25rem;">
                     <p id="supportVersionBanner" style="margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: var(--bg-alt); border-radius: 0.5rem; font-size: 0.95rem; color: var(--text-light);">
-                        <strong style="color: var(--primary);">SpeechGradebook</strong> <span id="supportVersionText">v3.0</span> <span id="supportVersionLabel"></span>
+                        <strong style="color: var(--primary);">SpeechGradebook</strong> <span id="supportVersionText">v1.0</span> <span id="supportVersionLabel"></span>
                     </p>
 
                     <div id="supportDocTablist" role="tablist" class="support-tablist" aria-label="Support documentation">
-                        <button type="button" id="supportTabBtnGettingStarted" class="support-tab support-tab-active" role="tab" aria-selected="true" aria-controls="supportPanelGettingStarted" onclick="switchSupportDocTab('getting-started')"><span class="icon-with-text"><i data-lucide="rocket"></i> Getting Started</span></button>
-                        <button type="button" id="supportTabBtnUserManual" class="support-tab" role="tab" aria-selected="false" aria-controls="supportPanelUserManual" onclick="switchSupportDocTab('user-manual')"><span class="icon-with-text"><i data-lucide="book-open"></i> User Manual</span></button>
-                        <button type="button" id="supportTabBtnTechnical" class="support-tab" role="tab" aria-selected="false" aria-controls="supportPanelTechnical" onclick="switchSupportDocTab('technical')"><span class="icon-with-text"><i data-lucide="file-code"></i> Technical Documentation</span></button>
+                        <button type="button" id="supportTabBtnGettingStarted" class="support-tab support-tab-active" role="tab" aria-selected="true" aria-controls="supportPanelGettingStarted" onclick="switchSupportDocTab('getting-started')"><span class="icon-with-text"><i data-lucide="rocket"></i> Quick Start</span></button>
+                        <button type="button" id="supportTabBtnUserManual" class="support-tab" role="tab" aria-selected="false" aria-controls="supportPanelUserManual" onclick="switchSupportDocTab('user-manual')"><span class="icon-with-text"><i data-lucide="book-open"></i> User Guide</span></button>
+                        <button type="button" id="supportTabBtnTechnical" class="support-tab" role="tab" aria-selected="false" aria-controls="supportPanelTechnical" onclick="switchSupportDocTab('technical')"><span class="icon-with-text"><i data-lucide="file-code"></i> Reference</span></button>
                     </div>
 
-                    <!-- Panel: Getting Started (detailed procedures) -->
+                                       <!-- Panel 1: Quick Start -->
                     <div id="supportPanelGettingStarted" class="support-doc-panel active" role="tabpanel" aria-labelledby="supportTabBtnGettingStarted">
-                        <p style="margin-bottom: 1.5rem; color: var(--text-light);">
-                            Step-by-step guides for the main areas of SpeechGradebook. Content below is relevant to your role where noted.
-                        </p>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="mic"></i> How to Evaluate a Speech</span></h3>
-                        <p style="margin-bottom: 0.5rem;">Run an AI evaluation on a student's audio or video recording.</p>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.95rem;">New to SpeechGradebook? Follow these steps to run your first evaluation in minutes.</p>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="book-open"></i> Step 1: Set up a course and rubric</span></h3>
                         <ol style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
-                            <li style="margin-bottom: 0.5rem;">Click <strong>Evaluate Speech</strong> in the navigation.</li>
-                            <li style="margin-bottom: 0.5rem;">Upload an audio or video file (MP3, MP4, MOV/QuickTime, WAV, M4A, WebM; for GPT-4o, image/screenshot also supported). Videos over 50 MB are compressed automatically.</li>
-                            <li style="margin-bottom: 0.5rem;">Select or create a course and student (or enter details). Choose a rubric.</li>
-                            <li style="margin-bottom: 0.5rem;">Choose an API provider in the evaluation flow (Gemini, GPT-4o, Claude, SpeechGradebook Text Model (Mistral), or SpeechGradebook Text + Video Model (Qwen)) and ensure the key or server URL is set in <strong>Settings</strong>.</li>
-                            <li style="margin-bottom: 0.5rem;">Click <strong>Continue to Evaluation</strong> and wait for analysis.</li>
-                            <li style="margin-bottom: 0.5rem;">Review results, download PDF, or email to student.</li>
+                            <li style="margin-bottom: 0.5rem;">Go to <strong>Dashboard → Courses</strong> and select <strong>New Course</strong>.</li>
+                            <li style="margin-bottom: 0.5rem;">Enter the course name, term, year, and modality, then save.</li>
+                            <li style="margin-bottom: 0.5rem;">Add students to the course using the roster tool.</li>
+                            <li style="margin-bottom: 0.5rem;">Go to <strong>Dashboard → Rubrics</strong>. Select an existing rubric or create a new one.<br>
+                                <span style="color: var(--text-light); font-size: 0.9rem;">Tip: You can import a rubric from a PDF, image, Google Sheet, or Excel file using <strong>Import Rubric from File</strong>.</span>
+                            </li>
                         </ol>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="key"></i> Getting API Keys</span></h3>
-                        <p style="margin-bottom: 0.5rem;">Save provider keys or the SpeechGradebook Text Model (Mistral) server URL in <strong>Settings → General → API Keys</strong> so you don't re-enter them each time.</p>
-                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
-                            <li style="margin-bottom: 0.5rem;"><strong>Google Gemini</strong> (recommended): <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary);">aistudio.google.com/app/apikey</a></li>
-                            <li style="margin-bottom: 0.5rem;"><strong>OpenAI GPT-4o</strong>: <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary);">platform.openai.com/api-keys</a></li>
-                            <li style="margin-bottom: 0.5rem;"><strong>Anthropic Claude</strong>: <a href="https://console.anthropic.com" target="_blank" style="color: var(--primary);">console.anthropic.com</a></li>
-                            <li style="margin-bottom: 0.5rem;"><strong>SpeechGradebook Text Model (Mistral)</strong>: Enter your evaluation server URL (e.g. your Render or local server).</li>
-                        </ul>
-
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="video"></i> How to Start Qwen (Text + Video Model)</span> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span></h3>
-                        <p style="margin-bottom: 0.5rem;">The <strong>SpeechGradebook Text + Video Model (Qwen)</strong> runs on your own infrastructure (e.g. ISAAC). Set the <strong>Qwen Service URL</strong> in <strong>Settings → General</strong> (select SpeechGradebook Text + Video Model (Qwen), enter the URL, Save). Use <strong>Check Qwen status</strong> there to see if the service is reachable.</p>
-                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
-                            <li style="margin-bottom: 0.5rem;"><strong>Quick tunnel (URL changes each time):</strong> On an ISAAC compute node, run Qwen and <code>cloudflared tunnel --url http://localhost:8001</code>; copy the <code>https://….trycloudflare.com</code> URL into Settings and on Render as <code>QWEN_API_URL</code>. See <code>llm_training/START_QWEN_FOR_RENDER.md</code>.</li>
-                            <li style="margin-bottom: 0.5rem;"><strong>Stable URL (named tunnel):</strong> Create a Cloudflare named tunnel and a fixed hostname (e.g. <code>https://qwen.yourdomain.com</code>). Set that URL on Render once. Steps: <code>llm_training/QWEN_NAMED_TUNNEL.md</code>.</li>
-                        </ul>
-
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="book-open"></i> Managing Courses</span> <span class="support-tier-badge" data-tier="instructor">Instructor</span></h3>
-                        <p style="margin-bottom: 0.5rem;">From the Dashboard, create and manage courses. Add students, run evaluations, and view history. Data is stored in the cloud (Supabase) for your institution.</p>
-                        <ol style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
-                            <li style="margin-bottom: 0.5rem;">Open <strong>Dashboard</strong> and use the <strong>Courses</strong> tab.</li>
-                            <li style="margin-bottom: 0.5rem;">Create a course (name, term, year, modality). Add students to the course.</li>
-                            <li style="margin-bottom: 0.5rem;">Evaluations are linked to course and student; view and filter from the course or from Course Insights.</li>
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="mic"></i> Step 2: Run an evaluation</span></h3>
+                        <ol style="margin-bottom: 0.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Select <strong>Evaluate Speech</strong> in the navigation bar.</li>
+                            <li style="margin-bottom: 0.5rem;">Upload the student's recording. Supported formats: MP3, MP4, MOV, WAV, M4A, WebM. Files over 50 MB are compressed automatically.</li>
+                            <li style="margin-bottom: 0.5rem;">Select a course, student, and rubric.</li>
+                            <li style="margin-bottom: 0.5rem;">Select <strong>Continue to Evaluation</strong>. The SpeechGradebook Model analyzes the recording against your rubric criteria.</li>
+                            <li style="margin-bottom: 0.5rem;">Review the results. You can download a PDF report or email the student directly from the results screen.</li>
                         </ol>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.9rem;">Evaluations are processed by the SpeechGradebook Model, a fine-tuned version of Qwen running on Modal. No external API key is required.</p>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="list-checks"></i> Custom Rubrics</span> <span class="support-tier-badge" data-tier="instructor">Instructor</span></h3>
-                        <p style="margin-bottom: 0.5rem;">Create rubrics tailored to your assignments. The AI scores and comments using your criteria.</p>
-                        <ol style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
-                            <li style="margin-bottom: 0.5rem;">Dashboard → <strong>Rubrics</strong>. Create a new rubric or use an existing one.</li>
-                            <li style="margin-bottom: 0.5rem;">Define categories, subcategories, and point values. For <strong>blank rubrics</strong> (PNG, PDF, Google Sheets, or Excel): use <strong>Import Rubric from File</strong> (Extract & Create Rubric), or create the rubric manually in the UI.</li>
-                            <li style="margin-bottom: 0.5rem;">Select the rubric when starting an evaluation.</li>
-                        </ol>
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="clipboard-check"></i> Step 3: Collect student consent</span></h3>
+                        <p style="margin-bottom: 1.5rem;">Before storing evaluations in the cloud, students must give consent. Go to <strong>Settings → Consent</strong> to generate a consent link for your course. Share the link with students — they complete a short form, and their status updates automatically. Evaluations for students who haven't consented remain local only.</p>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="bar-chart-2"></i> Course Insights (Analytics)</span> <span class="support-tier-badge" data-tier="instructor">Instructor</span></h3>
-                        <p style="margin-bottom: 1.5rem;">View overview metrics, comparisons, and evaluation lists. Export data from the Export tab. <span class="support-tier-badge" data-tier="admin">Admin</span> and <span class="support-tier-badge" data-tier="super_admin">Super Admin</span> see department- or institution-wide dashboards and filters.</p>
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="bar-chart-2"></i> Step 4: Review course insights</span></h3>
+                        <p style="margin-bottom: 1.5rem;">After running several evaluations, go to <strong>Dashboard → Course Insights</strong> to see score trends, category breakdowns, and comparisons across students. Use the <strong>Export</strong> tab to download data. <span class="support-tier-badge" data-tier="admin">Admin</span> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span> users see department- and institution-wide views with instructor filters.</p>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="clipboard-check"></i> Consent</span></h3>
-                        <p style="margin-bottom: 1.5rem;">In <strong>Settings → Consent</strong>, generate student consent links per course. Students open the link and submit consent; evaluations for consenting students can be stored in the cloud. Instructor LLM consent is requested once at first use.</p>
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="shield"></i> Admin and institution management</span> <span class="support-tier-badge" data-tier="admin">Admin</span> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span></h3>
+                        <p style="margin-bottom: 1.5rem;">Admins can view and filter all courses in <strong>Settings → Admin</strong>. Super Admins can create and configure institutions and manage global settings.</p>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="shield"></i> Admin &amp; Institution Management</span> <span class="support-tier-badge" data-tier="admin">Admin</span> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span></h3>
-                        <p style="margin-bottom: 1.5rem;">Admins see <strong>Settings → Admin</strong>: manage API keys for the institution, view all courses (with filters). Super Admins can manage institutions, themes, fonts, and global settings.</p>
                     </div>
 
-                    <!-- Panel: User Manual (technical how-to) -->
+                    <!-- Panel 2: User Guide -->
                     <div id="supportPanelUserManual" class="support-doc-panel" role="tabpanel" aria-labelledby="supportTabBtnUserManual">
-                        <p style="margin-bottom: 1.5rem; color: var(--text-light);">Technical reference for using SpeechGradebook features and workflows.</p>
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="compass"></i> Navigation &amp; Sections</span></h3>
-                        <p style="margin-bottom: 1rem;">The header shows the app name, main navigation links, and the logged-in user's <strong>name</strong> (from your profile) next to <strong>Logout</strong>. Main sections: <strong>Evaluate Speech</strong> (run evaluations), <strong>Dashboard</strong> (Courses, Rubrics, Course Insights), <strong>Settings</strong> (General, Consent, Admin if applicable), <strong>Support</strong> (this area). Visibility of Dashboard tabs and Settings tabs depends on your account tier (instructor, admin, super_admin).</p>
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="git-branch"></i> Evaluation Flow</span></h3>
-                        <p style="margin-bottom: 1rem;">Multi-step wizard: upload file → course/student/rubric → API provider → run evaluation → results. You can download a PDF report or email the student from the results step. Supported media: MP3, MP4, MOV/QuickTime, WAV, M4A, WebM; GPT-4o also accepts image/screenshot (JPG, PNG).</p>
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="layout-dashboard"></i> Dashboard</span></h3>
-                        <p style="margin-bottom: 1rem;"><strong>Courses:</strong> Create/edit courses, add students, see evaluations per course. <strong>Rubrics:</strong> Create and edit rubrics; use extract-from-PDF to build criteria. <strong>Course Insights:</strong> Overview, comparisons, evaluation list, and export. Admins see institution/department scope and instructor filters.</p>
+
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.95rem;">A complete reference for every feature in SpeechGradebook, organized by task area.</p>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="compass"></i> Navigation</span></h3>
+                        <p style="margin-bottom: 1rem;">The navigation bar provides access to all major areas of the app. What you see depends on your account role.</p>
+                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Evaluate Speech</strong> — Upload a recording and run an evaluation.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Dashboard</strong> — Manage courses, rubrics, and analytics. Includes Courses, Rubrics, and Course Insights tabs. Visibility of tabs depends on your role.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Settings</strong> — Configure consent settings and (for admins) institution settings.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Support</strong> — This documentation area.</li>
+                        </ul>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="git-branch"></i> Running an evaluation</span></h3>
+                        <p style="margin-bottom: 0.5rem;">The evaluation flow is a step-by-step wizard:</p>
+                        <ol style="margin-bottom: 0.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Upload</strong> — Select an audio or video file. Videos over 50 MB are compressed automatically before submission.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Course, student, and rubric</strong> — Select existing entries or create new ones inline.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Evaluate</strong> — Select <strong>Continue to Evaluation</strong>. The SpeechGradebook Model analyzes the recording against your rubric criteria.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Results</strong> — Review scores and AI feedback by category. Download a PDF report or email results to the student.</li>
+                        </ol>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.9rem;">Supported formats: MP3, MP4, MOV/QuickTime, WAV, M4A, WebM.</p>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="edit"></i> Editing an evaluation</span></h3>
+                        <p style="margin-bottom: 0.5rem;">You can edit any saved evaluation to adjust scores, grades, or comments.</p>
+                        <ol style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Go to a student's evaluations and open the evaluation you want to change.</li>
+                            <li style="margin-bottom: 0.5rem;">Select <strong>Edit</strong> from the evaluation menu (•••).</li>
+                            <li style="margin-bottom: 0.5rem;">The evaluation opens in editing mode. The video or audio player stays visible as you scroll so you can review the recording while making changes.</li>
+                            <li style="margin-bottom: 0.5rem;">For each criterion, select a letter grade (A–F) or enter a point value directly. Grades and points stay in sync automatically.</li>
+                            <li style="margin-bottom: 0.5rem;">Add per-criterion comments in the <strong>Comments</strong> field below each row, and section-level notes in the <strong>Section Notes</strong> area.</li>
+                            <li style="margin-bottom: 0.5rem;">Add timeline markers by double-clicking the video at a moment you want to annotate.</li>
+                            <li style="margin-bottom: 0.5rem;">Select <strong>Save</strong> when finished. Changes are saved to the cloud.</li>
+                        </ol>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="layout-dashboard"></i> Courses</span> <span class="support-tier-badge" data-tier="instructor">Instructor</span></h3>
+                        <p style="margin-bottom: 0.5rem;">Courses organize your students and their evaluations in one place.</p>
+                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Create a course</strong> — Go to Dashboard → Courses and select <strong>New Course</strong>. Enter a name, term, year, and modality.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Add students</strong> — Open the course and use the roster to add students individually or in bulk.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>View evaluations</strong> — Select a student to see their full evaluation history, scores, and trends.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Customize</strong> — Use the course card menu (•••) to rename, customize the card color, or delete the course.</li>
+                        </ul>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="list-checks"></i> Rubrics</span> <span class="support-tier-badge" data-tier="instructor">Instructor</span></h3>
+                        <p style="margin-bottom: 0.5rem;">Rubrics define the criteria and point values the model uses to evaluate a speech. You can create rubrics manually or import them from an existing file.</p>
+                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Create manually</strong> — Go to Dashboard → Rubrics → <strong>New Rubric</strong>. Add categories, subcategories, and point values.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Import from file</strong> — Use <strong>Import Rubric from File</strong> to extract criteria from a PDF, image (PNG/JPG), Google Sheet, or Excel file. SpeechGradebook reads the structure and pre-fills the rubric editor.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Duplicate or edit</strong> — Use the rubric card menu to duplicate an existing rubric as a starting point, or edit it directly.</li>
+                        </ul>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="bar-chart-2"></i> Course Insights</span> <span class="support-tier-badge" data-tier="instructor">Instructor</span></h3>
+                        <p style="margin-bottom: 0.5rem;">Course Insights gives you analytics across all evaluations in a course.</p>
+                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Overview</strong> — Summary metrics: average score, score distribution, and evaluation count.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Comparisons</strong> — Score breakdowns by category and comparisons across students or speech types.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Evaluation list</strong> — Searchable, filterable list of all evaluations in the course.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Export</strong> — Download evaluation data as a CSV or formatted report.</li>
+                        </ul>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.9rem;"><span class="support-tier-badge" data-tier="admin">Admin</span> and <span class="support-tier-badge" data-tier="super_admin">Super Admin</span> users see department- or institution-wide views with instructor filters.</p>
+
                         <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="settings"></i> Settings</span></h3>
-                        <p style="margin-bottom: 1rem;"><strong>General:</strong> Tenant/theme selector, API keys (Gemini, OpenAI, Anthropic, SpeechGradebook Text Model (Mistral) URL, SpeechGradebook Text + Video Model (Qwen) URL). <strong>Consent:</strong> Generate student consent links; view consent status. <strong>Admin:</strong> (Admin/Super Admin only) Institution API keys, course filters, and (Super Admin) institution list, theme customizer, font packages.</p>
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="palette"></i> Themes &amp; Branding</span></h3>
-                        <p style="margin-bottom: 1rem;">Institutions can have a custom theme (colors, logo, fonts). Super Admins configure themes per institution in Settings → Admin → theme customizer. Users in an institution see that theme when selected.</p>
+                        <p style="margin-bottom: 0.5rem;">Settings is divided into tabs based on your role.</p>
+                        <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>General</strong> — Configure the SpeechGradebook Model service URL.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Consent</strong> — Generate per-course consent links to share with students. View each student's consent status.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Admin</strong> <span class="support-tier-badge" data-tier="admin">Admin</span> — View all courses with instructor and date filters, and access data management tools.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Admin</strong> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span> — All admin features plus institution management.</li>
+                        </ul>
+
+
+
                     </div>
 
-                    <!-- Panel: Technical Documentation -->
+                    <!-- Panel 3: Reference -->
                     <div id="supportPanelTechnical" class="support-doc-panel" role="tabpanel" aria-labelledby="supportTabBtnTechnical">
-                        <p style="margin-bottom: 1.5rem; color: var(--text-light);">Data management, LLM training, change history, and legal information.</p>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="cpu"></i> LLM Training Guide</span> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span></h3>
-                        <p style="margin-bottom: 0.5rem;">Train your own custom speech evaluation model using your institution's evaluation data. This gives you complete privacy, no per-evaluation API costs, and a model trained on your specific rubrics and grading style.</p>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.95rem;">Data management, security, model training, version history, and legal information.</p>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="database"></i> Data management and security</span></h3>
+                        <p style="margin-bottom: 0.5rem;">SpeechGradebook uses <strong>Supabase</strong> for authentication and cloud storage. All data is stored per institution with row-level security (RLS) — each user can only access data their role permits.</p>
+                        <ul style="margin-bottom: 0.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Instructors</strong> — Access their own courses, students, rubrics, and evaluations only.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Admins</strong> — Access all data within their department or institution; can filter by instructor and view cross-course analytics.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Super Admins</strong> — Manage institutions and (where configured) cross-institution data.</li>
+                        </ul>
+                        <p style="margin-bottom: 0.5rem;"><strong>Student consent</strong> — Evaluations for students who haven't given consent are not stored in the cloud. Consent status is tracked in the <code>consent_forms</code> table.</p>
+                        <p style="margin-bottom: 1.5rem;"><strong>Audit logging</strong> — All access to student evaluation data is recorded in <code>audit_logs</code> for FERPA compliance. Each log entry includes the purpose, user, IP address, and user agent.</p>
+
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="cpu"></i> Model training</span> <span class="support-tier-badge" data-tier="super_admin">Super Admin</span></h3>
+                        <p style="margin-bottom: 0.5rem;">The SpeechGradebook Model is a fine-tuned version of Qwen trained on your institution's evaluation data. Training runs on <strong>Modal</strong> (serverless GPU infrastructure), which handles compute provisioning automatically — no server management required.</p>
+                        <p style="margin-bottom: 0.5rem;">A trained model gives you scoring behavior calibrated to your rubrics and grading style, with all data remaining within your institution's environment.</p>
+                        <p style="margin-bottom: 0.75rem;"><strong>To export training data:</strong> Go to Settings → Admin → Data Management.</p>
                         <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
-                            <p style="margin: 0 0 0.75rem 0; font-weight: 600;"><span class="icon-with-text"><i data-lucide="book-open"></i> Complete Guides:</span></p>
-                            <ul style="margin: 0; padding-left: 1.5rem; list-style: none;">
-                                <li style="margin-bottom: 0.5rem;"><span style="color: var(--primary);">▸</span> <strong><a href="LLM_TRAINING_QUICKSTART.md" target="_blank" style="color: var(--primary); text-decoration: underline;">LLM Training Quickstart</a></strong> — Step-by-step guide with all prerequisites, installation, and troubleshooting</li>
-                                <li style="margin-bottom: 0.5rem;"><span style="color: var(--primary);">▸</span> <strong><a href="llm_training/README.md" target="_blank" style="color: var(--primary); text-decoration: underline;">LLM Training README</a></strong> — Quick reference for export, convert, train, and serve commands</li>
-                                <li style="margin-bottom: 0;"><span style="color: var(--primary);">▸</span> <strong><a href="llm_training/IMPLEMENTATION_GUIDE.md" target="_blank" style="color: var(--primary); text-decoration: underline;">Implementation Guide</a></strong> — Detailed technical documentation for advanced users</li>
+                            <p style="margin: 0 0 0.5rem 0; font-weight: 600;">Training guides</p>
+                            <ul style="margin: 0; padding-left: 1.25rem;">
+                                <li style="margin-bottom: 0.5rem;"><a href="LLM_TRAINING_QUICKSTART.md" target="_blank" style="color: var(--primary); font-weight: 600;">Training Quickstart</a> — Prerequisites, Modal setup, and step-by-step training procedure</li>
+                                <li style="margin-bottom: 0.5rem;"><a href="llm_training/README.md" target="_blank" style="color: var(--primary); font-weight: 600;">Training README</a> — Quick reference for export, convert, train, and serve commands</li>
+                                <li style="margin-bottom: 0;"><a href="llm_training/IMPLEMENTATION_GUIDE.md" target="_blank" style="color: var(--primary); font-weight: 600;">Implementation Guide</a> — Advanced technical documentation for custom deployments</li>
                             </ul>
-                            <p style="margin: 0.75rem 0 0 0; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-light);"><strong>Quick access:</strong> Go to Settings → Admin → Data Management to export training data.</p>
                         </div>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="database"></i> How Data Is Managed</span></h3>
-                        <p style="margin-bottom: 0.5rem;">SpeechGradebook uses <strong>Supabase</strong> for authentication and database. Data is stored per institution with row-level security (RLS):</p>
-                        <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-                            <li style="margin-bottom: 0.5rem;"><strong>Instructors</strong> see only their own courses, students, rubrics, and evaluations.</li>
-                            <li style="margin-bottom: 0.5rem;"><strong>Admins</strong> see data for their department/institution; they can filter by instructor and view analytics across courses.</li>
-                            <li style="margin-bottom: 0.5rem;"><strong>Super Admins</strong> can manage institutions, themes, and (where configured) view cross-institution data.</li>
-                            <li style="margin-bottom: 0.5rem;">Student consent is recorded in <code>consent_forms</code>; evaluations for non-consenting students are not stored in the cloud (local-only behavior when applicable).</li>
-                            <li style="margin-bottom: 0.5rem;">Access to student data is logged in <strong>audit_logs</strong> for FERPA and compliance (purpose, justification, IP, user agent).</li>
-                        </ul>
-
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="history"></i> Change Log</span></h3>
-                        <p style="margin-bottom: 0.5rem;">Recent changes to SpeechGradebook. For the full history, see <code>CHANGELOG.md</code> in the project.</p>
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="history"></i> Version history</span></h3>
+                        <p style="margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.9rem;">Recent changes to SpeechGradebook. See <code>CHANGELOG.md</code> in the project repository for the full history.</p>
                         <div id="supportChangelogContent" style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-alt); border-radius: 0.5rem; font-size: 0.9rem; white-space: pre-wrap;"></div>
 
-                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="scale"></i> Licensing &amp; Legal</span></h3>
-                        <p style="margin-bottom: 0.5rem;">SpeechGradebook is provided for educational use. By using the application you agree to your institution's terms and any applicable privacy policies. Student data is processed in accordance with FERPA and your institution's data agreements. For third-party AI providers (e.g. Google, OpenAI, Anthropic), their respective terms and privacy policies apply to API usage.</p>
-                        <p style="margin-bottom: 0.5rem;"><strong>Custom / fine-tuned LLM:</strong> The optional fine-tuned evaluation model is based on <strong>Mistral 7B Instruct</strong> (Apache 2.0). If you <strong>distribute</strong> the model, adapter weights, or training/serving code that includes that model, you must include the Apache 2.0 license and any required attribution (e.g. Mistral AI, and PEFT if applicable). See <code>llm_training/LICENSE</code> in the project for the Apache 2.0 text and third-party notices. Internal use only (no redistribution) does not require including the license in the app UI.</p>
-                        <p style="margin-bottom: 0.5rem;">Contact your institution or the support email below for licensing and legal questions.</p>
-                    </div>
+                        <h3 style="margin-bottom: 0.75rem;"><span class="icon-with-text"><i data-lucide="scale"></i> Licensing and legal</span></h3>
+                        <p style="margin-bottom: 0.5rem;">SpeechGradebook is provided for educational use. By using the app, you agree to your institution's terms and any applicable privacy policies. Student data is processed in accordance with FERPA and your institution's data agreements.</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>Model licensing</strong> — The SpeechGradebook Model is a fine-tuned version of <strong>Qwen</strong> (Apache 2.0 license). If you distribute the model, adapter weights, or any training or serving code that includes the model, you must include the Apache 2.0 license and required attribution. Internal use without redistribution doesn't require including the license in the app. See <code>llm_training/LICENSE</code> for the full license text and third-party notices.</p>
+                        <p style="margin-bottom: 1.5rem;">For licensing or legal questions, contact your institution or the support address below.</p>
 
-                    <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
+                    </div>                    </div> <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
                     <h3 style="margin-bottom: 0.5rem;"><span class="icon-with-text"><i data-lucide="mail"></i> Contact Support</span></h3>
                     <p>
                         For questions or technical support, contact: <strong id="supportEmail"><a href="/cdn-cgi/l/email-protection#95e6e5f0f0f6fdf2e7f4f1f0f7fafafed5e5e7fae1fafbbbf8f0"><span class="__cf_email__" data-cfemail="ccbfbca9a9afa4abbeada8a9aea3a3a78cbcbea3b8a3a2e2a1a9">[email&#160;protected]</span></a></strong>
@@ -6718,8 +6758,8 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             SUPABASE_URL: window.SUPABASE_URL || '',
             SUPABASE_ANON_KEY: window.SUPABASE_ANON_KEY || '',
             DEBUG: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
-            appVersion: '3.0',
-            appVersionLabel: 'Supabase Edition'
+            appVersion: '1.0',
+            appVersionLabel: ''
         };
         
         // Warn if Supabase is not configured (config.js not loaded or env vars not set)
@@ -14474,12 +14514,12 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         }
 
         function refreshSupportContent() {
-            const v = (typeof CONFIG !== 'undefined' && CONFIG.appVersion) ? CONFIG.appVersion : '3.0';
-            const label = (typeof CONFIG !== 'undefined' && CONFIG.appVersionLabel) ? ' ' + CONFIG.appVersionLabel : ' (Supabase Edition)';
+            const v = (typeof CONFIG !== 'undefined' && CONFIG.appVersion) ? CONFIG.appVersion : '1.0';
+            const label = (typeof CONFIG !== 'undefined' && CONFIG.appVersionLabel) ? ' ' + CONFIG.appVersionLabel : '';
             const versionEl = document.getElementById('supportVersionText');
             const labelEl = document.getElementById('supportVersionLabel');
             if (versionEl) versionEl.textContent = 'v' + v;
-            if (labelEl) labelEl.textContent = label;
+            if (labelEl) labelEl.textContent = label.trim();
             const tier = typeof userTier !== 'undefined' ? userTier : 'demo';
             document.querySelectorAll('.support-tier-badge').forEach(badge => {
                 const t = badge.getAttribute('data-tier');
@@ -14497,15 +14537,13 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         }
 
         // Recent changelog text for Support → Technical Documentation (full history in CHANGELOG.md)
-        const SUPPORT_CHANGELOG = `v3.0 (Supabase Edition)
-• Support section restructured: version at top, Getting Started, User Manual, Technical Documentation
-• Documentation tailored by user tier (instructor, admin, super_admin)
-• Data management, Change Log, and Licensing/Legal in Technical Documentation
-
-Earlier:
+        const SUPPORT_CHANGELOG = `v1.0
+• SpeechGradebook Model (fine-tuned Qwen on Modal) — no external API key required
+• Evaluation wizard: upload, course/student/rubric, run, review results
+• Inline evaluation editing with sticky video player and timeline markers
+• Course Insights analytics: score trends, category breakdowns, export
+• Student consent management with per-course consent links
 • Supabase backend: courses, evaluations, rubrics, consent, audit logs, RLS
-• Multi-provider evaluation: Gemini, GPT-4o, Claude, SpeechGradebook Text Model (Mistral), SpeechGradebook Text + Video Model (Qwen)
-• Institution themes, custom fonts, consent links, Course Insights / analytics
 • FERPA-oriented audit logging and consent flows`;
 
         // Consent: store last generated links for copy/download
@@ -29840,13 +29878,13 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 const sectionId = section.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
                 if (isEditing) {
-                    // ── SCORECARD TABLE (editing mode) ─────────────────────────────
+                    // ── SCORECARD TABLE (editing mode) — Apple HIG compliant ────────
                     const sectionEscT = section.replace(/\\/g, '\\\\').replace(/`/g, '\\`');
                     html += `
-                    <div style="background:#fff;border:1px solid #e5e5e7;border-radius:12px;overflow:hidden;margin-bottom:12px;" data-editable-section="${escapeHtml(section)}">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:#f5f5f7;border-bottom:1px solid #e5e5e7;">
-                            <strong style="font-size:14px;font-weight:600;color:#1d1d1f;">${escapeHtml(section)}</strong>
-                            <span id="sectionScore-${sectionId}" style="font-size:13px;font-weight:600;color:#007AFF;white-space:nowrap;">${data.score} / ${data.maxScore} pts</span>
+                    <div style="background:#fff;border:1px solid #e5e5e7;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);" data-editable-section="${escapeHtml(section)}">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;background:#fff;border-bottom:1px solid #e5e5e7;">
+                            <h3 style="font-size:20px;font-weight:600;color:#1d1d1f;letter-spacing:-0.4px;margin:0;">${escapeHtml(section)}</h3>
+                            <span id="sectionScore-${sectionId}" style="font-size:15px;font-weight:600;color:#007AFF;white-space:nowrap;">${Math.round((data.score||0)*100)/100} / ${data.maxScore} pts</span>
                         </div>`;
 
                     if (data.subcategories && data.subcategories.length > 0) {
@@ -29854,14 +29892,14 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
                             <colgroup>
                                 <col style="width:auto;">
-                                <col style="width:40px;"><col style="width:40px;"><col style="width:40px;"><col style="width:40px;"><col style="width:40px;">
-                                <col style="width:80px;">
+                                <col style="width:44px;"><col style="width:44px;"><col style="width:44px;"><col style="width:44px;"><col style="width:44px;">
+                                <col style="width:76px;">
                             </colgroup>
                             <thead>
                                 <tr style="background:#fafafa;border-bottom:1px solid #e5e5e7;">
-                                    <th style="padding:6px 14px;font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">Criterion</th>
-                                    ${['A','B','C','D','F'].map(g => `<th style="padding:6px 2px;font-size:12px;font-weight:700;color:#6e6e73;text-align:center;">${g}</th>`).join('')}
-                                    <th style="padding:6px 8px;font-size:11px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;text-align:center;">Pts</th>
+                                    <th style="padding:8px 16px;font-size:12px;font-weight:600;color:#3a3a3c;text-transform:uppercase;letter-spacing:0.5px;text-align:left;">Criterion</th>
+                                    ${['A','B','C','D','F'].map(g => `<th style="padding:8px 2px;font-size:13px;font-weight:700;color:#3a3a3c;text-align:center;">${g}</th>`).join('')}
+                                    <th style="padding:8px 8px;font-size:12px;font-weight:600;color:#3a3a3c;text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Pts</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -29870,13 +29908,17 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             const subId = sectionId + '_sub_' + subIdx;
                             const currentGrade = sub.grade || 'F';
                             const radioName = `grade-${subId}`;
+                            const _maxPts = parseFloat(sub.maxPoints) || 0;
+                            const _gradePoints = {'A': _maxPts, 'B': Math.round(0.85*_maxPts*10)/10, 'C': Math.round(0.75*_maxPts*10)/10, 'D': Math.round(0.65*_maxPts*10)/10, 'F': Math.round(0.30*_maxPts*10)/10};
+                            const displayPoints = _gradePoints[currentGrade] !== undefined ? _gradePoints[currentGrade] : _gradePoints['F'];
+                            sub.points = displayPoints;
                             html += `
-                                <tr style="border-bottom:0.5px solid #f0f0f0;" data-editable-subcategory="${escapeHtml(section)}" data-subcategory-index="${subIdx}">
-                                    <td style="padding:8px 14px;vertical-align:middle;">
-                                        <div style="font-size:13px;color:#1d1d1f;line-height:1.4;">${escapeHtml(sub.name)}</div>
+                                <tr style="border-bottom:0;background:#fff;" data-editable-subcategory="${escapeHtml(section)}" data-subcategory-index="${subIdx}">
+                                    <td style="padding:12px 16px 4px;vertical-align:top;">
+                                        <div style="font-size:15px;font-weight:500;color:#1d1d1f;line-height:1.4;">${escapeHtml(sub.name)}</div>
                                     </td>
                                     ${['A','B','C','D','F'].map(g => `
-                                    <td style="padding:6px 4px;text-align:center;vertical-align:middle;">
+                                    <td style="padding:10px 4px 4px;text-align:center;vertical-align:top;">
                                         <span id="gc-${subId}-${g}"
                                             class="grade-circle${currentGrade === g ? ' selected-' + g : ''}"
                                             data-radio-name="${radioName}"
@@ -29887,22 +29929,24 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                                             onclick="window.selectGrade(this)"
                                             title="Grade ${g}">${g}</span>
                                     </td>`).join('')}
-                                    <td style="padding:6px 8px;text-align:center;vertical-align:middle;">
+                                    <td style="padding:10px 8px 4px;text-align:center;vertical-align:top;">
                                         <input type="number" id="subcategory-${sectionId}-${subIdx}-points"
-                                            value="${sub.points}" min="0" max="${sub.maxPoints}" step="0.5"
+                                            value="${displayPoints}" min="0" max="${sub.maxPoints}" step="0.5"
                                             onchange="updateSubcategoryGrade('${sectionEscT.replace(/'/g,"\'")}',${subIdx})"
-                                            style="width:46px;padding:4px 2px;border:1px solid #d2d2d7;border-radius:5px;font-size:12px;text-align:center;box-sizing:border-box;display:block;margin:0 auto;"
+                                            style="width:48px;padding:5px 3px;border:1.5px solid #c7c7cc;border-radius:7px;font-size:13px;font-weight:500;text-align:center;box-sizing:border-box;display:block;margin:0 auto;color:#1d1d1f;"
                                             onfocus="this.style.borderColor='#007AFF';this.style.outline='none';"
-                                            onblur="this.style.borderColor='#d2d2d7';">
-                                        <div style="font-size:10px;color:#6e6e73;white-space:nowrap;text-align:center;">/${sub.maxPoints}</div>
+                                            onblur="this.style.borderColor='#c7c7cc';">
+                                        <div style="font-size:11px;color:#8e8e93;white-space:nowrap;text-align:center;margin-top:2px;">/ ${sub.maxPoints}</div>
                                     </td>
                                 </tr>
-                                <tr style="border-bottom:1px solid #f0f0f0;">
-                                    <td colspan="7" style="padding:0 14px 8px;">
-                                        <textarea id="subfeedback-${subId}" placeholder="Feedback for ${escapeHtml(sub.name)}…"
-                                            style="width:100%;min-height:38px;padding:5px 8px;border:1px solid #e5e5e7;border-radius:6px;font-size:11px;font-family:-apple-system,sans-serif;resize:vertical;background:#fafafa;color:#1d1d1f;line-height:1.4;box-sizing:border-box;"
-                                            onfocus="this.style.borderColor='#007AFF';this.style.outline='none';this.style.background='#fff';"
-                                            onblur="this.style.borderColor='#e5e5e7';this.style.background='#fafafa';"
+                                <tr style="border-bottom:1px solid #e5e5e7;background:#f9f9fb;">
+                                    <td colspan="7" style="padding:4px 16px 12px;">
+                                        <div style="font-size:12px;font-weight:500;color:#8e8e93;margin-bottom:5px;">Comments for <em style="font-style:normal;color:#3a3a3c;">${escapeHtml(sub.name)}</em></div>
+                                        <textarea id="subfeedback-${subId}"
+                                            placeholder="Add specific feedback for this criterion…"
+                                            style="width:100%;min-height:54px;padding:8px 10px;border:1.5px solid #c7c7cc;border-radius:8px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;resize:vertical;background:#fff;color:#1d1d1f;line-height:1.5;box-sizing:border-box;"
+                                            onfocus="this.style.borderColor='#007AFF';this.style.outline='none';"
+                                            onblur="this.style.borderColor='#c7c7cc';"
                                             onkeydown="event.stopPropagation();">${escapeHtml(sub.feedback || '')}</textarea>
                                     </td>
                                 </tr>`;
@@ -29911,14 +29955,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                         html += `</tbody></table>`;
                     }
 
-                    // Section-level notes
+                    // Section-level notes — blue tint to distinguish from per-criterion comments
                     html += `
-                        <div style="padding:8px 14px 10px;background:#fafafa;border-top:1px solid #e5e5e7;">
-                            <div style="font-size:10px;font-weight:600;color:#6e6e73;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">Section notes</div>
-                            <textarea id="feedback-${sectionId}" placeholder="Overall notes for ${escapeHtml(section)}…"
-                                style="width:100%;min-height:44px;padding:6px 8px;border:1px solid #e5e5e7;border-radius:6px;font-size:12px;font-family:-apple-system,sans-serif;resize:vertical;background:#fff;color:#1d1d1f;line-height:1.4;box-sizing:border-box;"
+                        <div style="padding:12px 16px 14px;background:#f0f4ff;border-top:1.5px solid #dce8ff;">
+                            <div style="font-size:12px;font-weight:600;color:#3478f6;letter-spacing:0.1px;margin-bottom:6px;">Section Notes — ${escapeHtml(section)}</div>
+                            <textarea id="feedback-${sectionId}"
+                                placeholder="Overall comments for this section…"
+                                style="width:100%;min-height:54px;padding:8px 10px;border:1.5px solid #b8d0ff;border-radius:8px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;resize:vertical;background:#fff;color:#1d1d1f;line-height:1.5;box-sizing:border-box;"
                                 onfocus="this.style.borderColor='#007AFF';this.style.outline='none';"
-                                onblur="this.style.borderColor='#e5e5e7';"
+                                onblur="this.style.borderColor='#b8d0ff';"
                                 onkeydown="event.stopPropagation();">${escapeHtml(data.feedback || '')}</textarea>
                         </div>
                     </div>`;
@@ -30124,25 +30169,30 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             wrapper.appendChild(timelineSection);
                         }
 
-                        // Insert a placeholder div that takes the wrapper's space when floating
+                        // Placeholder holds layout space while wrapper is floating
                         const placeholder = document.createElement('div');
                         placeholder.id = 'sticky-eval-placeholder';
+                        placeholder.style.cssText = 'display:none;';
                         wrapper.parentNode.insertBefore(placeholder, wrapper.nextSibling);
 
-                        // Scroll listener: float when wrapper scrolls out of view
+                        // Scroll listener: float when wrapper has scrolled out of view
                         const scrollHandler = () => {
-                            const wrapperRect = placeholder.getBoundingClientRect();
-                            const isFloating = wrapperRect.top < -10;
-                            if (isFloating && !wrapper.classList.contains('is-floating')) {
-                                // Capture height before floating so placeholder can hold space
-                                placeholder.style.height = wrapper.offsetHeight + 'px';
-                                placeholder.classList.add('active');
+                            // When not floating, wrapper is in-flow — check its live position
+                            // When floating, wrapper is fixed so check placeholder position instead
+                            const refEl = wrapper.classList.contains('is-floating') ? placeholder : wrapper;
+                            const top = refEl.getBoundingClientRect().top;
+                            const shouldFloat = top < 0;
+                            const isCurrentlyFloating = wrapper.classList.contains('is-floating');
+
+                            if (shouldFloat && !isCurrentlyFloating) {
+                                const h = wrapper.offsetHeight;
+                                placeholder.style.height = h + 'px';
+                                placeholder.style.display = 'block';
                                 wrapper.classList.add('is-floating');
-                                // Re-init lucide icons in floating wrapper
                                 if (typeof lucide !== 'undefined') lucide.createIcons({ root: wrapper });
-                            } else if (!isFloating && wrapper.classList.contains('is-floating')) {
+                            } else if (!shouldFloat && isCurrentlyFloating) {
                                 wrapper.classList.remove('is-floating');
-                                placeholder.classList.remove('active');
+                                placeholder.style.display = 'none';
                                 placeholder.style.height = '';
                             }
                         };
@@ -30152,6 +30202,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                             window.removeEventListener('scroll', window._evalScrollHandler, true);
                         }
                         window._evalScrollHandler = scrollHandler;
+                        // Listen on capture so it catches scroll on any ancestor
                         window.addEventListener('scroll', scrollHandler, { passive: true, capture: true });
                     }
                 } else {
@@ -30644,28 +30695,24 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 if (input) {
                     const points = parseFloat(input.value) || 0;
                     totalPoints += points;
-                    sub.points = points; // Update data
+                    sub.points = points;
                 } else {
-                    totalPoints += parseFloat(sub.points) || 0; // Use existing if input not found
+                    totalPoints += parseFloat(sub.points) || 0;
                 }
             });
             
-            // Update section score
+            // Round to 2 decimal places to avoid floating point junk like 6.300000000000001
+            totalPoints = Math.round(totalPoints * 100) / 100;
             section.score = totalPoints;
             
-            // Update display
             const scoreInput = document.getElementById('editSectionScore');
-            if (scoreInput) {
-                scoreInput.value = totalPoints;
-            }
+            if (scoreInput) scoreInput.value = totalPoints;
 
-            // Update the new scorecard section header display
             const sectionScoreEl = document.getElementById('sectionScore-' + sectionId);
             if (sectionScoreEl) {
                 sectionScoreEl.textContent = totalPoints + ' / ' + (section.maxScore || 0) + ' pts';
             }
             
-            // Recalculate overall total score
             recalculateTotalScore();
         }
         
@@ -30681,17 +30728,15 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 maxScore += section.maxScore || 0;
             });
             
+            totalScore = Math.round(totalScore * 100) / 100;
             evaluationResults.totalScore = totalScore;
             evaluationResults.maxScore = maxScore;
             
-            // Update display if results are shown
             const scoreBanner = document.querySelector('.score-banner');
             if (scoreBanner) {
                 const scoreValue = scoreBanner.querySelector('.score-value');
                 const scorePercentage = scoreBanner.querySelector('.score-percentage');
-                if (scoreValue) {
-                    scoreValue.textContent = `${totalScore} / ${maxScore}`;
-                }
+                if (scoreValue) scoreValue.textContent = `${totalScore} / ${maxScore}`;
                 if (scorePercentage) {
                     const percentage = maxScore > 0 ? ((totalScore / maxScore) * 100).toFixed(1) : '0';
                     scorePercentage.textContent = `${percentage}%`;
@@ -31254,22 +31299,23 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
             closeBtn.setAttribute('aria-label', 'Close notification');
             closeBtn.innerHTML = '<i data-lucide="x"></i>';
             closeBtn.style.cssText = `
-                background: rgba(255, 255, 255, 0.2);
+                background: transparent;
                 border: none;
                 color: white;
                 width: 1.5rem;
                 height: 1.5rem;
-                border-radius: 50%;
+                border-radius: 4px;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 margin-left: auto;
                 padding: 0;
-                transition: background-color var(--motion-fast) var(--motion-ease);
+                opacity: 0.75;
+                transition: opacity var(--motion-fast) var(--motion-ease);
             `;
-            closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255, 255, 255, 0.3)';
-            closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+            closeBtn.onmouseenter = () => closeBtn.style.opacity = '1';
+            closeBtn.onmouseleave = () => closeBtn.style.opacity = '0.75';
             closeBtn.onclick = () => {
                 notification.style.animation = 'notificationSlideOut var(--motion-normal) var(--motion-ease-in)';
                 setTimeout(() => notification.remove(), 250);
@@ -32192,7 +32238,7 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                 </button>
                 <div id="courseActionsMenu_${courseIdForMenu}" class="course-actions-menu hidden" style="position: absolute; right: 0.75rem; top: 2.5rem; background: white; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 180px; padding: 0.25rem 0;">
                     <button type="button" onclick="if(event)event.stopPropagation();window.editCourse('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit</button>
-                    <button type="button" onclick="if(event)event.stopPropagation();window.customizeCourseColor('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="palette" style="width:1rem;height:1rem;"></i> Customize Color</button>
+                    <button type="button" onclick="if(event)event.stopPropagation();window.customizeCourseColor('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="palette" style="width:1rem;height:1rem;"></i> Customize</button>
                     <button type="button" onclick="if(event)event.stopPropagation();window.moveCourse('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="move" style="width:1rem;height:1rem;"></i> Move</button>
                     <div style="border-top: 1px solid var(--border); margin: 0.25rem 0;"></div>
                     <button type="button" onclick="if(event)event.stopPropagation();window.deleteCourse('${courseIdForMenu}');window.toggleCourseActionsMenu('${courseIdForMenu}');return false;" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error, #dc2626); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
@@ -32784,8 +32830,8 @@ Ensure every subcategory from the rubric receives a grade. Be specific in your f
                                         <i data-lucide="more-horizontal" style="width:1.125rem;height:1.125rem;"></i>
                                     </button>
                                     <div id="studentActionsMenu_${studentId}" class="student-actions-menu hidden" role="menu" aria-label="Student actions">
-                                        <button type="button" id="studentMenuItem_add_${studentId}" role="menuitem" onclick="addEvaluationForStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="plus-circle" style="width:1rem;height:1rem;"></i> Add Evaluation</button>
                                         ${evalCount > 0 ? `<button type="button" id="studentMenuItem_view_${studentId}" role="menuitem" onclick="viewStudentEvals('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluations</button>` : ''}
+                                        <button type="button" id="studentMenuItem_add_${studentId}" role="menuitem" onclick="addEvaluationForStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="plus-circle" style="width:1rem;height:1rem;"></i> Add Evaluation</button>
                                         <button type="button" id="studentMenuItem_edit_${studentId}" role="menuitem" onclick="editStudent('${studentId}'); toggleStudentActions('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit Student</button>
                                         <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
                                         <button type="button" id="studentMenuItem_delete_${studentId}" role="menuitem" data-destructive="true" onclick="toggleStudentActions('${studentId}'); deleteStudent('${studentId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='none'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete Student</button>
@@ -34950,7 +34996,7 @@ Return ONLY the JSON object, nothing else.`;
                 <div class="card">
                     <div class="card-header">${escapeHtml(student.firstName || '')} ${escapeHtml(student.lastName || '')} - Evaluations</div>
                     <div style="margin-bottom: 1rem;">
-                        <button onclick="${backAction}" class="btn-secondary">${backLabel}</button>
+                        <button onclick="${backAction}" style="background:none;border:none;padding:0;color:#007AFF;font-size:17px;font-weight:400;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;letter-spacing:-0.2px;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'"><svg width="11" height="18" viewBox="0 0 11 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 1.5L2 9L9.5 16.5" stroke="#007AFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>${backLabel.replace('← ','')}</button>
                     </div>
                     <!-- Evaluation Search -->
                     <div style="margin-bottom: 1rem;">
@@ -35017,12 +35063,13 @@ Return ONLY the JSON object, nothing else.`;
                                         <i data-lucide="more-horizontal" style="width:1.1em;height:1.1em;"></i>
                                     </button>
                                     <div id="${menuId}" class="evaluation-actions-menu hidden" role="menu" aria-label="Evaluation actions">
-                                        <button type="button" id="evalMenuItem_view_${evalId}" role="menuitem" onclick="event.stopPropagation(); toggleEvaluation('${uniqueId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Evaluation</button>
+                                        <button type="button" id="evalMenuItem_view_${evalId}" role="menuitem" onclick="event.stopPropagation(); toggleEvaluation('${uniqueId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="eye" style="width:1rem;height:1rem;"></i> View</button>
                                         <button type="button" id="evalMenuItem_edit_${evalId}" role="menuitem" onclick="handleEditEvaluation('${evalId}', '${studentId}', '${uniqueId}', '${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:1rem;height:1rem;"></i> Edit</button>
-                                        <button type="button" id="evalMenuItem_move_${evalId}" role="menuitem" onclick="event.stopPropagation(); openMoveEvalModal('${evalId}', '${currentClassId || ''}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="move" style="width:1rem;height:1rem;"></i> Move to Different Student</button>
-                                        <button type="button" id="evalMenuItem_download_${evalId}" role="menuitem" onclick="event.stopPropagation(); downloadSavedEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s; border-top: 1px solid var(--border);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="file-down" style="width:1rem;height:1rem;"></i> Download</button>
-                                        <div class="menu-separator"></div>
-                                        <button type="button" id="evalMenuItem_delete_${evalId}" role="menuitem" data-destructive="true" onclick="event.stopPropagation(); deleteEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
+                                        <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
+                                        <button type="button" id="evalMenuItem_download_${evalId}" role="menuitem" onclick="event.stopPropagation(); downloadSavedEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="file-down" style="width:1rem;height:1rem;"></i> Download</button>
+                                        <button type="button" id="evalMenuItem_move_${evalId}" role="menuitem" onclick="event.stopPropagation(); openMoveEvalModal('${evalId}', '${currentClassId || ''}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='white'"><i data-lucide="move" style="width:1rem;height:1rem;"></i> Move</button>
+                                        <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
+                                        <button type="button" id="evalMenuItem_delete_${evalId}" role="menuitem" data-destructive="true" onclick="event.stopPropagation(); deleteEvaluation('${evalId}', '${studentId}'); toggleEvaluationMenu('${menuId}');" style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; color: var(--error); display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s;" onmouseover="this.style.background='var(--error-bg)'" onmouseout="this.style.background='none'"><i data-lucide="trash-2" style="width:1rem;height:1rem;"></i> Delete</button>
                                     </div>
                                 </div>
                                 <span id="${uniqueId}-arrow" style="font-size: 1.2rem; color: var(--text-light);">▼</span>
