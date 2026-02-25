@@ -9219,7 +9219,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             try {
                 // Try to acquire and release the lock to clear any stale state
                 if (navigator.locks && navigator.locks.request) {
-                    await navigator.locks.request('lock:sb-zsdwbulkkiptaooketqa-auth-token', { ifAvailable: true }, async (lock) => {
+                    // Try with a very short timeout to avoid blocking
+                    const lockPromise = navigator.locks.request('lock:sb-zsdwbulkkiptaooketqa-auth-token', { 
+                        ifAvailable: true,
+                        mode: 'exclusive'
+                    }, async (lock) => {
                         if (lock) {
                             // Lock was available, release it immediately
                             return Promise.resolve();
@@ -9227,10 +9231,41 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                         // Lock is held, that's okay - we'll handle it in retry
                         return Promise.resolve();
                     });
+                    
+                    // Add a timeout to prevent hanging
+                    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 100));
+                    await Promise.race([lockPromise, timeoutPromise]);
                 }
             } catch (error) {
                 // Ignore lock errors during cleanup
                 log.debug('Lock cleanup attempt:', error);
+            }
+        }
+        
+        // Check if we're the only tab (workaround for LockManager issues)
+        async function isOnlyTab() {
+            try {
+                // Use BroadcastChannel to check for other tabs
+                const channel = new BroadcastChannel('speechgradebook-tab-check');
+                let otherTabsFound = false;
+                
+                const checkPromise = new Promise((resolve) => {
+                    const timeout = setTimeout(() => resolve(false), 100);
+                    channel.onmessage = () => {
+                        otherTabsFound = true;
+                        clearTimeout(timeout);
+                        resolve(true);
+                    };
+                    // Send a ping
+                    channel.postMessage({ type: 'ping', tabId: Date.now() });
+                });
+                
+                const hasOtherTabs = await checkPromise;
+                channel.close();
+                return !hasOtherTabs;
+            } catch (e) {
+                // If BroadcastChannel isn't supported, assume we're the only tab
+                return true;
             }
         }
         
@@ -9263,7 +9298,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             // First, try to clear any stale locks
             await clearStaleLocks();
             
-            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            // Check if we're the only tab - if so, we can be more aggressive with retries
+            const onlyTab = await isOnlyTab();
+            const effectiveMaxRetries = onlyTab ? maxRetries + 2 : maxRetries; // More retries if we're alone
+            
+            for (let attempt = 1; attempt <= effectiveMaxRetries; attempt++) {
                 try {
                     return await operation();
                 } catch (error) {
@@ -9271,13 +9310,18 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                                       error?.message?.includes('lock') ||
                                       error?.message?.includes('timed out');
                     
-                    if (isLockError && attempt < maxRetries) {
+                    if (isLockError && attempt < effectiveMaxRetries) {
                         const waitTime = delay * Math.pow(2, attempt - 1); // Exponential backoff
-                        log.debug(`LockManager timeout (attempt ${attempt}/${maxRetries}), retrying in ${waitTime}ms...`);
+                        log.debug(`LockManager timeout (attempt ${attempt}/${effectiveMaxRetries}), retrying in ${waitTime}ms...`);
                         
                         // Try to clear locks again before retrying
-                        if (attempt === 2) {
+                        if (attempt === 2 || attempt === 3) {
                             await clearStaleLocks();
+                            // Also clear storage if we're on attempt 3
+                            if (attempt === 3) {
+                                clearSupabaseAuthStorage();
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                            }
                         }
                         
                         await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -9285,12 +9329,12 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                     
                     // If all retries failed, try clearing storage as last resort
-                    if (isLockError && attempt === maxRetries) {
+                    if (isLockError && attempt === effectiveMaxRetries) {
                         log.warn('All retries failed, attempting to clear auth storage...');
                         clearSupabaseAuthStorage();
                         
                         // Wait a moment, then try one final time
-                        await new Promise(resolve => setTimeout(resolve, 500));
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                         try {
                             return await operation();
                         } catch (finalError) {
