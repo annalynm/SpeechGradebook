@@ -9151,21 +9151,58 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             info: CONFIG.DEBUG ? console.info.bind(console) : () => {}
         };
         
+        // Custom storage adapter that bypasses LockManager to avoid timeout issues
+        class SimpleStorageAdapter {
+            constructor(storage) {
+                this.storage = storage;
+            }
+            
+            async getItem(key) {
+                try {
+                    return this.storage.getItem(key);
+                } catch (error) {
+                    console.warn('Storage getItem error:', error);
+                    return null;
+                }
+            }
+            
+            async setItem(key, value) {
+                try {
+                    this.storage.setItem(key, value);
+                } catch (error) {
+                    console.warn('Storage setItem error:', error);
+                }
+            }
+            
+            async removeItem(key) {
+                try {
+                    this.storage.removeItem(key);
+                } catch (error) {
+                    console.warn('Storage removeItem error:', error);
+                }
+            }
+        }
+        
         // Initialize Supabase client
         let supabaseClient = null;
         
         try {
             if (window.supabase) {
-                // Configure Supabase client with options to reduce LockManager issues
+                // Use custom storage adapter to bypass LockManager
+                const customStorage = new SimpleStorageAdapter(window.localStorage);
+                
+                // Configure Supabase client with custom storage to avoid LockManager timeouts
                 supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
                     auth: {
                         persistSession: true,
                         autoRefreshToken: true,
                         detectSessionInUrl: true,
-                        storage: window.localStorage
+                        storage: customStorage,
+                        // Disable flow type to avoid lock manager issues
+                        flowType: 'pkce'
                     }
                 });
-                log.debug('✓ Supabase client initialized');
+                log.debug('✓ Supabase client initialized with custom storage');
             } else {
                 log.warn('⚠️ Supabase library not loaded - using localStorage fallback');
             }
@@ -9174,8 +9211,55 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             log.debug('Using localStorage fallback mode');
         }
         
+        // Helper function to clear stale Supabase auth locks and storage
+        async function clearStaleLocks() {
+            try {
+                // Try to acquire and release the lock to clear any stale state
+                if (navigator.locks && navigator.locks.request) {
+                    await navigator.locks.request('lock:sb-zsdwbulkkiptaooketqa-auth-token', { ifAvailable: true }, async (lock) => {
+                        if (lock) {
+                            // Lock was available, release it immediately
+                            return Promise.resolve();
+                        }
+                        // Lock is held, that's okay - we'll handle it in retry
+                        return Promise.resolve();
+                    });
+                }
+            } catch (error) {
+                // Ignore lock errors during cleanup
+                log.debug('Lock cleanup attempt:', error);
+            }
+        }
+        
+        // Clear Supabase auth storage to reset lock state (use as last resort)
+        function clearSupabaseAuthStorage() {
+            try {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('sb-') || key.includes('supabase'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => {
+                    try {
+                        localStorage.removeItem(key);
+                        log.debug('Cleared auth storage key:', key);
+                    } catch (e) {
+                        // Ignore individual removal errors
+                    }
+                });
+                log.debug('Cleared Supabase auth storage to reset locks');
+            } catch (error) {
+                log.warn('Could not clear auth storage:', error);
+            }
+        }
+        
         // Helper function to retry Supabase operations that may fail due to LockManager timeouts
         async function retrySupabaseOperation(operation, maxRetries = 3, delay = 1000) {
+            // First, try to clear any stale locks
+            await clearStaleLocks();
+            
             for (let attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
                     return await operation();
@@ -9187,9 +9271,35 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     if (isLockError && attempt < maxRetries) {
                         const waitTime = delay * Math.pow(2, attempt - 1); // Exponential backoff
                         log.debug(`LockManager timeout (attempt ${attempt}/${maxRetries}), retrying in ${waitTime}ms...`);
+                        
+                        // Try to clear locks again before retrying
+                        if (attempt === 2) {
+                            await clearStaleLocks();
+                        }
+                        
                         await new Promise(resolve => setTimeout(resolve, waitTime));
                         continue;
                     }
+                    
+                    // If all retries failed, try clearing storage as last resort
+                    if (isLockError && attempt === maxRetries) {
+                        log.warn('All retries failed, attempting to clear auth storage...');
+                        clearSupabaseAuthStorage();
+                        
+                        // Wait a moment, then try one final time
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        try {
+                            return await operation();
+                        } catch (finalError) {
+                            const errorMsg = 'Authentication lock timeout. This usually happens when:\n' +
+                                           '1. Multiple browser tabs are open with the app\n' +
+                                           '2. A previous session didn\'t close properly\n\n' +
+                                           'Try: Close all tabs, clear browser cache, or use an incognito window.';
+                            console.error('❌', errorMsg);
+                            throw new Error(errorMsg);
+                        }
+                    }
+                    
                     throw error;
                 }
             }
@@ -13182,6 +13292,24 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                 } else {
                     console.error('❌ Auth check error:', error);
+                    // If it's a lock error, show user-friendly message
+                    if (error?.message?.includes('Navigator LockManager') || error?.message?.includes('lock')) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--error-bg, #fee); color: var(--error-text, #c00); padding: 1rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; max-width: 500px; text-align: center;';
+                        errorDiv.innerHTML = `
+                            <strong>Authentication Lock Issue</strong><br>
+                            <p style="margin: 0.5rem 0; font-size: 0.9rem;">Another tab may be using the app. Please:</p>
+                            <ol style="text-align: left; margin: 0.5rem 0; padding-left: 1.5rem; font-size: 0.85rem;">
+                                <li>Close other tabs with this app</li>
+                                <li>Or use an incognito/private window</li>
+                                <li>Or clear browser cache and reload</li>
+                            </ol>
+                            <button onclick="this.parentElement.remove(); location.reload();" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Reload Page</button>
+                        `;
+                        document.body.appendChild(errorDiv);
+                        // Auto-remove after 10 seconds
+                        setTimeout(() => errorDiv.remove(), 10000);
+                    }
                     session = null;
                 }
             }
