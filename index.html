@@ -9314,6 +9314,8 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             // Wrap query builder - intercept execution methods that return promises
             // But preserve all chainable methods
+            // Note: In Supabase, .select() returns a filter builder, not a promise
+            // The promise is returned by methods like .single(), .maybeSingle(), or when you await the filter builder
             function wrapQueryBuilder(query) {
                 if (!query) return query;
                 
@@ -9324,26 +9326,43 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                         
                         // If it's a function, wrap it
                         if (typeof value === 'function') {
-                            // Execution methods that return promises - wrap with retry
-                            const executionMethods = ['select', 'insert', 'update', 'delete', 'upsert'];
+                            // Methods that execute and return promises
+                            const executionMethods = ['single', 'maybeSingle', 'csv', 'geojson', 'explain'];
+                            
+                            // Methods that modify the query and return a new query builder
+                            const chainMethods = ['select', 'insert', 'update', 'delete', 'upsert', 'eq', 'neq', 
+                                                 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'is', 'in', 'contains',
+                                                 'range', 'limit', 'order', 'filter', 'or', 'not', 'textSearch', 
+                                                 'match', 'rollback', 'returns', 'abortSignal'];
                             
                             if (executionMethods.includes(prop)) {
+                                // Execution methods - wrap the promise with retry
                                 return function(...args) {
                                     const promise = value.apply(target, args);
-                                    // Wrap the promise execution with retry
                                     return retrySupabaseOperation(async () => {
                                         return await promise;
                                     });
                                 };
                             } else {
-                                // Chainable methods - return wrapped query builder
+                                // Chainable methods - wrap the result if it's a query builder
                                 return function(...args) {
                                     const result = value.apply(target, args);
-                                    // If it returns a query builder (has select method), wrap it
-                                    if (result && typeof result === 'object' && typeof result.select === 'function') {
-                                        return wrapQueryBuilder(result);
+                                    // Check if result is a query builder (has common query builder methods)
+                                    if (result && typeof result === 'object') {
+                                        // If it has query builder methods, wrap it
+                                        if (typeof result.select === 'function' || 
+                                            typeof result.eq === 'function' || 
+                                            typeof result.single === 'function' ||
+                                            typeof result.insert === 'function') {
+                                            return wrapQueryBuilder(result);
+                                        }
+                                        // If it's a promise (thenable), wrap it with retry
+                                        if (typeof result.then === 'function') {
+                                            return retrySupabaseOperation(async () => {
+                                                return await result;
+                                            });
+                                        }
                                     }
-                                    // Otherwise return as-is (might be a promise or other value)
                                     return result;
                                 };
                             }
