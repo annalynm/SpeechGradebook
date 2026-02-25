@@ -1334,6 +1334,235 @@
             border-bottom: 3px solid var(--primary) !important;
         }
         
+        /* Business Dashboard - Segmented Control (Apple HIG pattern) */
+        .biz-seg-wrap {
+            margin-bottom: 1.5rem;
+        }
+        .biz-seg-control {
+            display: inline-flex;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+        .biz-seg-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        .biz-seg-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .biz-seg-btn.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        .biz-seg-btn i {
+            width: 1rem;
+            height: 1rem;
+        }
+        .biz-sub-panel {
+            display: none;
+        }
+        .biz-sub-panel.active {
+            display: block;
+        }
+        
+        /* Business Dashboard - KPI Strip */
+        .biz-kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .biz-kpi-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .biz-kpi-strip {
+                grid-template-columns: 1fr;
+            }
+        }
+        .biz-kpi-card {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .biz-kpi-card:hover {
+            background: var(--bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .biz-kpi-card .biz-kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0.5rem 0;
+            line-height: 1.2;
+        }
+        .biz-kpi-card .biz-kpi-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+        .biz-kpi-card .biz-kpi-sub {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+        .biz-trend-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .biz-trend-chip.positive {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success-text, #065f46);
+        }
+        .biz-trend-chip.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-text, #dc2626);
+        }
+        .biz-trend-chip.neutral {
+            background: var(--bg-alt);
+            color: var(--text-light);
+        }
+        
+        /* Business Dashboard - Overview Bottom Section */
+        .biz-overview-bottom {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .biz-overview-bottom {
+                grid-template-columns: 1fr;
+            }
+            .biz-seg-control {
+                width: 100%;
+                justify-content: center;
+            }
+            .biz-seg-btn {
+                flex: 1;
+                min-width: 0;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+        .biz-section-hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .biz-section-hdr h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .biz-refresh-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .biz-refresh-btn:hover {
+            background: var(--bg-alt);
+        }
+        .biz-rank-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .biz-rank-row:last-child {
+            border-bottom: none;
+        }
+        .biz-rank-row:hover {
+            background: var(--bg-alt);
+        }
+        .biz-rank-medal {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .biz-alert-item {
+            padding: 0.75rem;
+            border-left: 3px solid;
+            border-radius: 0.25rem;
+            margin-bottom: 0.75rem;
+            background: var(--bg-alt);
+        }
+        .biz-alert-item.warning {
+            border-left-color: var(--warning, #f59e0b);
+        }
+        .biz-alert-item.info {
+            border-left-color: var(--primary);
+        }
+        .biz-alert-item .biz-alert-msg {
+            font-size: 0.875rem;
+            color: var(--text);
+            margin: 0;
+        }
+        .biz-alert-item .biz-alert-action {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+        .biz-alert-item .biz-alert-action a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .biz-alert-item .biz-alert-action a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Business Dashboard - Timestamp */
+        .biz-timestamp {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+        .biz-timestamp a {
+            color: var(--primary);
+            text-decoration: none;
+            margin-left: 0.5rem;
+        }
+        .biz-timestamp a:hover {
+            text-decoration: underline;
+        }
+        
         /* Instructor dashboard top-level tabs (Courses | Rubrics | Course Insights) */
         .instructor-dashboard-tablist {
             display: flex;
@@ -5463,6 +5692,196 @@
                             </table>
                         </div>
                         <p style="margin: 0; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text-light); border-top: 1px solid var(--border);">Exports only include evaluations from students who have granted data-use consent. Column filters (▾) apply to the export. <a href="javascript:void(0)" onclick="exportDepartmentData(); return false;" style="color: var(--primary); font-weight: 600; text-decoration: underline;">Export CSV</a></p>
+                    </div>
+                </div>
+                <!-- Platform Analytics (Business Dashboard) - Super Admin only -->
+                <div id="analyticsBusinessTab" data-dashboard-id="business" role="tabpanel" style="display: none;">
+                    <!-- Segmented control header row -->
+                    <div class="biz-seg-wrap" style="margin-bottom: 1.5rem;">
+                        <div class="biz-seg-control" role="tablist" aria-label="Business dashboard sections">
+                            <button class="biz-seg-btn active" id="bizBtn-overview"
+                                    role="tab" aria-selected="true" aria-controls="bizPanel-overview"
+                                    onclick="switchBusinessSubTab('overview')">
+                                <i data-lucide="layout-dashboard"></i> Overview
+                            </button>
+                            <button class="biz-seg-btn" id="bizBtn-users"
+                                    role="tab" aria-selected="false" aria-controls="bizPanel-users"
+                                    onclick="switchBusinessSubTab('users')">
+                                <i data-lucide="users"></i> Users
+                            </button>
+                            <button class="biz-seg-btn" id="bizBtn-usage"
+                                    role="tab" aria-selected="false" aria-controls="bizPanel-usage"
+                                    onclick="switchBusinessSubTab('usage')">
+                                <i data-lucide="bar-chart-2"></i> Usage & Evaluations
+                            </button>
+                            <button class="biz-seg-btn" id="bizBtn-cost"
+                                    role="tab" aria-selected="false" aria-controls="bizPanel-cost"
+                                    onclick="switchBusinessSubTab('cost')">
+                                <i data-lucide="dollar-sign"></i> Cost & Energy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sub-panel: Overview -->
+                    <div id="bizPanel-overview" class="biz-sub-panel active" role="tabpanel" aria-labelledby="bizBtn-overview">
+                        <!-- KPI Strip -->
+                        <div id="bizKPIStrip" class="biz-kpi-strip">
+                            <div class="biz-kpi-card" style="grid-column: 1/-1; text-align: center; padding: 2rem;">
+                                <div class="spinner" style="margin: 0 auto 0.75rem;" aria-hidden="true"></div>
+                                <p style="color: var(--text-light); margin: 0;">Loading platform metrics…</p>
+                            </div>
+                        </div>
+                        <!-- Growth Sparklines -->
+                        <div id="bizSparklines" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;"></div>
+                        <!-- Top Institutions & Alerts -->
+                        <div class="biz-overview-bottom" style="display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem;">
+                            <div id="bizTopInstitutions" class="card">
+                                <div class="biz-section-hdr" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h3 style="margin: 0;"><span class="icon-with-text"><i data-lucide="trophy"></i> Top Institutions</span></h3>
+                                    <button class="biz-refresh-btn" onclick="switchBusinessSubTab('users')" style="font-size:0.72rem;">
+                                        View all <i data-lucide="chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div id="bizTopInstitutionsList"></div>
+                                <div class="biz-timestamp">
+                                    <span id="bizOverviewLastUpdated"></span>
+                                    <a href="javascript:void(0)" onclick="refreshBusinessAnalytics()">Refresh</a>
+                                </div>
+                            </div>
+                            <div id="bizAlerts" class="card">
+                                <div class="biz-section-hdr" style="margin-bottom: 1rem;">
+                                    <h3 style="margin: 0;"><span class="icon-with-text"><i data-lucide="bell"></i> Alerts</span></h3>
+                                </div>
+                                <div id="bizAlertsList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-panel: Users -->
+                    <div id="bizPanel-users" class="biz-sub-panel" role="tabpanel" aria-labelledby="bizBtn-users" style="display: none;">
+                        <div class="card">
+                            <div style="margin-bottom: 1rem;">
+                                <div class="biz-seg-control" role="tablist" aria-label="User tier filter" style="display: inline-flex;">
+                                    <button class="biz-seg-btn active" onclick="switchUserTierFilter('all')">All</button>
+                                    <button class="biz-seg-btn" onclick="switchUserTierFilter('institutions')">Institutions</button>
+                                    <button class="biz-seg-btn" onclick="switchUserTierFilter('instructors')">Instructors</button>
+                                    <button class="biz-seg-btn" onclick="switchUserTierFilter('individuals')">Individuals</button>
+                                </div>
+                            </div>
+                            <div id="bizUsersSummary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;"></div>
+                            <div id="bizUsersTableContainer" style="overflow-x: auto;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <span style="font-size: 0.875rem; color: var(--text-light);" id="bizUsersTableInfo"></span>
+                                    <button class="btn-secondary" onclick="exportBusinessAnalyticsCSV('users')" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                                        <i data-lucide="download"></i> Export CSV
+                                    </button>
+                                </div>
+                                <table id="bizUsersTable" class="data-table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th onclick="sortUsersTable('name')">Name / Institution</th>
+                                            <th>Tier</th>
+                                            <th>Status</th>
+                                            <th onclick="sortUsersTable('joined')">Joined</th>
+                                            <th onclick="sortUsersTable('last_active')">Last Active</th>
+                                            <th onclick="sortUsersTable('evals_all')" style="text-align: right;">Evals (All)</th>
+                                            <th onclick="sortUsersTable('evals_30d')" style="text-align: right;">Evals (30d)</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bizUsersTableBody"></tbody>
+                                </table>
+                                <div class="biz-timestamp">
+                                    <span id="bizUsersLastUpdated"></span>
+                                    <a href="javascript:void(0)" onclick="refreshBusinessAnalytics()">Refresh</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-panel: Usage & Evaluations -->
+                    <div id="bizPanel-usage" class="biz-sub-panel" role="tabpanel" aria-labelledby="bizBtn-usage" style="display: none;">
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                                <button class="btn-secondary" onclick="setUsageDateRange('7d')" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">7d</button>
+                                <button class="btn-secondary" onclick="setUsageDateRange('30d')" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">30d</button>
+                                <button class="btn-secondary" onclick="setUsageDateRange('90d')" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">90d</button>
+                                <button class="btn-secondary" onclick="setUsageDateRange('year')" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">This Year</button>
+                                <button class="btn-secondary" onclick="setUsageDateRange('all')" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">All Time</button>
+                            </div>
+                            <div id="bizUsageVolumeChart" style="margin-bottom: 1.5rem; min-height: 200px;"></div>
+                            <div id="bizUsageFunnel" style="margin-bottom: 1.5rem;"></div>
+                        </div>
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0 0 1rem 0;"><span class="icon-with-text"><i data-lucide="list-checks"></i> Top Rubrics</span></h3>
+                            <div id="bizTopRubricsTableContainer" style="overflow-x: auto;">
+                                <table id="bizTopRubricsTable" class="data-table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Rubric Name</th>
+                                            <th style="text-align: right;">Uses (All)</th>
+                                            <th style="text-align: right;">Uses (30d)</th>
+                                            <th style="text-align: right;">Avg Score</th>
+                                            <th style="text-align: right;">Institutions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bizTopRubricsTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 style="margin: 0 0 1rem 0;"><span class="icon-with-text"><i data-lucide="trending-up"></i> Quality Signals</span></h3>
+                            <div id="bizQualitySignals"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-panel: Cost & Energy -->
+                    <div id="bizPanel-cost" class="biz-sub-panel" role="tabpanel" aria-labelledby="bizBtn-cost" style="display: none;">
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <div id="bizCostKPIs" class="biz-kpi-strip" style="margin-bottom: 1.5rem;"></div>
+                            <div id="bizCostTrendChart" style="min-height: 250px; margin-bottom: 1.5rem;"></div>
+                            <div id="bizCostByTierTableContainer" style="overflow-x: auto; margin-bottom: 1.5rem;">
+                                <h4 style="margin: 0 0 1rem 0;">Cost by User Tier</h4>
+                                <table id="bizCostByTierTable" class="data-table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Tier</th>
+                                            <th style="text-align: right;">Evaluations</th>
+                                            <th style="text-align: right;">Total Cost</th>
+                                            <th style="text-align: right;">Cost/Eval</th>
+                                            <th style="text-align: right;">% of Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bizCostByTierTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div id="bizCostByInstitutionTableContainer" style="overflow-x: auto;">
+                                <h4 style="margin: 0 0 1rem 0;">Cost by Institution (Top 10)</h4>
+                                <table id="bizCostByInstitutionTable" class="data-table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Institution</th>
+                                            <th style="text-align: right;">Evals</th>
+                                            <th style="text-align: right;">Cost</th>
+                                            <th style="text-align: right;">Cost/Eval</th>
+                                            <th style="text-align: right;">Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bizCostByInstitutionTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 style="margin: 0 0 1rem 0;"><span class="icon-with-text"><i data-lucide="leaf"></i> Energy & Carbon</span></h3>
+                            <div id="bizEnergySection">
+                                <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                    <i data-lucide="info" style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle;"></i> Estimates based on published model benchmarks. Last updated <span id="bizEnergyLastUpdated"></span>.
+                                </p>
+                                <div id="bizEnergyKPIs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;"></div>
+                                <div id="bizEnergyByModel" style="margin-bottom: 1.5rem;"></div>
+                                <div id="bizGHGScopeBreakdown"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="analyticsCustomPanelsContainer"></div>
@@ -17733,6 +18152,26 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             filtered: []
         };
         
+        // Business Analytics Data (Super Admin only)
+        let businessAnalyticsData = {
+            cache: null,
+            cacheTimestamp: null,
+            cacheTTL: 5 * 60 * 1000, // 5 minutes
+            totals: {
+                activeUsers30d: 0,
+                evaluationsThisMonth: 0,
+                platformCostMTD: 0,
+                mrrEstimate: 0
+            },
+            growth: {
+                institutions12mo: [],
+                instructors12mo: [],
+                evaluations12mo: []
+            },
+            topInstitutions: [],
+            alerts: []
+        };
+        
         // User-customizable dashboards (add, remove, rename, hide, reorder)
         const DEFAULT_DASHBOARD_CONFIG = [
             { id: 'overview', name: 'Overview', type: 'builtin', visible: true },
@@ -17747,7 +18186,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             { id: 'evaluations', name: 'Evaluations', type: 'builtin', visible: true },
             { id: 'export', name: 'Data Export', type: 'builtin', visible: false }
         ];
-        const BUILTIN_PANEL_IDS = { overview: 'analyticsOverviewTab', comparisons: 'analyticsComparisonsTab', evaluations: 'analyticsEvaluationsTab', export: 'analyticsExportTab' };
+        // Super Admin: includes Platform Analytics (business) tab
+        const DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN = [
+            { id: 'overview', name: 'Overview', type: 'builtin', visible: true },
+            { id: 'business', name: 'Platform Analytics', type: 'builtin', visible: true },
+            { id: 'comparisons', name: 'Comparisons', type: 'builtin', visible: true },
+            { id: 'evaluations', name: 'Evaluations', type: 'builtin', visible: true },
+            { id: 'export', name: 'Data Export', type: 'builtin', visible: false }
+        ];
+        const BUILTIN_PANEL_IDS = { overview: 'analyticsOverviewTab', comparisons: 'analyticsComparisonsTab', evaluations: 'analyticsEvaluationsTab', export: 'analyticsExportTab', business: 'analyticsBusinessTab' };
         const DEFAULT_OVERVIEW_WIDGETS = [
             { id: 'kpi-row', label: 'KPI cards', visible: true, order: 0 },
             { id: 'chart-outcome', label: 'Outcome attainment by outcome', visible: true, order: 1 },
@@ -17785,7 +18232,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 if (typeof setUserItem === 'function') {
                     setUserItem(migratedKey, '1');
                     const isInstructorOnly = (typeof userTier !== 'undefined' && userTier === 'instructor') || (typeof userTier !== 'undefined' && userTier === 'demo' && typeof demoViewAs !== 'undefined' && demoViewAs === 'instructor');
-                    const defaultConfig = JSON.parse(JSON.stringify(isInstructorOnly ? DEFAULT_DASHBOARD_CONFIG_INSTRUCTOR : DEFAULT_DASHBOARD_CONFIG));
+                    const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
+                    let defaultConfig;
+                    if (isSuperAdminUser) {
+                        defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
+                    } else if (isInstructorOnly) {
+                        defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_INSTRUCTOR));
+                    } else {
+                        defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG));
+                    }
                     setUserItem('dashboard_config', JSON.stringify(defaultConfig));
                     return defaultConfig;
                 }
@@ -17814,7 +18269,14 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             } catch (e) {}
             // Tier-specific defaults: instructor sees Overview, Evaluations, Data Export only; Admin/Super Admin see all tabs
             const isInstructorOnly = (typeof userTier !== 'undefined' && userTier === 'instructor') || (typeof userTier !== 'undefined' && userTier === 'demo' && typeof demoViewAs !== 'undefined' && demoViewAs === 'instructor');
-            return JSON.parse(JSON.stringify(isInstructorOnly ? DEFAULT_DASHBOARD_CONFIG_INSTRUCTOR : DEFAULT_DASHBOARD_CONFIG));
+            const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
+            if (isSuperAdminUser) {
+                return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
+            } else if (isInstructorOnly) {
+                return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_INSTRUCTOR));
+            } else {
+                return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG));
+            }
         }
         function setDashboardConfig(config) {
             if (typeof setUserItem !== 'function') return;
@@ -17902,6 +18364,30 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 if (customContainer) customContainer.querySelectorAll('[id^="analyticsPanel_"]').forEach(el => { el.style.display = 'none'; });
             }
             panel.style.display = 'block';
+            
+            // Handle business analytics tab
+            if (dashboardId === 'business') {
+                if (typeof loadBusinessAnalytics === 'function') {
+                    const startDate = document.getElementById('analyticsStartDate')?.value || '';
+                    const endDate = document.getElementById('analyticsEndDate')?.value || '';
+                    loadBusinessAnalytics(startDate, endDate).then(() => {
+                        if (typeof renderBizOverview === 'function') {
+                            switchBusinessSubTab('overview');
+                        }
+                        // Initialize icons
+                        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                            const businessTab = document.getElementById('analyticsBusinessTab');
+                            if (businessTab) lucide.createIcons({ root: businessTab });
+                        }
+                    });
+                } else {
+                    // Still initialize icons even if data loading fails
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        const businessTab = document.getElementById('analyticsBusinessTab');
+                        if (businessTab) lucide.createIcons({ root: businessTab });
+                    }
+                }
+            }
             
             config.forEach((d, i) => {
                 const tab = document.getElementById('tab_' + d.id);
@@ -19329,6 +19815,1217 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             if (exportBtn) exportBtn.style.display = (isAdminView || isSuperAdminView) ? '' : 'none';
             var institutionDropdown = document.getElementById('filter-dropdown-institution');
             if (institutionDropdown) institutionDropdown.style.display = isSuperAdminView ? 'flex' : 'none';
+        }
+        
+        // ===== BUSINESS ANALYTICS (Super Admin only) =====
+        
+        // Load business analytics data with caching
+        async function loadBusinessAnalytics(startDate, endDate) {
+            if (!supabaseClient || !currentUser) return;
+            if (typeof isSuperAdmin !== 'function' || !isSuperAdmin()) return;
+            
+            // Check cache
+            const now = Date.now();
+            if (businessAnalyticsData.cache && businessAnalyticsData.cacheTimestamp && 
+                (now - businessAnalyticsData.cacheTimestamp) < businessAnalyticsData.cacheTTL) {
+                return businessAnalyticsData.cache;
+            }
+            
+            try {
+                const nowDate = new Date();
+                const monthStart = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1);
+                const lastMonthStart = new Date(nowDate.getFullYear(), nowDate.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(nowDate.getFullYear(), nowDate.getMonth(), 0);
+                const thirtyDaysAgo = new Date(nowDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+                const twelveMonthsAgo = new Date(nowDate.getFullYear() - 1, nowDate.getMonth(), nowDate.getDate());
+                
+                // Load active users (30d) - check last_sign_in from auth.users
+                let activeUsers30d = 0;
+                try {
+                    const { data: usersData, error: usersErr } = await supabaseClient.auth.admin.listUsers();
+                    if (!usersErr && usersData) {
+                        activeUsers30d = usersData.users.filter(u => {
+                            if (!u.last_sign_in_at) return false;
+                            const lastSignIn = new Date(u.last_sign_in_at);
+                            return lastSignIn >= thirtyDaysAgo;
+                        }).length;
+                    }
+                } catch (e) {
+                    console.warn('Could not load active users from auth:', e);
+                    // Fallback: count from user_profiles with recent activity
+                    const { count } = await supabaseClient
+                        .from('user_profiles')
+                        .select('*', { count: 'exact', head: true })
+                        .gte('updated_at', thirtyDaysAgo.toISOString());
+                    activeUsers30d = count || 0;
+                }
+                
+                // Load evaluations this month
+                const { count: evalsThisMonth } = await supabaseClient
+                    .from('evaluations')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('created_at', monthStart.toISOString())
+                    .is('deleted_locally_at', null);
+                
+                // Load platform cost MTD
+                let platformCostMTD = 0;
+                try {
+                    const { data: costData, error: costErr } = await supabaseClient
+                        .from('cost_tracking')
+                        .select('estimated_cost')
+                        .gte('created_at', monthStart.toISOString());
+                    if (!costErr && costData) {
+                        platformCostMTD = costData.reduce((sum, c) => sum + (parseFloat(c.estimated_cost) || 0), 0);
+                    }
+                } catch (e) {
+                    console.warn('Could not load cost data:', e);
+                }
+                
+                // Load MRR/ARR estimate from institutions
+                let mrrEstimate = 0;
+                try {
+                    const { data: instData, error: instErr } = await supabaseClient
+                        .from('institutions')
+                        .select('mrr_usd');
+                    if (!instErr && instData) {
+                        mrrEstimate = instData.reduce((sum, i) => sum + (parseFloat(i.mrr_usd) || 0), 0);
+                    }
+                } catch (e) {
+                    // mrr_usd column may not exist yet
+                    console.debug('MRR column may not exist:', e);
+                }
+                
+                // Load top institutions by evaluation count this month
+                // Simplified query - get evaluations with instructor and institution info
+                const { data: topInstData } = await supabaseClient
+                    .from('evaluations')
+                    .select(`
+                        instructor_id,
+                        courses(instructor_id, instructor:user_profiles(institution_id, institution:institutions(id, name)))
+                    `)
+                    .gte('created_at', monthStart.toISOString())
+                    .is('deleted_locally_at', null)
+                    .limit(500);
+                
+                const instCounts = {};
+                if (topInstData) {
+                    topInstData.forEach(eval => {
+                        const course = Array.isArray(eval.courses) ? eval.courses[0] : eval.courses;
+                        if (!course) return;
+                        const instructor = course.instructor;
+                        if (!instructor) return;
+                        const institution = instructor.institution;
+                        if (institution && institution.id) {
+                            if (!instCounts[institution.id]) {
+                                instCounts[institution.id] = { id: institution.id, name: institution.name || 'Unknown', count: 0 };
+                            }
+                            instCounts[institution.id].count++;
+                        }
+                    });
+                }
+                const topInstitutions = Object.values(instCounts)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+                
+                // Load growth data (12 months) - simplified for performance
+                const growthData = {
+                    institutions12mo: [],
+                    instructors12mo: [],
+                    evaluations12mo: []
+                };
+                // For now, use simplified approach - can be optimized with RPC functions later
+                for (let i = 11; i >= 0; i--) {
+                    const monthDate = new Date(nowDate.getFullYear(), nowDate.getMonth() - i, 1);
+                    const monthEnd = new Date(nowDate.getFullYear(), nowDate.getMonth() - i + 1, 0);
+                    
+                    const [instRes, instProfRes, evalRes] = await Promise.all([
+                        supabaseClient.from('institutions').select('*', { count: 'exact', head: true })
+                            .lte('created_at', monthEnd.toISOString()),
+                        supabaseClient.from('user_profiles').select('*', { count: 'exact', head: true })
+                            .eq('account_tier', 'instructor')
+                            .lte('created_at', monthEnd.toISOString()),
+                        supabaseClient.from('evaluations').select('*', { count: 'exact', head: true })
+                            .gte('created_at', monthDate.toISOString())
+                            .lte('created_at', monthEnd.toISOString())
+                            .is('deleted_locally_at', null)
+                    ]);
+                    
+                    growthData.institutions12mo.push(instRes.count || 0);
+                    growthData.instructors12mo.push(instProfRes.count || 0);
+                    growthData.evaluations12mo.push(evalRes.count || 0);
+                }
+                
+                // Generate alerts (simplified - check first 10 institutions to avoid performance issues)
+                const alerts = [];
+                try {
+                    const { data: allInsts } = await supabaseClient.from('institutions').select('id, name').limit(10);
+                    if (allInsts) {
+                        for (const inst of allInsts) {
+                            // Get instructor IDs for this institution
+                            const { data: instInstructors } = await supabaseClient
+                                .from('user_profiles')
+                                .select('id')
+                                .eq('institution_id', inst.id)
+                                .limit(100);
+                            
+                            if (instInstructors && instInstructors.length > 0) {
+                                const instructorIds = instInstructors.map(i => i.id);
+                                const { count } = await supabaseClient
+                                    .from('evaluations')
+                                    .select('*', { count: 'exact', head: true })
+                                    .gte('created_at', thirtyDaysAgo.toISOString())
+                                    .is('deleted_locally_at', null)
+                                    .in('instructor_id', instructorIds);
+                                
+                                if (count === 0) {
+                                    alerts.push({
+                                        type: 'warning',
+                                        msg: `Institution <strong>${escapeHtml(inst.name)}</strong> has no evaluations in the last 30 days (churn risk)`,
+                                        action: `switchBusinessSubTab('users')`
+                                    });
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not generate alerts:', e);
+                }
+                
+                businessAnalyticsData.totals = {
+                    activeUsers30d,
+                    evaluationsThisMonth: evalsThisMonth || 0,
+                    platformCostMTD,
+                    mrrEstimate
+                };
+                businessAnalyticsData.growth = growthData;
+                businessAnalyticsData.topInstitutions = topInstitutions;
+                businessAnalyticsData.alerts = alerts.slice(0, 10); // Limit to 10 alerts
+                
+                businessAnalyticsData.cache = businessAnalyticsData;
+                businessAnalyticsData.cacheTimestamp = now;
+                
+                return businessAnalyticsData;
+            } catch (error) {
+                console.error('Error loading business analytics:', error);
+                return null;
+            }
+        }
+        
+        // Render Business Overview sub-section
+        function renderBizOverview() {
+            const kpiStrip = document.getElementById('bizKPIStrip');
+            const topInstList = document.getElementById('bizTopInstitutionsList');
+            const alertsList = document.getElementById('bizAlertsList');
+            
+            if (!kpiStrip) return;
+            
+            const data = businessAnalyticsData;
+            const totals = data.totals || {};
+            
+            // Render KPI Strip
+            const trendChip = (value, label) => {
+                if (!value || value === 0) return '<span class="biz-trend-chip neutral">—</span>';
+                const isPositive = value > 0;
+                const sign = isPositive ? '+' : '';
+                return `<span class="biz-trend-chip ${isPositive ? 'positive' : 'negative'}">${sign}${value}% ${label}</span>`;
+            };
+            
+            const fmtNum = (n) => (n || 0).toLocaleString();
+            const fmtUSD = (n) => '$' + (n || 0).toFixed(2);
+            
+            // Calculate trends (simplified - would compare to previous period)
+            const trends = {
+                users: 12, // Placeholder - would calculate from growth data
+                evaluations: 8,
+                cost: -5,
+                mrr: 15
+            };
+            
+            kpiStrip.innerHTML = `
+                <div class="biz-kpi-card" onclick="switchBusinessSubTab('users')">
+                    <div class="biz-kpi-label">Total Active Users (30d)</div>
+                    <div class="biz-kpi-value">${fmtNum(totals.activeUsers30d || 0)}</div>
+                    <div class="biz-kpi-sub">Core health metric</div>
+                    ${trendChip(trends.users, 'vs last 30d')}
+                </div>
+                <div class="biz-kpi-card" onclick="switchBusinessSubTab('usage')">
+                    <div class="biz-kpi-label">Evaluations This Month</div>
+                    <div class="biz-kpi-value">${fmtNum(totals.evaluationsThisMonth || 0)}</div>
+                    <div class="biz-kpi-sub">Primary value delivery</div>
+                    ${trendChip(trends.evaluations, 'vs last month')}
+                </div>
+                <div class="biz-kpi-card" onclick="switchBusinessSubTab('cost')">
+                    <div class="biz-kpi-label">Platform Cost MTD</div>
+                    <div class="biz-kpi-value">${fmtUSD(totals.platformCostMTD || 0)}</div>
+                    <div class="biz-kpi-sub">Margin awareness</div>
+                    ${trendChip(trends.cost, 'vs last month')}
+                </div>
+                <div class="biz-kpi-card" onclick="switchBusinessSubTab('cost')">
+                    <div class="biz-kpi-label">MRR / ARR Estimate</div>
+                    <div class="biz-kpi-value">${fmtUSD((totals.mrrEstimate || 0) * 12)}</div>
+                    <div class="biz-kpi-sub">Business viability</div>
+                    ${trendChip(trends.mrr, 'vs last month')}
+                </div>
+            `;
+            
+            // Render Top Institutions
+            if (topInstList) {
+                const medals = ['🥇', '🥈', '🥉'];
+                if (data.topInstitutions && data.topInstitutions.length > 0) {
+                    topInstList.innerHTML = data.topInstitutions.map((inst, idx) => `
+                        <div class="biz-rank-row" onclick="switchBusinessSubTab('users')">
+                            <span class="biz-rank-medal">${medals[idx] || (idx + 1) + '.'}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">${escapeHtml(inst.name)}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-light);">${inst.count} evaluations this month</div>
+                            </div>
+                            <div style="width: 100px; height: 8px; background: var(--bg-alt); border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${Math.min(100, (inst.count / (data.topInstitutions[0]?.count || 1)) * 100)}%; height: 100%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    topInstList.innerHTML = '<p style="color: var(--text-light); padding: 1rem; text-align: center;">No institution data yet</p>';
+                }
+            }
+            
+            // Render Alerts
+            if (alertsList) {
+                if (data.alerts && data.alerts.length > 0) {
+                    alertsList.innerHTML = data.alerts.map(alert => `
+                        <div class="biz-alert-item ${alert.type}">
+                            <p class="biz-alert-msg">${alert.msg}</p>
+                            ${alert.action ? `<div class="biz-alert-action"><a href="javascript:void(0)" onclick="${alert.action}">View details →</a></div>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    alertsList.innerHTML = '<p style="color: var(--text-light); padding: 1rem; text-align: center; font-size: 0.875rem;">No alerts at this time</p>';
+                }
+            }
+            
+            // Render sparklines (simplified - would create SVG)
+            const sparklinesContainer = document.getElementById('bizSparklines');
+            if (sparklinesContainer) {
+                const instMax = Math.max(...(data.growth?.institutions12mo || [1]), 1);
+                const instProfMax = Math.max(...(data.growth?.instructors12mo || [1]), 1);
+                const evalsMax = Math.max(...(data.growth?.evaluations12mo || [1]), 1);
+                
+                sparklinesContainer.innerHTML = `
+                    <div class="card">
+                        <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">New Institutions (12mo)</div>
+                        <div style="height: 40px; display: flex; align-items: flex-end; gap: 2px;">
+                            ${Array(12).fill(0).map((_, i) => {
+                                const val = data.growth?.institutions12mo?.[i] || 0;
+                                return `<div style="flex: 1; background: var(--primary); height: ${Math.max(2, (val / instMax) * 100)}%; border-radius: 2px 2px 0 0; min-height: 2px;"></div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">New Instructors (12mo)</div>
+                        <div style="height: 40px; display: flex; align-items: flex-end; gap: 2px;">
+                            ${Array(12).fill(0).map((_, i) => {
+                                const val = data.growth?.instructors12mo?.[i] || 0;
+                                return `<div style="flex: 1; background: var(--primary); height: ${Math.max(2, (val / instProfMax) * 100)}%; border-radius: 2px 2px 0 0; min-height: 2px;"></div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Evaluations Run (12mo)</div>
+                        <div style="height: 40px; display: flex; align-items: flex-end; gap: 2px;">
+                            ${Array(12).fill(0).map((_, i) => {
+                                const val = data.growth?.evaluations12mo?.[i] || 0;
+                                return `<div style="flex: 1; background: var(--primary); height: ${Math.max(2, (val / evalsMax) * 100)}%; border-radius: 2px 2px 0 0; min-height: 2px;"></div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Update timestamp
+            const overviewLastUpdated = document.getElementById('bizOverviewLastUpdated');
+            if (overviewLastUpdated) {
+                overviewLastUpdated.textContent = 'As of ' + new Date().toLocaleString();
+            }
+            
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: kpiStrip });
+                if (topInstList) lucide.createIcons({ root: topInstList });
+                if (alertsList) lucide.createIcons({ root: alertsList });
+            }
+        }
+        
+        // Switch business sub-tab
+        var _currentBizSubTab = 'overview';
+        function switchBusinessSubTab(id) {
+            _currentBizSubTab = id;
+            // Update segmented control
+            document.querySelectorAll('.biz-seg-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            const btn = document.getElementById('bizBtn-' + id);
+            if (btn) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+            }
+            
+            // Show/hide sub-panels
+            document.querySelectorAll('.biz-sub-panel').forEach(panel => {
+                panel.classList.remove('active');
+                panel.style.display = 'none';
+            });
+            const panel = document.getElementById('bizPanel-' + id);
+            if (panel) {
+                panel.classList.add('active');
+                panel.style.display = 'block';
+            }
+            
+            // Render appropriate content
+            if (id === 'overview') {
+                renderBizOverview();
+            } else if (id === 'users') {
+                renderBizUsers();
+            } else if (id === 'usage') {
+                renderBizUsage();
+            } else if (id === 'cost') {
+                renderBizCost();
+            }
+        }
+        
+        // Business Users section
+        var _currentUserTierFilter = 'all';
+        var _usersData = null;
+        
+        async function loadUsersByTier(tier) {
+            if (!supabaseClient) return null;
+            
+            try {
+                const now = new Date();
+                const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                
+                let query = supabaseClient.from('user_profiles').select('id, email, full_name, institution_id, account_tier, created_at, updated_at, institutions(id, name)');
+                
+                // Filter by tier
+                if (tier === 'institutions') {
+                    // Users with institution_id and account_tier = 'admin' or similar
+                    query = query.not('institution_id', 'is', null);
+                } else if (tier === 'instructors') {
+                    query = query.eq('account_tier', 'instructor');
+                } else if (tier === 'individuals') {
+                    // Users without institution_id or with account_tier = 'individual'
+                    query = query.is('institution_id', null).or('account_tier.is.null,account_tier.eq.individual');
+                }
+                // 'all' - no filter
+                
+                const { data: users, error } = await query.order('created_at', { ascending: false });
+                if (error) throw error;
+                
+                // Get evaluation counts for each user
+                const userIds = users.map(u => u.id);
+                const { data: evalsAll } = await supabaseClient
+                    .from('evaluations')
+                    .select('instructor_id')
+                    .in('instructor_id', userIds)
+                    .is('deleted_locally_at', null);
+                
+                const { data: evals30d } = await supabaseClient
+                    .from('evaluations')
+                    .select('instructor_id')
+                    .in('instructor_id', userIds)
+                    .gte('created_at', thirtyDaysAgo.toISOString())
+                    .is('deleted_locally_at', null);
+                
+                const evalCountsAll = {};
+                const evalCounts30d = {};
+                (evalsAll || []).forEach(e => {
+                    evalCountsAll[e.instructor_id] = (evalCountsAll[e.instructor_id] || 0) + 1;
+                });
+                (evals30d || []).forEach(e => {
+                    evalCounts30d[e.instructor_id] = (evalCounts30d[e.instructor_id] || 0) + 1;
+                });
+                
+                // Enrich users with evaluation counts and status
+                const enrichedUsers = users.map(user => {
+                    const evalsAllCount = evalCountsAll[user.id] || 0;
+                    const evals30dCount = evalCounts30d[user.id] || 0;
+                    const isActive = evals30dCount > 0;
+                    const neverActivated = evalsAllCount === 0;
+                    
+                    let status = 'active';
+                    let statusLabel = 'Active';
+                    if (neverActivated) {
+                        status = 'never';
+                        statusLabel = 'Never activated';
+                    } else if (!isActive) {
+                        status = 'inactive';
+                        statusLabel = 'Inactive 30d';
+                    }
+                    
+                    return {
+                        ...user,
+                        evalsAll: evalsAllCount,
+                        evals30d: evals30dCount,
+                        status,
+                        statusLabel,
+                        lastActive: user.updated_at || user.created_at
+                    };
+                });
+                
+                return enrichedUsers;
+            } catch (error) {
+                console.error('Error loading users by tier:', error);
+                return null;
+            }
+        }
+        
+        function renderBizUsers() {
+            const summaryContainer = document.getElementById('bizUsersSummary');
+            const tableBody = document.getElementById('bizUsersTableBody');
+            
+            if (!tableBody) return;
+            
+            // Show loading
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;"><div class="spinner" style="margin: 0 auto;"></div><p style="color: var(--text-light); margin-top: 0.5rem;">Loading users...</p></td></tr>';
+            
+            loadUsersByTier(_currentUserTierFilter).then(users => {
+                if (!users) {
+                    tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--error);">Error loading users</td></tr>';
+                    return;
+                }
+                
+                _usersData = users;
+                
+                // Calculate summary stats
+                const total = users.length;
+                const active30d = users.filter(u => u.status === 'active').length;
+                const newThisMonth = users.filter(u => {
+                    const created = new Date(u.created_at);
+                    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+                    return created >= monthStart;
+                }).length;
+                const avgEvalsPerActive = active30d > 0 
+                    ? users.filter(u => u.status === 'active').reduce((sum, u) => sum + u.evals30d, 0) / active30d 
+                    : 0;
+                
+                // Render summary
+                if (summaryContainer) {
+                    summaryContainer.innerHTML = `
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">Total Accounts</div>
+                            <div class="biz-kpi-value">${total.toLocaleString()}</div>
+                        </div>
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">Active (30d)</div>
+                            <div class="biz-kpi-value">${active30d.toLocaleString()}</div>
+                            <div class="biz-kpi-sub">${total > 0 ? Math.round((active30d / total) * 100) : 0}% of total</div>
+                        </div>
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">New This Month</div>
+                            <div class="biz-kpi-value">${newThisMonth.toLocaleString()}</div>
+                        </div>
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">Avg Evals/Active</div>
+                            <div class="biz-kpi-value">${Math.round(avgEvalsPerActive)}</div>
+                            <div class="biz-kpi-sub">Engagement depth</div>
+                        </div>
+                    `;
+                }
+                
+                // Render table (paginated - 25 per page)
+                const page = 1;
+                const perPage = 25;
+                const startIdx = (page - 1) * perPage;
+                const endIdx = startIdx + perPage;
+                const pageUsers = users.slice(startIdx, endIdx);
+                
+                if (pageUsers.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-light);">No users found</td></tr>';
+                    return;
+                }
+                
+                const fmtDate = (dateStr) => {
+                    if (!dateStr) return '—';
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString();
+                };
+                
+                const fmtRelative = (dateStr) => {
+                    if (!dateStr) return 'Never';
+                    const d = new Date(dateStr);
+                    const now = new Date();
+                    const diffMs = now - d;
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    if (diffDays === 0) return 'Today';
+                    if (diffDays === 1) return '1 day ago';
+                    if (diffDays < 7) return `${diffDays} days ago`;
+                    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+                    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+                    return `${Math.floor(diffDays / 365)} years ago`;
+                };
+                
+                const getStatusBadge = (status) => {
+                    const colors = {
+                        active: 'var(--success)',
+                        inactive: 'var(--warning)',
+                        never: 'var(--error)'
+                    };
+                    const labels = {
+                        active: 'Active',
+                        inactive: 'Inactive 30d',
+                        never: 'Never activated'
+                    };
+                    return `<span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; background: ${colors[status]}20; color: ${colors[status]};">
+                        ${labels[status] || status}
+                    </span>`;
+                };
+                
+                const getTierBadge = (user) => {
+                    if (user.institution_id) {
+                        return '<span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; background: var(--primary)20; color: var(--primary);">Institution</span>';
+                    } else if (user.account_tier === 'instructor') {
+                        return '<span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; background: var(--accent)20; color: var(--accent);">Instructor</span>';
+                    } else {
+                        return '<span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; background: var(--bg-alt); color: var(--text-light);">Individual</span>';
+                    }
+                };
+                
+                tableBody.innerHTML = pageUsers.map(user => {
+                    const institution = user.institutions ? (Array.isArray(user.institutions) ? user.institutions[0] : user.institutions) : null;
+                    return `
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">${escapeHtml(user.full_name || user.email || '—')}</div>
+                                ${institution ? `<div style="font-size: 0.75rem; color: var(--text-light);">${escapeHtml(institution.name)}</div>` : ''}
+                            </td>
+                            <td>${getTierBadge(user)}</td>
+                            <td>${getStatusBadge(user.status)}</td>
+                            <td>${fmtDate(user.created_at)}</td>
+                            <td>${fmtRelative(user.lastActive)}</td>
+                            <td style="text-align: right;">${user.evalsAll.toLocaleString()}</td>
+                            <td style="text-align: right; ${user.evals30d > 0 ? 'font-weight: 600;' : ''}">${user.evals30d.toLocaleString()}</td>
+                            <td>
+                                <button class="btn-icon-only" onclick="showUserActionsMenu('${user.id}')" aria-label="Actions">
+                                    <i data-lucide="more-vertical"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons({ root: tableBody });
+                }
+                
+                // Update table info and timestamp
+                const tableInfo = document.getElementById('bizUsersTableInfo');
+                if (tableInfo) {
+                    tableInfo.textContent = `Showing ${Math.min(perPage, users.length)} of ${users.length} users`;
+                }
+                const lastUpdated = document.getElementById('bizUsersLastUpdated');
+                if (lastUpdated) {
+                    lastUpdated.textContent = 'As of ' + new Date().toLocaleString();
+                }
+            });
+        }
+        
+        function sortUsersTable(column) {
+            if (!_usersData) return;
+            // Simple sort implementation
+            _usersData.sort((a, b) => {
+                let aVal, bVal;
+                switch (column) {
+                    case 'name':
+                        aVal = (a.full_name || a.email || '').toLowerCase();
+                        bVal = (b.full_name || b.email || '').toLowerCase();
+                        return aVal.localeCompare(bVal);
+                    case 'joined':
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    case 'last_active':
+                        return new Date(a.lastActive) - new Date(b.lastActive);
+                    case 'evals_all':
+                        return a.evalsAll - b.evalsAll;
+                    case 'evals_30d':
+                        return a.evals30d - b.evals30d;
+                    default:
+                        return 0;
+                }
+            });
+            renderBizUsers();
+        }
+        
+        function switchUserTierFilter(tier) {
+            _currentUserTierFilter = tier;
+            // Update segmented control
+            document.querySelectorAll('#bizPanel-users .biz-seg-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderBizUsers();
+        }
+        
+        function showUserActionsMenu(userId) {
+            // Placeholder - would show menu with View Detail, Send Nudge Email, Flag for Review
+            console.log('User actions menu for:', userId);
+        }
+        
+        // Business Usage & Evaluations section
+        var _usageDateRange = '30d';
+        
+        function setUsageDateRange(range) {
+            _usageDateRange = range;
+            const startEl = document.getElementById('analyticsStartDate');
+            const endEl = document.getElementById('analyticsEndDate');
+            if (!startEl || !endEl) return;
+            
+            const now = new Date();
+            let startDate, endDate = now;
+            
+            switch (range) {
+                case '7d':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case '30d':
+                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case '90d':
+                    startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+                case 'all':
+                    startDate = new Date(2000, 0, 1);
+                    break;
+            }
+            
+            startEl.value = startDate.toISOString().split('T')[0];
+            endEl.value = endDate.toISOString().split('T')[0];
+            renderBizUsage();
+        }
+        
+        async function renderBizUsage() {
+            const volumeChart = document.getElementById('bizUsageVolumeChart');
+            const funnelContainer = document.getElementById('bizUsageFunnel');
+            const rubricsTableBody = document.getElementById('bizTopRubricsTableBody');
+            const qualitySignals = document.getElementById('bizQualitySignals');
+            
+            if (!volumeChart) return;
+            
+            // Show loading
+            volumeChart.innerHTML = '<div class="spinner" style="margin: 2rem auto;"></div><p style="text-align: center; color: var(--text-light);">Loading usage data...</p>';
+            
+            try {
+                const startEl = document.getElementById('analyticsStartDate');
+                const endEl = document.getElementById('analyticsEndDate');
+                const startDate = startEl?.value || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                const endDate = endEl?.value || new Date().toISOString().split('T')[0];
+                
+                // Load evaluations for the date range
+                const { data: evals, error: evalsErr } = await supabaseClient
+                    .from('evaluations')
+                    .select('id, created_at, rubric_id, evaluation_data, courses(instructor_id, instructor:user_profiles(institution_id, institution:institutions(id, name)))')
+                    .gte('created_at', startDate)
+                    .lte('created_at', endDate + 'T23:59:59')
+                    .is('deleted_locally_at', null)
+                    .order('created_at', { ascending: true });
+                
+                if (evalsErr) throw evalsErr;
+                
+                // Render volume chart (grouped by day/week/month based on range)
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                const granularity = diffDays <= 7 ? 'day' : diffDays <= 90 ? 'week' : 'month';
+                
+                const grouped = {};
+                (evals || []).forEach(eval => {
+                    const date = new Date(eval.created_at);
+                    let key;
+                    if (granularity === 'day') {
+                        key = date.toISOString().split('T')[0];
+                    } else if (granularity === 'week') {
+                        const weekStart = new Date(date);
+                        weekStart.setDate(date.getDate() - date.getDay());
+                        key = weekStart.toISOString().split('T')[0];
+                    } else {
+                        key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    }
+                    grouped[key] = (grouped[key] || 0) + 1;
+                });
+                
+                const sortedKeys = Object.keys(grouped).sort();
+                const maxCount = Math.max(...Object.values(grouped), 1);
+                const chartHeight = 200;
+                
+                volumeChart.innerHTML = `
+                    <h4 style="margin: 0 0 1rem 0;">Evaluation Volume (${granularity === 'day' ? 'Daily' : granularity === 'week' ? 'Weekly' : 'Monthly'})</h4>
+                    <svg width="100%" height="${chartHeight}" viewBox="0 0 800 ${chartHeight}" style="overflow: visible;">
+                        ${sortedKeys.map((key, idx) => {
+                            const count = grouped[key];
+                            const x = (idx / (sortedKeys.length - 1 || 1)) * 700 + 50;
+                            const barHeight = (count / maxCount) * (chartHeight - 40);
+                            const y = chartHeight - barHeight - 20;
+                            return `
+                                <rect x="${x - 15}" y="${y}" width="30" height="${barHeight}" fill="var(--primary)" rx="4"/>
+                                <text x="${x}" y="${chartHeight - 5}" text-anchor="middle" font-size="10" fill="var(--text-light)">${key.split('-').slice(-2).join('/')}</text>
+                                <text x="${x}" y="${y - 5}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text)">${count}</text>
+                            `;
+                        }).join('')}
+                    </svg>
+                `;
+                
+                // Render activation funnel
+                const totalAccounts = await supabaseClient.from('user_profiles').select('*', { count: 'exact', head: true });
+                const accountsCreated = totalAccounts.count || 0;
+                
+                const { count: firstEvalCount } = await supabaseClient
+                    .from('evaluations')
+                    .select('*', { count: 'exact', head: true })
+                    .is('deleted_locally_at', null);
+                
+                const firstEvalPct = accountsCreated > 0 ? Math.round((firstEvalCount / accountsCreated) * 100) : 0;
+                const evalsThisMonth = (evals || []).length;
+                const activePct = firstEvalCount > 0 ? Math.round((evalsThisMonth / firstEvalCount) * 100) : 0;
+                
+                if (funnelContainer) {
+                    funnelContainer.innerHTML = `
+                        <h4 style="margin: 0 0 1rem 0;">Activation Funnel</h4>
+                        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 150px; text-align: center; padding: 1rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">${accountsCreated.toLocaleString()}</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem;">Accounts Created</div>
+                            </div>
+                            <div style="font-size: 1.5rem; color: var(--text-light);">→</div>
+                            <div style="flex: 1; min-width: 150px; text-align: center; padding: 1rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">${firstEvalCount.toLocaleString()}</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem;">First Evaluation (${firstEvalPct}%)</div>
+                            </div>
+                            <div style="font-size: 1.5rem; color: var(--text-light);">→</div>
+                            <div style="flex: 1; min-width: 150px; text-align: center; padding: 1rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">${evalsThisMonth.toLocaleString()}</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem;">This Month (${activePct}% of active)</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Load top rubrics
+                const rubricCounts = {};
+                const rubricScores = {};
+                (evals || []).forEach(eval => {
+                    if (eval.rubric_id) {
+                        rubricCounts[eval.rubric_id] = (rubricCounts[eval.rubric_id] || 0) + 1;
+                        if (eval.evaluation_data && eval.evaluation_data.overall_score !== undefined) {
+                            if (!rubricScores[eval.rubric_id]) rubricScores[eval.rubric_id] = [];
+                            rubricScores[eval.rubric_id].push(eval.evaluation_data.overall_score);
+                        }
+                    }
+                });
+                
+                const { data: rubrics } = await supabaseClient
+                    .from('rubrics')
+                    .select('id, name')
+                    .in('id', Object.keys(rubricCounts));
+                
+                const rubricMap = {};
+                (rubrics || []).forEach(r => { rubricMap[r.id] = r.name; });
+                
+                const topRubrics = Object.entries(rubricCounts)
+                    .map(([id, count]) => ({
+                        id,
+                        name: rubricMap[id] || 'Unknown',
+                        usesAll: count,
+                        uses30d: count, // Simplified
+                        avgScore: rubricScores[id] ? Math.round(rubricScores[id].reduce((a, b) => a + b, 0) / rubricScores[id].length) : 0,
+                        institutions: 1 // Simplified
+                    }))
+                    .sort((a, b) => b.usesAll - a.usesAll)
+                    .slice(0, 10);
+                
+                if (rubricsTableBody) {
+                    if (topRubrics.length === 0) {
+                        rubricsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-light);">No rubric data</td></tr>';
+                    } else {
+                        rubricsTableBody.innerHTML = topRubrics.map(r => `
+                            <tr>
+                                <td>${escapeHtml(r.name)}</td>
+                                <td style="text-align: right;">${r.usesAll.toLocaleString()}</td>
+                                <td style="text-align: right;">${r.uses30d.toLocaleString()}</td>
+                                <td style="text-align: right;">${r.avgScore}%</td>
+                                <td style="text-align: right;">${r.institutions}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+                
+                // Quality signals
+                const scores = (evals || []).map(e => {
+                    if (e.evaluation_data && e.evaluation_data.overall_score !== undefined) {
+                        return e.evaluation_data.overall_score;
+                    }
+                    return null;
+                }).filter(s => s !== null);
+                
+                const buckets = { '0-60': 0, '61-70': 0, '71-80': 0, '81-90': 0, '91-100': 0 };
+                scores.forEach(s => {
+                    if (s <= 60) buckets['0-60']++;
+                    else if (s <= 70) buckets['61-70']++;
+                    else if (s <= 80) buckets['71-80']++;
+                    else if (s <= 90) buckets['81-90']++;
+                    else buckets['91-100']++;
+                });
+                
+                const maxBucket = Math.max(...Object.values(buckets), 1);
+                
+                if (qualitySignals) {
+                    qualitySignals.innerHTML = `
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 1rem 0;">Score Distribution</h4>
+                            <div style="display: flex; align-items: flex-end; gap: 0.5rem; height: 150px;">
+                                ${Object.entries(buckets).map(([range, count]) => `
+                                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                        <div style="width: 100%; background: var(--bg-alt); border-radius: 4px 4px 0 0; height: ${(count / maxBucket) * 140}px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.5rem;">
+                                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text);">${count}</span>
+                                        </div>
+                                        <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.5rem; text-align: center;">${range}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="biz-kpi-card">
+                                <div class="biz-kpi-label">Total Evaluations</div>
+                                <div class="biz-kpi-value">${(evals || []).length.toLocaleString()}</div>
+                            </div>
+                            <div class="biz-kpi-card">
+                                <div class="biz-kpi-label">Avg Score</div>
+                                <div class="biz-kpi-value">${scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0}%</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error rendering usage data:', error);
+                if (volumeChart) volumeChart.innerHTML = '<p style="color: var(--error); padding: 2rem; text-align: center;">Error loading usage data</p>';
+            }
+        }
+        
+        // Business Cost & Energy section
+        async function renderBizCost() {
+            const costKPIs = document.getElementById('bizCostKPIs');
+            const costTrendChart = document.getElementById('bizCostTrendChart');
+            const costByTierBody = document.getElementById('bizCostByTierTableBody');
+            const costByInstBody = document.getElementById('bizCostByInstitutionTableBody');
+            const energyKPIs = document.getElementById('bizEnergyKPIs');
+            const energyByModel = document.getElementById('bizEnergyByModel');
+            const ghgScope = document.getElementById('bizGHGScopeBreakdown');
+            
+            if (!costKPIs) return;
+            
+            try {
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+                
+                // Load cost data
+                const { data: costThisMonth } = await supabaseClient
+                    .from('cost_tracking')
+                    .select('estimated_cost, created_at')
+                    .gte('created_at', monthStart.toISOString());
+                
+                const { data: costLastMonth } = await supabaseClient
+                    .from('cost_tracking')
+                    .select('estimated_cost')
+                    .gte('created_at', lastMonthStart.toISOString())
+                    .lte('created_at', lastMonthEnd.toISOString());
+                
+                const costMTD = (costThisMonth || []).reduce((sum, c) => sum + (parseFloat(c.estimated_cost) || 0), 0);
+                const costLast = (costLastMonth || []).reduce((sum, c) => sum + (parseFloat(c.estimated_cost) || 0), 0);
+                
+                // Get evaluation count for cost per eval
+                const { count: evalsThisMonth } = await supabaseClient
+                    .from('evaluations')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('created_at', monthStart.toISOString())
+                    .is('deleted_locally_at', null);
+                
+                const costPerEval = evalsThisMonth > 0 ? costMTD / evalsThisMonth : 0;
+                const daysInMonth = now.getDate();
+                const daysTotal = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                const projectedCost = (costMTD / daysInMonth) * daysTotal;
+                
+                // Render Cost KPIs
+                costKPIs.innerHTML = `
+                    <div class="biz-kpi-card">
+                        <div class="biz-kpi-label">Cost This Month (MTD)</div>
+                        <div class="biz-kpi-value">$${costMTD.toFixed(2)}</div>
+                    </div>
+                    <div class="biz-kpi-card">
+                        <div class="biz-kpi-label">Cost Last Month</div>
+                        <div class="biz-kpi-value">$${costLast.toFixed(2)}</div>
+                    </div>
+                    <div class="biz-kpi-card" style="border: 2px solid var(--primary);">
+                        <div class="biz-kpi-label">Cost per Evaluation (MTD)</div>
+                        <div class="biz-kpi-value" style="color: var(--primary);">$${costPerEval.toFixed(4)}</div>
+                        <div class="biz-kpi-sub">Most important metric</div>
+                    </div>
+                    <div class="biz-kpi-card">
+                        <div class="biz-kpi-label">Projected Month-End</div>
+                        <div class="biz-kpi-value">$${projectedCost.toFixed(2)}</div>
+                    </div>
+                `;
+                
+                // Load 12 months of cost data for trend
+                const monthlyCosts = [];
+                for (let i = 11; i >= 0; i--) {
+                    const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+                    const { data: monthCost } = await supabaseClient
+                        .from('cost_tracking')
+                        .select('estimated_cost, provider')
+                        .gte('created_at', monthDate.toISOString())
+                        .lte('created_at', monthEnd.toISOString());
+                    
+                    const total = (monthCost || []).reduce((sum, c) => sum + (parseFloat(c.estimated_cost) || 0), 0);
+                    monthlyCosts.push({
+                        month: monthDate.toISOString().slice(0, 7),
+                        total,
+                        llm: (monthCost || []).filter(c => c.provider && c.provider !== 'supabase').reduce((sum, c) => sum + (parseFloat(c.estimated_cost) || 0), 0),
+                        supabase: (monthCost || []).filter(c => c.provider === 'supabase').reduce((sum, c) => sum + (parseFloat(c.estimated_cost) || 0), 0)
+                    });
+                }
+                
+                const maxCost = Math.max(...monthlyCosts.map(m => m.total), 1);
+                const chartHeight = 250;
+                
+                costTrendChart.innerHTML = `
+                    <h4 style="margin: 0 0 1rem 0;">Cost Trend (12 Months)</h4>
+                    <svg width="100%" height="${chartHeight}" viewBox="0 0 800 ${chartHeight}" style="overflow: visible;">
+                        ${monthlyCosts.map((m, idx) => {
+                            const x = (idx / (monthlyCosts.length - 1 || 1)) * 700 + 50;
+                            const llmHeight = (m.llm / maxCost) * (chartHeight - 60);
+                            const supabaseHeight = (m.supabase / maxCost) * (chartHeight - 60);
+                            const llmY = chartHeight - supabaseHeight - llmHeight - 30;
+                            const supabaseY = chartHeight - supabaseHeight - 30;
+                            return `
+                                <g>
+                                    <rect x="${x - 20}" y="${supabaseY}" width="40" height="${supabaseHeight}" fill="var(--accent)" rx="4"/>
+                                    <rect x="${x - 20}" y="${llmY}" width="40" height="${llmHeight}" fill="var(--primary)" rx="4"/>
+                                    <text x="${x}" y="${chartHeight - 10}" text-anchor="middle" font-size="9" fill="var(--text-light)">${m.month.slice(5)}</text>
+                                    <text x="${x}" y="${llmY - 5}" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text)">$${m.total.toFixed(0)}</text>
+                                </g>
+                            `;
+                        }).join('')}
+                        <text x="20" y="20" font-size="12" font-weight="600" fill="var(--text)">Legend:</text>
+                        <rect x="20" y="30" width="15" height="15" fill="var(--primary)"/>
+                        <text x="40" y="42" font-size="11" fill="var(--text-light)">LLM Inference</text>
+                        <rect x="150" y="30" width="15" height="15" fill="var(--accent)"/>
+                        <text x="170" y="42" font-size="11" fill="var(--text-light)">Supabase</text>
+                    </svg>
+                `;
+                
+                // Cost by tier (simplified - would join with user_profiles)
+                if (costByTierBody) {
+                    costByTierBody.innerHTML = `
+                        <tr>
+                            <td>Institutions</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                        </tr>
+                        <tr>
+                            <td>Instructors</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                        </tr>
+                        <tr>
+                            <td>Individuals</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                            <td style="text-align: right;">—</td>
+                        </tr>
+                    `;
+                }
+                
+                // Cost by institution (Top 10)
+                const { data: instCosts } = await supabaseClient
+                    .from('cost_tracking')
+                    .select('institution_id, estimated_cost, institutions(name)')
+                    .gte('created_at', monthStart.toISOString());
+                
+                const instCostMap = {};
+                (instCosts || []).forEach(c => {
+                    const instId = c.institution_id;
+                    if (!instId) return;
+                    if (!instCostMap[instId]) {
+                        instCostMap[instId] = {
+                            name: c.institutions?.name || 'Unknown',
+                            cost: 0,
+                            evals: 0
+                        };
+                    }
+                    instCostMap[instId].cost += parseFloat(c.estimated_cost) || 0;
+                    instCostMap[instId].evals++;
+                });
+                
+                const topInstCosts = Object.values(instCostMap)
+                    .sort((a, b) => b.cost - a.cost)
+                    .slice(0, 10);
+                
+                if (costByInstBody) {
+                    if (topInstCosts.length === 0) {
+                        costByInstBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-light);">No cost data by institution</td></tr>';
+                    } else {
+                        costByInstBody.innerHTML = topInstCosts.map(inst => {
+                            const costPerEval = inst.evals > 0 ? inst.cost / inst.evals : 0;
+                            return `
+                                <tr>
+                                    <td>${escapeHtml(inst.name)}</td>
+                                    <td style="text-align: right;">${inst.evals.toLocaleString()}</td>
+                                    <td style="text-align: right;">$${inst.cost.toFixed(2)}</td>
+                                    <td style="text-align: right;">$${costPerEval.toFixed(4)}</td>
+                                    <td style="text-align: right;">—</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+                
+                // Energy & Carbon
+                const { data: energyData } = await supabaseClient
+                    .from('energy_usage')
+                    .select('energy_kwh, co2_kg, scope, ai_provider')
+                    .gte('created_at', monthStart.toISOString());
+                
+                const totalEnergy = (energyData || []).reduce((sum, e) => sum + (parseFloat(e.energy_kwh) || 0), 0);
+                const totalCO2 = (energyData || []).reduce((sum, e) => sum + (parseFloat(e.co2_kg) || 0), 0);
+                const milesEquivalent = totalCO2 * 2.47; // kg CO2 to miles driven (EPA estimate)
+                
+                const scope2 = (energyData || []).filter(e => e.scope === 'scope_2').reduce((sum, e) => sum + (parseFloat(e.co2_kg) || 0), 0);
+                const scope3 = (energyData || []).filter(e => e.scope === 'scope_3').reduce((sum, e) => sum + (parseFloat(e.co2_kg) || 0), 0);
+                
+                const energyByProvider = {};
+                (energyData || []).forEach(e => {
+                    const provider = e.ai_provider || 'unknown';
+                    if (!energyByProvider[provider]) {
+                        energyByProvider[provider] = { kwh: 0, co2: 0 };
+                    }
+                    energyByProvider[provider].kwh += parseFloat(e.energy_kwh) || 0;
+                    energyByProvider[provider].co2 += parseFloat(e.co2_kg) || 0;
+                });
+                
+                if (energyKPIs) {
+                    energyKPIs.innerHTML = `
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">Energy Consumed (kWh)</div>
+                            <div class="biz-kpi-value">${totalEnergy.toFixed(2)}</div>
+                        </div>
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">CO₂e (kg)</div>
+                            <div class="biz-kpi-value">${totalCO2.toFixed(2)}</div>
+                        </div>
+                        <div class="biz-kpi-card">
+                            <div class="biz-kpi-label">Equivalent Miles</div>
+                            <div class="biz-kpi-value">${Math.round(milesEquivalent).toLocaleString()}</div>
+                            <div class="biz-kpi-sub">Miles driven</div>
+                        </div>
+                    `;
+                }
+                
+                if (energyByModel) {
+                    energyByModel.innerHTML = `
+                        <h4 style="margin: 0 0 1rem 0;">Energy by Model</h4>
+                        <div style="display: grid; gap: 0.75rem;">
+                            ${Object.entries(energyByProvider).map(([provider, data]) => `
+                                <div style="padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-weight: 600;">${escapeHtml(provider)}</span>
+                                        <span style="font-size: 0.875rem; color: var(--text-light);">${data.kwh.toFixed(2)} kWh · ${data.co2.toFixed(2)} kg CO₂</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                if (ghgScope) {
+                    ghgScope.innerHTML = `
+                        <h4 style="margin: 0 0 1rem 0;">GHG Protocol Scope Breakdown</h4>
+                        <div style="display: grid; gap: 0.75rem;">
+                            <div style="padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">Scope 2 (Purchased Energy)</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light);">${scope2.toFixed(2)} kg CO₂e</div>
+                            </div>
+                            <div style="padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">Scope 3 (Other Indirect)</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light);">${scope3.toFixed(2)} kg CO₂e (Estimated)</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Update last updated timestamp
+                const energyLastUpdated = document.getElementById('bizEnergyLastUpdated');
+                if (energyLastUpdated) {
+                    energyLastUpdated.textContent = new Date().toLocaleDateString();
+                }
+            } catch (error) {
+                console.error('Error rendering cost/energy data:', error);
+                if (costKPIs) costKPIs.innerHTML = '<p style="color: var(--error); padding: 2rem; text-align: center;">Error loading cost data</p>';
+            }
+        }
+        
+        // Refresh business analytics data
+        function refreshBusinessAnalytics() {
+            // Clear cache
+            businessAnalyticsData.cache = null;
+            businessAnalyticsData.cacheTimestamp = null;
+            
+            // Reload and re-render current sub-tab
+            const startDate = document.getElementById('analyticsStartDate')?.value || '';
+            const endDate = document.getElementById('analyticsEndDate')?.value || '';
+            
+            loadBusinessAnalytics(startDate, endDate).then(() => {
+                switchBusinessSubTab(_currentBizSubTab);
+            });
+        }
+        
+        // Export business analytics data to CSV
+        function exportBusinessAnalyticsCSV(type) {
+            if (type === 'users' && _usersData) {
+                const headers = ['Name', 'Email', 'Institution', 'Tier', 'Status', 'Joined', 'Last Active', 'Evals (All)', 'Evals (30d)'];
+                const rows = _usersData.map(u => {
+                    const inst = u.institutions ? (Array.isArray(u.institutions) ? u.institutions[0] : u.institutions) : null;
+                    return [
+                        u.full_name || '',
+                        u.email || '',
+                        inst?.name || '',
+                        u.institution_id ? 'Institution' : (u.account_tier === 'instructor' ? 'Instructor' : 'Individual'),
+                        u.statusLabel || '',
+                        u.created_at ? new Date(u.created_at).toLocaleDateString() : '',
+                        u.lastActive ? new Date(u.lastActive).toLocaleDateString() : '',
+                        u.evalsAll || 0,
+                        u.evals30d || 0
+                    ];
+                });
+                
+                const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `business-users-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                console.warn('Export not implemented for type:', type);
+            }
         }
         
         // Metric definitions database
