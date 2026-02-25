@@ -9339,10 +9339,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                                 // Chainable methods - return wrapped query builder
                                 return function(...args) {
                                     const result = value.apply(target, args);
-                                    // If it returns a query builder, wrap it; otherwise return as-is
-                                    if (result && typeof result === 'object' && result.select) {
+                                    // If it returns a query builder (has select method), wrap it
+                                    if (result && typeof result === 'object' && typeof result.select === 'function') {
                                         return wrapQueryBuilder(result);
                                     }
+                                    // Otherwise return as-is (might be a promise or other value)
                                     return result;
                                 };
                             }
@@ -12081,13 +12082,22 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             try {
                 // Fetch only flat columns so RLS on institutions/departments can't break the query
+                console.log('[loadUserTier] Fetching profile for user:', currentUser.id, 'email:', currentUser.email);
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
                     .select('account_tier, is_admin, is_super_admin, institution_id, department_id, llm_training_consent_given, full_name, approval_status')
                     .eq('id', currentUser.id)
                     .single();
                 
-                console.log('[loadUserTier] Profile fetch:', error ? 'error ' + error.message : 'ok', 'account_tier=', data?.account_tier, 'approval_status=', data?.approval_status);
+                console.log('[loadUserTier] Profile fetch result:', {
+                    error: error ? error.message : null,
+                    hasData: !!data,
+                    account_tier: data?.account_tier,
+                    is_admin: data?.is_admin,
+                    is_super_admin: data?.is_super_admin,
+                    approval_status: data?.approval_status,
+                    fullData: data
+                });
                 
                 if (error) {
                     console.warn('Could not load user profile:', error.message, '- Ensure user_profiles has a row for this user and RLS allows read. Falling back to demo.');
