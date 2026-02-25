@@ -9192,7 +9192,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 const customStorage = new SimpleStorageAdapter(window.localStorage);
                 
                 // Configure Supabase client with custom storage to avoid LockManager timeouts
-                supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+                const baseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
                     auth: {
                         persistSession: true,
                         autoRefreshToken: true,
@@ -9202,7 +9202,10 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                         flowType: 'pkce'
                     }
                 });
-                log.debug('✓ Supabase client initialized with custom storage');
+                
+                // Wrap the client to automatically retry operations that fail due to LockManager
+                supabaseClient = createWrappedSupabaseClient(baseClient);
+                log.debug('✓ Supabase client initialized with custom storage and retry wrapper');
             } else {
                 log.warn('⚠️ Supabase library not loaded - using localStorage fallback');
             }
@@ -9291,7 +9294,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                         try {
                             return await operation();
                         } catch (finalError) {
-                            const errorMsg = 'Authentication lock timeout. This usually happens when:\n' +
+                            const errorMsg = 'Operation lock timeout. This usually happens when:\n' +
                                            '1. Multiple browser tabs are open with the app\n' +
                                            '2. A previous session didn\'t close properly\n\n' +
                                            'Try: Close all tabs, clear browser cache, or use an incognito window.';
@@ -9303,6 +9306,94 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     throw error;
                 }
             }
+        }
+        
+        // Create a wrapped Supabase client that automatically retries operations
+        function createWrappedSupabaseClient(originalClient) {
+            if (!originalClient) return null;
+            
+            // Wrap query builder - intercept execution methods that return promises
+            function wrapQueryBuilder(query) {
+                if (!query) return query;
+                
+                // Methods that execute queries and return promises
+                const executionMethods = ['select', 'insert', 'update', 'delete', 'upsert'];
+                
+                executionMethods.forEach(method => {
+                    if (typeof query[method] === 'function') {
+                        const originalMethod = query[method].bind(query);
+                        query[method] = function(...args) {
+                            // The original method returns a promise - wrap it with retry logic
+                            const promise = originalMethod(...args);
+                            // Wrap the promise execution with retry
+                            return retrySupabaseOperation(async () => {
+                                return await promise;
+                            });
+                        };
+                    }
+                });
+                
+                // Chaining methods that return the query builder itself - just pass through
+                // These don't need wrapping as they don't execute
+                
+                return query;
+            }
+            
+            const wrapped = {
+                ...originalClient,
+                from: function(table) {
+                    const query = originalClient.from(table);
+                    return wrapQueryBuilder(query);
+                },
+                rpc: function(functionName, params, options) {
+                    return retrySupabaseOperation(() => originalClient.rpc(functionName, params, options));
+                },
+                storage: originalClient.storage ? {
+                    ...originalClient.storage,
+                    from: function(bucket) {
+                        const storageBucket = originalClient.storage.from(bucket);
+                        // Wrap storage operations that return promises
+                        const promiseMethods = ['upload', 'download', 'list', 'remove', 'createBucket', 
+                                              'getBucket', 'listBuckets', 'updateBucket', 'deleteBucket',
+                                              'getPublicUrl', 'createSignedUrl', 'createSignedUrls',
+                                              'move', 'copy'];
+                        
+                        promiseMethods.forEach(method => {
+                            if (typeof storageBucket[method] === 'function') {
+                                const originalMethod = storageBucket[method].bind(storageBucket);
+                                storageBucket[method] = function(...args) {
+                                    return retrySupabaseOperation(() => originalMethod(...args));
+                                };
+                            }
+                        });
+                        
+                        return storageBucket;
+                    }
+                } : originalClient.storage,
+                auth: {
+                    ...originalClient.auth,
+                    getSession: function() {
+                        return retrySupabaseOperation(() => originalClient.auth.getSession());
+                    },
+                    signInWithPassword: function(credentials) {
+                        return retrySupabaseOperation(() => originalClient.auth.signInWithPassword(credentials));
+                    },
+                    signOut: function(options) {
+                        return retrySupabaseOperation(() => originalClient.auth.signOut(options));
+                    },
+                    getUser: function() {
+                        return retrySupabaseOperation(() => originalClient.auth.getUser());
+                    },
+                    updateUser: function(attributes) {
+                        return retrySupabaseOperation(() => originalClient.auth.updateUser(attributes));
+                    },
+                    resetPasswordForEmail: function(email, options) {
+                        return retrySupabaseOperation(() => originalClient.auth.resetPasswordForEmail(email, options));
+                    }
+                }
+            };
+            
+            return wrapped;
         }
         
         // Test Supabase connection
