@@ -20,9 +20,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py .
 COPY config.js .
 COPY index.html .
+COPY landing.html .
 COPY consent.html .
 COPY privacy.html .
 COPY terms.html .
+COPY contact.html .
+COPY help.html .
+COPY accessibility.html .
 COPY assets/ ./assets/
 COPY llm_training/ ./llm_training/
 
