@@ -6,7 +6,11 @@
     <title>SpeechGradebook</title>
     <link rel="icon" id="faviconLink" href="assets/speechgradebook-logo-light.png" type="image/png">
     
-    <!-- Fonts (Bunny Fonts - privacy-friendly, less blocked than Google Fonts) -->
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fallback fonts (Bunny Fonts - privacy-friendly, less blocked than Google Fonts) -->
     <link href="https://fonts.bunny.net/css?family=Montserrat:400,500,600,700|Source+Sans+3:400,600,700|Roboto:400,500,700|Open+Sans:400,600,700|Crimson+Pro:400,600,700|Work+Sans:400,600,700&display=swap" rel="stylesheet">
     
     <!-- Supabase JS Library -->
@@ -69,8 +73,8 @@
             /* Apple HIG: Focus indicators */
             --focus-ring: #2563eb;        /* Focus ring color */
             --focus-ring-offset: 2px;     /* Focus ring offset */
-            --heading-font: 'Roboto', sans-serif;
-            --body-font: 'Roboto', sans-serif;
+            --heading-font: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --body-font: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             --heading-weight: 700;
             --body-weight: 400;
             /* Typography hierarchy */
@@ -354,7 +358,10 @@
             font-style: normal; /* Always normal style */
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.47059; /* Apple's standard line-height */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.01em; /* Subtle letter-spacing for refinement */
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -362,6 +369,8 @@
             font-weight: 700; /* Always bold for headings */
             font-style: normal; /* Always normal style */
             color: var(--primary);
+            letter-spacing: -0.02em; /* Tighter letter-spacing for headings */
+            line-height: 1.2;
         }
         
         /* Typography hierarchy (Apple HIG–aligned) — single source of truth */
@@ -377,8 +386,9 @@
         .card-header { 
             color: var(--primary); 
             margin-bottom: var(--space-lg); 
-            border-bottom: 2px solid var(--border); 
+            border-bottom: 1px solid var(--border); /* Lighter border like landing page */
             padding-bottom: var(--space-md); 
+            letter-spacing: -0.01em; /* Refined typography */
         }
         .modal-box h3 { margin: 0 0 0.75rem 0; color: var(--primary); }
         .class-header { color: var(--primary); margin-bottom: var(--space-sm); }
@@ -394,12 +404,20 @@
         .class-meta { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.5; margin-bottom: var(--space-md); }
         
         .container {
-            max-width: 1200px;
+            max-width: 980px; /* Match landing page max-width for consistency */
             margin: 0 auto;
-            padding: 0 var(--space-md);
+            padding: 0 22px; /* Match landing page padding */
             /* Safe area: respect notch/Dynamic Island on side-mounted phones */
-            padding-left: max(var(--space-md), env(safe-area-inset-left));
-            padding-right: max(var(--space-md), env(safe-area-inset-right));
+            padding-left: max(22px, env(safe-area-inset-left));
+            padding-right: max(22px, env(safe-area-inset-right));
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
         }
         
         /* Remove all spacing between header and class detail section */
@@ -410,6 +428,12 @@
         main#main-content {
             margin-top: 0 !important;
             padding-top: 0 !important;
+            padding-bottom: var(--space-2xl); /* Generous bottom padding like landing page */
+        }
+        
+        /* Section spacing - match landing page generous spacing */
+        .section {
+            padding: var(--space-2xl) 0;
         }
         
         header + main#main-content {
@@ -432,25 +456,25 @@
             padding-top: 0 !important;
         }
         
-        /* Header - Apple HIG: Clear hierarchy, proper elevation */
+        /* Header - Clean, professional dark header */
         header {
             font-family: var(--body-font);
             background: var(--primary-dark);
             color: white;
-            padding: var(--space-lg) 0;
-            /* Safe area: status bar / notch / Dynamic Island */
-            padding-top: calc(var(--space-lg) + env(safe-area-inset-top));
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-            box-shadow: var(--elevation-2);
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08); /* Refined shadow */
             margin-bottom: 0 !important;
         }
         
         .header-content {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 56px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: var(--space-lg);
+            gap: 16px;
             flex-wrap: wrap;
         }
         
@@ -458,7 +482,7 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: var(--space-lg);
+            gap: 16px;
             flex: 1;
             min-width: 0;
         }
@@ -467,28 +491,36 @@
         .primary-nav {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
+            gap: 4px;
+            flex-shrink: 1;
+            min-width: 0;
+            overflow: hidden;
         }
         
         /* Right section: Search and Account menu */
         .header-right {
             display: flex;
             align-items: center;
-            gap: var(--space-sm);
+            gap: 8px;
             flex-shrink: 0;
+        }
+        
+        /* Mobile menu button - hidden on desktop */
+        .mobile-menu-button {
+            display: none;
         }
         
         .logo-section {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
+            gap: 12px;
             flex-shrink: 0;
             min-width: 0; /* Allow text truncation */
         }
         
         .logo {
-            width: 70px;
-            height: 70px;
+            width: 32px;
+            height: 32px;
             background: #ffffff;
             border-radius: 50%;
             display: flex;
@@ -543,10 +575,11 @@
         
         .app-title h1 {
             font-family: var(--heading-font);
-            font-weight: 700;
+            font-weight: 600;
             color: white;
-            font-size: 1.8rem;
-            margin-bottom: var(--space-xs);
+            font-size: 21px;
+            letter-spacing: -0.01em;
+            margin: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -584,18 +617,59 @@
         .nav-link {
             color: white;
             text-decoration: none;
-            padding: var(--space-sm) var(--space-lg);
-            border-radius: var(--radius-md);
-            transition: all var(--motion-normal) var(--motion-ease);
-            min-height: 2.75rem;
+            padding: 8px 16px;
+            border-radius: 980px;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
+            gap: 6px;
             box-sizing: border-box;
-            font-size: 0.9375rem;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 400;
             white-space: nowrap;
             position: relative;
-            flex-shrink: 0;
+            flex-shrink: 1;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+            font-family: var(--body-font);
+        }
+        
+        /* On tablet/smaller desktop, show both nav items consistently */
+        /* Option 1: Show both with full text (if space allows) */
+        @media (max-width: 1200px) and (min-width: 900px) {
+            .nav-link {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+        }
+        
+        /* Option 2: Show both as icons only on smaller tablets (consistent behavior) */
+        @media (max-width: 900px) and (min-width: 769px) {
+            .nav-link {
+                padding: 8px 10px;
+            }
+            /* Hide text for BOTH nav items consistently */
+            .nav-link .icon-with-text {
+                font-size: 0;
+                line-height: 0;
+            }
+            /* Restore icon size for both */
+            .nav-link .icon-with-text i {
+                font-size: 16px;
+                line-height: 1;
+                margin-right: 0;
+                vertical-align: middle;
+            }
+            .primary-nav {
+                gap: 2px;
+            }
+            .header-left {
+                gap: 12px;
+            }
+            .app-title h1 {
+                font-size: 18px;
+            }
         }
         
         /* Account Dropdown */
@@ -857,24 +931,12 @@
         }
         
         .nav-link:hover {
-            background: rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.12);
         }
         
         .nav-link.active {
             background: rgba(255,255,255,0.18);
             font-weight: 600;
-        }
-        
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
-            height: 2px;
-            background: white;
-            border-radius: var(--radius-full);
         }
         
         /* Reduce icon size in nav for cleaner look */
@@ -968,14 +1030,19 @@
         /* Cards - Apple HIG: Proper spacing and elevation with enhanced visual interest */
         .card {
             background: var(--card);
-            border-radius: var(--radius-lg);
+            border-radius: 12px; /* Match landing page refined radius */
             padding: var(--space-xl);
-            box-shadow: var(--elevation-1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.04); /* Refined Apple-style shadow */
             margin-bottom: var(--space-xl);
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all var(--motion-normal) var(--motion-ease);
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); /* Apple's standard easing */
             position: relative;
             overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
         }
 
         /* Apple HIG: 16pt horizontal margin on iPhone */
@@ -1243,13 +1310,28 @@
             outline: 2px solid var(--primary);
             outline-offset: 2px;
         }
+        .analytics-tab-active:focus-visible {
+            outline: none;
+        }
         .analytics-tab-active {
-            border-bottom-color: var(--primary);
+            border: none !important;
+            border-bottom: 3px solid var(--primary) !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            outline: none !important;
+            box-shadow: none !important;
             color: var(--primary);
             font-weight: 600;
             background: rgba(30, 58, 95, 0.06);
-            border-bottom-width: 3px;
-            border-bottom-style: solid;
+        }
+        .analytics-tab-active:focus,
+        .analytics-tab-active:focus-visible,
+        .analytics-tab-active:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-bottom: 3px solid var(--primary) !important;
         }
         
         /* Instructor dashboard top-level tabs (Courses | Rubrics | Course Insights) */
@@ -2252,11 +2334,12 @@
         textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 0.5rem;
+            border: 1px solid var(--border); /* Lighter border like landing page */
+            border-radius: 8px; /* Match landing page radius */
             font-size: 1rem;
             font-family: var(--body-font);
-            transition: border-color 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); /* Apple easing */
+            background: var(--card);
         }
         
         input:focus,
@@ -2306,21 +2389,22 @@
         /* Buttons - Apple HIG: Clear affordances, proper feedback with enhanced visual appeal */
         button,
         .btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: var(--primary); /* Solid color like landing page */
             color: white;
-            padding: var(--space-md) var(--space-lg);
+            padding: 12px 24px; /* Match landing page button padding */
             border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 980px; /* Pill shape like landing page */
+            font-size: 17px; /* Match landing page font size */
+            font-weight: 400; /* Lighter weight like landing page */
             cursor: pointer;
-            transition: all var(--motion-normal) var(--motion-ease);
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); /* Apple easing */
             display: inline-block;
             text-decoration: none;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(30, 58, 95, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(30, 58, 95, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.05); /* Refined shadow */
             position: relative;
             overflow: hidden;
+            letter-spacing: -0.01em; /* Refined typography */
         }
         
         button::before,
@@ -2342,9 +2426,9 @@
         
         button:hover,
         .btn:hover {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
-            filter: brightness(1.05);
+            background: var(--primary-dark); /* Darker on hover like landing page */
+            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+            transform: scale(1.02); /* Subtle scale like landing page */
         }
         
         button:active,
@@ -2475,8 +2559,21 @@
         html.theme-utk-torch .analytics-tab-active {
             background: white;
             color: var(--link-blue, #1a73c5);
-            border-color: var(--border);
-            border-bottom: 2px solid white;
+            border: none !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: 2px solid white !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        html.theme-utk-torch .analytics-tab-active:focus,
+        html.theme-utk-torch .analytics-tab-active:focus-visible,
+        html.theme-utk-torch .analytics-tab-active:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-bottom: 2px solid white !important;
         }
         
         /* Progress Steps - Apple HIG: Proper spacing and motion */
@@ -2914,15 +3011,82 @@
         .dashboard-shell-title { font-size: var(--text-headline-size); font-weight: var(--text-headline-weight); line-height: 1.35; margin-bottom: 0.25rem; color: var(--text); }
         .dashboard-shell-subtitle { font-size: var(--text-caption-size); font-weight: 400; color: var(--text-light); line-height: 1.4; margin-bottom: 1.5rem; }
         .global-filter-bar {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .global-filter-bar::-webkit-scrollbar {
+            display: none;
+        }
             display: flex; flex-direction: column; gap: 0;
             padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-lg);
             border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-alt);
         }
         .global-filter-bar-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: nowrap;
+            min-width: min-content;
+        }
+        
+        @media (max-width: 768px) {
+            .global-filter-bar-row {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .global-filter-bar .filter-dropdown {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+            
+            .global-filter-bar .filter-dropdown-trigger {
+                min-width: 0;
+                width: 100%;
+                font-size: 0.8125rem;
+                padding: var(--space-xs) var(--space-sm);
+            }
+            
+            /* Filter actions row styling - now in separate row */
+            .global-filter-bar-row:has(#analyticsGlobalReset) {
+                margin-top: 0.75rem;
+                padding-top: 0.75rem;
+                border-top: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            @media (max-width: 768px) {
+                .global-filter-bar-row:has(#analyticsGlobalReset) {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+                
+                .global-filter-bar-row:has(#analyticsGlobalReset) .btn-secondary {
+                    width: 100%;
+                    justify-content: center;
+                }
+                
+                .global-filter-bar-row:has(#analyticsGlobalReset) .last-updated {
+                    text-align: center;
+                    width: 100%;
+                }
+            }
             display: flex; flex-wrap: nowrap; align-items: flex-end; gap: var(--space-md) var(--space-lg);
             overflow: visible; min-width: 0; padding-bottom: var(--space-xs);
         }
         .global-filter-bar-row > * { flex-shrink: 0; }
+        
+        @media (max-width: 768px) {
+            .global-filter-bar-row > * { 
+                flex-shrink: 1;
+            }
+        }
         .global-filter-bar label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--text-light); }
         .global-filter-bar select, .global-filter-bar input[type="date"] {
             padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;
@@ -3495,9 +3659,10 @@
             .header-content {
                 gap: var(--space-sm);
             }
+            /* Logo stays 32px at all breakpoints */
             .logo {
-                width: 60px;
-                height: 60px;
+                width: 32px;
+                height: 32px;
             }
             .app-title h1 {
                 font-size: 1.35rem;
@@ -3544,82 +3709,260 @@
         @media (max-width: 768px) {
             /* Row 1: logo left, account right — never stacked */
             .header-content {
-                flex-direction: column;
-                gap: 0.5rem;
-                align-items: stretch;
+                height: 48px;
+                flex-direction: row;
+                gap: 8px;
+                align-items: center;
+                padding: 0 16px;
+                overflow: hidden;
             }
 
             .header-left {
                 flex-direction: row;
                 align-items: center;
-                justify-content: space-between;
-                gap: var(--space-sm);
+                flex: 1;
+                min-width: 0;
+                gap: 8px;
+                overflow: hidden;
             }
 
-            /* Move header-right inside header-left row via order */
             .header-right {
-                order: 2;
                 flex-shrink: 0;
-                justify-content: flex-end;
+                display: flex;
+                align-items: center;
+                gap: 4px;
             }
 
             .logo-section {
-                justify-content: flex-start;
-                flex: 1;
-                min-width: 0;
-            }
-
-            /* Tagline hidden on mobile — too much noise at small size */
-            .tagline {
-                display: none;
-            }
-
-            /* Row 2: nav links scroll horizontally */
-            .primary-nav {
-                order: 3;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                gap: var(--space-xs);
-                padding-bottom: 2px; /* prevent clipping active indicator */
-                scrollbar-width: none;
-            }
-
-            .primary-nav::-webkit-scrollbar {
-                display: none;
-            }
-
-            .nav-link {
                 flex-shrink: 0;
-                padding: var(--space-sm) var(--space-md);
+                min-width: 0;
+                gap: 8px;
             }
 
-            .account-search-wrap.search-expandable {
-                position: fixed;
-                top: var(--space-lg);
-                left: var(--space-md);
-                right: var(--space-md);
-                max-width: none;
+            /* Logo stays 32px at all breakpoints - never changes */
+            .logo {
+                width: 32px !important;
+                height: 32px !important;
+            }
+
+            .app-title {
                 min-width: 0;
-                width: auto;
+                flex: 0 1 auto;
+                overflow: hidden;
+            }
+
+            .app-title h1 {
+                font-size: 18px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Hide navigation, search, and account on mobile - all in mobile menu */
+            .primary-nav,
+            nav.primary-nav,
+            .search-wrapper,
+            .account-dropdown-wrapper {
+                display: none !important;
+            }
+            
+            /* Show mobile menu button */
+            .mobile-menu-button {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 8px;
+                transition: background 0.2s;
+                width: 2rem;
+                height: 2rem;
+            }
+            
+            .mobile-menu-button:hover {
+                background: rgba(255, 255, 255, 0.12);
+            }
+            
+            .mobile-menu-button i {
+                width: 24px;
+                height: 24px;
             }
 
             .classes-grid {
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Mobile Menu (Apple Style) */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            max-width: 85vw;
+            height: 100vh;
+            background: var(--card);
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1999;
+            opacity: 0;
+            transition: opacity 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+            backdrop-filter: blur(4px);
+        }
+
+        .mobile-menu-overlay.open {
+            opacity: 1;
+        }
+
+        .mobile-menu-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-alt);
+        }
+
+        .mobile-menu-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            font-family: var(--body-font);
+            letter-spacing: -0.01em;
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-close:hover {
+            background: var(--border);
+        }
+
+        .mobile-menu-nav {
+            padding: 8px 0;
+        }
+
+        .mobile-menu-section {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu-section:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-menu-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 22px;
+            font-family: var(--body-font);
+        }
+
+        .mobile-menu-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 22px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 17px;
+            transition: background 0.2s;
+            font-family: var(--body-font);
+            -webkit-tap-highlight-color: transparent;
+            border-radius: 0;
+        }
+
+        .mobile-menu-nav .nav-link:active {
+            background: var(--bg-alt);
+        }
+
+        .mobile-menu-nav .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mobile-menu-nav .nav-link i {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .mobile-menu-search {
+            padding: 12px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu-search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 17px;
+            font-family: var(--body-font);
+            background: var(--bg-alt);
+            box-sizing: border-box;
+        }
+
+        .mobile-menu-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--card);
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu,
+            .mobile-menu-overlay {
+                display: block;
+            }
+        }
 
         @media (max-width: 480px) {
-            .logo {
-                width: 48px;
+            .header-content {
                 height: 48px;
+                padding: 0 12px;
+            }
+            /* Logo stays 32px on all screen sizes - never changes */
+            .logo {
+                width: 32px !important;
+                height: 32px !important;
             }
             .app-title h1 {
-                font-size: 1.1rem;
-            }
-            .nav-link {
-                font-size: 0.875rem;
-                padding: var(--space-xs) var(--space-sm);
+                font-size: 16px;
             }
         }
         
@@ -3924,7 +4267,6 @@
                         <div class="logo" id="appLogo" style="background-color: #ffffff;"><img src="assets/speechgradebook-logo-light.png" alt="SpeechGradebook" style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 50%; padding: 12%;"></div>
                         <div class="app-title">
                             <h1 id="appName">SpeechGradebook</h1>
-                            <div class="tagline" id="appTagline">Instructor-Informed Speech Assessment</div>
                         </div>
                     </div>
                     <!-- Primary Navigation: Core workflows -->
@@ -3974,10 +4316,66 @@
                             </a>
                         </div>
                     </div>
+                    
+                    <!-- Mobile Menu Button (hidden on desktop) -->
+                    <button class="mobile-menu-button" id="mobileMenuButton" onclick="toggleMobileMenu(); return false;" aria-label="Menu" aria-expanded="false" style="display: none;">
+                        <i data-lucide="menu"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
+    
+    <!-- Mobile Menu (Apple Style) -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu(); return false;"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <h3>Menu</h3>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu(); return false;" aria-label="Close menu">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <nav class="mobile-menu-nav">
+            <!-- Search Section -->
+            <div class="mobile-menu-search">
+                <input type="text" class="mobile-menu-search-input" id="mobileMenuSearchInput" placeholder="Search courses, students..." onclick="event.stopPropagation();">
+            </div>
+            
+            <!-- Navigation Section -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-section-title">Navigation</div>
+                <a href="#" class="nav-link" id="mobileNavDashboard" onclick="showDashboard(); toggleMobileMenu(); return false;">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-link" id="mobileNavEvaluate" onclick="showEvaluate(); toggleMobileMenu(); return false;">
+                    <i data-lucide="mic"></i>
+                    <span>Evaluate Speech</span>
+                </a>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-section-title">Account</div>
+                <div class="nav-link" id="mobileMenuUserName" style="color: var(--text-secondary);">
+                    <i data-lucide="user"></i>
+                    <span id="mobileUserDisplay">User</span>
+                </div>
+                <a href="#" class="nav-link" onclick="showSettings(); toggleMobileMenu(); return false;">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-link" onclick="showHelp(); toggleMobileMenu(); return false;">
+                    <i data-lucide="help-circle"></i>
+                    <span>Support</span>
+                </a>
+                <a href="#" class="nav-link" onclick="logout(); toggleMobileMenu(); return false;">
+                    <i data-lucide="log-out"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </nav>
+    </div>
     <main id="main-content" class="container" tabindex="-1" style="margin-top: 0 !important; padding-top: 0 !important;">
         <!-- Evaluate Section -->
         <section id="evaluateSection" class="section" aria-label="Evaluate a speech">
@@ -4910,46 +5308,61 @@
             <div id="analyticsSection" style="margin-top: 0; margin-bottom: 2rem;" data-instructor-panel="insights">
                 <div class="card">
                     <div class="card-header text-title" id="analyticsSectionTitle"><span class="icon-with-text"><i data-lucide="bar-chart-2"></i> Course Insights</span></div>
-                    <!-- Global filter bar (Overview / Course Insights) -->
-                    <div id="analyticsGlobalFilterBar" class="global-filter-bar">
-                        <div class="global-filter-bar-row">
-                        <div class="filter-dropdown" id="filter-dropdown-institution" data-select-id="analyticsGlobalInstitution" style="display: none;">
-                            <label class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Institution</label>
-                            <button type="button" class="filter-dropdown-trigger" id="filter-trigger-institution" aria-expanded="false" aria-haspopup="listbox" aria-label="Select institutions" style="min-width: 12rem;">All institutions</button>
-                            <div class="filter-dropdown-panel" id="filter-panel-institution" role="listbox" aria-hidden="true"></div>
-                            <select id="analyticsGlobalInstitution" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All institutions</option></select>
-                        </div>
-                        <div class="filter-dropdown" id="filter-dropdown-instructor" data-select-id="analyticsGlobalInstructor">
-                            <label class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Instructor</label>
-                            <button type="button" class="filter-dropdown-trigger" id="filter-trigger-instructor" aria-expanded="false" aria-haspopup="listbox" aria-label="Select instructors" style="min-width: 12rem;">All instructors</button>
-                            <div class="filter-dropdown-panel" id="filter-panel-instructor" role="listbox" aria-hidden="true"></div>
-                            <select id="analyticsGlobalInstructor" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All instructors</option></select>
-                        </div>
-                        <div class="filter-dropdown" id="filter-dropdown-course" data-select-id="analyticsGlobalCourse">
-                            <label class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Course</label>
-                            <button type="button" class="filter-dropdown-trigger" id="filter-trigger-course" aria-expanded="false" aria-haspopup="listbox" aria-label="Select courses" style="min-width: 12rem;">All courses</button>
-                            <div class="filter-dropdown-panel" id="filter-panel-course" role="listbox" aria-hidden="true"></div>
-                            <select id="analyticsGlobalCourse" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All courses</option></select>
-                        </div>
-                        <div class="filter-actions" style="margin-left: auto;">
-                            <button type="button" id="analyticsGlobalReset" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; min-width: 80px; height: 2.25rem; box-sizing: border-box;" aria-label="Reset filters">Reset</button>
-                            <span id="analyticsLastUpdated" class="last-updated" style="align-self: center;"></span>
-                        </div>
-                        </div>
-                        <div class="global-filter-bar-row" style="margin-top: 0.75rem;">
-                        <div class="filter-date-range" style="display: flex; flex-direction: column; gap: 0.25rem;">
-                            <span class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Date range</span>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="date" id="analyticsStartDate" aria-label="Start date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();">
-                                <span style="color: var(--text-light); font-size: 0.875rem;">to</span>
-                                <input type="date" id="analyticsEndDate" aria-label="End date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();">
+                    <!-- Compact Filter Toolbar for Course Insights (matches Courses and Rubrics style) -->
+                    <div id="analyticsFiltersToolbar" style="margin-top: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; border: 1px solid var(--border); overflow: hidden;">
+                        <!-- Collapsible Header -->
+                        <button type="button" onclick="toggleAnalyticsFilters()" id="analyticsFiltersToggle" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: transparent; border: none; cursor: pointer; text-align: left; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text);">Filters</span>
+                            <i data-lucide="chevron-down" id="analyticsFiltersChevron" style="width: 1rem; height: 1rem; color: var(--text-light); transition: transform 0.3s ease;"></i>
+                        </button>
+                        
+                        <!-- Collapsible Filter Content -->
+                        <div id="analyticsFiltersContent" style="max-height: 0px; padding: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; padding: 0.75rem;">
+                                <div class="filter-dropdown" id="filter-dropdown-institution" data-select-id="analyticsGlobalInstitution" style="display: none;">
+                                    <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                        <label for="filter-trigger-institution" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Institution:</label>
+                                        <button type="button" class="filter-dropdown-trigger" id="filter-trigger-institution" aria-expanded="false" aria-haspopup="listbox" aria-label="Select institutions" style="min-width: 12rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">All institutions</button>
+                                        <div class="filter-dropdown-panel" id="filter-panel-institution" role="listbox" aria-hidden="true"></div>
+                                        <select id="analyticsGlobalInstitution" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All institutions</option></select>
+                                    </div>
+                                </div>
+                                <div class="filter-dropdown" id="filter-dropdown-instructor" data-select-id="analyticsGlobalInstructor">
+                                    <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                        <label for="filter-trigger-instructor" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Instructor:</label>
+                                        <button type="button" class="filter-dropdown-trigger" id="filter-trigger-instructor" aria-expanded="false" aria-haspopup="listbox" aria-label="Select instructors" style="min-width: 12rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">All instructors</button>
+                                        <div class="filter-dropdown-panel" id="filter-panel-instructor" role="listbox" aria-hidden="true"></div>
+                                        <select id="analyticsGlobalInstructor" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All instructors</option></select>
+                                    </div>
+                                </div>
+                                <div class="filter-dropdown" id="filter-dropdown-course" data-select-id="analyticsGlobalCourse">
+                                    <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                        <label for="filter-trigger-course" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Course:</label>
+                                        <button type="button" class="filter-dropdown-trigger" id="filter-trigger-course" aria-expanded="false" aria-haspopup="listbox" aria-label="Select courses" style="min-width: 12rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">All courses</button>
+                                        <div class="filter-dropdown-panel" id="filter-panel-course" role="listbox" aria-hidden="true"></div>
+                                        <select id="analyticsGlobalCourse" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All courses</option></select>
+                                    </div>
+                                </div>
+                                <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                    <label for="analyticsStartDate" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Date Range:</label>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="date" id="analyticsStartDate" aria-label="Start date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 8rem; cursor: pointer; transition: border-color 0.2s ease;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                        <span style="color: var(--text-light); font-size: 0.875rem;">to</span>
+                                        <input type="date" id="analyticsEndDate" aria-label="End date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 8rem; cursor: pointer; transition: border-color 0.2s ease;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    </div>
+                                </div>
+                                <div class="filter-group" style="margin-left: auto; align-self: flex-end;">
+                                    <button type="button" id="analyticsGlobalReset" onclick="clearAnalyticsFilters()" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.375rem;" onmouseover="this.style.backgroundColor='var(--bg-alt)'" onmouseout="this.style.backgroundColor='white'" aria-label="Reset filters">
+                                        <i data-lucide="x" style="width:0.875rem;height:0.875rem;"></i> Clear Filters
+                                    </button>
+                                </div>
                             </div>
+                            <div id="activeFiltersDisplay" style="display: none; flex-wrap: wrap; gap: 0.5rem; padding: 0 0.75rem 0.75rem 0.75rem;"></div>
+                            <div id="analyticsFilterHint" style="display: none; margin: 0 0.75rem 0.75rem 0.75rem; padding: 0.75rem 1rem; background: var(--bg-alt); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.85rem; color: var(--text);"></div>
+                            <div id="analyticsLastUpdated" class="last-updated" style="padding: 0 0.75rem 0.75rem 0.75rem; font-size: 0.75rem; color: var(--text-light);"></div>
                         </div>
-                        </div>
-                        <div id="activeFiltersDisplay" style="display: none; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border);"></div>
-                        <div id="analyticsFilterHint" style="display: none; margin-top: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-alt); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.85rem; color: var(--text);"></div>
                     </div>
-                <div style="display: flex; align-items: flex-end; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); flex-wrap: wrap;">
+                <div style="display: flex; align-items: flex-end; gap: 0.5rem; margin-top: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; position: relative; z-index: 2;">
                     <div id="analyticsTablist" role="tablist" class="analytics-tablist" style="display: flex; gap: 0.5rem; overflow: visible; flex: 1; min-width: 0;"></div>
                 </div>
                 <div id="analyticsPanelsWrapper">
@@ -9736,6 +10149,155 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
         }
         
+        // Toggle analytics filters collapse/expand
+        function toggleAnalyticsFilters() {
+            const content = document.getElementById('analyticsFiltersContent');
+            const chevron = document.getElementById('analyticsFiltersChevron');
+            const toolbar = document.getElementById('analyticsFiltersToolbar');
+            
+            if (!content || !chevron || !toolbar) return;
+            
+            // Check current state from data attribute or style
+            const isCollapsed = toolbar.getAttribute('data-collapsed') === 'true' || 
+                               content.style.maxHeight === '0px' ||
+                               (content.style.maxHeight === '' && content.offsetHeight === 0);
+            
+            if (isCollapsed) {
+                // Expand
+                // First set padding to get accurate height measurement
+                content.style.padding = '0.75rem';
+                // Force reflow to ensure padding is applied
+                content.offsetHeight;
+                const targetHeight = content.scrollHeight;
+                content.style.maxHeight = targetHeight + 'px';
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('analyticsFiltersCollapsed', 'false');
+                }
+            } else {
+                // Collapse
+                const currentHeight = content.scrollHeight;
+                content.style.maxHeight = currentHeight + 'px';
+                // Force reflow
+                content.offsetHeight;
+                // Remove padding immediately (no transition) to prevent content from showing
+                content.style.padding = '0';
+                content.style.maxHeight = '0px';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('analyticsFiltersCollapsed', 'true');
+                }
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        // Initialize analytics filters collapsed state from localStorage
+        function initAnalyticsFiltersState() {
+            const toolbar = document.getElementById('analyticsFiltersToolbar');
+            const content = document.getElementById('analyticsFiltersContent');
+            const chevron = document.getElementById('analyticsFiltersChevron');
+            
+            if (!toolbar || !content || !chevron) return;
+            
+            // Check localStorage for saved state (default to collapsed)
+            const savedState = typeof localStorage !== 'undefined' ? localStorage.getItem('analyticsFiltersCollapsed') : null;
+            const shouldCollapse = savedState !== 'false'; // Default to collapsed if no saved state
+            
+            if (shouldCollapse) {
+                // Set initial collapsed state
+                content.style.maxHeight = '0px';
+                content.style.padding = '0';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+            } else {
+                // Set initial expanded state
+                // Use setTimeout to ensure content is rendered and visible before measuring
+                setTimeout(() => {
+                    if (toolbar.style.display !== 'none') {
+                        content.style.padding = '0.75rem';
+                        // Force reflow
+                        content.offsetHeight;
+                        const targetHeight = content.scrollHeight;
+                        content.style.maxHeight = targetHeight + 'px';
+                    }
+                }, 50);
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        function clearAnalyticsFilters() {
+            log.debug('🧹 Clearing analytics filters');
+            // Reset date range
+            const startEl = document.getElementById('analyticsStartDate');
+            const endEl = document.getElementById('analyticsEndDate');
+            if (startEl) startEl.value = '';
+            if (endEl) endEl.value = '';
+            
+            // Reset multi-select filters
+            const institutionSelect = document.getElementById('analyticsGlobalInstitution');
+            const instructorSelect = document.getElementById('analyticsGlobalInstructor');
+            const courseSelect = document.getElementById('analyticsGlobalCourse');
+            
+            if (institutionSelect) {
+                Array.from(institutionSelect.options).forEach(opt => opt.selected = false);
+            }
+            if (instructorSelect) {
+                Array.from(instructorSelect.options).forEach(opt => opt.selected = false);
+            }
+            if (courseSelect) {
+                Array.from(courseSelect.options).forEach(opt => opt.selected = false);
+            }
+            
+            // Update filter trigger buttons
+            const institutionTrigger = document.getElementById('filter-trigger-institution');
+            const instructorTrigger = document.getElementById('filter-trigger-instructor');
+            const courseTrigger = document.getElementById('filter-trigger-course');
+            
+            if (institutionTrigger) institutionTrigger.textContent = 'All institutions';
+            if (instructorTrigger) instructorTrigger.textContent = 'All instructors';
+            if (courseTrigger) courseTrigger.textContent = 'All courses';
+            
+            // Close dropdown panels
+            const institutionPanel = document.getElementById('filter-panel-institution');
+            const instructorPanel = document.getElementById('filter-panel-instructor');
+            const coursePanel = document.getElementById('filter-panel-course');
+            
+            if (institutionPanel) {
+                const dropdown = document.getElementById('filter-dropdown-institution');
+                if (dropdown) dropdown.classList.remove('open');
+                institutionPanel.setAttribute('aria-hidden', 'true');
+            }
+            if (instructorPanel) {
+                const dropdown = document.getElementById('filter-dropdown-instructor');
+                if (dropdown) dropdown.classList.remove('open');
+                instructorPanel.setAttribute('aria-hidden', 'true');
+            }
+            if (coursePanel) {
+                const dropdown = document.getElementById('filter-dropdown-course');
+                if (dropdown) dropdown.classList.remove('open');
+                coursePanel.setAttribute('aria-hidden', 'true');
+            }
+            
+            // Apply filters to refresh view
+            if (typeof applyGlobalFilters === 'function') {
+                applyGlobalFilters();
+            }
+        }
+        
         function clearInstructorFilters() {
             log.debug('🧹 Clearing instructor filters');
             const ic = document.getElementById('instructorFilterCourse');
@@ -11769,7 +12331,13 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             const rubricsWrap = document.getElementById('dashboardRubricsWrap');
             if (rubricsWrap) rubricsWrap.style.display = 'none';
             const analyticsSection = document.getElementById('analyticsSection');
-            if (analyticsSection) analyticsSection.style.display = 'block';
+            if (analyticsSection) {
+                analyticsSection.style.display = 'block';
+                // Initialize analytics filters state when section is shown
+                if (typeof initAnalyticsFiltersState === 'function') {
+                    setTimeout(() => initAnalyticsFiltersState(), 100);
+                }
+            }
             
             const overviewAllWrap = document.getElementById('overviewAllInstitutionsWrap');
             const overviewDeptWrap = document.getElementById('overviewDepartmentCoursesWrap');
@@ -12147,6 +12715,18 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             const { data: { session } } = await supabaseClient.auth.getSession();
             const currentPath = window.location.pathname;
             
+            // Check for demo mode FIRST, regardless of authentication status
+            // This ensures the landing page iframe always shows demo, even if user is logged in
+            if (window.location.hash === '#demo' && 
+                (currentPath === '/app' || currentPath.startsWith('/dashboard') || 
+                 currentPath.startsWith('/evaluate') || currentPath.startsWith('/settings') ||
+                 currentPath.startsWith('/analytics'))) {
+                // Clear the hash and enter demo mode (ignore authentication)
+                window.history.replaceState({}, '', window.location.pathname + window.location.search);
+                enterDemoMode();
+                return;
+            }
+            
             if (session) {
                 currentUser = session.user;
                 console.log('✓ Logged in as:', currentUser.email);
@@ -12438,6 +13018,57 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         }
         
         // Account Dropdown Functions
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const button = document.getElementById('mobileMenuButton');
+            
+            if (!menu || !overlay) return;
+            
+            const isOpen = menu.classList.contains('open');
+            
+            if (isOpen) {
+                menu.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+                if (button) button.setAttribute('aria-expanded', 'false');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 350);
+            } else {
+                overlay.style.display = 'block';
+                menu.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                if (button) button.setAttribute('aria-expanded', 'true');
+                
+                // Update active nav link in mobile menu
+                const activeNav = document.querySelector('.nav-link.active');
+                if (activeNav) {
+                    const navId = activeNav.id;
+                    if (navId === 'navDashboard') {
+                        document.getElementById('mobileNavDashboard')?.classList.add('active');
+                        document.getElementById('mobileNavEvaluate')?.classList.remove('active');
+                    } else if (navId === 'navEvaluate') {
+                        document.getElementById('mobileNavEvaluate')?.classList.add('active');
+                        document.getElementById('mobileNavDashboard')?.classList.remove('active');
+                    }
+                }
+                
+                // Update user name in mobile menu
+                const userDisplay = document.getElementById('userDisplayDropdown');
+                const mobileUserDisplay = document.getElementById('mobileUserDisplay');
+                if (userDisplay && mobileUserDisplay) {
+                    mobileUserDisplay.textContent = userDisplay.textContent || 'User';
+                }
+                
+                // Recreate icons
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons({ root: menu });
+                }
+            }
+        }
+        
         function toggleAccountDropdown() {
             const trigger = document.getElementById('accountDropdownTrigger');
             const menu = document.getElementById('accountDropdownMenu');
@@ -13216,6 +13847,16 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         }
         
         // Expandable Search Functions
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const menu = document.getElementById('mobileMenu');
+                if (menu && menu.classList.contains('open')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+        
         function toggleSearch() {
             const button = document.getElementById('searchIconButton');
             const searchWrap = document.getElementById('accountSearchWrap');
@@ -14428,7 +15069,22 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                 });
             }
+            // Initialize analytics filters state
+            if (typeof initAnalyticsFiltersState === 'function') {
+                initAnalyticsFiltersState();
+            }
+            
             var analyticsGlobalReset = document.getElementById('analyticsGlobalReset');
+            if (analyticsGlobalReset) {
+                // Remove old event listener if any and use the new clearAnalyticsFilters function
+                analyticsGlobalReset.onclick = function() {
+                    if (typeof clearAnalyticsFilters === 'function') {
+                        clearAnalyticsFilters();
+                    }
+                };
+            }
+            
+            // Legacy event listener for backward compatibility
             if (analyticsGlobalReset) analyticsGlobalReset.addEventListener('click', function() {
                 // Reset date range
                 var startEl = document.getElementById('analyticsStartDate');
@@ -14648,6 +15304,22 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                     // Initialize collapsed state from localStorage
                     initRubricsFiltersState();
+                }
+            }
+            
+            // Show/hide analytics filter toolbar (only for insights tab)
+            const analyticsFilterToolbar = document.getElementById('analyticsFiltersToolbar');
+            if (analyticsFilterToolbar) {
+                analyticsFilterToolbar.style.display = tabId === 'insights' ? 'block' : 'none';
+                // Initialize Lucide icons in filter toolbar and collapsed state
+                if (tabId === 'insights') {
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: analyticsFilterToolbar });
+                    }
+                    // Initialize collapsed state from localStorage
+                    if (typeof initAnalyticsFiltersState === 'function') {
+                        setTimeout(() => initAnalyticsFiltersState(), 50);
+                    }
                 }
             }
             
@@ -17238,7 +17910,8 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     tab.setAttribute('aria-selected', selected ? 'true' : 'false');
                     tab.setAttribute('tabindex', selected ? 0 : -1);
                     tab.classList.toggle('analytics-tab-active', selected);
-                    if (selected) tab.focus({ preventScroll: true });
+                    // Don't auto-focus on page load to prevent blue outline
+                    // if (selected) tab.focus({ preventScroll: true });
                 }
             });
             // LLM Export tab removed - moved to Settings → Admin → Data Management
