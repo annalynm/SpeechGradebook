@@ -18586,17 +18586,63 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         };
         
         function getDashboardConfig() {
+            // Check if user is Super Admin first - if so, always use Super Admin config
+            const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
+            const isInstructorOnly = (typeof userTier !== 'undefined' && userTier === 'instructor') || (typeof userTier !== 'undefined' && userTier === 'demo' && typeof demoViewAs !== 'undefined' && demoViewAs === 'instructor');
+            
+            // For Super Admins, check if cached config has business tab, if not, reset to defaults
+            if (isSuperAdminUser) {
+                try {
+                    const raw = typeof getUserItem === 'function' ? getUserItem('dashboard_config') : null;
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed) && parsed.length) {
+                            // Check if business tab exists in cached config
+                            const hasBusinessTab = parsed.some(d => d.id === 'business');
+                            if (!hasBusinessTab) {
+                                console.log('[getDashboardConfig] Super Admin config missing business tab, resetting to defaults');
+                                // Reset to Super Admin defaults
+                                const defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
+                                if (typeof setUserItem === 'function') {
+                                    setUserItem('dashboard_config', JSON.stringify(defaultConfig));
+                                }
+                                return defaultConfig;
+                            }
+                            // Business tab exists, but ensure it's visible
+                            parsed.forEach(function(d) {
+                                if (d.id === 'business') {
+                                    d.visible = true;
+                                }
+                                if (d.visible === undefined) d.visible = true;
+                                if (d.type === 'custom' && d.visible === undefined) d.visible = true;
+                                if (d.id === 'evaluations' && d.name === 'All Evaluations') d.name = 'Evaluations';
+                            });
+                            // Migration: Remove energy tab from analytics if it exists (moved to Settings)
+                            const energyTabIndex = parsed.findIndex(function(d) { return d.id === 'energy'; });
+                            if (energyTabIndex !== -1) {
+                                parsed.splice(energyTabIndex, 1);
+                                if (typeof setUserItem === 'function') {
+                                    setUserItem('dashboard_config', JSON.stringify(parsed));
+                                }
+                            }
+                            return parsed;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('[getDashboardConfig] Error parsing cached config, using defaults:', e);
+                }
+                // No valid cached config, use Super Admin defaults
+                console.log('[getDashboardConfig] Using Super Admin default config');
+                return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
+            }
+            
             // One-time migration: apply tier-specific defaults to existing users
             const migratedKey = 'dashboard_config_migrated_v2';
             if (typeof getUserItem === 'function' && getUserItem(migratedKey) !== '1') {
                 if (typeof setUserItem === 'function') {
                     setUserItem(migratedKey, '1');
-                    const isInstructorOnly = (typeof userTier !== 'undefined' && userTier === 'instructor') || (typeof userTier !== 'undefined' && userTier === 'demo' && typeof demoViewAs !== 'undefined' && demoViewAs === 'instructor');
-                    const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
                     let defaultConfig;
-                    if (isSuperAdminUser) {
-                        defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
-                    } else if (isInstructorOnly) {
+                    if (isInstructorOnly) {
                         defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_INSTRUCTOR));
                     } else {
                         defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG));
@@ -18605,6 +18651,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     return defaultConfig;
                 }
             }
+            
             try {
                 const raw = typeof getUserItem === 'function' ? getUserItem('dashboard_config') : null;
                 if (raw) {
@@ -18627,12 +18674,9 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                 }
             } catch (e) {}
+            
             // Tier-specific defaults: instructor sees Overview, Evaluations, Data Export only; Admin/Super Admin see all tabs
-            const isInstructorOnly = (typeof userTier !== 'undefined' && userTier === 'instructor') || (typeof userTier !== 'undefined' && userTier === 'demo' && typeof demoViewAs !== 'undefined' && demoViewAs === 'instructor');
-            const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
-            if (isSuperAdminUser) {
-                return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
-            } else if (isInstructorOnly) {
+            if (isInstructorOnly) {
                 return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_INSTRUCTOR));
             } else {
                 return JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG));
