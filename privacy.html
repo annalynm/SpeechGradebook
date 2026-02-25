@@ -52,16 +52,97 @@
         <p>Speech Gradebook (“we”, “the application”) is provided for educational use. This policy describes how we handle information in the context of the application.</p>
 
         <h2>Information we collect and use</h2>
-        <p>When you use Speech Gradebook, we store account and usage data necessary to provide the service: your account profile (e.g. name, email, institution), courses, students, rubrics, evaluations, and consent records. Data is stored in a secure database (Supabase) and is used to operate the application, enforce access controls, and support FERPA-compliant audit logging.</p>
+        <p>When you use SpeechGradebook, we store account and usage data necessary to provide the service. This includes:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li><strong>Account information:</strong> Name, email address, institution affiliation, and role (instructor, administrator, student)</li>
+            <li><strong>Course data:</strong> Course names, enrollment information, and course settings</li>
+            <li><strong>Student educational records:</strong> Student names, speech evaluations, grades, rubrics, and feedback (protected under FERPA)</li>
+            <li><strong>Consent records:</strong> Student consent decisions with timestamps for audit purposes</li>
+            <li><strong>Usage data:</strong> System logs, access records, and audit trails for compliance</li>
+        </ul>
+        <p>All data is stored in secure, encrypted databases (Supabase) and is used solely to operate the application, enforce role-based access controls, maintain FERPA-compliant audit logs, and provide the evaluation services you request.</p>
 
-        <h2>Student data</h2>
-        <p>Student data (e.g. names, evaluations) is processed in accordance with FERPA and your institution’s data agreements. Access to student data is logged for compliance. Evaluations for students who have not granted data-use consent are not stored in the cloud when that option is used.</p>
+        <h2>Student data and FERPA compliance</h2>
+        <p>SpeechGradebook is designed to comply with the Family Educational Rights and Privacy Act (FERPA) and your institution's data protection policies. We implement multiple safeguards to protect student educational records.</p>
+
+        <h3>Consent management</h3>
+        <p>Before processing student data, we require explicit consent from students through our consent management system. Students receive secure, unique consent links for each course and can choose to:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li><strong>Consent to data use:</strong> Allows their data to be stored in secure cloud storage and used for grading, platform improvement, research, and potential third-party sharing (subject to your institution's agreements).</li>
+            <li><strong>Decline consent:</strong> Their evaluation data is stored only on the instructor's local device and is not used for research, platform improvement, or third-party sharing. Students can still receive evaluations and grades.</li>
+        </ul>
+        <p>Consent decisions are recorded with timestamps and cannot be modified retroactively, ensuring an auditable record of student choices.</p>
+
+        <h3>Access controls and role-based permissions</h3>
+        <p>Access to student data is strictly controlled through role-based access controls:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li><strong>Instructors:</strong> Can access data only for their own courses and students.</li>
+            <li><strong>Administrators:</strong> Have institution-wide access with appropriate oversight.</li>
+            <li><strong>Super Admins:</strong> Have system-wide access for support and maintenance.</li>
+            <li><strong>Students:</strong> Can access only their own evaluation data.</li>
+        </ul>
+        <p>All access is authenticated through secure authentication (Supabase Auth) and enforced at the database level using Row Level Security (RLS) policies.</p>
+
+        <h3>Audit logging</h3>
+        <p>To maintain FERPA compliance, we log all access to student educational records, including:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Who accessed student data (user identity and role)</li>
+            <li>What data was accessed (specific records, evaluations, courses)</li>
+            <li>When access occurred (timestamps)</li>
+            <li>Actions performed (viewing, editing, exporting)</li>
+        </ul>
+        <p>These audit logs are maintained for compliance purposes and can be reviewed by authorized administrators. Audit logs are stored securely and are not accessible to regular users.</p>
+
+        <h3>Data storage and security</h3>
+        <p>Student data is stored in secure, encrypted databases hosted by Supabase, which provides:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Encryption at rest and in transit</li>
+            <li>Regular security audits and compliance certifications</li>
+            <li>Automated backups and disaster recovery</li>
+            <li>Geographic data residency controls</li>
+        </ul>
+        <p>For students who decline data-use consent, evaluation data can be stored locally on the instructor's device, ensuring no cloud storage of their educational records.</p>
+
+        <h3>Data retention and deletion</h3>
+        <p>Student educational records are retained according to your institution's policies. Instructors and administrators can delete student data at any time, and deletion is permanent and audited. When accounts are deleted, all associated student data is removed from our systems.</p>
+
+        <h3>Third-party data sharing</h3>
+        <p>When students consent to data use, their data may be used for:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Grading and evaluation purposes</li>
+            <li>Platform and AI model improvement</li>
+            <li>Research (with appropriate IRB approval where required)</li>
+            <li>Third-party sharing (subject to your institution's data sharing agreements)</li>
+        </ul>
+        <p>All third-party sharing is subject to your institution's data sharing agreements and FERPA's directory information and research exceptions, as applicable. Students who do not consent will not have their data shared with third parties.</p>
 
         <h2>Third-party services</h2>
         <p>We use Supabase for authentication and database hosting. If you use third-party AI providers (e.g. Google Gemini, OpenAI, Anthropic) for evaluations, their respective privacy policies apply to that usage. API keys you enter are stored locally in your browser and are not sent to our servers except as needed to call those providers when you run an evaluation.</p>
 
-        <h2>Your choices</h2>
-        <p>You can manage consent settings in the application. For questions about your data or this policy, contact your institution or the support email listed in the application.</p>
+        <h2>Your rights and choices</h2>
+        <h3>Student rights under FERPA</h3>
+        <p>Under FERPA, students have the right to:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Inspect and review their educational records</li>
+            <li>Request corrections to inaccurate or misleading information</li>
+            <li>Control disclosure of their educational records (subject to FERPA exceptions)</li>
+            <li>File complaints with the U.S. Department of Education regarding FERPA violations</li>
+        </ul>
+        <p>Students can access their own evaluation data through the application and can request corrections through their instructor or institution.</p>
+
+        <h3>Consent management</h3>
+        <p>Students can manage their data-use consent through secure consent links provided by their instructors. Consent decisions are recorded and can be reviewed, though they cannot be retroactively changed to ensure audit integrity.</p>
+
+        <h3>Data access and deletion</h3>
+        <p>Instructors and administrators can access, export, and delete student data through the application's administrative functions. All data access and deletion actions are logged for audit purposes.</p>
+
+        <h3>Questions and concerns</h3>
+        <p>For questions about your data, this privacy policy, or FERPA compliance, please contact:</p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Your institution's designated FERPA compliance officer</li>
+            <li>SpeechGradebook support at <a href="/contact">speechgradebook@proton.me</a></li>
+        </ul>
+        <p>If you believe your FERPA rights have been violated, you may file a complaint with the U.S. Department of Education's Family Policy Compliance Office.</p>
 
         <a href="index.html" class="back">← Back to Speech Gradebook</a>
     </div>

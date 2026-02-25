@@ -1,18 +1,50 @@
 # SpeechGradebook – Key Commands
 
-Quick reference for common tasks. Run from your machine (not inside Modal/ISAAC).
+Quick reference for common tasks.
 
 ---
 
 ## 1. Access the repo
 
 ```bash
-cd "/Users/annamcclure/SpeechGradebook Repo"
+cd /Users/annamcclure/SpeechGradebook
 ```
 
 ---
 
-## 2. Push to GitHub
+## 2. Development Workflow
+
+### Push to Development Branch
+
+Work on the `develop` branch and push changes:
+
+```bash
+git checkout develop
+git add .
+git commit -m "Your commit message"
+git push origin develop
+```
+
+This automatically deploys to the development site on Render.
+
+### Merge to Main (Production)
+
+When ready to deploy to production:
+
+```bash
+git checkout main
+git pull origin main
+git merge develop
+git push origin main
+```
+
+This automatically deploys to the production site on Render.
+
+**Note:** Always test on the development site before merging to main.
+
+---
+
+## 3. Push to GitHub (Alternative Method)
 
 From the repo root:
 
@@ -30,14 +62,14 @@ Or pass the message on the command line:
 
 ---
 
-## 3. Launch Modal (Qwen video evaluation)
+## 4. Launch Modal (Qwen video evaluation)
 
 **First-time setup:** `modal setup` (authenticate in browser).
 
 **Deploy (permanent URL):**
 
 ```bash
-cd "/Users/annamcclure/SpeechGradebook Repo"
+cd /Users/annamcclure/SpeechGradebook
 modal deploy llm_training/qwen_modal.py
 ```
 
@@ -46,7 +78,7 @@ Copy the URL Modal prints and set `QWEN_API_URL` on Render.
 **Dev mode (temporary URL for testing):**
 
 ```bash
-cd "/Users/annamcclure/SpeechGradebook Repo"
+cd /Users/annamcclure/SpeechGradebook
 modal serve llm_training/qwen_modal.py
 ```
 
@@ -54,41 +86,33 @@ Stop with Ctrl+C.
 
 ---
 
-## 4. Launch localhost
+## 5. Launch localhost (Development)
 
 From the repo root:
 
 ```bash
-./run_local.sh
+./run_local_dev.sh
 ```
 
 Opens http://localhost:8000 (or the port in `$PORT`).
 
+Uses development Supabase project (configured in `.env` file).
+
 Press Ctrl+C to stop.
+
+**Note:** Make sure `.env` file exists with your development Supabase credentials. See `docs/DEVELOPMENT_SETUP.md` for setup.
 
 ---
 
-## 5. Kill port 8000 (when localhost is stuck)
+## 6. Kill port 8000 (when localhost is stuck)
 
-If `./run_local.sh` fails because port 8000 is already in use:
+If `./run_local_dev.sh` fails because port 8000 is already in use:
 
 ```bash
 ./scripts/kill_port_8000.sh
 ```
 
-Then run `./run_local.sh` again.
-
----
-
-## 6. Connect ISAAC + Qwen (campus GPU alternative to Modal)
-
-Use ISAAC campus GPU instead of Modal for Qwen video evaluation. Double‑click **`Connect_ISAAC_Qwen.command`** in the repo root, or from Terminal:
-
-```bash
-./scripts/connect_isaac_qwen.sh
-```
-
-You’ll be prompted for ISAAC password and Duo. Copy the Cloudflare tunnel URL from the banner and set it as `QWEN_API_URL` on Render.
+Then run `./run_local_dev.sh` again.
 
 ---
 

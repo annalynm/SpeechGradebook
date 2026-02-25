@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center — SpeechGradebook</title>
+    <link href="https://fonts.bunny.net/css?family=Crimson+Pro:400,600,700|Work+Sans:400,500,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #142940;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --bg: #fafbfc;
+            --card: #ffffff;
+            --border: #e1e8ed;
+            --heading-font: 'Crimson Pro', serif;
+            --body-font: 'Work Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--body-font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 2rem 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+        h1 { font-family: var(--heading-font); font-size: 1.75rem; color: var(--primary); margin-bottom: 0.5rem; }
+        h2 { font-family: var(--heading-font); font-size: 1.5rem; color: var(--primary); margin: 2rem 0 1rem 0; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+        h3 { font-family: var(--heading-font); font-size: 1.25rem; color: var(--primary); margin: 1.5rem 0 0.75rem 0; }
+        h4 { font-family: var(--heading-font); font-size: 1.1rem; color: var(--primary); margin: 1.25rem 0 0.5rem 0; }
+        .meta { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        p { margin-bottom: 1rem; }
+        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+        a { color: var(--primary); text-decoration: underline; }
+        a:hover { opacity: 0.9; }
+        .back { display: inline-block; margin-top: 1.5rem; }
+        .user-type-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        .user-type-badge.admin { background: #fef3c7; color: #92400e; }
+        .user-type-badge.super-admin { background: #fce7f3; color: #831843; }
+        code {
+            background: #f1f4f7;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .tip {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+        }
+        .tip strong { color: #15803d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Help Center</h1>
+        <p class="meta">SpeechGradebook Support Documentation — Organized by User Type</p>
+
+        <p>Welcome to the SpeechGradebook Help Center. This documentation is organized by user role to help you find the information you need quickly.</p>
+
+        <h2>Getting Started</h2>
+        <p>New to SpeechGradebook? Follow these steps to run your first evaluation in minutes.</p>
+
+        <h3>Step 1: Set up a course and rubric</h3>
+        <ol>
+            <li>Go to <strong>Dashboard → Courses</strong> and select <strong>New Course</strong>.</li>
+            <li>Enter the course name, term, year, and modality, then save.</li>
+            <li>Add students to the course using the roster tool.</li>
+            <li>Go to <strong>Dashboard → Rubrics</strong>. Select an existing rubric or create a new one.
+                <div class="tip"><strong>Tip:</strong> You can import a rubric from a PDF, image, Google Sheet, or Excel file using <strong>Import Rubric from File</strong>.</div>
+            </li>
+        </ol>
+
+        <h3>Step 2: Run an evaluation</h3>
+        <ol>
+            <li>Select <strong>Evaluate Speech</strong> in the navigation bar.</li>
+            <li>Upload the student's recording. Supported formats: MP3, MP4, MOV, WAV, M4A, WebM. Files over 50 MB are compressed automatically.</li>
+            <li>Select a course, student, and rubric.</li>
+            <li>Select <strong>Continue to Evaluation</strong>. The SpeechGradebook Model analyzes the recording against your rubric criteria.</li>
+            <li>Review the results. You can download a PDF report or email the student directly from the results screen.</li>
+        </ol>
+        <p style="color: var(--text-light); font-size: 0.9rem;">Evaluations are processed by the SpeechGradebook Model, a fine-tuned version of Qwen running on Modal. No external API key is required.</p>
+
+        <h3>Step 3: Collect student consent</h3>
+        <p>Before storing evaluations in the cloud, students must give consent. Go to <strong>Settings → Consent</strong> to generate a consent link for your course. Share the link with students — they complete a short form, and their status updates automatically. Evaluations for students who haven't consented remain local only.</p>
+
+        <h3>Step 4: Review course insights</h3>
+        <p>After running several evaluations, go to <strong>Dashboard → Course Insights</strong> to see score trends, category breakdowns, and comparisons across students. Use the <strong>Export</strong> tab to download data.</p>
+
+        <h2>For Instructors</h2>
+        <p>Complete guide to using SpeechGradebook for course evaluation and student feedback.</p>
+
+        <h3>Navigation</h3>
+        <p>The navigation bar provides access to all major areas of the app:</p>
+        <ul>
+            <li><strong>Evaluate Speech</strong> — Upload a recording and run an evaluation.</li>
+            <li><strong>Dashboard</strong> — Manage courses, rubrics, and analytics. Includes Courses, Rubrics, and Course Insights tabs.</li>
+            <li><strong>Settings</strong> — Configure consent settings and account preferences.</li>
+            <li><strong>Support</strong> — Access this documentation area.</li>
+        </ul>
+
+        <h3>Running an evaluation</h3>
+        <p>The evaluation flow is a step-by-step wizard:</p>
+        <ol>
+            <li><strong>Upload</strong> — Select an audio or video file. Videos over 50 MB are compressed automatically before submission.</li>
+            <li><strong>Course, student, and rubric</strong> — Select existing entries or create new ones inline.</li>
+            <li><strong>Evaluate</strong> — Select <strong>Continue to Evaluation</strong>. The SpeechGradebook Model analyzes the recording against your rubric criteria.</li>
+            <li><strong>Results</strong> — Review scores and AI feedback by category. Download a PDF report or email results to the student.</li>
+        </ol>
+        <p style="color: var(--text-light); font-size: 0.9rem;">Supported formats: MP3, MP4, MOV/QuickTime, WAV, M4A, WebM.</p>
+
+        <h3>Editing an evaluation</h3>
+        <p>You can edit any saved evaluation to adjust scores, grades, or comments:</p>
+        <ol>
+            <li>Go to a student's evaluations and open the evaluation you want to change.</li>
+            <li>Select <strong>Edit</strong> from the evaluation menu (•••).</li>
+            <li>The evaluation opens in editing mode. The video or audio player stays visible as you scroll so you can review the recording while making changes.</li>
+            <li>For each criterion, select a letter grade (A–F) or enter a point value directly. Grades and points stay in sync automatically.</li>
+            <li>Add per-criterion comments in the <strong>Comments</strong> field below each row, and section-level notes in the <strong>Section Notes</strong> area.</li>
+            <li>Add timeline markers by double-clicking the video at a moment you want to annotate.</li>
+            <li>Save your changes when finished.</li>
+        </ol>
+
+        <h3>Managing courses and students</h3>
+        <ul>
+            <li><strong>Creating courses:</strong> Go to Dashboard → Courses → New Course. Enter course details and save.</li>
+            <li><strong>Adding students:</strong> Open a course and use the roster tool to add students individually or import from a CSV file.</li>
+            <li><strong>Managing rubrics:</strong> Create custom rubrics in Dashboard → Rubrics, or import from files (PDF, image, spreadsheet).</li>
+        </ul>
+
+        <h3>Student consent management</h3>
+        <p>FERPA compliance requires student consent before storing evaluations in the cloud:</p>
+        <ol>
+            <li>Go to <strong>Settings → Consent</strong>.</li>
+            <li>Select a course and generate a consent link.</li>
+            <li>Share the link with students via email or your LMS.</li>
+            <li>Students complete a short consent form. Their status updates automatically in your dashboard.</li>
+            <li>Evaluations for students who haven't consented remain stored locally only.</li>
+        </ol>
+
+        <h3>Exporting and sharing results</h3>
+        <ul>
+            <li><strong>PDF reports:</strong> Download evaluation results as PDF from the results screen.</li>
+            <li><strong>Email to students:</strong> Send evaluation results directly to students from the results screen.</li>
+            <li><strong>Data export:</strong> Export course data from Dashboard → Course Insights → Export tab.</li>
+        </ul>
+
+        <h3>Undo and recover deleted items</h3>
+        <ul>
+            <li><strong>Right after a delete:</strong> A toast appears with an <strong>Undo</strong> button for a few seconds. Use it to restore the student, evaluation, or course you just removed.</li>
+            <li><strong>Already deleted:</strong> Open <strong>Settings → General</strong> and click <strong>Recover deleted items</strong> to see students, evaluations, and courses you've removed and restore them.</li>
+        </ul>
+
+        <h2>For Administrators <span class="user-type-badge admin">Admin</span></h2>
+        <p>Administrators have access to department- and institution-wide views and management tools.</p>
+
+        <h3>Admin dashboard features</h3>
+        <ul>
+            <li><strong>View all courses:</strong> Access <strong>Settings → Admin</strong> to view and filter all courses across your institution.</li>
+            <li><strong>Course Insights:</strong> See department- and institution-wide analytics with instructor filters.</li>
+            <li><strong>User management:</strong> View and manage user accounts within your institution.</li>
+        </ul>
+
+        <h3>Institution-wide analytics</h3>
+        <p>Admins can access expanded analytics in <strong>Dashboard → Course Insights</strong>:</p>
+        <ul>
+            <li>Department-wide score trends and comparisons</li>
+            <li>Instructor-level filtering and analysis</li>
+            <li>Institution-wide data exports</li>
+            <li>Cross-course performance metrics</li>
+        </ul>
+
+        <h3>User approval workflow</h3>
+        <p>If your institution uses the approval workflow:</p>
+        <ol>
+            <li>New users sign up with a .edu email address.</li>
+            <li>They must confirm their email address.</li>
+            <li>Their account status is set to "pending approval."</li>
+            <li>Super Admins approve or reject requests in <strong>Settings → Admin → User management</strong>.</li>
+            <li>You'll receive Slack notifications (if configured) when new users request access.</li>
+        </ol>
+
+        <h2>For Super Admins <span class="user-type-badge super-admin">Super Admin</span></h2>
+        <p>Super Admins have system-wide access for configuration, management, and support.</p>
+
+        <h3>Institution management</h3>
+        <ul>
+            <li><strong>Create and configure institutions:</strong> Set up new institutions, configure settings, and manage institution-level preferences.</li>
+            <li><strong>Global settings:</strong> Manage system-wide settings and configurations.</li>
+            <li><strong>Institution themes:</strong> Configure custom branding and themes for institutions.</li>
+        </ul>
+
+        <h3>User management</h3>
+        <p>Super Admins can manage all users across all institutions:</p>
+        <ul>
+            <li><strong>Approve/reject signups:</strong> Review and approve pending user requests in <strong>Settings → Admin → User management</strong>.</li>
+            <li><strong>Manage user roles:</strong> Assign Admin, Instructor, or Super Admin roles to users.</li>
+            <li><strong>Account tiers:</strong> Manage subscription tiers and quotas for users.</li>
+            <li><strong>User search and filtering:</strong> Find users by name, email, institution, or role.</li>
+        </ul>
+
+        <h3>System administration</h3>
+        <ul>
+            <li><strong>Analytics and reporting:</strong> Access system-wide analytics and usage reports.</li>
+            <li><strong>LLM training data export:</strong> Export evaluation data for model training (requires both student and instructor consent).</li>
+            <li><strong>Database management:</strong> Access database tools and maintenance functions.</li>
+            <li><strong>Incident response:</strong> Monitor system health and respond to incidents.</li>
+        </ul>
+
+        <h3>Signup approval and notifications</h3>
+        <p>Configure Slack notifications for new signup requests:</p>
+        <ol>
+            <li>Create a Slack Incoming Webhook in your Slack workspace.</li>
+            <li>Set the <code>SLACK_SIGNUP_WEBHOOK_URL</code> environment variable on your server.</li>
+            <li>You'll receive notifications when non-invited users complete registration.</li>
+            <li>Approve or reject requests in <strong>Settings → Admin → User management</strong>.</li>
+        </ol>
+
+        <h3>LLM training data export</h3>
+        <p>Super Admins can export evaluation data for model training:</p>
+        <ul>
+            <li>Go to <strong>Analytics → Evaluations</strong> (or the <strong>LLM Export</strong> tab).</li>
+            <li>Click <strong>Download for LLM training</strong> to export consented evaluations.</li>
+            <li>Only evaluations with both student data-use consent and instructor LLM training consent are included.</li>
+            <li>Export includes transcripts, rubrics, scores, feedback, and video URLs.</li>
+        </ul>
+
+        <h2>Technical Reference</h2>
+        <p>Technical information about data management, security, and system architecture.</p>
+
+        <h3>Data management and security</h3>
+        <p>SpeechGradebook uses <strong>Supabase</strong> for authentication and cloud storage. All data is stored per institution with row-level security (RLS) — each user can only access data their role permits.</p>
+        <ul>
+            <li><strong>Authentication:</strong> Supabase Auth handles user authentication and session management.</li>
+            <li><strong>Database:</strong> PostgreSQL database with Row Level Security policies enforcing access controls.</li>
+            <li><strong>Storage:</strong> Supabase Storage for video and audio files, with FERPA-compliant access controls.</li>
+            <li><strong>Encryption:</strong> Data encrypted at rest and in transit.</li>
+        </ul>
+
+        <h3>FERPA compliance</h3>
+        <p>SpeechGradebook is designed to comply with FERPA requirements:</p>
+        <ul>
+            <li><strong>Consent management:</strong> Students must consent before data is stored in the cloud.</li>
+            <li><strong>Access controls:</strong> Role-based access with Row Level Security policies.</li>
+            <li><strong>Audit logging:</strong> All access to student data is logged for compliance.</li>
+            <li><strong>Data retention:</strong> Data can be deleted at any time by authorized users.</li>
+        </ul>
+        <p>See our <a href="/privacy">Privacy Policy</a> for detailed information about FERPA compliance and data management.</p>
+
+        <h3>AI evaluation model</h3>
+        <p>Evaluations are processed by the SpeechGradebook Model, a fine-tuned version of Qwen running on Modal:</p>
+        <ul>
+            <li><strong>No API keys required:</strong> The model is hosted and managed by SpeechGradebook.</li>
+            <li><strong>Processing time:</strong> Typically 60-90 seconds per evaluation.</li>
+            <li><strong>Supported formats:</strong> Audio (MP3, WAV, M4A) and video (MP4, MOV, WebM).</li>
+            <li><strong>Model training:</strong> The model is continuously improved using consented evaluation data.</li>
+        </ul>
+
+        <h3>System requirements</h3>
+        <ul>
+            <li><strong>Browsers:</strong> Modern browsers (Chrome, Firefox, Safari, Edge) with JavaScript enabled.</li>
+            <li><strong>File formats:</strong> MP3, MP4, MOV, WAV, M4A, WebM for recordings.</li>
+            <li><strong>File size:</strong> Files over 50 MB are automatically compressed before upload.</li>
+            <li><strong>Internet connection:</strong> Required for cloud storage and AI evaluation.</li>
+        </ul>
+
+        <h3>Troubleshooting</h3>
+        <h4>Common issues</h4>
+        <ul>
+            <li><strong>Upload fails:</strong> Check file format and size. Try compressing large files before upload.</li>
+            <li><strong>Evaluation timeout:</strong> Very long recordings may take longer. Wait a few minutes and refresh.</li>
+            <li><strong>Can't access data:</strong> Verify your account role and institution permissions.</li>
+            <li><strong>Consent link not working:</strong> Ensure the link hasn't expired and was generated for the correct course.</li>
+        </ul>
+
+        <h4>Getting help</h4>
+        <p>If you need additional support:</p>
+        <ul>
+            <li><strong>Contact form:</strong> <a href="/contact">Use our contact form</a> to reach support.</li>
+            <li><strong>Email:</strong> <a href="/contact">speechgradebook@proton.me</a></li>
+            <li><strong>Check logs:</strong> Review browser console for JavaScript errors if experiencing issues.</li>
+        </ul>
+
+        <h2>Contact Us</h2>
+        <p>Need help or have questions? We're here to assist you.</p>
+        <ul>
+            <li><strong><a href="/contact">Contact Form</a></strong> — Submit a support request, sales inquiry, or general question</li>
+            <li><strong>Email:</strong> <a href="/contact">speechgradebook@proton.me</a></li>
+            <li><strong>Response time:</strong> We aim to respond to all inquiries within 5 business days</li>
+        </ul>
+        <p>For urgent issues or technical problems, please use the contact form and select "Support Request" as the subject.</p>
+
+        <h2>Additional Resources</h2>
+        <ul>
+            <li><a href="/contact">Contact Us</a> — Get in touch with our support team</li>
+            <li><a href="/privacy">Privacy Policy</a> — Information about data management and FERPA compliance</li>
+            <li><a href="/accessibility">Accessibility Statement</a> — WCAG 2.1 compliance and accessibility features</li>
+            <li><a href="/terms">Terms of Service</a> — Terms and conditions for using SpeechGradebook</li>
+            <li><a href="/landing">Product Information</a> — Learn more about SpeechGradebook features</li>
+        </ul>
+
+        <a href="index.html" class="back">← Back to SpeechGradebook</a>
+    </div>
+</body>
+</html>

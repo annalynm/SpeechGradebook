@@ -7,8 +7,19 @@ Usage (from repo root):
 
 After deploy, set QWEN_API_URL on Render to the Modal URL (e.g. https://annalynm--qwen-speechgradebook.modal.run).
 
+**RECOMMENDED: RunPod Alternative (80% cost savings)**
+For cost-effective deployment, consider using RunPod instead:
+- RunPod A100: $0.39-0.79/hour vs Modal $4-5/hour
+- Cost per evaluation: $0.01-0.03 (RunPod) vs $0.05-0.15 (Modal)
+- See llm_training/qwen_runpod.py for RunPod deployment (if created)
+
 Textbook RAG: Disabled on Modal by default (DISABLE_TEXTBOOK_RAG=1) to avoid OOM.
 To enable: remove DISABLE_TEXTBOOK_RAG from .env() above, create secret, then deploy.
+
+**Cost Tracking:**
+- Modal A100: ~$0.00125/second ($4-5/hour)
+- RunPod A100: ~$0.000165/second ($0.39-0.79/hour)
+- Cost is automatically tracked in app.py based on QWEN_API_URL provider
 """
 
 from pathlib import Path

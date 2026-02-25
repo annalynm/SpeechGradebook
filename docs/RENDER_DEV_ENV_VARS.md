@@ -10,8 +10,11 @@ These are **required** for the app to work. Without them, login will fail.
 |----------|-------------|-----------------|---------|
 | `SUPABASE_URL` | **Development** Supabase project URL | Development Supabase Dashboard → Settings → API → Project URL | `https://xxxx-dev.supabase.co` |
 | `SUPABASE_ANON_KEY` | **Development** Supabase anon/public key | Development Supabase Dashboard → Settings → API → anon public key | `eyJhbGc...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Development** Supabase service role key | Development Supabase Dashboard → Settings → API → service_role key | `eyJhbGc...` |
 
 **⚠️ CRITICAL:** Use your **DEVELOPMENT** Supabase project credentials, NOT production!
+
+**Note:** `SUPABASE_SERVICE_ROLE_KEY` is required for backend operations like quota checking and cost tracking. Make sure to use the **service_role** key from your **development** project, not production.
 
 ## Recommended Optional Variables
 
@@ -76,12 +79,15 @@ Only needed if you serve the Mistral model on this service.
 
 ## Minimum Setup
 
-For a basic working development site, you only need:
+For a basic working development site, you need:
 
 ```
 SUPABASE_URL=https://your-dev-project.supabase.co
 SUPABASE_ANON_KEY=your-dev-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-dev-service-role-key-here
 ```
+
+**Note:** `SUPABASE_SERVICE_ROLE_KEY` is required for the quota system and cost tracking features.
 
 ## How to Set in Render
 
@@ -95,6 +101,7 @@ SUPABASE_ANON_KEY=your-dev-anon-key-here
 
 - [ ] `SUPABASE_URL` - Set to **development** project URL
 - [ ] `SUPABASE_ANON_KEY` - Set to **development** anon key
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` - Set to **development** service role key (required for quota system)
 - [ ] `SENTRY_ENVIRONMENT=development` (if using Sentry)
 - [ ] `ALLOWED_ORIGINS` - Include dev site URL (if needed for CORS)
 - [ ] `QWEN_API_URL` - If using Qwen service

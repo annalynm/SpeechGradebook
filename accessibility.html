@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Statement — Speech Gradebook</title>
+    <link href="https://fonts.bunny.net/css?family=Crimson+Pro:400,600,700|Work+Sans:400,500,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #142940;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --bg: #fafbfc;
+            --card: #ffffff;
+            --border: #e1e8ed;
+            --heading-font: 'Crimson Pro', serif;
+            --body-font: 'Work Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--body-font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 2rem 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+        h1 { font-family: var(--heading-font); font-size: 1.75rem; color: var(--primary); margin-bottom: 0.5rem; }
+        h2 { font-family: var(--heading-font); font-size: 1.25rem; color: var(--primary); margin: 1.5rem 0 0.5rem 0; }
+        h3 { font-family: var(--heading-font); font-size: 1.1rem; color: var(--primary); margin: 1.25rem 0 0.5rem 0; }
+        .meta { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        p { margin-bottom: 1rem; }
+        ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+        a { color: var(--primary); text-decoration: underline; }
+        a:hover { opacity: 0.9; }
+        .back { display: inline-block; margin-top: 1.5rem; }
+        .compliance-badge {
+            display: inline-block;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Accessibility Statement</h1>
+        <p class="meta">SpeechGradebook — WCAG 2.1 Compliance</p>
+
+        <div class="compliance-badge">WCAG 2.1 Level AA Compliant</div>
+
+        <p>SpeechGradebook is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards to achieve <a href="https://www.w3.org/WAI/WCAG21/quickref/?currentsidebar=%23col_overview&levels=aaa" target="_blank" rel="noopener">WCAG 2.1 Level AA</a> compliance.</p>
+
+        <h2>Our Commitment</h2>
+        <p>We strive to make SpeechGradebook accessible to all users, including those with visual, auditory, motor, and cognitive disabilities. Our accessibility efforts include:</p>
+        <ul>
+            <li>Regular accessibility audits and testing</li>
+            <li>User testing with people who have disabilities</li>
+            <li>Continuous improvement based on feedback and best practices</li>
+            <li>Training for our development team on accessibility standards</li>
+        </ul>
+
+        <h2>WCAG 2.1 Level AA Compliance</h2>
+        <p>SpeechGradebook has been designed and developed to meet WCAG 2.1 Level AA standards. Below are the key areas of compliance:</p>
+
+        <h3>Perceivable</h3>
+        <p><strong>Text Alternatives:</strong> All non-text content (images, icons, charts) includes appropriate text alternatives through alt text, ARIA labels, or descriptive text.</p>
+        <ul>
+            <li>Images and icons have descriptive alt attributes</li>
+            <li>Charts and data visualizations include text alternatives and hidden data tables for screen readers</li>
+            <li>Decorative elements are marked with <code>aria-hidden="true"</code></li>
+        </ul>
+
+        <p><strong>Color Contrast:</strong> All text meets WCAG AA contrast requirements (minimum 4.5:1 for normal text, 3:1 for large text).</p>
+        <ul>
+            <li>Body text: 16.6:1 contrast ratio (WCAG AAA)</li>
+            <li>Secondary text: 7.1:1 contrast ratio (WCAG AA)</li>
+            <li>Interactive elements maintain proper contrast in all states</li>
+            <li>Color is never used as the sole means of conveying information</li>
+        </ul>
+
+        <p><strong>Text Resizing:</strong> Text can be resized up to 200% without loss of content or functionality. The interface uses relative units (rem, em) and responsive typography.</p>
+
+        <p><strong>Audio and Video:</strong> Video content includes transcripts, and audio descriptions are provided where necessary. Video players include captions and controls.</p>
+
+        <h3>Operable</h3>
+        <p><strong>Keyboard Navigation:</strong> All functionality is available through keyboard navigation without requiring specific timings for individual keystrokes.</p>
+        <ul>
+            <li>All interactive elements (buttons, links, form controls) are keyboard accessible</li>
+            <li>Logical tab order throughout the interface</li>
+            <li>Keyboard shortcuts are documented and don't conflict with browser or assistive technology shortcuts</li>
+            <li>Charts and data visualizations support full keyboard navigation</li>
+        </ul>
+
+        <p><strong>Focus Indicators:</strong> Clear, visible focus indicators are provided for all interactive elements.</p>
+        <ul>
+            <li>Focus outlines use 2px solid borders with 2px offset</li>
+            <li>Focus states are clearly distinguishable from non-focused states</li>
+            <li>Focus order follows a logical sequence</li>
+        </ul>
+
+        <p><strong>Touch Targets:</strong> All interactive elements meet minimum touch target sizes (44x44 pixels) for mobile and tablet users.</p>
+        <ul>
+            <li>Buttons and interactive elements meet Apple HIG (44pt) and Material Design (48dp) standards</li>
+            <li>Spacing between touch targets prevents accidental activation</li>
+            <li>Touch targets are large enough for users with motor disabilities</li>
+        </ul>
+
+        <p><strong>No Seizures:</strong> Content does not include anything that flashes more than three times in any one-second period.</p>
+
+        <p><strong>Motion Sensitivity:</strong> Animations and motion respect user preferences.</p>
+        <ul>
+            <li>Respects <code>prefers-reduced-motion</code> media query</li>
+            <li>Animations can be disabled or reduced for users with motion sensitivity</li>
+            <li>Essential animations are minimal and purposeful</li>
+        </ul>
+
+        <h3>Understandable</h3>
+        <p><strong>Readable:</strong> Text content is readable and understandable.</p>
+        <ul>
+            <li>Language is identified using the <code>lang</code> attribute</li>
+            <li>Unusual words, abbreviations, and technical terms are explained</li>
+            <li>Reading level is appropriate for the target audience</li>
+        </ul>
+
+        <p><strong>Predictable:</strong> The interface operates in predictable ways.</p>
+        <ul>
+            <li>Navigation is consistent throughout the application</li>
+            <li>Components that appear on multiple pages function consistently</li>
+            <li>Changes of context (new windows, focus changes) are initiated only by user request</li>
+            <li>Form validation errors are clearly identified and described</li>
+        </ul>
+
+        <p><strong>Input Assistance:</strong> Forms and inputs provide clear guidance and error handling.</p>
+        <ul>
+            <li>Labels are associated with form controls</li>
+            <li>Required fields are clearly marked</li>
+            <li>Error messages are descriptive and suggest corrections</li>
+            <li>Input errors are identified and described to users</li>
+        </ul>
+
+        <h3>Robust</h3>
+        <p><strong>Compatible:</strong> Content is compatible with current and future assistive technologies.</p>
+        <ul>
+            <li>Valid HTML5 markup with proper semantic structure</li>
+            <li>ARIA attributes used appropriately to enhance accessibility</li>
+            <li>Screen reader announcements for dynamic content updates</li>
+            <li>Compatible with major screen readers (NVDA, JAWS, VoiceOver, TalkBack)</li>
+        </ul>
+
+        <p><strong>Semantic HTML:</strong> Proper use of semantic HTML elements.</p>
+        <ul>
+            <li>Headings (<code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>) create a logical document structure</li>
+            <li>Lists, tables, and forms use appropriate semantic markup</li>
+            <li>Landmark regions (header, nav, main, footer) are properly identified</li>
+            <li>Roles and properties are used to enhance meaning where needed</li>
+        </ul>
+
+        <h2>Assistive Technology Support</h2>
+        <p>SpeechGradebook has been tested with and supports the following assistive technologies:</p>
+        <ul>
+            <li><strong>Screen Readers:</strong> NVDA (Windows), JAWS (Windows), VoiceOver (macOS/iOS), TalkBack (Android)</li>
+            <li><strong>Screen Magnifiers:</strong> ZoomText, Windows Magnifier, browser zoom</li>
+            <li><strong>Voice Control:</strong> Dragon NaturallySpeaking, Windows Speech Recognition, Voice Control (macOS/iOS)</li>
+            <li><strong>Keyboard Navigation:</strong> Full keyboard support without mouse dependency</li>
+            <li><strong>Switch Control:</strong> Compatible with switch control devices</li>
+        </ul>
+
+        <h2>Known Limitations</h2>
+        <p>While we strive to ensure accessibility, there may be some limitations:</p>
+        <ul>
+            <li>Some third-party content or integrations may not fully meet accessibility standards</li>
+            <li>Older browser versions may have limited support for certain accessibility features</li>
+            <li>Video content uploaded by users may not include captions (we encourage instructors to provide captions)</li>
+        </ul>
+        <p>We are actively working to address these limitations and improve accessibility across all features.</p>
+
+        <h2>Feedback and Reporting Issues</h2>
+        <p>We welcome feedback on the accessibility of SpeechGradebook. If you encounter accessibility barriers or have suggestions for improvement, please contact us:</p>
+        <ul>
+            <li><strong>Email:</strong> <a href="/contact">speechgradebook@proton.me</a></li>
+            <li><strong>Contact Form:</strong> <a href="/contact">Use our contact form</a></li>
+        </ul>
+        <p>When reporting accessibility issues, please include:</p>
+        <ul>
+            <li>The page or feature where you encountered the issue</li>
+            <li>Your device, browser, and assistive technology (if applicable)</li>
+            <li>A description of the problem and any steps to reproduce it</li>
+        </ul>
+        <p>We aim to respond to accessibility feedback within 5 business days and will work with you to address any issues.</p>
+
+        <h2>Accessibility Roadmap</h2>
+        <p>We are committed to continuous improvement of accessibility. Our ongoing efforts include:</p>
+        <ul>
+            <li>Regular accessibility audits using automated and manual testing</li>
+            <li>User testing with people who have disabilities</li>
+            <li>Implementation of WCAG 2.2 guidelines as they become finalized</li>
+            <li>Enhanced screen reader support for complex interactions</li>
+            <li>Improved keyboard navigation for advanced features</li>
+            <li>Better support for voice control and switch devices</li>
+        </ul>
+
+        <h2>Third-Party Content</h2>
+        <p>SpeechGradebook may include content from third-party services (such as video hosting or AI providers). While we strive to work with accessible third-party services, we cannot guarantee the accessibility of all third-party content. If you encounter accessibility issues with third-party content, please report them to us, and we will work with our partners to address them.</p>
+
+        <h2>Standards and Guidelines</h2>
+        <p>Our accessibility efforts are guided by:</p>
+        <ul>
+            <li><a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" rel="noopener">WCAG 2.1 Level AA</a> (Web Content Accessibility Guidelines)</li>
+            <li><a href="https://www.w3.org/WAI/ARIA/" target="_blank" rel="noopener">WAI-ARIA</a> (Accessible Rich Internet Applications)</li>
+            <li><a href="https://developer.apple.com/design/human-interface-guidelines/" target="_blank" rel="noopener">Apple Human Interface Guidelines</a> (for touch targets and interaction patterns)</li>
+            <li><a href="https://www.section508.gov/" target="_blank" rel="noopener">Section 508</a> (U.S. federal accessibility requirements)</li>
+        </ul>
+
+        <h2>Last Updated</h2>
+        <p>This accessibility statement was last updated on January 2026. We review and update this statement regularly to reflect our ongoing accessibility improvements.</p>
+
+        <a href="index.html" class="back">← Back to Speech Gradebook</a>
+    </div>
+</body>
+</html>

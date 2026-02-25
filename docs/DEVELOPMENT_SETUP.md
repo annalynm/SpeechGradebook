@@ -28,9 +28,27 @@ The development environment consists of three deployment targets:
 - Render account (for development site deployment)
 - **Separate Supabase project for development** (recommended)
 
-## Step 1: Create Development Supabase Project
+## Step 1: Create Development Supabase Project/Branch
 
-**IMPORTANT:** Use a separate Supabase project for development to avoid affecting production data.
+**IMPORTANT:** Use a separate Supabase project or database branch for development to avoid affecting production data.
+
+### Option A: Database Branch (Recommended if Available)
+
+Supabase offers **Database Branches** which create isolated copies of your database:
+
+1. Go to your **production Supabase project** dashboard
+2. Navigate to **Database** → **Branches** (or look for "Branches" in the sidebar)
+3. Click **Create Branch** or **New Branch**
+4. Name it `dev` or `development`
+5. Choose to copy from your main branch/production database
+6. Wait for the branch to be created
+7. Switch to the dev branch and go to **Settings → API** to get credentials
+
+**Note:** Database Branches may require a paid Supabase plan. If not available, use Option B.
+
+### Option B: Separate Supabase Project (Alternative)
+
+If Database Branches aren't available, create a separate project:
 
 1. Go to [Supabase Dashboard](https://app.supabase.com)
 2. Click **New Project**
@@ -40,6 +58,9 @@ The development environment consists of three deployment targets:
 6. Go to **Settings → API** and copy:
    - **Project URL** (e.g., `https://xxxx-dev.supabase.co`)
    - **anon public** key (NOT the service_role key)
+   - **service_role** key (needed for backend operations like quota checking)
+
+**See `SUPABASE_DEV_BRANCH_SETUP.md` for detailed setup instructions.**
 
 ### Copy Production Schema (Optional)
 
