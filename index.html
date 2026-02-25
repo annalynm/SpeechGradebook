@@ -12086,7 +12086,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     showPendingApprovalScreen();
                     return;
                 } else if (data) {
-                    userTier = (data.account_tier || currentUser.user_metadata?.account_tier || currentUser.app_metadata?.account_tier) || 'demo';
+                    // If is_super_admin is true, force account_tier to 'super_admin'
+                    if (data.is_super_admin === true) {
+                        userTier = 'super_admin';
+                    } else if (data.is_admin === true) {
+                        userTier = 'admin';
+                    } else {
+                        userTier = (data.account_tier || currentUser.user_metadata?.account_tier || currentUser.app_metadata?.account_tier) || 'demo';
+                    }
+                    
                     currentUser.is_admin = data.is_admin;
                     currentUser.is_super_admin = data.is_super_admin;
                     currentUser.institution_id = data.institution_id;
@@ -12094,6 +12102,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     currentUser.llm_training_consent_given = data.llm_training_consent_given === true;
                     currentUser.full_name = (data.full_name || '').trim() || null;
                     currentInstitution = null; // Load below if needed
+                    
+                    console.log('[loadUserTier] Set userTier:', userTier, 
+                        'is_super_admin:', data.is_super_admin,
+                        'is_admin:', data.is_admin,
+                        'account_tier from DB:', data.account_tier);
                     
                     log.debug('✓ Account tier:', userTier, 
                         data.is_super_admin ? '(Super Admin)' : 
@@ -12150,9 +12163,17 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                         showPendingApprovalScreen();
                         return;
                     }
-                    if (!error && data && data.account_tier && data.account_tier !== 'demo') {
-                        console.log('[loadUserTier] Retry got tier:', data.account_tier);
-                        userTier = data.account_tier;
+                    if (!error && data) {
+                        // If is_super_admin is true, force account_tier to 'super_admin'
+                        if (data.is_super_admin === true) {
+                            userTier = 'super_admin';
+                        } else if (data.is_admin === true) {
+                            userTier = 'admin';
+                        } else if (data.account_tier && data.account_tier !== 'demo') {
+                            userTier = data.account_tier;
+                        }
+                        
+                        console.log('[loadUserTier] Retry got tier:', userTier, 'is_super_admin:', data.is_super_admin);
                         currentUser.is_admin = data.is_admin;
                         currentUser.is_super_admin = data.is_super_admin;
                         currentUser.institution_id = data.institution_id;
