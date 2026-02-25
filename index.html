@@ -9156,7 +9156,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         
         try {
             if (window.supabase) {
-                supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                // Configure Supabase client with options to reduce LockManager issues
+                supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true,
+                        storage: window.localStorage
+                    }
+                });
                 log.debug('✓ Supabase client initialized');
             } else {
                 log.warn('⚠️ Supabase library not loaded - using localStorage fallback');
@@ -9164,6 +9172,27 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         } catch (error) {
             log.error('❌ Supabase initialization failed:', error);
             log.debug('Using localStorage fallback mode');
+        }
+        
+        // Helper function to retry Supabase operations that may fail due to LockManager timeouts
+        async function retrySupabaseOperation(operation, maxRetries = 3, delay = 1000) {
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    return await operation();
+                } catch (error) {
+                    const isLockError = error?.message?.includes('Navigator LockManager') || 
+                                      error?.message?.includes('lock') ||
+                                      error?.message?.includes('timed out');
+                    
+                    if (isLockError && attempt < maxRetries) {
+                        const waitTime = delay * Math.pow(2, attempt - 1); // Exponential backoff
+                        log.debug(`LockManager timeout (attempt ${attempt}/${maxRetries}), retrying in ${waitTime}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                        continue;
+                    }
+                    throw error;
+                }
+            }
         }
         
         // Test Supabase connection
@@ -13131,7 +13160,32 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 return;
             }
             
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            let session = null;
+            try {
+                const result = await retrySupabaseOperation(async () => {
+                    return await supabaseClient.auth.getSession();
+                });
+                session = result?.data?.session || null;
+            } catch (error) {
+                // If LockManager error persists after retries, try to clear and retry once more
+                if (error?.message?.includes('Navigator LockManager') || error?.message?.includes('lock')) {
+                    console.warn('LockManager error, attempting recovery...');
+                    try {
+                        // Wait a bit longer and try one more time
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        const result = await supabaseClient.auth.getSession();
+                        session = result?.data?.session || null;
+                    } catch (retryError) {
+                        console.error('❌ Auth check failed after retries:', retryError);
+                        // Fall through to show auth screen
+                        session = null;
+                    }
+                } else {
+                    console.error('❌ Auth check error:', error);
+                    session = null;
+                }
+            }
+            
             const currentPath = window.location.pathname;
             
             // Check for demo mode FIRST, regardless of authentication status
@@ -14444,9 +14498,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 // Check if "Stay signed in" is checked
                 const staySignedIn = document.getElementById('staySignedIn')?.checked || false;
                 
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
+                const { data, error } = await retrySupabaseOperation(async () => {
+                    return await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
                 });
                 
                 if (error) {
@@ -14542,9 +14598,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             try {
                 // First verify current password by attempting to sign in
-                const { error: signInError } = await supabaseClient.auth.signInWithPassword({
-                    email: currentUser.email,
-                    password: currentPassword
+                const { error: signInError } = await retrySupabaseOperation(async () => {
+                    return await supabaseClient.auth.signInWithPassword({
+                        email: currentUser.email,
+                        password: currentPassword
+                    });
                 });
                 
                 if (signInError) {
