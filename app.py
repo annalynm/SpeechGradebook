@@ -79,7 +79,18 @@ from slowapi.errors import RateLimitExceeded
 import base64
 
 # Import the evaluation API app (model loaded on startup if MODEL_PATH exists)
-from llm_training import serve_model
+try:
+    from llm_training import serve_model
+except ImportError as e:
+    print(f"Warning: Could not import serve_model: {e}")
+    print("API endpoints /api/evaluate* will not be available.")
+    # Create a dummy serve_model object to prevent crashes
+    class DummyServeModel:
+        app = None
+        @staticmethod
+        def load_model_and_tokenizer(*args, **kwargs):
+            pass
+    serve_model = DummyServeModel()
 
 # Initialize Sentry for error monitoring (optional, requires SENTRY_DSN env var)
 try:
@@ -872,27 +883,59 @@ def config_check():
         "SUPABASE_URL_starts_with": url[:30] + "..." if len(url) > 30 else url,
         "SUPABASE_ANON_KEY_set": bool(key),
         "SUPABASE_ANON_KEY_length": len(key),
-        "hint": "Use the anon PUBLIC key from Supabase (Settings → API), not the service_role key."
+        "hint": "Use the anon PUBLIC key from Supabase (Settings → API), not the service_role key.",
+        "files_check": {
+            "index.html": (_this_dir / "index.html").exists(),
+            "landing.html": (_this_dir / "landing.html").exists(),
+            "config.js": (_this_dir / "config.js").exists(),
+            "assets": (_this_dir / "assets").exists(),
+            "working_dir": str(_this_dir)
+        }
+    }
+
+@app.get("/health")
+def health_check():
+    """Simple health check endpoint."""
+    return {
+        "status": "ok",
+        "app": "SpeechGradebook",
+        "files": {
+            "index.html": (_this_dir / "index.html").exists(),
+            "landing.html": (_this_dir / "landing.html").exists(),
+        }
     }
 
 
 @app.on_event("startup")
 def startup():
     """Load the Fine-tuned model if MODEL_PATH is set and exists."""
-    url = _get_env("SUPABASE_URL")
-    key = _get_env("SUPABASE_ANON_KEY")
-    print(f"Supabase config: SUPABASE_URL set={bool(url)}, SUPABASE_ANON_KEY set={bool(key)} (len={len(key)})")
-    model_path = os.environ.get("MODEL_PATH", "./llm_training/mistral7b-speech-lora")
-    base_model = os.environ.get("BASE_MODEL", "mistralai/Mistral-7B-Instruct-v0.2")
-    load_8bit = os.environ.get("LOAD_IN_8BIT", "").lower() in ("1", "true", "yes")
-    if Path(model_path).exists():
-        try:
-            serve_model.load_model_and_tokenizer(model_path, base_model, load_8bit)
-            print("Model loaded.")
-        except Exception as e:
-            print("Model load failed:", e)
-    else:
-        print("MODEL_PATH not set or path missing; /api/evaluate* will return 503 until model is available.")
+    try:
+        url = _get_env("SUPABASE_URL")
+        key = _get_env("SUPABASE_ANON_KEY")
+        print(f"Supabase config: SUPABASE_URL set={bool(url)}, SUPABASE_ANON_KEY set={bool(key)} (len={len(key)})")
+        
+        # Verify critical files exist
+        print(f"Working directory: {_this_dir}")
+        print(f"index.html exists: {(_this_dir / 'index.html').exists()}")
+        print(f"landing.html exists: {(_this_dir / 'landing.html').exists()}")
+        print(f"config.js exists: {(_this_dir / 'config.js').exists()}")
+        print(f"assets directory exists: {(_this_dir / 'assets').exists()}")
+        
+        model_path = os.environ.get("MODEL_PATH", "./llm_training/mistral7b-speech-lora")
+        base_model = os.environ.get("BASE_MODEL", "mistralai/Mistral-7B-Instruct-v0.2")
+        load_8bit = os.environ.get("LOAD_IN_8BIT", "").lower() in ("1", "true", "yes")
+        if Path(model_path).exists():
+            try:
+                serve_model.load_model_and_tokenizer(model_path, base_model, load_8bit)
+                print("Model loaded.")
+            except Exception as e:
+                print(f"Model load failed: {e}")
+        else:
+            print("MODEL_PATH not set or path missing; /api/evaluate* will return 503 until model is available.")
+    except Exception as e:
+        print(f"Startup error: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 # Notify signup (root path so it's never shadowed by /api mount)
@@ -922,7 +965,13 @@ def api_llm_export_status():
 
 
 # API under /api (must be before static so /api/* is handled by the sub-app)
-app.mount("/api", serve_model.app)
+if serve_model.app is not None:
+    app.mount("/api", serve_model.app)
+else:
+    # Fallback if serve_model is not available
+    @app.get("/api/health")
+    def api_health_fallback():
+        return {"status": "error", "detail": "API module not available"}
 
 
 # Direct video upload endpoints (presigned URLs for Supabase Storage)
@@ -1383,7 +1432,14 @@ def serve_root():
     """Serve landing.html for new users finding SpeechGradebook via search."""
     path = _this_dir / "landing.html"
     if not path.exists():
-        return Response(status_code=404)
+        # Fallback to index.html if landing.html doesn't exist
+        path = _this_dir / "index.html"
+        if not path.exists():
+            return Response(
+                status_code=500,
+                content=f"Error: Neither landing.html nor index.html found in {_this_dir}",
+                media_type="text/plain"
+            )
     return FileResponse(
         path,
         media_type="text/html",
@@ -1417,7 +1473,11 @@ def serve_index():
     """Serve index.html (app) for authenticated users."""
     path = _this_dir / "index.html"
     if not path.exists():
-        return Response(status_code=404)
+        return Response(
+            status_code=500,
+            content=f"Error: index.html not found in {_this_dir}",
+            media_type="text/plain"
+        )
     return FileResponse(
         path,
         media_type="text/html",
