@@ -12157,7 +12157,24 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     return;
                 }
                 
-                // Don't redirect from / or /landing - let them see the landing page if they want
+                // If user is on / or /landing, they should see landing.html (served by backend)
+                // If index.html was somehow loaded at /, hide overlay and redirect to ensure landing.html is served
+                if (currentPath === '/' || currentPath === '/landing' || currentPath === '/landing.html') {
+                    // Hide loading overlay - backend should serve landing.html, not index.html
+                    var loadingEl = document.getElementById('authLoadingOverlay');
+                    if (loadingEl) loadingEl.classList.add('hidden');
+                    // If we're here, index.html was loaded incorrectly - redirect to get landing.html
+                    // Use replace to avoid adding to history
+                    if (currentPath === '/' && !sessionStorage.getItem('redirectingFromIndex')) {
+                        sessionStorage.setItem('redirectingFromIndex', 'true');
+                        window.location.replace('/');
+                        return;
+                    } else {
+                        // Clear the flag if we're here again (shouldn't happen if backend serves landing.html correctly)
+                        sessionStorage.removeItem('redirectingFromIndex');
+                    }
+                }
+                
                 // Show main app first so theme and interface apply to it, not the login page (fixes login page color flash and blank admin)
                 showMainApp();
                 await loadUserTier();
@@ -12173,6 +12190,26 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     currentPath.startsWith('/analytics')) {
                     window.location.href = '/login';
                     return;
+                }
+                
+                // If on / or /landing, they should see landing.html (served by backend)
+                // If index.html was somehow loaded, hide overlay and redirect to ensure landing.html is served
+                if (currentPath === '/' || currentPath === '/landing' || currentPath === '/landing.html') {
+                    // Hide loading overlay - backend should serve landing.html, not index.html
+                    var loadingEl = document.getElementById('authLoadingOverlay');
+                    if (loadingEl) loadingEl.classList.add('hidden');
+                    // If we're here, index.html was loaded incorrectly - redirect to get landing.html
+                    // Use replace to avoid adding to history and check for redirect loop
+                    if (currentPath === '/' && !sessionStorage.getItem('redirectingFromIndex')) {
+                        sessionStorage.setItem('redirectingFromIndex', 'true');
+                        window.location.replace('/');
+                        return;
+                    } else {
+                        // Clear the flag if we're here again (shouldn't happen if backend serves landing.html correctly)
+                        sessionStorage.removeItem('redirectingFromIndex');
+                        // Fallback: show auth screen if redirect didn't work
+                        showAuthScreen();
+                    }
                 }
                 
                 // If on /login, show login form
@@ -12200,9 +12237,11 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                             Router.handleRoute();
                         }
                     }
+                } else {
+                    // Fallback: if we're on an unknown path and not logged in, show login screen
+                    console.log('Not logged in on unknown path - showing auth screen');
+                    showAuthScreen();
                 }
-                // If on / or /landing, let them see the landing page (don't redirect)
-                // This allows new users to find the site via search
             }
         }
         
@@ -14221,7 +14260,16 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             testSupabaseConnection();
             
             // Check authentication status (loading overlay hides when this completes)
-            await checkAuth();
+            try {
+                await checkAuth();
+            } catch (error) {
+                console.error('Error in checkAuth:', error);
+                // Ensure loading overlay is hidden even if checkAuth fails
+                var loadingEl = document.getElementById('authLoadingOverlay');
+                if (loadingEl) loadingEl.classList.add('hidden');
+                // Show auth screen as fallback
+                showAuthScreen();
+            }
             
             // Handle URL routing after auth is complete
             if (currentUser && typeof Router !== 'undefined' && Router.handleRoute) {
