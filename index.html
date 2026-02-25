@@ -9313,30 +9313,45 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             if (!originalClient) return null;
             
             // Wrap query builder - intercept execution methods that return promises
+            // But preserve all chainable methods
             function wrapQueryBuilder(query) {
                 if (!query) return query;
                 
-                // Methods that execute queries and return promises
-                const executionMethods = ['select', 'insert', 'update', 'delete', 'upsert'];
-                
-                executionMethods.forEach(method => {
-                    if (typeof query[method] === 'function') {
-                        const originalMethod = query[method].bind(query);
-                        query[method] = function(...args) {
-                            // The original method returns a promise - wrap it with retry logic
-                            const promise = originalMethod(...args);
-                            // Wrap the promise execution with retry
-                            return retrySupabaseOperation(async () => {
-                                return await promise;
-                            });
-                        };
+                // Create a proxy to intercept method calls
+                return new Proxy(query, {
+                    get: function(target, prop) {
+                        const value = target[prop];
+                        
+                        // If it's a function, wrap it
+                        if (typeof value === 'function') {
+                            // Execution methods that return promises - wrap with retry
+                            const executionMethods = ['select', 'insert', 'update', 'delete', 'upsert'];
+                            
+                            if (executionMethods.includes(prop)) {
+                                return function(...args) {
+                                    const promise = value.apply(target, args);
+                                    // Wrap the promise execution with retry
+                                    return retrySupabaseOperation(async () => {
+                                        return await promise;
+                                    });
+                                };
+                            } else {
+                                // Chainable methods - return wrapped query builder
+                                return function(...args) {
+                                    const result = value.apply(target, args);
+                                    // If it returns a query builder, wrap it; otherwise return as-is
+                                    if (result && typeof result === 'object' && result.select) {
+                                        return wrapQueryBuilder(result);
+                                    }
+                                    return result;
+                                };
+                            }
+                        }
+                        
+                        // Non-function properties - return as-is
+                        return value;
                     }
                 });
-                
-                // Chaining methods that return the query builder itself - just pass through
-                // These don't need wrapping as they don't execute
-                
-                return query;
             }
             
             const wrapped = {
