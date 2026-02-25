@@ -12183,6 +12183,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             // Route to appropriate interface (each interface handles its own UI setup)
             await routeToInterface();
             
+            // Re-render dashboard tabs now that user tier is known (so Super Admin sees Business tab)
+            if (typeof renderDashboardTabs === 'function') {
+                renderDashboardTabs();
+                // If we're on the analytics page, make sure the correct tab is shown
+                if (currentAnalyticsTabId && typeof switchAnalyticsTab === 'function') {
+                    switchAnalyticsTab(currentAnalyticsTabId);
+                }
+            }
+            
             // Update user display with name from profile (now that loadUserTier has completed)
             updateUserDisplay();
             
