@@ -5696,8 +5696,8 @@
                 </div>
                 <!-- Platform Analytics (Business Dashboard) - Super Admin only -->
                 <div id="analyticsBusinessTab" data-dashboard-id="business" role="tabpanel" style="display: none;">
-                    <!-- Segmented control header row -->
-                    <div class="biz-seg-wrap" style="margin-bottom: 1.5rem;">
+                    <!-- Segmented control header row - hidden when accessed as primary tabs -->
+                    <div class="biz-seg-wrap" id="bizSegmentedControl" style="display: none; margin-bottom: 1.5rem;">
                         <div class="biz-seg-control" role="tablist" aria-label="Business dashboard sections">
                             <button class="biz-seg-btn active" id="bizBtn-overview"
                                     role="tab" aria-selected="true" aria-controls="bizPanel-overview"
@@ -9989,6 +9989,12 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             // PHASE 5: Reload courses with new filter
             loadFilteredCoursesForSuperAdmin();
+            
+            // Reload business analytics if on a business tab
+            if (typeof isSuperAdmin === 'function' && isSuperAdmin() && 
+                ['overview', 'users', 'usage', 'cost'].includes(currentAnalyticsTabId)) {
+                reloadBusinessAnalyticsWithFilters();
+            }
         }
         
         function onInstructorFilterChange() {
@@ -9997,6 +10003,33 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             // PHASE 5: Reload courses with new filter
             loadFilteredCoursesForSuperAdmin();
+            
+            // Reload business analytics if on a business tab
+            if (typeof isSuperAdmin === 'function' && isSuperAdmin() && 
+                ['overview', 'users', 'usage', 'cost'].includes(currentAnalyticsTabId)) {
+                reloadBusinessAnalyticsWithFilters();
+            }
+        }
+        
+        // Helper function to reload business analytics with current filters
+        function reloadBusinessAnalyticsWithFilters() {
+            if (typeof loadBusinessAnalytics !== 'function') return;
+            const startDate = document.getElementById('analyticsStartDate')?.value || '';
+            const endDate = document.getElementById('analyticsEndDate')?.value || '';
+            const institutionId = document.getElementById('filterInstitution')?.value || '';
+            const instructorId = document.getElementById('filterInstructor')?.value || '';
+            
+            // Clear cache to force reload
+            businessAnalyticsData.cache = null;
+            businessAnalyticsData.cacheTimestamp = null;
+            businessAnalyticsData.cacheFilterKey = null;
+            
+            loadBusinessAnalytics(startDate, endDate, institutionId, instructorId).then(() => {
+                // Re-render current tab
+                if (typeof switchBusinessSubTab === 'function') {
+                    switchBusinessSubTab(_currentBizSubTab || currentAnalyticsTabId);
+                }
+            });
         }
         
         function onYearFilterChange() {
@@ -18598,6 +18631,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         let businessAnalyticsData = {
             cache: null,
             cacheTimestamp: null,
+            cacheFilterKey: null,
             cacheTTL: 5 * 60 * 1000, // 5 minutes
             totals: {
                 activeUsers30d: 0,
@@ -18628,15 +18662,26 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             { id: 'evaluations', name: 'Evaluations', type: 'builtin', visible: true },
             { id: 'export', name: 'Data Export', type: 'builtin', visible: false }
         ];
-        // Super Admin: includes Platform Analytics (business) tab
+        // Super Admin: Business dashboard tabs (Overview, Users, Usage, Cost)
         const DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN = [
             { id: 'overview', name: 'Overview', type: 'builtin', visible: true },
-            { id: 'business', name: 'Platform Analytics', type: 'builtin', visible: true },
-            { id: 'comparisons', name: 'Comparisons', type: 'builtin', visible: true },
-            { id: 'evaluations', name: 'Evaluations', type: 'builtin', visible: true },
+            { id: 'users', name: 'Users', type: 'builtin', visible: true },
+            { id: 'usage', name: 'Usage & Evaluations', type: 'builtin', visible: true },
+            { id: 'cost', name: 'Cost & Energy', type: 'builtin', visible: true },
+            { id: 'comparisons', name: 'Comparisons', type: 'builtin', visible: false },
+            { id: 'evaluations', name: 'Evaluations', type: 'builtin', visible: false },
             { id: 'export', name: 'Data Export', type: 'builtin', visible: false }
         ];
-        const BUILTIN_PANEL_IDS = { overview: 'analyticsOverviewTab', comparisons: 'analyticsComparisonsTab', evaluations: 'analyticsEvaluationsTab', export: 'analyticsExportTab', business: 'analyticsBusinessTab' };
+        const BUILTIN_PANEL_IDS = { 
+            overview: 'analyticsBusinessTab', 
+            users: 'analyticsBusinessTab', 
+            usage: 'analyticsBusinessTab', 
+            cost: 'analyticsBusinessTab',
+            comparisons: 'analyticsComparisonsTab', 
+            evaluations: 'analyticsEvaluationsTab', 
+            export: 'analyticsExportTab', 
+            business: 'analyticsBusinessTab' // Keep for backward compatibility
+        };
         const DEFAULT_OVERVIEW_WIDGETS = [
             { id: 'kpi-row', label: 'KPI cards', visible: true, order: 0 },
             { id: 'chart-outcome', label: 'Outcome attainment by outcome', visible: true, order: 1 },
@@ -18672,17 +18717,20 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
             const isInstructorOnly = (typeof userTier !== 'undefined' && userTier === 'instructor') || (typeof userTier !== 'undefined' && userTier === 'demo' && typeof demoViewAs !== 'undefined' && demoViewAs === 'instructor');
             
-            // For Super Admins, check if cached config has business tab, if not, reset to defaults
+            // For Super Admins, check if cached config has new tab structure, if not, reset to defaults
             if (isSuperAdminUser) {
                 try {
                     const raw = typeof getUserItem === 'function' ? getUserItem('dashboard_config') : null;
                     if (raw) {
                         const parsed = JSON.parse(raw);
                         if (Array.isArray(parsed) && parsed.length) {
-                            // Check if business tab exists in cached config
-                            const hasBusinessTab = parsed.some(d => d.id === 'business');
-                            if (!hasBusinessTab) {
-                                console.log('[getDashboardConfig] Super Admin config missing business tab, resetting to defaults');
+                            // Check if new tab structure exists (users, usage, cost tabs)
+                            const hasNewTabs = parsed.some(d => ['users', 'usage', 'cost'].includes(d.id));
+                            const hasOldBusinessTab = parsed.some(d => d.id === 'business');
+                            
+                            // Migration: If old business tab exists or new tabs missing, reset to defaults
+                            if (hasOldBusinessTab || !hasNewTabs) {
+                                console.log('[getDashboardConfig] Super Admin config needs migration, resetting to defaults');
                                 // Reset to Super Admin defaults
                                 const defaultConfig = JSON.parse(JSON.stringify(DEFAULT_DASHBOARD_CONFIG_SUPER_ADMIN));
                                 if (typeof setUserItem === 'function') {
@@ -18690,10 +18738,12 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                                 }
                                 return defaultConfig;
                             }
-                            // Business tab exists, but ensure it's visible
+                            // New tabs exist, ensure they're visible and comparisons/evaluations are hidden
                             parsed.forEach(function(d) {
-                                if (d.id === 'business') {
+                                if (['overview', 'users', 'usage', 'cost'].includes(d.id)) {
                                     d.visible = true;
+                                } else if (['comparisons', 'evaluations'].includes(d.id)) {
+                                    d.visible = false; // Hide by default
                                 }
                                 if (d.visible === undefined) d.visible = true;
                                 if (d.type === 'custom' && d.visible === undefined) d.visible = true;
@@ -18827,6 +18877,19 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 isVisible = isVisible && isVisible.visible !== false;
                 el.style.display = inConfig && isVisible ? (did === firstVisibleId ? 'block' : 'none') : 'none';
             });
+            
+            // For Super Admins, hide instructor-level Overview content when on business tabs
+            const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
+            if (isSuperAdminUser) {
+                const overviewTab = document.getElementById('analyticsOverviewTab');
+                if (overviewTab) {
+                    // Hide instructor stats and show business content instead
+                    const overviewStats = overviewTab.querySelector('#dashboardOverviewStats');
+                    if (overviewStats) overviewStats.style.display = 'none';
+                    const overviewStatsContainer = overviewTab.querySelector('#overviewStatsContainer');
+                    if (overviewStatsContainer) overviewStatsContainer.style.display = 'none';
+                }
+            }
             customContainer.querySelectorAll('[id^="analyticsPanel_"]').forEach(function(panel) {
                 var did = panel.id.replace('analyticsPanel_', '');
                 var d = config.find(function(c) { return c.id === did; });
@@ -18851,7 +18914,55 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
             panel.style.display = 'block';
             
-            // Handle business analytics tab
+            // Handle business analytics tabs (overview, users, usage, cost)
+            // All map to analyticsBusinessTab panel, but show different sub-panels
+            if (['overview', 'users', 'usage', 'cost'].includes(dashboardId)) {
+                // Hide the segmented control since these are now primary tabs
+                const segControl = document.getElementById('bizSegmentedControl');
+                if (segControl) segControl.style.display = 'none';
+                
+                // For Super Admins, hide instructor-level Overview content when showing business tabs
+                const isSuperAdminUser = typeof isSuperAdmin === 'function' && isSuperAdmin();
+                if (isSuperAdminUser) {
+                    const oldOverviewTab = document.getElementById('analyticsOverviewTab');
+                    if (oldOverviewTab) {
+                        const overviewStats = oldOverviewTab.querySelector('#dashboardOverviewStats');
+                        if (overviewStats) overviewStats.style.display = 'none';
+                        const overviewStatsContainer = oldOverviewTab.querySelector('#overviewStatsContainer');
+                        if (overviewStatsContainer) overviewStatsContainer.style.display = 'none';
+                    }
+                }
+                
+                if (typeof loadBusinessAnalytics === 'function') {
+                    const startDate = document.getElementById('analyticsStartDate')?.value || '';
+                    const endDate = document.getElementById('analyticsEndDate')?.value || '';
+                    const institutionId = document.getElementById('filterInstitution')?.value || '';
+                    const instructorId = document.getElementById('filterInstructor')?.value || '';
+                    
+                    loadBusinessAnalytics(startDate, endDate, institutionId, instructorId).then(() => {
+                        // Switch to appropriate business sub-tab based on dashboardId
+                        if (typeof switchBusinessSubTab === 'function') {
+                            switchBusinessSubTab(dashboardId);
+                        }
+                        // Initialize icons
+                        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                            const businessTab = document.getElementById('analyticsBusinessTab');
+                            if (businessTab) lucide.createIcons({ root: businessTab });
+                        }
+                    });
+                } else {
+                    // Still switch to sub-tab and initialize icons even if data loading fails
+                    if (typeof switchBusinessSubTab === 'function') {
+                        switchBusinessSubTab(dashboardId);
+                    }
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        const businessTab = document.getElementById('analyticsBusinessTab');
+                        if (businessTab) lucide.createIcons({ root: businessTab });
+                    }
+                }
+            }
+            
+            // Handle legacy business tab (for backward compatibility)
             if (dashboardId === 'business') {
                 if (typeof loadBusinessAnalytics === 'function') {
                     const startDate = document.getElementById('analyticsStartDate')?.value || '';
@@ -18866,12 +18977,6 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                             if (businessTab) lucide.createIcons({ root: businessTab });
                         }
                     });
-                } else {
-                    // Still initialize icons even if data loading fails
-                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                        const businessTab = document.getElementById('analyticsBusinessTab');
-                        if (businessTab) lucide.createIcons({ root: businessTab });
-                    }
                 }
             }
             
@@ -20306,13 +20411,17 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         // ===== BUSINESS ANALYTICS (Super Admin only) =====
         
         // Load business analytics data with caching
-        async function loadBusinessAnalytics(startDate, endDate) {
+        async function loadBusinessAnalytics(startDate, endDate, institutionId, instructorId) {
             if (!supabaseClient || !currentUser) return;
             if (typeof isSuperAdmin !== 'function' || !isSuperAdmin()) return;
             
-            // Check cache
+            // Build cache key including filter state
+            const filterKey = `${startDate || ''}_${endDate || ''}_${institutionId || ''}_${instructorId || ''}`;
+            
+            // Check cache (only if no filters applied, or same filters)
             const now = Date.now();
             if (businessAnalyticsData.cache && businessAnalyticsData.cacheTimestamp && 
+                businessAnalyticsData.cacheFilterKey === filterKey &&
                 (now - businessAnalyticsData.cacheTimestamp) < businessAnalyticsData.cacheTTL) {
                 return businessAnalyticsData.cache;
             }
@@ -20346,12 +20455,71 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     activeUsers30d = count || 0;
                 }
                 
-                // Load evaluations this month
-                const { count: evalsThisMonth } = await supabaseClient
+                // Get course IDs to filter by if institution or instructor filter is applied
+                let courseIdsForFilter = null;
+                if (institutionId) {
+                    // Get instructor IDs for this institution
+                    const { data: instInstructors } = await supabaseClient
+                        .from('user_profiles')
+                        .select('id')
+                        .eq('institution_id', institutionId)
+                        .eq('account_tier', 'instructor');
+                    if (instInstructors && instInstructors.length > 0) {
+                        const instructorIds = instInstructors.map(i => i.id);
+                        // Get course IDs for these instructors
+                        const { data: courses } = await supabaseClient
+                            .from('courses')
+                            .select('id')
+                            .in('instructor_id', instructorIds)
+                            .is('deleted_locally_at', null);
+                        if (courses && courses.length > 0) {
+                            courseIdsForFilter = courses.map(c => c.id);
+                        } else {
+                            courseIdsForFilter = []; // No courses, so no evaluations
+                        }
+                    } else {
+                        courseIdsForFilter = []; // No instructors, so no evaluations
+                    }
+                } else if (instructorId) {
+                    // Get course IDs for this instructor
+                    const { data: courses } = await supabaseClient
+                        .from('courses')
+                        .select('id')
+                        .eq('instructor_id', instructorId)
+                        .is('deleted_locally_at', null);
+                    if (courses && courses.length > 0) {
+                        courseIdsForFilter = courses.map(c => c.id);
+                    } else {
+                        courseIdsForFilter = []; // No courses, so no evaluations
+                    }
+                }
+                
+                // Load evaluations this month (with filters)
+                let evalsQuery = supabaseClient
                     .from('evaluations')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', monthStart.toISOString())
                     .is('deleted_locally_at', null);
+                
+                // Apply date range filters if provided
+                if (startDate) evalsQuery = evalsQuery.gte('created_at', startDate);
+                if (endDate) evalsQuery = evalsQuery.lte('created_at', endDate + 'T23:59:59');
+                
+                // Apply course filter if we have course IDs
+                if (courseIdsForFilter !== null) {
+                    if (courseIdsForFilter.length === 0) {
+                        // No courses match filter, so no evaluations
+                        var evalsThisMonth = 0;
+                    } else {
+                        evalsQuery = evalsQuery.in('course_id', courseIdsForFilter);
+                        const { count } = await evalsQuery;
+                        var evalsThisMonth = count || 0;
+                    }
+                } else {
+                    // No filters, count all
+                    const { count } = await evalsQuery;
+                    var evalsThisMonth = count || 0;
+                }
                 
                 // Load platform cost MTD
                 let platformCostMTD = 0;
@@ -20381,17 +20549,36 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     console.debug('MRR column may not exist:', e);
                 }
                 
-                // Load top institutions by evaluation count this month
-                // Simplified query - get evaluations with instructor and institution info
-                const { data: topInstData } = await supabaseClient
+                // Load top institutions by evaluation count this month (with filters)
+                let topInstQuery = supabaseClient
                     .from('evaluations')
                     .select(`
                         instructor_id,
+                        course_id,
                         courses(instructor_id, instructor:user_profiles(institution_id, institution:institutions(id, name)))
                     `)
                     .gte('created_at', monthStart.toISOString())
-                    .is('deleted_locally_at', null)
-                    .limit(500);
+                    .is('deleted_locally_at', null);
+                
+                // Apply date range filters if provided
+                if (startDate) topInstQuery = topInstQuery.gte('created_at', startDate);
+                if (endDate) topInstQuery = topInstQuery.lte('created_at', endDate + 'T23:59:59');
+                
+                // Apply course filter if we have course IDs (from institution/instructor filters)
+                if (courseIdsForFilter !== null) {
+                    if (courseIdsForFilter.length === 0) {
+                        // No courses match filter, so no evaluations
+                        var topInstData = [];
+                    } else {
+                        topInstQuery = topInstQuery.in('course_id', courseIdsForFilter);
+                        const { data } = await topInstQuery.limit(500);
+                        var topInstData = data || [];
+                    }
+                } else {
+                    // No filters, get all
+                    const { data } = await topInstQuery.limit(500);
+                    var topInstData = data || [];
+                }
                 
                 const instCounts = {};
                 if (topInstData) {
@@ -20489,6 +20676,7 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 
                 businessAnalyticsData.cache = businessAnalyticsData;
                 businessAnalyticsData.cacheTimestamp = now;
+                businessAnalyticsData.cacheFilterKey = filterKey;
                 
                 return businessAnalyticsData;
             } catch (error) {
@@ -20507,6 +20695,14 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             const data = businessAnalyticsData;
             const totals = data.totals || {};
+            
+            // Check if filters are active
+            const institutionId = document.getElementById('filterInstitution')?.value || '';
+            const instructorId = document.getElementById('filterInstructor')?.value || '';
+            const startDate = document.getElementById('analyticsStartDate')?.value || '';
+            const endDate = document.getElementById('analyticsEndDate')?.value || '';
+            const hasFilters = institutionId || instructorId || startDate || endDate;
+            const filterLabel = hasFilters ? '<span style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.25rem; display: block;">in filter</span>' : '';
             
             // Render KPI Strip
             const trendChip = (value, label) => {
@@ -20531,24 +20727,28 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 <div class="biz-kpi-card" onclick="switchBusinessSubTab('users')">
                     <div class="biz-kpi-label">Total Active Users (30d)</div>
                     <div class="biz-kpi-value">${fmtNum(totals.activeUsers30d || 0)}</div>
+                    ${filterLabel}
                     <div class="biz-kpi-sub">Core health metric</div>
                     ${trendChip(trends.users, 'vs last 30d')}
                 </div>
                 <div class="biz-kpi-card" onclick="switchBusinessSubTab('usage')">
                     <div class="biz-kpi-label">Evaluations This Month</div>
                     <div class="biz-kpi-value">${fmtNum(totals.evaluationsThisMonth || 0)}</div>
+                    ${filterLabel}
                     <div class="biz-kpi-sub">Primary value delivery</div>
                     ${trendChip(trends.evaluations, 'vs last month')}
                 </div>
                 <div class="biz-kpi-card" onclick="switchBusinessSubTab('cost')">
                     <div class="biz-kpi-label">Platform Cost MTD</div>
                     <div class="biz-kpi-value">${fmtUSD(totals.platformCostMTD || 0)}</div>
+                    ${filterLabel}
                     <div class="biz-kpi-sub">Margin awareness</div>
                     ${trendChip(trends.cost, 'vs last month')}
                 </div>
                 <div class="biz-kpi-card" onclick="switchBusinessSubTab('cost')">
                     <div class="biz-kpi-label">MRR / ARR Estimate</div>
                     <div class="biz-kpi-value">${fmtUSD((totals.mrrEstimate || 0) * 12)}</div>
+                    ${filterLabel}
                     <div class="biz-kpi-sub">Business viability</div>
                     ${trendChip(trends.mrr, 'vs last month')}
                 </div>
@@ -21472,12 +21672,15 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             // Clear cache
             businessAnalyticsData.cache = null;
             businessAnalyticsData.cacheTimestamp = null;
+            businessAnalyticsData.cacheFilterKey = null;
             
             // Reload and re-render current sub-tab
             const startDate = document.getElementById('analyticsStartDate')?.value || '';
             const endDate = document.getElementById('analyticsEndDate')?.value || '';
+            const institutionId = document.getElementById('filterInstitution')?.value || '';
+            const instructorId = document.getElementById('filterInstructor')?.value || '';
             
-            loadBusinessAnalytics(startDate, endDate).then(() => {
+            loadBusinessAnalytics(startDate, endDate, institutionId, instructorId).then(() => {
                 switchBusinessSubTab(_currentBizSubTab);
             });
         }
