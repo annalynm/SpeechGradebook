@@ -9152,30 +9152,50 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
         };
         
         // Custom storage adapter that bypasses LockManager to avoid timeout issues
+        // Supabase expects synchronous storage methods, not async
         class SimpleStorageAdapter {
             constructor(storage) {
                 this.storage = storage;
+                this.cache = {}; // In-memory cache to reduce localStorage access
             }
             
-            async getItem(key) {
+            getItem(key) {
                 try {
-                    return this.storage.getItem(key);
+                    // Check cache first
+                    if (this.cache[key] !== undefined) {
+                        return this.cache[key];
+                    }
+                    // Fall back to storage (synchronous)
+                    const value = this.storage.getItem(key);
+                    // Cache it
+                    if (value !== null) {
+                        this.cache[key] = value;
+                    }
+                    return value;
                 } catch (error) {
                     console.warn('Storage getItem error:', error);
-                    return null;
+                    return this.cache[key] || null;
                 }
             }
             
-            async setItem(key, value) {
+            setItem(key, value) {
                 try {
+                    // Update cache
+                    this.cache[key] = value;
+                    // Update storage (synchronous)
                     this.storage.setItem(key, value);
                 } catch (error) {
                     console.warn('Storage setItem error:', error);
+                    // Still update cache even if storage fails
+                    this.cache[key] = value;
                 }
             }
             
-            async removeItem(key) {
+            removeItem(key) {
                 try {
+                    // Remove from cache
+                    delete this.cache[key];
+                    // Remove from storage (synchronous)
                     this.storage.removeItem(key);
                 } catch (error) {
                     console.warn('Storage removeItem error:', error);
@@ -13481,45 +13501,57 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             
             let session = null;
             try {
-                const result = await retrySupabaseOperation(async () => {
-                    return await supabaseClient.auth.getSession();
-                });
+                // Try to get session - if login just succeeded, the session should be available
+                // Use a shorter timeout for getSession since we just logged in
+                const result = await Promise.race([
+                    supabaseClient.auth.getSession(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Session check timeout')), 5000))
+                ]);
                 session = result?.data?.session || null;
             } catch (error) {
-                // If LockManager error persists after retries, try to clear and retry once more
-                if (error?.message?.includes('Navigator LockManager') || error?.message?.includes('lock')) {
-                    console.warn('LockManager error, attempting recovery...');
-                    try {
-                        // Wait a bit longer and try one more time
-                        await new Promise(resolve => setTimeout(resolve, 2000));
-                        const result = await supabaseClient.auth.getSession();
-                        session = result?.data?.session || null;
-                    } catch (retryError) {
-                        console.error('❌ Auth check failed after retries:', retryError);
-                        // Fall through to show auth screen
+                console.warn('[checkAuth] getSession failed, trying retry logic:', error.message);
+                // If direct call failed, try with retry logic
+                try {
+                    const result = await retrySupabaseOperation(async () => {
+                        return await supabaseClient.auth.getSession();
+                    });
+                    session = result?.data?.session || null;
+                } catch (retryError) {
+                    // If LockManager error persists after retries, try to clear and retry once more
+                    if (retryError?.message?.includes('Navigator LockManager') || retryError?.message?.includes('lock')) {
+                        console.warn('LockManager error, attempting recovery...');
+                        try {
+                            // Wait a bit longer and try one more time
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            const result = await supabaseClient.auth.getSession();
+                            session = result?.data?.session || null;
+                        } catch (finalError) {
+                            console.error('❌ Auth check failed after retries:', finalError);
+                            // Fall through to show auth screen
+                            session = null;
+                        }
+                    } else {
+                        console.error('❌ Auth check error:', retryError);
+                        // If it's a lock error, show user-friendly message
+                        if (retryError?.message?.includes('Navigator LockManager') || retryError?.message?.includes('lock')) {
+                            const errorDiv = document.createElement('div');
+                            errorDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--error-bg, #fee); color: var(--error-text, #c00); padding: 1rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; max-width: 500px; text-align: center;';
+                            errorDiv.innerHTML = `
+                                <strong>Authentication Lock Issue</strong><br>
+                                <p style="margin: 0.5rem 0; font-size: 0.9rem;">Another tab may be using the app. Please:</p>
+                                <ol style="text-align: left; margin: 0.5rem 0; padding-left: 1.5rem; font-size: 0.85rem;">
+                                    <li>Close other tabs with this app</li>
+                                    <li>Or use an incognito/private window</li>
+                                    <li>Or clear browser cache and reload</li>
+                                </ol>
+                                <button onclick="this.parentElement.remove(); location.reload();" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Reload Page</button>
+                            `;
+                            document.body.appendChild(errorDiv);
+                            // Auto-remove after 10 seconds
+                            setTimeout(() => errorDiv.remove(), 10000);
+                        }
                         session = null;
                     }
-                } else {
-                    console.error('❌ Auth check error:', error);
-                    // If it's a lock error, show user-friendly message
-                    if (error?.message?.includes('Navigator LockManager') || error?.message?.includes('lock')) {
-                        const errorDiv = document.createElement('div');
-                        errorDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--error-bg, #fee); color: var(--error-text, #c00); padding: 1rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; max-width: 500px; text-align: center;';
-                        errorDiv.innerHTML = `
-                            <strong>Authentication Lock Issue</strong><br>
-                            <p style="margin: 0.5rem 0; font-size: 0.9rem;">Another tab may be using the app. Please:</p>
-                            <ol style="text-align: left; margin: 0.5rem 0; padding-left: 1.5rem; font-size: 0.85rem;">
-                                <li>Close other tabs with this app</li>
-                                <li>Or use an incognito/private window</li>
-                                <li>Or clear browser cache and reload</li>
-                            </ol>
-                            <button onclick="this.parentElement.remove(); location.reload();" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Reload Page</button>
-                        `;
-                        document.body.appendChild(errorDiv);
-                        // Auto-remove after 10 seconds
-                        setTimeout(() => errorDiv.remove(), 10000);
-                    }
-                    session = null;
                 }
             }
             
