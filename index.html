@@ -1310,12 +1310,28 @@
             outline: 2px solid var(--primary);
             outline-offset: 2px;
         }
+        .analytics-tab-active:focus-visible {
+            outline: none;
+        }
         .analytics-tab-active {
-            border: none;
-            border-bottom: 3px solid var(--primary);
+            border: none !important;
+            border-bottom: 3px solid var(--primary) !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            outline: none !important;
+            box-shadow: none !important;
             color: var(--primary);
             font-weight: 600;
             background: rgba(30, 58, 95, 0.06);
+        }
+        .analytics-tab-active:focus,
+        .analytics-tab-active:focus-visible,
+        .analytics-tab-active:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-bottom: 3px solid var(--primary) !important;
         }
         
         /* Instructor dashboard top-level tabs (Courses | Rubrics | Course Insights) */
@@ -2543,8 +2559,21 @@
         html.theme-utk-torch .analytics-tab-active {
             background: white;
             color: var(--link-blue, #1a73c5);
-            border-color: var(--border);
-            border-bottom: 2px solid white;
+            border: none !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: 2px solid white !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        html.theme-utk-torch .analytics-tab-active:focus,
+        html.theme-utk-torch .analytics-tab-active:focus-visible,
+        html.theme-utk-torch .analytics-tab-active:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-bottom: 2px solid white !important;
         }
         
         /* Progress Steps - Apple HIG: Proper spacing and motion */
@@ -5279,44 +5308,59 @@
             <div id="analyticsSection" style="margin-top: 0; margin-bottom: 2rem;" data-instructor-panel="insights">
                 <div class="card">
                     <div class="card-header text-title" id="analyticsSectionTitle"><span class="icon-with-text"><i data-lucide="bar-chart-2"></i> Course Insights</span></div>
-                    <!-- Global filter bar (Overview / Course Insights) -->
-                    <div id="analyticsGlobalFilterBar" class="global-filter-bar">
-                        <div class="global-filter-bar-row">
-                        <div class="filter-dropdown" id="filter-dropdown-institution" data-select-id="analyticsGlobalInstitution" style="display: none;">
-                            <label class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Institution</label>
-                            <button type="button" class="filter-dropdown-trigger" id="filter-trigger-institution" aria-expanded="false" aria-haspopup="listbox" aria-label="Select institutions" style="min-width: 12rem;">All institutions</button>
-                            <div class="filter-dropdown-panel" id="filter-panel-institution" role="listbox" aria-hidden="true"></div>
-                            <select id="analyticsGlobalInstitution" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All institutions</option></select>
-                        </div>
-                        <div class="filter-dropdown" id="filter-dropdown-instructor" data-select-id="analyticsGlobalInstructor">
-                            <label class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Instructor</label>
-                            <button type="button" class="filter-dropdown-trigger" id="filter-trigger-instructor" aria-expanded="false" aria-haspopup="listbox" aria-label="Select instructors" style="min-width: 12rem;">All instructors</button>
-                            <div class="filter-dropdown-panel" id="filter-panel-instructor" role="listbox" aria-hidden="true"></div>
-                            <select id="analyticsGlobalInstructor" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All instructors</option></select>
-                        </div>
-                        <div class="filter-dropdown" id="filter-dropdown-course" data-select-id="analyticsGlobalCourse">
-                            <label class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Course</label>
-                            <button type="button" class="filter-dropdown-trigger" id="filter-trigger-course" aria-expanded="false" aria-haspopup="listbox" aria-label="Select courses" style="min-width: 12rem;">All courses</button>
-                            <div class="filter-dropdown-panel" id="filter-panel-course" role="listbox" aria-hidden="true"></div>
-                            <select id="analyticsGlobalCourse" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All courses</option></select>
-                        </div>
-                        </div>
-                        <div class="global-filter-bar-row" style="margin-top: 0.75rem;">
-                        <div class="filter-date-range" style="display: flex; flex-direction: column; gap: 0.25rem;">
-                            <span class="filter-dropdown-label" style="font-size: 0.75rem; color: var(--text-light);">Date range</span>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="date" id="analyticsStartDate" aria-label="Start date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();">
-                                <span style="color: var(--text-light); font-size: 0.875rem;">to</span>
-                                <input type="date" id="analyticsEndDate" aria-label="End date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.875rem; min-width: 8rem;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();">
+                    <!-- Compact Filter Toolbar for Course Insights (matches Courses and Rubrics style) -->
+                    <div id="analyticsFiltersToolbar" style="margin-top: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; border: 1px solid var(--border); overflow: hidden;">
+                        <!-- Collapsible Header -->
+                        <button type="button" onclick="toggleAnalyticsFilters()" id="analyticsFiltersToggle" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: transparent; border: none; cursor: pointer; text-align: left; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text);">Filters</span>
+                            <i data-lucide="chevron-down" id="analyticsFiltersChevron" style="width: 1rem; height: 1rem; color: var(--text-light); transition: transform 0.3s ease;"></i>
+                        </button>
+                        
+                        <!-- Collapsible Filter Content -->
+                        <div id="analyticsFiltersContent" style="max-height: 0px; padding: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; padding: 0.75rem;">
+                                <div class="filter-dropdown" id="filter-dropdown-institution" data-select-id="analyticsGlobalInstitution" style="display: none;">
+                                    <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                        <label for="filter-trigger-institution" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Institution:</label>
+                                        <button type="button" class="filter-dropdown-trigger" id="filter-trigger-institution" aria-expanded="false" aria-haspopup="listbox" aria-label="Select institutions" style="min-width: 12rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">All institutions</button>
+                                        <div class="filter-dropdown-panel" id="filter-panel-institution" role="listbox" aria-hidden="true"></div>
+                                        <select id="analyticsGlobalInstitution" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All institutions</option></select>
+                                    </div>
+                                </div>
+                                <div class="filter-dropdown" id="filter-dropdown-instructor" data-select-id="analyticsGlobalInstructor">
+                                    <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                        <label for="filter-trigger-instructor" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Instructor:</label>
+                                        <button type="button" class="filter-dropdown-trigger" id="filter-trigger-instructor" aria-expanded="false" aria-haspopup="listbox" aria-label="Select instructors" style="min-width: 12rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">All instructors</button>
+                                        <div class="filter-dropdown-panel" id="filter-panel-instructor" role="listbox" aria-hidden="true"></div>
+                                        <select id="analyticsGlobalInstructor" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All instructors</option></select>
+                                    </div>
+                                </div>
+                                <div class="filter-dropdown" id="filter-dropdown-course" data-select-id="analyticsGlobalCourse">
+                                    <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                        <label for="filter-trigger-course" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Course:</label>
+                                        <button type="button" class="filter-dropdown-trigger" id="filter-trigger-course" aria-expanded="false" aria-haspopup="listbox" aria-label="Select courses" style="min-width: 12rem; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); transition: border-color 0.2s ease;" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">All courses</button>
+                                        <div class="filter-dropdown-panel" id="filter-panel-course" role="listbox" aria-hidden="true"></div>
+                                        <select id="analyticsGlobalCourse" multiple aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"><option value="">All courses</option></select>
+                                    </div>
+                                </div>
+                                <div class="filter-group" style="display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: column;">
+                                    <label for="analyticsStartDate" style="font-size: 0.875rem; font-weight: 500; color: var(--text); white-space: nowrap; text-align: left;">Date Range:</label>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="date" id="analyticsStartDate" aria-label="Start date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 8rem; cursor: pointer; transition: border-color 0.2s ease;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                        <span style="color: var(--text-light); font-size: 0.875rem;">to</span>
+                                        <input type="date" id="analyticsEndDate" aria-label="End date" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.375rem; font-size: 0.875rem; background: white; color: var(--text); min-width: 8rem; cursor: pointer; transition: border-color 0.2s ease;" onchange="if(typeof applyGlobalFilters==='function') applyGlobalFilters();" onfocus="this.style.borderColor='var(--primary)'; this.style.outline='none'" onblur="this.style.borderColor='var(--border)'">
+                                    </div>
+                                </div>
+                                <div class="filter-group" style="margin-left: auto; align-self: flex-end;">
+                                    <button type="button" id="analyticsGlobalReset" onclick="clearAnalyticsFilters()" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.375rem;" onmouseover="this.style.backgroundColor='var(--bg-alt)'" onmouseout="this.style.backgroundColor='white'" aria-label="Reset filters">
+                                        <i data-lucide="x" style="width:0.875rem;height:0.875rem;"></i> Clear Filters
+                                    </button>
+                                </div>
                             </div>
+                            <div id="activeFiltersDisplay" style="display: none; flex-wrap: wrap; gap: 0.5rem; padding: 0 0.75rem 0.75rem 0.75rem;"></div>
+                            <div id="analyticsFilterHint" style="display: none; margin: 0 0.75rem 0.75rem 0.75rem; padding: 0.75rem 1rem; background: var(--bg-alt); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.85rem; color: var(--text);"></div>
+                            <div id="analyticsLastUpdated" class="last-updated" style="padding: 0 0.75rem 0.75rem 0.75rem; font-size: 0.75rem; color: var(--text-light);"></div>
                         </div>
-                        </div>
-                        <div class="global-filter-bar-row" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; position: relative; z-index: 1;">
-                            <button type="button" id="analyticsGlobalReset" class="btn-secondary" style="padding: 10px 16px; font-size: 0.875rem; min-width: 80px; box-sizing: border-box; border-radius: 980px; position: relative; z-index: 1;" aria-label="Reset filters">Reset</button>
-                            <span id="analyticsLastUpdated" class="last-updated" style="align-self: center;"></span>
-                        </div>
-                        <div id="activeFiltersDisplay" style="display: none; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border);"></div>
-                        <div id="analyticsFilterHint" style="display: none; margin-top: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-alt); border-radius: 0.5rem; border-left: 4px solid var(--primary); font-size: 0.85rem; color: var(--text);"></div>
                     </div>
                 <div style="display: flex; align-items: flex-end; gap: 0.5rem; margin-top: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); flex-wrap: wrap; position: relative; z-index: 2;">
                     <div id="analyticsTablist" role="tablist" class="analytics-tablist" style="display: flex; gap: 0.5rem; overflow: visible; flex: 1; min-width: 0;"></div>
@@ -10105,6 +10149,155 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             }
         }
         
+        // Toggle analytics filters collapse/expand
+        function toggleAnalyticsFilters() {
+            const content = document.getElementById('analyticsFiltersContent');
+            const chevron = document.getElementById('analyticsFiltersChevron');
+            const toolbar = document.getElementById('analyticsFiltersToolbar');
+            
+            if (!content || !chevron || !toolbar) return;
+            
+            // Check current state from data attribute or style
+            const isCollapsed = toolbar.getAttribute('data-collapsed') === 'true' || 
+                               content.style.maxHeight === '0px' ||
+                               (content.style.maxHeight === '' && content.offsetHeight === 0);
+            
+            if (isCollapsed) {
+                // Expand
+                // First set padding to get accurate height measurement
+                content.style.padding = '0.75rem';
+                // Force reflow to ensure padding is applied
+                content.offsetHeight;
+                const targetHeight = content.scrollHeight;
+                content.style.maxHeight = targetHeight + 'px';
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('analyticsFiltersCollapsed', 'false');
+                }
+            } else {
+                // Collapse
+                const currentHeight = content.scrollHeight;
+                content.style.maxHeight = currentHeight + 'px';
+                // Force reflow
+                content.offsetHeight;
+                // Remove padding immediately (no transition) to prevent content from showing
+                content.style.padding = '0';
+                content.style.maxHeight = '0px';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+                // Store state
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('analyticsFiltersCollapsed', 'true');
+                }
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        // Initialize analytics filters collapsed state from localStorage
+        function initAnalyticsFiltersState() {
+            const toolbar = document.getElementById('analyticsFiltersToolbar');
+            const content = document.getElementById('analyticsFiltersContent');
+            const chevron = document.getElementById('analyticsFiltersChevron');
+            
+            if (!toolbar || !content || !chevron) return;
+            
+            // Check localStorage for saved state (default to collapsed)
+            const savedState = typeof localStorage !== 'undefined' ? localStorage.getItem('analyticsFiltersCollapsed') : null;
+            const shouldCollapse = savedState !== 'false'; // Default to collapsed if no saved state
+            
+            if (shouldCollapse) {
+                // Set initial collapsed state
+                content.style.maxHeight = '0px';
+                content.style.padding = '0';
+                chevron.style.transform = 'rotate(-90deg)';
+                toolbar.setAttribute('data-collapsed', 'true');
+            } else {
+                // Set initial expanded state
+                // Use setTimeout to ensure content is rendered and visible before measuring
+                setTimeout(() => {
+                    if (toolbar.style.display !== 'none') {
+                        content.style.padding = '0.75rem';
+                        // Force reflow
+                        content.offsetHeight;
+                        const targetHeight = content.scrollHeight;
+                        content.style.maxHeight = targetHeight + 'px';
+                    }
+                }, 50);
+                chevron.style.transform = 'rotate(0deg)';
+                toolbar.setAttribute('data-collapsed', 'false');
+            }
+            
+            // Update Lucide icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: toolbar });
+            }
+        }
+        
+        function clearAnalyticsFilters() {
+            log.debug('🧹 Clearing analytics filters');
+            // Reset date range
+            const startEl = document.getElementById('analyticsStartDate');
+            const endEl = document.getElementById('analyticsEndDate');
+            if (startEl) startEl.value = '';
+            if (endEl) endEl.value = '';
+            
+            // Reset multi-select filters
+            const institutionSelect = document.getElementById('analyticsGlobalInstitution');
+            const instructorSelect = document.getElementById('analyticsGlobalInstructor');
+            const courseSelect = document.getElementById('analyticsGlobalCourse');
+            
+            if (institutionSelect) {
+                Array.from(institutionSelect.options).forEach(opt => opt.selected = false);
+            }
+            if (instructorSelect) {
+                Array.from(instructorSelect.options).forEach(opt => opt.selected = false);
+            }
+            if (courseSelect) {
+                Array.from(courseSelect.options).forEach(opt => opt.selected = false);
+            }
+            
+            // Update filter trigger buttons
+            const institutionTrigger = document.getElementById('filter-trigger-institution');
+            const instructorTrigger = document.getElementById('filter-trigger-instructor');
+            const courseTrigger = document.getElementById('filter-trigger-course');
+            
+            if (institutionTrigger) institutionTrigger.textContent = 'All institutions';
+            if (instructorTrigger) instructorTrigger.textContent = 'All instructors';
+            if (courseTrigger) courseTrigger.textContent = 'All courses';
+            
+            // Close dropdown panels
+            const institutionPanel = document.getElementById('filter-panel-institution');
+            const instructorPanel = document.getElementById('filter-panel-instructor');
+            const coursePanel = document.getElementById('filter-panel-course');
+            
+            if (institutionPanel) {
+                const dropdown = document.getElementById('filter-dropdown-institution');
+                if (dropdown) dropdown.classList.remove('open');
+                institutionPanel.setAttribute('aria-hidden', 'true');
+            }
+            if (instructorPanel) {
+                const dropdown = document.getElementById('filter-dropdown-instructor');
+                if (dropdown) dropdown.classList.remove('open');
+                instructorPanel.setAttribute('aria-hidden', 'true');
+            }
+            if (coursePanel) {
+                const dropdown = document.getElementById('filter-dropdown-course');
+                if (dropdown) dropdown.classList.remove('open');
+                coursePanel.setAttribute('aria-hidden', 'true');
+            }
+            
+            // Apply filters to refresh view
+            if (typeof applyGlobalFilters === 'function') {
+                applyGlobalFilters();
+            }
+        }
+        
         function clearInstructorFilters() {
             log.debug('🧹 Clearing instructor filters');
             const ic = document.getElementById('instructorFilterCourse');
@@ -12138,7 +12331,13 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             const rubricsWrap = document.getElementById('dashboardRubricsWrap');
             if (rubricsWrap) rubricsWrap.style.display = 'none';
             const analyticsSection = document.getElementById('analyticsSection');
-            if (analyticsSection) analyticsSection.style.display = 'block';
+            if (analyticsSection) {
+                analyticsSection.style.display = 'block';
+                // Initialize analytics filters state when section is shown
+                if (typeof initAnalyticsFiltersState === 'function') {
+                    setTimeout(() => initAnalyticsFiltersState(), 100);
+                }
+            }
             
             const overviewAllWrap = document.getElementById('overviewAllInstitutionsWrap');
             const overviewDeptWrap = document.getElementById('overviewDepartmentCoursesWrap');
@@ -14870,7 +15069,22 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                 });
             }
+            // Initialize analytics filters state
+            if (typeof initAnalyticsFiltersState === 'function') {
+                initAnalyticsFiltersState();
+            }
+            
             var analyticsGlobalReset = document.getElementById('analyticsGlobalReset');
+            if (analyticsGlobalReset) {
+                // Remove old event listener if any and use the new clearAnalyticsFilters function
+                analyticsGlobalReset.onclick = function() {
+                    if (typeof clearAnalyticsFilters === 'function') {
+                        clearAnalyticsFilters();
+                    }
+                };
+            }
+            
+            // Legacy event listener for backward compatibility
             if (analyticsGlobalReset) analyticsGlobalReset.addEventListener('click', function() {
                 // Reset date range
                 var startEl = document.getElementById('analyticsStartDate');
@@ -15090,6 +15304,22 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     }
                     // Initialize collapsed state from localStorage
                     initRubricsFiltersState();
+                }
+            }
+            
+            // Show/hide analytics filter toolbar (only for insights tab)
+            const analyticsFilterToolbar = document.getElementById('analyticsFiltersToolbar');
+            if (analyticsFilterToolbar) {
+                analyticsFilterToolbar.style.display = tabId === 'insights' ? 'block' : 'none';
+                // Initialize Lucide icons in filter toolbar and collapsed state
+                if (tabId === 'insights') {
+                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                        lucide.createIcons({ root: analyticsFilterToolbar });
+                    }
+                    // Initialize collapsed state from localStorage
+                    if (typeof initAnalyticsFiltersState === 'function') {
+                        setTimeout(() => initAnalyticsFiltersState(), 50);
+                    }
                 }
             }
             
@@ -17680,7 +17910,8 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                     tab.setAttribute('aria-selected', selected ? 'true' : 'false');
                     tab.setAttribute('tabindex', selected ? 0 : -1);
                     tab.classList.toggle('analytics-tab-active', selected);
-                    if (selected) tab.focus({ preventScroll: true });
+                    // Don't auto-focus on page load to prevent blue outline
+                    // if (selected) tab.focus({ preventScroll: true });
                 }
             });
             // LLM Export tab removed - moved to Settings → Admin → Data Management
