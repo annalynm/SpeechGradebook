@@ -14901,8 +14901,14 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 // Flag so we show Dashboard (not last section) on this load
                 if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('justLoggedIn', '1');
                 
-                // Load new user's profile and theme
-                await checkAuth();
+                // After successful login, we already have the user and session
+                // Skip checkAuth() which tries to getSession() and may timeout
+                // Instead, directly load user tier and proceed
+                console.log('[login] Skipping checkAuth, directly loading user tier...');
+                await loadUserTier();
+                
+                // Show main app
+                showMainApp();
                 
                 // Reload data for this user
                 await loadClasses();
