@@ -12184,10 +12184,18 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 await handlePasswordResetFromEmail();
                 
                 // User is not logged in
-                // If on /app or other protected routes, redirect to /login
+                // If on /app or other protected routes, check for demo mode first
                 if (currentPath === '/app' || currentPath.startsWith('/dashboard') || 
                     currentPath.startsWith('/evaluate') || currentPath.startsWith('/settings') ||
                     currentPath.startsWith('/analytics')) {
+                    // Check for demo mode hash before redirecting
+                    if (window.location.hash === '#demo') {
+                        // Clear the hash and enter demo mode
+                        window.history.replaceState({}, '', window.location.pathname + window.location.search);
+                        enterDemoMode();
+                        return;
+                    }
+                    // Otherwise, redirect to login
                     window.location.href = '/login';
                     return;
                 }

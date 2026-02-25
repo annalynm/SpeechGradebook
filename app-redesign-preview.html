@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeechGradebook - App Redesign Preview</title>
+    
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #142940;
+            --primary-light: #2d4a6f;
+            --secondary: #5a6c7d;
+            --accent: #4a6fa5;
+            
+            --text: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-light: #6b6b6b;
+            
+            --bg: #fafbfc;
+            --bg-alt: #f1f4f7;
+            --card: #ffffff;
+            --border: #d1d5db;
+            
+            --success: #059669;
+            --warning: #d97706;
+            --error: #b91c1c;
+            --info: #0284c7;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.47059;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .preview-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: var(--card);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .preview-title {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .preview-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* ===== LIGHT HEADER OPTION ===== */
+        .header-light {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(250, 251, 252, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 0;
+        }
+
+        .header-light .header-content {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-light .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-light .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .header-light .logo {
+            width: 32px;
+            height: 32px;
+            background: var(--card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        .header-light .app-title h1 {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .header-light .primary-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            list-style: none;
+        }
+
+        .header-light .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 6px 12px;
+            border-radius: 980px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .header-light .nav-link:hover {
+            background: var(--bg-alt);
+        }
+
+        .header-light .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header-light .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .header-light .search-wrapper {
+            position: relative;
+        }
+
+        .header-light .search-icon-button {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-light .search-icon-button:hover {
+            background: var(--bg-alt);
+        }
+
+        .header-light .search-expandable {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            min-width: 280px;
+        }
+
+        .header-light .search-expandable.hidden {
+            display: none;
+        }
+
+        .header-light .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .header-light .account-dropdown-wrapper {
+            position: relative;
+        }
+
+        .header-light .account-dropdown-trigger {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-light .account-dropdown-trigger:hover {
+            background: var(--bg-alt);
+        }
+
+        .header-light .account-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            padding: 8px 0;
+        }
+
+        .header-light .account-dropdown-menu.hidden {
+            display: none;
+        }
+
+        .header-light .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .header-light .dropdown-item:hover {
+            background: var(--bg-alt);
+        }
+
+        .header-light .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 0;
+        }
+
+        .header-light .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .header-light .mobile-menu-button:hover {
+            background: var(--bg-alt);
+        }
+
+        /* ===== DARK HEADER OPTION ===== */
+        .header-dark {
+            background: var(--primary-dark);
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .header-dark .header-content {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-dark .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-dark .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .header-dark .logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-dark .app-title h1 {
+            font-size: 21px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: -0.01em;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .header-dark .primary-nav {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            list-style: none;
+        }
+
+        .header-dark .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 8px 16px;
+            border-radius: 980px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .header-dark .nav-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .header-dark .nav-link.active {
+            background: rgba(255, 255, 255, 0.18);
+            font-weight: 600;
+        }
+
+        .header-dark .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .header-dark .search-wrapper {
+            position: relative;
+        }
+
+        .header-dark .search-icon-button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-dark .search-icon-button:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .header-dark .search-expandable {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            min-width: 280px;
+        }
+
+        .header-dark .search-expandable.hidden {
+            display: none;
+        }
+
+        .header-dark .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+        }
+
+        .header-dark .account-dropdown-wrapper {
+            position: relative;
+        }
+
+        .header-dark .account-dropdown-trigger {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-dark .account-dropdown-trigger:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .header-dark .account-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            padding: 8px 0;
+        }
+
+        .header-dark .account-dropdown-menu.hidden {
+            display: none;
+        }
+
+        .header-dark .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .header-dark .dropdown-item:hover {
+            background: var(--bg-alt);
+        }
+
+        .header-dark .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 0;
+        }
+
+        .header-dark .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .header-dark .mobile-menu-button:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* ===== MOBILE MENU (Apple Style) ===== */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            max-width: 85vw;
+            height: 100vh;
+            background: var(--card);
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1999;
+            opacity: 0;
+            transition: opacity 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+            backdrop-filter: blur(4px);
+        }
+
+        .mobile-menu-overlay.open {
+            opacity: 1;
+        }
+
+        .mobile-menu-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-alt);
+        }
+
+        .mobile-menu-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-close:hover {
+            background: var(--border);
+        }
+
+        .mobile-menu-nav {
+            padding: 8px 0;
+        }
+
+        .mobile-menu-section {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu-section:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-menu-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 22px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .mobile-menu-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 22px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 17px;
+            transition: background 0.2s;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mobile-menu-nav .nav-link:active {
+            background: var(--bg-alt);
+        }
+
+        .mobile-menu-nav .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mobile-menu-nav .nav-link i {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .mobile-menu-search {
+            padding: 12px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu-search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 17px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-alt);
+        }
+
+        .mobile-menu-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--card);
+        }
+
+        /* ===== PILL-SHAPED BUTTONS ===== */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 400;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-alt);
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            /* Hide desktop navigation, search, and account menu on mobile */
+            .header-light .primary-nav,
+            .header-dark .primary-nav,
+            .header-light .search-wrapper,
+            .header-dark .search-wrapper,
+            .header-light .account-dropdown-wrapper,
+            .header-dark .account-dropdown-wrapper {
+                display: none;
+            }
+
+            /* Show mobile menu button */
+            .header-light .mobile-menu-button,
+            .header-dark .mobile-menu-button {
+                display: block;
+            }
+
+            /* Show mobile menu and overlay */
+            .mobile-menu,
+            .mobile-menu-overlay {
+                display: block;
+            }
+
+            /* Adjust header height for mobile */
+            .header-light .header-content,
+            .header-dark .header-content {
+                height: 48px;
+            }
+
+            /* Ensure logo and title fit */
+            .header-light .app-title h1,
+            .header-dark .app-title h1 {
+                font-size: 18px;
+            }
+        }
+
+        /* ===== CONTENT PREVIEW ===== */
+        .content-preview {
+            padding: 2rem;
+            background: var(--bg-alt);
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        p, ul, li {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="preview-title">App Redesign Preview</h1>
+        <p class="preview-subtitle">Comparing light and dark header options with mobile menu - Using Inter font</p>
+
+        <!-- LIGHT HEADER OPTION -->
+        <div class="preview-section">
+            <h2 class="preview-title">Option 1: Light Header (Landing Page Style)</h2>
+            <p class="preview-subtitle">Clean, minimal design matching the landing page aesthetic</p>
+            
+            <header class="header-light">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="logo-section">
+                            <div class="logo">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="8" fill="#1e3a5f"/>
+                                    <text x="10" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold">SG</text>
+                                </svg>
+                            </div>
+                            <div class="app-title">
+                                <h1>SpeechGradebook</h1>
+                            </div>
+                        </div>
+                        <nav class="primary-nav">
+                            <a href="#" class="nav-link active">
+                                <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>
+                                Dashboard
+                            </a>
+                            <a href="#" class="nav-link">
+                                <i data-lucide="mic" style="width: 16px; height: 16px;"></i>
+                                Evaluate
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-wrapper">
+                            <button class="search-icon-button" onclick="toggleSearch('light')">
+                                <i data-lucide="search" style="width: 20px; height: 20px;"></i>
+                            </button>
+                            <div class="search-expandable hidden" id="searchLight">
+                                <input type="text" class="search-input" placeholder="Search courses, students...">
+                            </div>
+                        </div>
+                        <div class="account-dropdown-wrapper">
+                            <button class="account-dropdown-trigger" onclick="toggleAccountDropdown('light')">
+                                <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+                            </button>
+                            <div class="account-dropdown-menu hidden" id="accountDropdownLight">
+                                <div class="dropdown-item">
+                                    <i data-lucide="user" style="width: 16px; height: 16px;"></i>
+                                    <span>John Doe</span>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item">
+                                    <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                                    <span>Settings</span>
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i data-lucide="help-circle" style="width: 16px; height: 16px;"></i>
+                                    <span>Support</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item">
+                                    <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                                    <span>Log Out</span>
+                                </a>
+                            </div>
+                        </div>
+                        <button class="mobile-menu-button" onclick="toggleMobileMenu()">
+                            <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-preview">
+                <h3 style="margin-bottom: 1rem;">Sample Content</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    This is how content looks with the light header. The header uses a backdrop blur effect 
+                    and matches the landing page aesthetic perfectly. All text uses the Inter font for a clean, 
+                    modern appearance that's consistent across all platforms.
+                </p>
+                <div class="button-group">
+                    <button class="btn btn-primary">Save Changes</button>
+                    <button class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DARK HEADER OPTION -->
+        <div class="preview-section">
+            <h2 class="preview-title">Option 2: Dark Header (Refined Current Style)</h2>
+            <p class="preview-subtitle">Professional dark header with improved mobile support</p>
+            
+            <header class="header-dark">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="logo-section">
+                            <div class="logo">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" fill="#1e3a5f"/>
+                                    <text x="12" y="16" text-anchor="middle" fill="white" font-size="12" font-weight="bold">SG</text>
+                                </svg>
+                            </div>
+                            <div class="app-title">
+                                <h1>SpeechGradebook</h1>
+                            </div>
+                        </div>
+                        <nav class="primary-nav">
+                            <a href="#" class="nav-link active">
+                                <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>
+                                Dashboard
+                            </a>
+                            <a href="#" class="nav-link">
+                                <i data-lucide="mic" style="width: 16px; height: 16px;"></i>
+                                Evaluate
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-wrapper">
+                            <button class="search-icon-button" onclick="toggleSearch('dark')">
+                                <i data-lucide="search" style="width: 20px; height: 20px;"></i>
+                            </button>
+                            <div class="search-expandable hidden" id="searchDark">
+                                <input type="text" class="search-input" placeholder="Search courses, students...">
+                            </div>
+                        </div>
+                        <div class="account-dropdown-wrapper">
+                            <button class="account-dropdown-trigger" onclick="toggleAccountDropdown('dark')">
+                                <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+                            </button>
+                            <div class="account-dropdown-menu hidden" id="accountDropdownDark">
+                                <div class="dropdown-item">
+                                    <i data-lucide="user" style="width: 16px; height: 16px;"></i>
+                                    <span>John Doe</span>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item">
+                                    <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                                    <span>Settings</span>
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i data-lucide="help-circle" style="width: 16px; height: 16px;"></i>
+                                    <span>Support</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item">
+                                    <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                                    <span>Log Out</span>
+                                </a>
+                            </div>
+                        </div>
+                        <button class="mobile-menu-button" onclick="toggleMobileMenu()">
+                            <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-preview" style="background: var(--bg);">
+                <h3 style="margin-bottom: 1rem;">Sample Content</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    This is how content looks with the dark header. The header provides strong contrast 
+                    and maintains a professional appearance while being mobile-friendly. Inter font ensures 
+                    excellent readability and a modern aesthetic.
+                </p>
+                <div class="button-group">
+                    <button class="btn btn-primary">Save Changes</button>
+                    <button class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOBILE MENU (Apple Style - All items nested) -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-menu-header">
+                <h3>Menu</h3>
+                <button class="mobile-menu-close" onclick="toggleMobileMenu()">
+                    <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+                </button>
+            </div>
+            <nav class="mobile-menu-nav">
+                <!-- Search Section -->
+                <div class="mobile-menu-search">
+                    <input type="text" class="mobile-menu-search-input" placeholder="Search courses, students...">
+                </div>
+                
+                <!-- Navigation Section -->
+                <div class="mobile-menu-section">
+                    <div class="mobile-menu-section-title">Navigation</div>
+                    <a href="#" class="nav-link active">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i data-lucide="mic"></i>
+                        <span>Evaluate Speech</span>
+                    </a>
+                </div>
+                
+                <!-- Account Section -->
+                <div class="mobile-menu-section">
+                    <div class="mobile-menu-section-title">Account</div>
+                    <a href="#" class="nav-link">
+                        <i data-lucide="user"></i>
+                        <span>John Doe</span>
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i data-lucide="settings"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i data-lucide="help-circle"></i>
+                        <span>Support</span>
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i data-lucide="log-out"></i>
+                        <span>Log Out</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- COMPARISON -->
+        <div class="preview-section">
+            <h2 class="preview-title">Key Changes Summary</h2>
+            <div class="comparison-grid">
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Typography</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>Inter font (open source, legally safe)</li>
+                        <li>Refined letter-spacing values</li>
+                        <li>Consistent across all platforms</li>
+                        <li>Excellent readability</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Buttons</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>Pill-shaped (border-radius: 980px)</li>
+                        <li>Solid colors (no gradients)</li>
+                        <li>Simple, clean transitions</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Mobile Menu</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>Hamburger button in header</li>
+                        <li>Slide-in menu from right</li>
+                        <li>Overlay backdrop</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Navigation</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>Hidden on mobile (< 768px)</li>
+                        <li>Accessible via menu button</li>
+                        <li>No more stacking issues</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            menu.classList.toggle('open');
+            overlay.classList.toggle('open');
+            
+            if (menu.classList.contains('open')) {
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 350);
+                document.body.style.overflow = '';
+            }
+        }
+
+        function toggleSearch(headerType) {
+            const searchId = headerType === 'light' ? 'searchLight' : 'searchDark';
+            const searchEl = document.getElementById(searchId);
+            if (searchEl) {
+                searchEl.classList.toggle('hidden');
+                if (!searchEl.classList.contains('hidden')) {
+                    searchEl.querySelector('.search-input')?.focus();
+                }
+            }
+        }
+
+        function toggleAccountDropdown(headerType) {
+            const dropdownId = headerType === 'light' ? 'accountDropdownLight' : 'accountDropdownDark';
+            const dropdownEl = document.getElementById(dropdownId);
+            if (dropdownEl) {
+                dropdownEl.classList.toggle('hidden');
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.account-dropdown-wrapper')) {
+                document.querySelectorAll('.account-dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            }
+            if (!e.target.closest('.search-wrapper')) {
+                document.querySelectorAll('.search-expandable').forEach(search => {
+                    search.classList.add('hidden');
+                });
+            }
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const menu = document.getElementById('mobileMenu');
+                if (menu.classList.contains('open')) {
+                    toggleMobileMenu();
+                }
+                // Also close dropdowns
+                document.querySelectorAll('.account-dropdown-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+                document.querySelectorAll('.search-expandable').forEach(search => {
+                    search.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
