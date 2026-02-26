@@ -21078,11 +21078,13 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                 
                 tableBody.innerHTML = pageUsers.map(user => {
                     const institution = user.institutions ? (Array.isArray(user.institutions) ? user.institutions[0] : user.institutions) : null;
+                    const institutionId = institution ? institution.id : null;
+                    const institutionName = institution ? institution.name : null;
                     return `
                         <tr>
                             <td>
                                 <div style="font-weight: 600;">${escapeHtml(user.full_name || user.email || '—')}</div>
-                                ${institution ? `<div style="font-size: 0.75rem; color: var(--text-light);">${escapeHtml(institution.name)}</div>` : ''}
+                                ${institution ? `<div style="font-size: 0.75rem; color: var(--text-light);"><a href="javascript:void(0)" onclick="showInstitutionDetail('${institutionId}')" style="color: var(--primary); text-decoration: none; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${escapeHtml(institution.name)}</a></div>` : ''}
                             </td>
                             <td>${getTierBadge(user)}</td>
                             <td>${getStatusBadge(user.status)}</td>
@@ -21091,9 +21093,25 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
                             <td style="text-align: right;">${user.evalsAll.toLocaleString()}</td>
                             <td style="text-align: right; ${user.evals30d > 0 ? 'font-weight: 600;' : ''}">${user.evals30d.toLocaleString()}</td>
                             <td>
-                                <button class="btn-icon-only" onclick="showUserActionsMenu('${user.id}')" aria-label="Actions">
-                                    <i data-lucide="more-vertical"></i>
-                                </button>
+                                <div class="rubric-actions-dropdown" style="position: relative; display: inline-block;" onclick="event.stopPropagation();">
+                                    <button type="button" onclick="toggleUserActionsMenu('${user.id}', event); return false;" 
+                                            class="btn-icon-only"
+                                            aria-label="User actions" aria-expanded="false" aria-haspopup="true" title="User actions">
+                                        <i data-lucide="more-vertical"></i>
+                                    </button>
+                                    <div class="rubric-actions-menu hidden" id="userActionsMenu_${user.id}" role="menu" aria-label="User actions">
+                                        <button type="button" role="menuitem" onclick="if(event)event.stopPropagation();viewUserDetail('${user.id}');closeUserActionsMenu('${user.id}');return false;">
+                                            <i data-lucide="eye" style="width:1rem;height:1rem;"></i> View Detail
+                                        </button>
+                                        <button type="button" role="menuitem" onclick="if(event)event.stopPropagation();sendNudgeEmail('${user.id}');closeUserActionsMenu('${user.id}');return false;">
+                                            <i data-lucide="mail" style="width:1rem;height:1rem;"></i> Send Nudge Email
+                                        </button>
+                                        <div class="menu-separator" style="height: 1px; background: var(--border); margin: 0.25rem 0;"></div>
+                                        <button type="button" role="menuitem" onclick="if(event)event.stopPropagation();flagUserForReview('${user.id}');closeUserActionsMenu('${user.id}');return false;">
+                                            <i data-lucide="flag" style="width:1rem;height:1rem;"></i> Flag for Review
+                                        </button>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -21150,9 +21168,393 @@ python llm_training/train_lora.py --train_file train.jsonl --validation_file val
             renderBizUsers();
         }
         
-        function showUserActionsMenu(userId) {
-            // Placeholder - would show menu with View Detail, Send Nudge Email, Flag for Review
-            console.log('User actions menu for:', userId);
+        // User actions menu functions
+        function toggleUserActionsMenu(userId, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const menu = document.getElementById('userActionsMenu_' + userId);
+            const button = event ? event.currentTarget : document.querySelector(`button[onclick*="toggleUserActionsMenu('${userId}'"]`);
+            
+            if (!menu) return;
+            
+            // Close all other user action menus
+            document.querySelectorAll('.rubric-actions-menu[id^="userActionsMenu_"]:not(.hidden)').forEach(m => {
+                if (m.id !== menu.id) {
+                    closeUserActionsMenu(m.id.replace('userActionsMenu_', ''));
+                }
+            });
+            
+            // Toggle this menu
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                if (button) button.setAttribute('aria-expanded', 'true');
+                positionActionMenu(menu, button);
+                
+                // Add click outside listener
+                setTimeout(() => {
+                    document.addEventListener('click', function closeOnOutside(e) {
+                        if (!menu.contains(e.target) && !button?.contains(e.target)) {
+                            closeUserActionsMenu(userId);
+                            document.removeEventListener('click', closeOnOutside);
+                        }
+                    }, true);
+                }, 0);
+            } else {
+                closeUserActionsMenu(userId);
+            }
+        }
+        
+        function closeUserActionsMenu(userId) {
+            const menu = document.getElementById('userActionsMenu_' + userId);
+            if (menu) {
+                menu.classList.add('hidden');
+                const button = menu.closest('.rubric-actions-dropdown')?.querySelector('button[aria-haspopup="true"]');
+                if (button) button.setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        // View user detail - shows user information in a modal/sheet
+        function viewUserDetail(userId) {
+            const user = _usersData?.find(u => u.id === userId);
+            if (!user) {
+                console.warn('User not found:', userId);
+                return;
+            }
+            
+            const institution = user.institutions ? (Array.isArray(user.institutions) ? user.institutions[0] : user.institutions) : null;
+            
+            // Create modal/sheet to show user details
+            const modal = document.createElement('div');
+            modal.id = 'userDetailModal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;';
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            modal.setAttribute('aria-labelledby', 'userDetailTitle');
+            modal.onclick = function(e) {
+                if (e.target === modal) closeUserDetail();
+            };
+            
+            const fmtDate = (dateStr) => {
+                if (!dateStr) return '—';
+                return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            };
+            
+            modal.innerHTML = `
+                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);" onclick="event.stopPropagation();">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 id="userDetailTitle" style="margin: 0; color: var(--primary);"><span class="icon-with-text"><i data-lucide="user"></i> User Details</span></h3>
+                        <button type="button" onclick="closeUserDetail()" class="btn-icon-only" aria-label="Close" style="padding: 0.5rem;">
+                            <i data-lucide="x" style="width:1.25rem;height:1.25rem;"></i>
+                        </button>
+                    </div>
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Name</label>
+                            <div style="font-size: 1.125rem; color: var(--text);">${escapeHtml(user.full_name || user.email || '—')}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Email</label>
+                            <div style="color: var(--text);">${escapeHtml(user.email || '—')}</div>
+                        </div>
+                        ${institution ? `
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Institution</label>
+                            <div style="color: var(--text);"><a href="javascript:void(0)" onclick="closeUserDetail(); showInstitutionDetail('${institution.id}');" style="color: var(--primary); text-decoration: none;">${escapeHtml(institution.name)}</a></div>
+                        </div>
+                        ` : ''}
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Account Tier</label>
+                            <div style="color: var(--text);">${user.account_tier || '—'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Status</label>
+                            <div style="color: var(--text);">${user.statusLabel || '—'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Joined</label>
+                            <div style="color: var(--text);">${fmtDate(user.created_at)}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Last Active</label>
+                            <div style="color: var(--text);">${fmtDate(user.lastActive)}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--bg-alt); border-radius: 0.5rem;">
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Evaluations (All Time)</label>
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--text);">${user.evalsAll.toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Evaluations (30d)</label>
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--text);">${user.evals30d.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeUserDetail(); showInstitutionDetail('${institution?.id || ''}');" class="btn-secondary" ${!institution ? 'style="display:none;"' : ''}>
+                            <span class="icon-with-text"><i data-lucide="building-2"></i> View Institution</span>
+                        </button>
+                        <button type="button" onclick="closeUserDetail(); sendNudgeEmail('${userId}');" class="btn" style="background: var(--primary); color: white;">
+                            <span class="icon-with-text"><i data-lucide="mail"></i> Send Email</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: modal });
+            }
+        }
+        
+        function closeUserDetail() {
+            const modal = document.getElementById('userDetailModal');
+            if (modal) modal.remove();
+        }
+        
+        // Send nudge email - opens email client or shows email form
+        function sendNudgeEmail(userId) {
+            const user = _usersData?.find(u => u.id === userId);
+            if (!user) {
+                console.warn('User not found:', userId);
+                return;
+            }
+            
+            // For now, open mailto link. In future, could integrate with email service
+            const subject = encodeURIComponent('Welcome back to SpeechGradebook');
+            const body = encodeURIComponent(`Hi ${user.full_name || user.email},\n\nWe noticed you haven't been active recently. We'd love to help you get the most out of SpeechGradebook.\n\nLet us know if you have any questions!\n\nBest regards,\nThe SpeechGradebook Team`);
+            window.location.href = `mailto:${user.email}?subject=${subject}&body=${body}`;
+        }
+        
+        // Flag user for review - marks user for follow-up
+        function flagUserForReview(userId) {
+            const user = _usersData?.find(u => u.id === userId);
+            if (!user) {
+                console.warn('User not found:', userId);
+                return;
+            }
+            
+            // Store flagged users in localStorage (could be moved to database)
+            try {
+                const flagged = JSON.parse(localStorage.getItem('flaggedUsers') || '[]');
+                if (!flagged.includes(userId)) {
+                    flagged.push(userId);
+                    localStorage.setItem('flaggedUsers', JSON.stringify(flagged));
+                }
+                
+                // Show confirmation
+                if (typeof showToast === 'function') {
+                    showToast(`User ${user.full_name || user.email} flagged for review`, 3000);
+                } else {
+                    alert(`User ${user.full_name || user.email} flagged for review`);
+                }
+            } catch (e) {
+                console.error('Error flagging user:', e);
+                alert('Error flagging user for review');
+            }
+        }
+        
+        // Show institution detail drawer
+        function showInstitutionDetail(institutionId) {
+            if (!institutionId) {
+                console.warn('No institution ID provided');
+                return;
+            }
+            
+            // Load institution data
+            if (!supabaseClient) {
+                console.warn('Supabase client not available');
+                return;
+            }
+            
+            // Create side sheet (drawer from right)
+            const drawer = document.createElement('div');
+            drawer.id = 'institutionDetailDrawer';
+            drawer.style.cssText = 'position: fixed; top: 0; right: 0; width: 500px; max-width: 90vw; height: 100vh; background: var(--bg); border-left: 1px solid var(--border); box-shadow: -4px 0 16px rgba(0,0,0,0.1); z-index: 10000; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease;';
+            drawer.setAttribute('role', 'dialog');
+            drawer.setAttribute('aria-modal', 'true');
+            drawer.setAttribute('aria-labelledby', 'institutionDetailTitle');
+            
+            drawer.innerHTML = `
+                <div style="padding: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 id="institutionDetailTitle" style="margin: 0; color: var(--primary);"><span class="icon-with-text"><i data-lucide="building-2"></i> Institution Details</span></h3>
+                        <button type="button" onclick="closeInstitutionDetail()" class="btn-icon-only" aria-label="Close" style="padding: 0.5rem;">
+                            <i data-lucide="x" style="width:1.25rem;height:1.25rem;"></i>
+                        </button>
+                    </div>
+                    <div id="institutionDetailContent" style="color: var(--text-light);">
+                        <div class="spinner" style="margin: 2rem auto;"></div>
+                        <p style="text-align: center;">Loading institution data...</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(drawer);
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons({ root: drawer });
+            }
+            
+            // Animate in
+            requestAnimationFrame(() => {
+                drawer.style.transform = 'translateX(0)';
+            });
+            
+            // Load institution data
+            supabaseClient.from('institutions')
+                .select('*')
+                .eq('id', institutionId)
+                .single()
+                .then(async ({ data: institution, error }) => {
+                    const content = document.getElementById('institutionDetailContent');
+                    if (error || !institution) {
+                        if (content) {
+                            content.innerHTML = '<p style="color: var(--error);">Error loading institution data</p>';
+                        }
+                        return;
+                    }
+                    
+                    // Get instructors for this institution
+                    const { data: instructorsData } = await supabaseClient
+                        .from('user_profiles')
+                        .select('id, email, full_name, account_tier, created_at')
+                        .eq('institution_id', institutionId)
+                        .eq('account_tier', 'instructor');
+                    
+                    const instructors = instructorsData || [];
+                    
+                    // Get evaluation count for institution
+                    // First get course IDs for instructors in this institution
+                    const instructorIds = instructors.map(i => i.id);
+                    if (instructorIds.length === 0) {
+                        if (content) {
+                            content.innerHTML = '<p style="color: var(--text-light);">No instructors found</p>';
+                        }
+                        return;
+                    }
+                    
+                    supabaseClient.from('courses')
+                        .select('id')
+                        .in('instructor_id', instructorIds)
+                        .is('deleted_locally_at', null)
+                        .then(({ data: courses }) => {
+                            const courseIds = courses ? courses.map(c => c.id) : [];
+                            if (courseIds.length === 0) {
+                                if (content) {
+                                    const fmtDate = (dateStr) => {
+                                        if (!dateStr) return '—';
+                                        return new Date(dateStr).toLocaleDateString();
+                                    };
+                                    content.innerHTML = `
+                                        <div style="display: grid; gap: 2rem;">
+                                            <div>
+                                                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Institution Name</label>
+                                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--text);">${escapeHtml(institution.name || '—')}</div>
+                                            </div>
+                                            <div>
+                                                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Total Evaluations</label>
+                                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--text);">0</div>
+                                            </div>
+                                            <div>
+                                                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Instructors (${instructors.length})</label>
+                                                <div style="display: grid; gap: 0.75rem; margin-top: 0.5rem;">
+                                                    ${instructors.map(inst => `
+                                                        <div style="padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                                            <div>
+                                                                <div style="font-weight: 600; color: var(--text);">${escapeHtml(inst.full_name || inst.email || '—')}</div>
+                                                                <div style="font-size: 0.75rem; color: var(--text-light);">Joined ${fmtDate(inst.created_at)}</div>
+                                                            </div>
+                                                        </div>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; justify-content: flex-end;">
+                                            <button type="button" onclick="closeInstitutionDetail(); window.location.href='#settings'; switchSettingsTab('admin'); switchAdminSection('institution');" class="btn" style="background: var(--primary); color: white;">
+                                                <span class="icon-with-text"><i data-lucide="edit"></i> Edit Institution</span>
+                                            </button>
+                                        </div>
+                                    `;
+                                    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                                        lucide.createIcons({ root: content });
+                                    }
+                                }
+                                return;
+                            }
+                            
+                            return supabaseClient.from('evaluations')
+                                .select('id', { count: 'exact', head: true })
+                                .in('course_id', courseIds)
+                                .is('deleted_locally_at', null);
+                        })
+                        .then((result) => {
+                            const count = result?.count || 0;
+                            const evalCount = count || 0;
+                            
+                            if (content) {
+                                const fmtDate = (dateStr) => {
+                                    if (!dateStr) return '—';
+                                    return new Date(dateStr).toLocaleDateString();
+                                };
+                                
+                                content.innerHTML = `
+                                    <div style="display: grid; gap: 2rem;">
+                                        <div>
+                                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Institution Name</label>
+                                            <div style="font-size: 1.25rem; font-weight: 600; color: var(--text);">${escapeHtml(institution.name || '—')}</div>
+                                        </div>
+                                        <div>
+                                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Total Evaluations</label>
+                                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--text);">${evalCount.toLocaleString()}</div>
+                                        </div>
+                                        <div>
+                                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.875rem;">Instructors (${instructors.length})</label>
+                                            <div style="display: grid; gap: 0.75rem; margin-top: 0.5rem;">
+                                                ${instructors.length > 0 ? instructors.map(inst => `
+                                                    <div style="padding: 0.75rem; background: var(--bg-alt); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                                        <div>
+                                                            <div style="font-weight: 600; color: var(--text);">${escapeHtml(inst.full_name || inst.email || '—')}</div>
+                                                            <div style="font-size: 0.75rem; color: var(--text-light);">Joined ${fmtDate(inst.created_at)}</div>
+                                                        </div>
+                                                    </div>
+                                                `).join('') : '<p style="color: var(--text-light);">No instructors found</p>'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; justify-content: flex-end;">
+                                        <button type="button" onclick="closeInstitutionDetail(); window.location.href='#settings'; switchSettingsTab('admin'); switchAdminSection('institution');" class="btn" style="background: var(--primary); color: white;">
+                                            <span class="icon-with-text"><i data-lucide="edit"></i> Edit Institution</span>
+                                        </button>
+                                    </div>
+                                `;
+                                
+                                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                                    lucide.createIcons({ root: content });
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error loading evaluation count:', err);
+                            if (content) {
+                                content.innerHTML = '<p style="color: var(--error);">Error loading evaluation data</p>';
+                            }
+                        });
+                })
+                .catch(err => {
+                    console.error('Error loading institution:', err);
+                    if (content) {
+                        content.innerHTML = '<p style="color: var(--error);">Error loading institution data</p>';
+                    }
+                });
+        }
+        
+        function closeInstitutionDetail() {
+            const drawer = document.getElementById('institutionDetailDrawer');
+            if (drawer) {
+                drawer.style.transform = 'translateX(100%)';
+                setTimeout(() => drawer.remove(), 300);
+            }
         }
         
         // Business Usage & Evaluations section
